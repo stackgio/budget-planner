@@ -1,0 +1,4 @@
+node_modules/
+out/frames/
+out/*_raw.mp4
+out/preview*.mp4
