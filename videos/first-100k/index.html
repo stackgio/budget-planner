@@ -1,0 +1,464 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>First $100K Timeline</title>
+<style>
+  :root {
+    --bg: #F5F3EC; --ink: #13171E; --ink2: #4A5260; --muted: #7C838E;
+    --green: #13865B; --gdark: #0A6343; --gsoft: #DCEFE4;
+    --line: #E3DFD4; --amber: #F4E8C8; --amberline: #C9A44A; --amberink: #5A4310;
+  }
+  html, body { margin: 0; background: var(--bg); }
+  #stage {
+    position: relative; width: 1080px; height: 1920px; overflow: hidden;
+    background: var(--bg); color: var(--ink);
+    font-family: "Inter", sans-serif; font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+  .a { position: absolute; left: 0; top: 0; white-space: nowrap; transform-origin: 0 0; }
+  .mask { overflow: hidden; }
+  .mask > .in { position: absolute; left: 0; top: 0; white-space: nowrap; }
+  .g { color: var(--green); }
+  .gd { color: var(--gdark); }
+  .card { border-radius: 24px; background: #fff; overflow: hidden; }
+  .accent { position: absolute; left: 0; top: 0; bottom: 0; width: 7px; background: var(--green); }
+  .lbl { font-size: 22px; font-weight: 800; letter-spacing: .12em; color: var(--muted); }
+  .amt { font-size: 56px; line-height: 70px; font-weight: 800; letter-spacing: -.01em; }
+  .unit { font-size: 26px; line-height: 32px; font-weight: 700; letter-spacing: .06em; }
+  .track { height: 24px; border-radius: 12px; background: #ECE9E1; }
+  .bar { height: 24px; border-radius: 12px; background: var(--green); }
+  .grid { width: 2px; height: 40px; background: rgba(19,23,30,.13); }
+  .shade { height: 24px; border-radius: 0 12px 12px 0;
+    background: repeating-linear-gradient(135deg, rgba(19,134,91,.22) 0 6px, rgba(19,134,91,.07) 6px 12px); }
+  .ref { width: 0; height: 44px; border-left: 3px dashed rgba(10,99,67,.55); }
+  .dot { width: 30px; height: 30px; border-radius: 50%; background: var(--gdark);
+    box-shadow: 0 0 0 4px #fff, 0 2px 6px rgba(0,0,0,.18); display: flex; align-items: center; justify-content: center; }
+  .cap { font-size: 50px; line-height: 64px; font-weight: 750; text-align: center; width: 936px; white-space: normal; }
+  .tick { font-size: 30px; line-height: 36px; font-weight: 700; color: var(--ink2); }
+  .foot { font-size: 28px; line-height: 36px; font-weight: 600; color: var(--ink2); }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+// ---------- data (from model.py; bar lengths use exact months / 12) ----------
+const ROWS = [
+  { amt: "$100",   dur: "26", months: 307, tIn: 7.90,  bar: [8.55, 9.75],   tDur: 9.80 },
+  { amt: "$250",   dur: "16", months: 196, tIn: 11.17, bar: [11.55, 12.50], tDur: 12.55 },
+  { amt: "$500",   dur: "11", months: 128, tIn: 13.89, bar: [14.15, 15.05], tDur: 15.11 },
+  { amt: "$1,000", dur: "6½", months: 77,  tIn: 16.37, bar: [16.65, 17.50], tDur: 17.55 },
+];
+const DURATION = 25.167;
+
+// ---------- layout ----------
+const CX = 72, CW = 866, ROW_Y0 = 420, ROW_H = 140, ROW_GAP = 14;
+const PAD = 28, TRACK_W = 810, PX = TRACK_W / 30;      // 27 px per year
+const X0 = CX + PAD;                                    // year 0 in stage px
+const BAR_Y = 98;                                       // bar top inside card
+const OPEN = { x: 72, y: 760, w: 400, h: 220 }, TCARD = { x: 538, y: 760, w: 400, h: 220 };
+const CHIP_W = 196, CHIP_H = 240, CHIP_GAP = 14, CHIP_Y = 760;
+const chipX = i => CX + 20 + i * (CHIP_W + CHIP_GAP);
+const rowY = i => ROW_Y0 + i * (ROW_H + ROW_GAP);
+const OPEN_SCALE = 72 / 56;
+
+// ---------- helpers ----------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const P = (t, a, b) => clamp((t - a) / (b - a));
+const eo = x => 1 - Math.pow(1 - x, 3);
+const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const L = (a, b, p) => a + (b - a) * p;
+const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mix = (c1, c2, p) => { const a = hex(c1), b = hex(c2);
+  return `rgb(${a.map((v, i) => Math.round(L(v, b[i], p))).join(",")})`; };
+const mixH = (c1, c2, p) => { const a = hex(c1), b = hex(c2);
+  return "#" + a.map((v, i) => Math.round(L(v, b[i], p)).toString(16).padStart(2, "0")).join(""); };
+// keyframes [[t,v],...] with eased interpolation
+const kf = (t, k) => { if (t <= k[0][0]) return k[0][1];
+  for (let i = 1; i < k.length; i++) if (t <= k[i][0])
+    return L(k[i - 1][1], k[i][1], eio(P(t, k[i - 1][0], k[i][0])));
+  return k[k.length - 1][1]; };
+// baseline offset from line-box top for Inter
+const BL = (size, lh) => (lh - 1.2109 * size) / 2 + 0.96875 * size;
+
+const stage = document.getElementById("stage");
+function el(cls, html = "", parent = stage) {
+  const d = document.createElement("div"); d.className = cls; d.innerHTML = html; parent.appendChild(d); return d;
+}
+function maskEl(cls, html, h, parent = stage) {
+  const m = el("a mask " + cls, "", parent); m.style.height = h + "px";
+  const i = el("in", html, m); return { m, i };
+}
+function S(e, o) { for (const k in o) e.style[k] = o[k]; }
+function pos(e, x, y, s = 1, op = 1) {
+  e.style.transform = `translate(${x}px,${y}px) scale(${s})`; e.style.opacity = op;
+}
+function rise(i, p, out = 0) { i.style.transform = `translateY(${(1 - p) * 105 - out * 105}%)`; }
+const meas = el("a", ""); meas.style.visibility = "hidden";
+function tw(html, cls) { meas.className = "a " + cls; meas.innerHTML = html; return meas.getBoundingClientRect().width; }
+
+const CHECK = `<svg width="16" height="16" viewBox="0 0 16 16"><path d="M3.5 8.4l2.9 2.9 6-6.3" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+// ---------- build ----------
+let E = {};
+function build() {
+  // watermark
+  E.wm = el("a", "@stackwithgio");
+  S(E.wm, { fontSize: "26px", fontWeight: 700, color: "rgba(19,23,30,.42)", letterSpacing: ".02em" });
+
+  // card backgrounds (rows) + opening time card
+  E.tcard = el("a card"); E.tcard.style.boxShadow = "0 10px 30px rgba(19,23,30,.08)";
+  ROWS.forEach(r => { r.bg = el("a card"); r.accent = el("accent", "", r.bg); });
+
+  // opening text
+  E.yf = el("a", "YOUR FIRST");
+  S(E.yf, { fontSize: "66px", lineHeight: "80px", fontWeight: 800, letterSpacing: ".1em" });
+  E.how = maskEl("", "HOW LONG WOULD IT TAKE?", 60);
+  S(E.how.i, { fontSize: "46px", lineHeight: "60px", fontWeight: 800, letterSpacing: ".06em", color: "var(--ink2)" });
+  E.arrow = el("a", "→"); S(E.arrow, { fontSize: "56px", lineHeight: "60px", fontWeight: 700, color: "var(--muted)" });
+  E.lblC = el("a lbl", "MONTHLY CONTRIBUTION");
+  E.lblT = el("a lbl", "TIME TO $100,000");
+
+  // goal badge
+  E.badge = el("a"); S(E.badge, { height: "76px", borderRadius: "38px", background: "var(--green)" });
+  E.bdot = el("a dot", CHECK); E.bdot.style.boxShadow = "0 0 0 4px rgba(255,255,255,.9)";
+  E.goal = el("a", "GOAL");
+  S(E.goal, { fontSize: "22px", lineHeight: "26px", fontWeight: 800, letterSpacing: ".14em", color: "rgba(255,255,255,.9)" });
+  E.big = el("a", "$100,000");
+  S(E.big, { fontFamily: "'Inter Display', Inter, sans-serif", fontSize: "200px", lineHeight: "200px", fontWeight: 900, letterSpacing: "-.02em" });
+  E.same = maskEl("", "Same target for every row", 34);
+  S(E.same.i, { fontSize: "26px", lineHeight: "34px", fontWeight: 600, color: "var(--ink2)" });
+
+  E.title = maskEl("", "TIME TO REACH $100,000", 42);
+  S(E.title.i, { fontSize: "32px", lineHeight: "42px", fontWeight: 800, letterSpacing: ".06em" });
+
+  // rows
+  ROWS.forEach((r, i) => {
+    r.yrs = r.months / 12;
+    r.hl = el("a"); S(r.hl, { height: "60px", borderRadius: "14px", background: "var(--gsoft)" });
+    r.track = el("a track"); r.track.style.width = TRACK_W + "px";
+    r.g10 = el("a grid"); r.g20 = el("a grid");
+    r.shade = el("a shade"); r.ref = el("a ref");
+    r.barEl = el("a bar"); r.dot = el("a dot", CHECK);
+    // amount group: mask + unit
+    r.amtG = el("a");
+    r.amtM = el("a mask", "", r.amtG); r.amtM.style.height = "70px";
+    r.amtPh = el("in amt", "$?", r.amtM); r.amtPh.style.color = "#A0A6AE";
+    r.amtV = el("in amt", r.amt, r.amtM);
+    r.unit = el("a unit", "/ MONTH", r.amtG);
+    r.wPh = i === 0 ? tw("$?", "amt") : tw(r.amt, "amt");
+    r.wAmt = tw(r.amt, "amt"); r.wUnit = tw("/ MONTH", "unit");
+    // duration group: ≈ + mask + YEARS
+    r.durG = el("a");
+    r.apx = el("a amt", "≈", r.durG);
+    r.durM = el("a mask", "", r.durG); r.durM.style.height = "70px";
+    r.durPh = el("in amt", "?", r.durM); r.durPh.style.color = "#A0A6AE";
+    r.durV = el("in amt", r.dur, r.durM);
+    r.yu = el("a unit", "YEARS", r.durG);
+    r.wApx = tw("≈", "amt"); r.wDph = tw("?", "amt"); r.wDur = tw(r.dur, "amt"); r.wYu = tw("YEARS", "unit");
+  });
+
+  // axis
+  E.ticks = [0, 10, 20, 30].map(v => { const m = maskEl("tick", v, 36); m.w = tw(String(v), "tick"); return m; });
+  E.tmarks = [0, 10, 20, 30].map(() => { const d = el("a"); S(d, { width: "2px", height: "10px", background: "rgba(19,23,30,.3)" }); return d; });
+  E.axis = el("a"); S(E.axis, { height: "2px", width: TRACK_W + "px", background: "rgba(19,23,30,.18)" });
+  E.years = maskEl("", "Years", 34);
+  S(E.years.i, { fontSize: "26px", lineHeight: "34px", fontWeight: 600, color: "var(--muted)", letterSpacing: ".04em" });
+  E.yearsW = tw("Years", "unit");
+
+  // footnote (assumptions)
+  E.f1a = maskEl("foot", 'Starting at <span id="e0">$0</span>', 36);
+  E.f1b = maskEl("foot", '&nbsp;• Assumed <span id="e8">8%</span> annual rate', 36);
+  E.f2 = maskEl("foot", "Monthly compounding • Before taxes and fees", 36);
+  E.wf1a = tw('Starting at $0', "foot"); E.wf1b = tw('&nbsp;• Assumed 8% annual rate', "foot");
+  E.wf2 = tw("Monthly compounding • Before taxes and fees", "foot");
+
+  // captions
+  const callout = (a, d) => `<span>${a}/mo</span> <span style="color:var(--muted)">→</span> <span class="gd">≈${d} years</span>`;
+  E.caps = [
+    [0.00, 1.16, "Here’s how long it could take"],
+    [1.16, 3.86, 'to build your first <span class="g">$100,000</span> portfolio'],
+    [4.18, 5.32, "Starting from zero,"],
+    [5.40, 7.45, 'assuming <span class="g">8%</span> annual growth'],
+    [17.95, 18.82, `<div style="font-size:46px;line-height:60px;font-weight:800">${callout("$100", "26")}</div>`],
+    [18.15, 18.82, `<div style="font-size:46px;line-height:60px;font-weight:800">${callout("$1,000", "6½")}</div>`],
+    [18.86, 20.78, '<div style="font-size:56px;line-height:66px;font-weight:900;letter-spacing:.01em"><span class="g">SAME GOAL.</span><br>DIFFERENT TIMELINES.</div>'],
+    [20.84, 23.32, 'Your <span class="gd">monthly contribution</span><br>makes a big difference'],
+  ].map(([t0, t1, html], k) => { const m = maskEl("cap", html, 136); m.i.className = "in cap"; m.t0 = t0; m.t1 = t1; m.k = k; return m; });
+
+  // disclaimer
+  E.disc = maskEl("", "ILLUSTRATION — RETURNS ARE NOT GUARANTEED", 56);
+  S(E.disc.i, { fontSize: "27px", lineHeight: "52px", fontWeight: 800, letterSpacing: ".05em", color: "var(--amberink)",
+    background: "var(--amber)", border: "2px solid var(--amberline)", borderRadius: "14px", padding: "0 24px" });
+
+  // ending question
+  E.q1 = maskEl("", 'Which <span class="gd">monthly amount</span>', 80);
+  E.q2 = maskEl("", "could you stick with?", 80);
+  [E.q1, E.q2].forEach(q => S(q.i, { fontSize: "64px", lineHeight: "80px", fontWeight: 800, letterSpacing: "-.01em" }));
+
+  // measurements for badge and big number
+  E.wBig = E.big.getBoundingClientRect().width;
+  E.wGoal = tw("GOAL", "lbl");
+  E.wSame = tw("Same target for every row", "unit");
+  E.wQ1 = tw('Which monthly amount', "amt") * 64 / 56;  // re-measured below
+  meas.className = "a"; meas.style.cssText += ";font-size:64px;font-weight:800;letter-spacing:-.01em";
+  meas.innerHTML = "Which monthly amount"; E.wQ1 = meas.getBoundingClientRect().width;
+  meas.innerHTML = "could you stick with?"; E.wQ2 = meas.getBoundingClientRect().width;
+  meas.style.cssText = "visibility:hidden";
+  meas.className = "a"; meas.style.cssText = "visibility:hidden;font-size:27px;font-weight:800;letter-spacing:.05em";
+  meas.innerHTML = "ILLUSTRATION — RETURNS ARE NOT GUARANTEED"; E.wDisc = meas.getBoundingClientRect().width + 52;
+  meas.style.cssText = "visibility:hidden";
+  // one layer per row so that, while the rows morph into choices, each card covers the one before it
+  ROWS.forEach(r => {
+    r.layer = el("a");
+    [r.bg, r.hl, r.track, r.g10, r.g20, r.shade, r.ref, r.barEl, r.dot, r.amtG, r.durG].forEach(n => r.layer.appendChild(n));
+  });
+}
+
+// ---------- per-frame render ----------
+function renderAt(t) {
+  const W = 1080;
+  // watermark (always on)
+  pos(E.wm, (W - E.wm.getBoundingClientRect().width) / 2, 200);
+
+  // ---- opening ----
+  const pf = eio(P(t, 3.9, 4.7));          // flight / card transform progress
+  const pExit = eo(P(t, 3.84, 4.2));
+  pos(E.yf, (W - E.yf.offsetWidth) / 2, 296 - pExit * 40, 1, 1 - pExit);
+  pos(E.how.m, (W - E.how.i.offsetWidth) / 2, 640 - pExit * 40, 1, 1 - pExit);
+  E.how.m.style.width = E.how.i.offsetWidth + "px"; rise(E.how.i, eo(P(t, 0.08, 0.45)));
+
+  // badge geometry
+  const BX = 72, BY = 252, BH = 76;
+  const amtS = 46 / 200, wAmtB = E.wBig * amtS;
+  const ax = BX + 66 + E.wGoal + 12, ay = BY + (BH - 46) / 2;
+  const bw = ax - BX + wAmtB + 26;
+  const pb = P(pf, 0.55, 1);
+  const pulse = 1 + 0.05 * Math.sin(Math.PI * P(t, 18.9, 19.5));
+  S(E.badge, { width: bw + "px", transformOrigin: `${bw / 2}px 38px` });
+  E.badge.style.transform = `translate(${BX}px,${BY}px) scale(${L(.6, 1, eo(pb)) * pulse})`;
+  E.badge.style.opacity = eo(pb);
+  pos(E.bdot, BX + 22, BY + 23, 1, P(pf, .8, 1));
+  pos(E.goal, BX + 66, ay + BL(46, 46) - BL(22, 26), 1, P(pf, .8, 1));
+  const bigX0 = (W - E.wBig) / 2, bigY0 = 380;
+  // keep the flying number centred on the pulsing badge
+  const bcx = BX + bw / 2, bcy = BY + 38;
+  let bx = L(bigX0, ax, pf), by = L(bigY0, ay, pf), bs = L(1, amtS, pf);
+  if (pulse !== 1) { bx = bcx + (bx - bcx) * pulse; by = bcy + (by - bcy) * pulse; bs *= pulse; }
+  pos(E.big, bx, by, bs);
+  E.big.style.color = mix("#13865B", "#FFFFFF", P(pf, .55, .9));
+  // bdot / goal pulse
+  if (pulse !== 1) {
+    pos(E.bdot, bcx + (BX + 22 - bcx) * pulse, bcy + (BY + 23 - bcy) * pulse, pulse, 1);
+    pos(E.goal, bcx + (BX + 66 - bcx) * pulse, bcy + (ay + BL(46, 46) - BL(22, 26) - bcy) * pulse, pulse, 1);
+  }
+
+  const pEnd = eio(P(t, 23.2, 23.9));      // rows → choices
+  const fadeEnd = 1 - eo(P(t, 23.12, 23.42));
+  // "same target" + chart title
+  E.same.m.style.width = E.wSame + 40 + "px";
+  pos(E.same.m, BX + bw + 22, BY + 21, 1, fadeEnd); rise(E.same.i, eo(P(t, 4.75, 5.1)));
+  E.title.m.style.width = "700px";
+  pos(E.title.m, CX, 352, 1, fadeEnd); rise(E.title.i, eo(P(t, 4.35, 4.75)));
+
+  // opening cards: entry
+  const pIn0 = eo(P(t, 0.30, 0.80)), pInT = eo(P(t, 0.48, 0.98));
+  const lblFade = 1 - eo(P(pf, 0, .4));
+  pos(E.lblC, OPEN.x + PAD + L(0, CX - OPEN.x, pf), OPEN.y + 30 + (1 - pIn0) * 50 + L(0, rowY(0) - OPEN.y, pf), 1, pIn0 * lblFade);
+  pos(E.lblT, TCARD.x + PAD, TCARD.y + 30 + (1 - pInT) * 50, 1, pInT * lblFade);
+  pos(E.arrow, (OPEN.x + OPEN.w + TCARD.x) / 2 - 22, OPEN.y + 82 + (1 - pInT) * 50, 1, eo(P(t, 0.55, 0.9)) * (1 - eo(P(pf, 0, .35))));
+
+  // ---- rows ----
+  const refX = X0 + PX * ROWS[0].yrs;
+  const emph = eio(P(t, 20.95, 21.35)) * (1 - eio(P(t, 23.05, 23.35)));
+  ROWS.forEach((r, i) => {
+    // activeness
+    const k = [[r.tIn - .15, 1]];
+    if (i < 3) k.push([ROWS[i + 1].tIn - .15, 1], [ROWS[i + 1].tIn + .2, 0]);
+    if (i === 0 || i === 3) k.push([17.85, i === 3 ? 1 : 0], [18.15, 1], [18.75, 1]);
+    else k.push([17.85, 0], [18.75, 0]);
+    k.push([19.05, .6]);
+    const a = kf(t, k);
+
+    // card rect
+    const R = { x: CX, y: rowY(i), w: CW, h: ROW_H };
+    const C = { x: chipX(i), y: CHIP_Y, w: CHIP_W, h: CHIP_H };
+    const p1 = eio(P(t, 23.15, 23.5)), p2 = eio(P(t, 23.42 + i * .04, 23.92 + i * .04));
+    const pe = p2;
+    let rect = R;
+    if (i === 0) rect = { x: L(OPEN.x, R.x, pf), y: L(OPEN.y, R.y, pf), w: L(OPEN.w, R.w, pf), h: L(OPEN.h, R.h, pf) };
+    rect = { ...rect, w: L(rect.w, CHIP_W, p1) };
+    rect = { x: L(rect.x, C.x, pe), y: L(rect.y, C.y, pe), w: L(rect.w, C.w, pe), h: L(rect.h, C.h, pe) };
+
+    // appearance
+    let show, slide = 0;
+    if (i === 0) { show = pIn0; slide = (1 - pIn0) * 50; }
+    else { show = eo(P(t, r.tIn - .12, r.tIn + .25)); slide = 0; }
+    const sx = i === 0 ? 0 : (1 - show) * -36;
+    const chipHL = eo(P(t, 24.25 + .14 * i, 24.55 + .14 * i));
+    const bgCol = mixH(mixH("#F8F7F2", "#FFFFFF", a), "#FFFFFF", pe);
+    S(r.bg, { width: rect.w + "px", height: rect.h + "px", background: bgCol,
+      border: `2px solid ${mixH(mixH("#E6E2D7", "#FFFFFF", a), mixH("#E3DFD4", "#13865B", chipHL), pe)}`,
+      boxShadow: `0 10px 30px rgba(19,23,30,${(.09 * Math.max(a, pe)).toFixed(3)})`, boxSizing: "border-box" });
+    pos(r.bg, rect.x + sx, rect.y + slide, 1, show);
+    r.accent.style.opacity = a * (1 - p1);
+
+    // amount group
+    const pa = i === 0 ? eo(P(t, r.tIn, r.tIn + .35)) : eo(P(t, r.tIn - .05, r.tIn + .3));
+    const mw = L(r.wPh, r.wAmt, pa);
+    r.amtM.style.width = mw + "px";
+    rise(r.amtV, pa); rise(r.amtPh, 1, i === 0 ? pa : 1);
+    const unitTop = BL(56, 70) - BL(26, 32);
+    // relative layout: row vs chip
+    const uxRow = mw + 12, uxChip = (r.wAmt - r.wUnit) / 2;
+    const inChip = eo(P(pe, .8, 1));
+    if (pe > 0) pos(r.unit, uxChip, 80, 1, inChip); else pos(r.unit, uxRow, unitTop, 1, (i === 0 ? 1 : pa) * (1 - eo(p1)));
+    const amtCol = mix(mixH(mixH("#5E6570", "#13171E", a), "#0A6343", emph), "#13171E", pe);
+    r.amtV.style.color = amtCol;
+    r.unit.style.color = mix(mixH("#8A919C", "#4A5260", a), "#4A5260", pe);
+    let gx, gy, gs;
+    const rowGX = R.x + PAD, rowGY = R.y + 12;
+    if (i === 0) { gx = L(OPEN.x + PAD, rowGX, pf); gy = L(OPEN.y + 96 + slide, rowGY, pf); gs = L(OPEN_SCALE, 1, pf); }
+    else { gx = rowGX + sx; gy = rowGY; gs = 1; }
+    const cs = Math.min(1, (CHIP_W - 30) / r.wAmt);
+    if (p1 > 0) {  // relative layout inside the card: row -> narrow amount chip -> choice card
+      const mx = (CHIP_W - r.wAmt * cs) / 2;
+      const rx = L(L(PAD, mx, p1), mx, pe), ry = L(L(12, (ROW_H - 70 * cs) / 2, p1), 26 + (1 - cs) * 30, pe);
+      gx = rect.x + rx; gy = rect.y + ry; gs = L(1, cs, p1);
+    }
+    pos(r.amtG, gx, gy, gs, i === 0 ? pIn0 : show);
+
+    // highlight behind amount (contribution emphasis)
+    const hp = eo(P(t, 20.95 + .12 * i, 21.35 + .12 * i)) * (1 - eio(P(t, 23.05, 23.3)));
+    S(r.hl, { width: (r.wAmt + 28) + "px" });
+    pos(r.hl, rowGX - 14, rowGY + 5, 1, hp);
+    r.hl.style.transform = `translate(${rowGX - 14}px,${rowGY + 5}px) scaleX(${L(.4, 1, hp)})`;
+
+    // duration group
+    const pd = eo(P(t, r.tDur, r.tDur + .32));
+    const dmw = L(r.wDph, r.wDur, pd);
+    const yuX = r.wApx + 4 + dmw + 10;
+    const wD = yuX + r.wYu;
+    S(r.durM, { width: dmw + "px", transform: `translateX(${r.wApx + 4}px)` });
+    rise(r.durV, pd); rise(r.durPh, 1, pd);
+    pos(r.apx, 0, 0); pos(r.yu, yuX, unitTop);
+    const durCol = mix(mixH(mixH("#5E6570", "#0A6343", a), "#0A6343", emph), "#0A6343", pe);
+    r.durV.style.color = durCol; r.apx.style.color = durCol;
+    r.yu.style.color = mix(mixH("#8A919C", "#0A6343", a * .8), "#0A6343", pe);
+    const rowDX = R.x + PAD + TRACK_W - wD, rowDY = R.y + 12;
+    let dx = rowDX + sx, dy = rowDY, ds = 1, dop = i === 0 ? 1 : eo(P(t, r.tIn + .05, r.tIn + .35));
+    if (i === 0) {
+      dx = L(TCARD.x + PAD, rowDX, pf); dy = L(TCARD.y + 96 + (1 - pInT) * 50, rowDY, pf);
+      ds = L(OPEN_SCALE, 1, pf); dop = pInT;
+    }
+    const chipDS = .68, chipDX = C.x + (CHIP_W - wD * chipDS) / 2, chipDY = C.y + 172;
+    // durations fade out and back in during the morph so they never pile up mid-flight
+    if (pe > 0) pos(r.durG, chipDX, chipDY, chipDS, eo(P(pe, .8, 1)));
+    else pos(r.durG, dx, dy, ds, dop * (1 - eo(P(p1, 0, .6))));
+
+    // track, gridlines, bar, dot
+    const by = R.y + BAR_Y;
+    const trackOp = (i === 0 ? eo(P(pf, .55, 1)) : show) * fadeEnd;
+    pos(r.track, X0 + sx, by, 1, trackOp);
+    pos(r.g10, X0 + PX * 10 - 1 + sx, by - 8, 1, trackOp);
+    pos(r.g20, X0 + PX * 20 - 1 + sx, by - 8, 1, trackOp);
+    const pbar = eio(P(t, r.bar[0], r.bar[1]));
+    const bw2 = PX * r.yrs * pbar;
+    r.barEl.style.width = Math.max(bw2, 0) + "px";
+    r.barEl.style.background = mixH(mixH("#A9D3BC", "#13865B", a), "#13865B", emph * .5);
+    pos(r.barEl, X0, by, 1, (pbar > 0 ? 1 : 0) * fadeEnd);
+    const dotP = eo(P(t, r.bar[1] - .08, r.bar[1] + .22));
+    const dpulse = 1 + .22 * Math.sin(Math.PI * P(t, 18.95 + .08 * i, 19.45 + .08 * i));
+    pos(r.dot, X0 + PX * r.yrs - 15, by - 3, 1, dotP * fadeEnd);
+    r.dot.style.transform = `translate(${X0 + PX * r.yrs - 15}px,${by - 3}px) scale(${L(.5, 1, dotP) * dpulse})`;
+    r.dot.style.transformOrigin = "15px 15px";
+    r.dot.style.background = mixH("#5FAE88", "#0A6343", Math.max(a, .5));
+
+    // time-difference shading (rows 2-4): gap to the $100 row's finish line
+    if (i > 0) {
+      const sp = eo(P(t, 22.05 + .12 * (i - 1), 22.6 + .12 * (i - 1)));
+      const endX = X0 + PX * r.yrs;
+      S(r.shade, { width: (refX - endX) * sp + "px" });
+      pos(r.shade, endX, by, 1, (sp > 0 ? 1 : 0) * fadeEnd);
+      const rp = eo(P(t, 21.85 + .1 * (i - 1), 22.15 + .1 * (i - 1)));
+      pos(r.ref, refX - 1.5, by - 10, 1, rp * fadeEnd);
+      r.ref.style.transform = `translate(${refX - 1.5}px,${by - 10}px) scaleY(${rp})`;
+    } else { r.shade.style.opacity = 0; r.ref.style.opacity = 0; }
+  });
+
+  // opening time card bg → morphs into row-1 duration slot, then disappears
+  {
+    const r = ROWS[0];
+    const wD = r.wApx + 4 + r.wDph + 10 + r.wYu;
+    const tx = CX + PAD + TRACK_W - wD - PAD;
+    const T = { x: L(TCARD.x, tx, pf), y: L(TCARD.y, rowY(0), pf), w: L(TCARD.w, wD + 2 * PAD, pf), h: L(TCARD.h, ROW_H, pf) };
+    S(E.tcard, { width: T.w + "px", height: T.h + "px" });
+    pos(E.tcard, T.x, T.y + (1 - pInT) * 50, 1, pInT * (1 - eo(P(pf, .45, .9))));
+  }
+
+  // ---- axis ----
+  const ay2 = rowY(3) + ROW_H;
+  const axOp = fadeEnd;
+  pos(E.axis, X0, ay2 + 8, 1, eo(P(t, 4.4, 4.8)) * axOp);
+  E.axis.style.transform = `translate(${X0}px,${ay2 + 8}px) scaleX(${eio(P(t, 4.4, 4.9))})`;
+  E.ticks.forEach((m, k) => {
+    const x = X0 + PX * 10 * k;
+    m.m.style.width = m.w + 4 + "px";
+    pos(m.m, x - m.w / 2 - 2, ay2 + 20, 1, axOp); rise(m.i, eo(P(t, 4.5 + .1 * k, 4.85 + .1 * k)));
+    pos(E.tmarks[k], x - 1, ay2 + 4, 1, eo(P(t, 4.5 + .1 * k, 4.8 + .1 * k)) * axOp);
+  });
+  E.years.m.style.width = E.yearsW + 10 + "px";
+  pos(E.years.m, X0 + TRACK_W / 2 - E.yearsW / 2, ay2 + 58, 1, axOp); rise(E.years.i, eo(P(t, 4.8, 5.15)));
+
+  // ---- footnote ----
+  const fy = ay2 + 112;
+  const fw1 = E.wf1a + E.wf1b, fx1 = (W - fw1) / 2;
+  E.f1a.m.style.width = E.wf1a + 2 + "px"; E.f1b.m.style.width = E.wf1b + 4 + "px"; E.f2.m.style.width = E.wf2 + 4 + "px";
+  pos(E.f1a.m, fx1, fy); rise(E.f1a.i, eo(P(t, 4.18, 4.5)));
+  pos(E.f1b.m, fx1 + E.wf1a, fy); rise(E.f1b.i, eo(P(t, 5.40, 5.72)));
+  pos(E.f2.m, (W - E.wf2) / 2, fy + 40); rise(E.f2.i, eo(P(t, 5.9, 6.25)));
+  const e0 = eo(P(t, 4.25, 4.5)) * (1 - eo(P(t, 5.3, 5.7)));
+  const e8 = eo(P(t, 5.75, 6.0)) * (1 - eo(P(t, 7.2, 7.6)));
+  const s0 = document.getElementById("e0"), s8 = document.getElementById("e8");
+  s0.style.color = mix("#4A5260", "#0A6343", e0); s0.style.fontWeight = e0 > .5 ? 800 : 600;
+  s8.style.color = mix("#4A5260", "#0A6343", e8); s8.style.fontWeight = e8 > .5 ? 800 : 600;
+
+  // ---- captions ----
+  const capY = fy + 112;
+  E.caps.forEach(c => {
+    const pin = c.t0 === 0 ? 1 : eo(P(t, c.t0, c.t0 + .25));
+    const out = P(t, c.t1 - .12, c.t1);
+    let y = capY;
+    if (c.k === 4) y = capY - 4; if (c.k === 5) y = capY + 58;
+    pos(c.m, CX, y, 1, (t >= c.t0 && t < c.t1 ? 1 : 0) * (1 - out));
+    c.m.style.width = "936px";
+    rise(c.i, pin);
+  });
+
+  // ---- disclaimer ----
+  E.disc.m.style.width = E.wDisc + "px";
+  pos(E.disc.m, (W - E.wDisc) / 2, capY + 152, 1, 1);
+  rise(E.disc.i, eo(P(t, 19.27, 19.6)));
+
+  // ---- ending question ----
+  E.q1.m.style.width = E.wQ1 + 6 + "px"; E.q2.m.style.width = E.wQ2 + 6 + "px";
+  pos(E.q1.m, (W - E.wQ1) / 2, 500); rise(E.q1.i, eo(P(t, 23.72, 24.08)));
+  pos(E.q2.m, (W - E.wQ2) / 2, 580); rise(E.q2.i, eo(P(t, 23.86, 24.22)));
+}
+
+window.ready = (async () => {
+  await document.fonts.load("800 56px Inter"); await document.fonts.load("900 220px 'Inter Display'");
+  await document.fonts.ready;
+  build(); renderAt(0); return true;
+})();
+window.renderAt = renderAt;
+window.DURATION = DURATION;
+// preview: open with ?t=12.6 for a still, or ?play for realtime playback
+const qs = new URLSearchParams(location.search);
+window.ready.then(() => {
+  if (qs.has("t")) renderAt(parseFloat(qs.get("t")));
+  if (qs.has("play")) { const t0 = performance.now(); const f = () => { const t = (performance.now() - t0) / 1000; renderAt(t % DURATION); requestAnimationFrame(f); }; f(); }
+});
+</script>
+</body>
+</html>
