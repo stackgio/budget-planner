@@ -29,3 +29,19 @@ transcribing sub-chunks and from the energy envelope.
 
 Bar lengths use exact months/12 on a shared 0–30-year scale (27 px per year):
 25.583 → 690.8 px, 16.333 → 441.0 px, 10.667 → 288.0 px, 6.417 → 173.3 px.
+
+## v2 changes (hook + retention pass)
+
+| Time (s)    | Visual |
+|-------------|--------|
+| 0.00 – 1.35 | Hook: YOUR FIRST $100,000 COULD TAKE. The $100/mo bar runs to ≈26 YEARS (lands 0.85), "…or", then the $1,000/mo bar lands on ≈6½ YEARS (1.10) |
+| 1.45 – 2.60 | The $100 finish line drops onto the $1,000 bar; the gap shades in and is labelled YEARS SAVED; slow push-in to 3.85 |
+| 3.82 – 4.60 | Hook exits; $100,000 flies into the goal badge; the axis builds |
+| 4.20 / 5.42 | Assumption cards: STARTING BALANCE $0, then ASSUMED RETURN 8%/YEAR (compounded monthly) |
+| 7.32 – 8.00 | The cards shrink into the footnote and the disclaimer ("Illustration assumes 8% annual return. Returns aren't guaranteed.") |
+| each row    | The card slides in on the amount; the bar extends; the duration punches in on the spoken number; the dashed $100 finish line and shaded YEARS SAVED gap draw on +0.15–0.85 s |
+| 19.27       | The disclaimer turns amber with a brief scale-up |
+| 20.95 – 23.4| Contribution column highlighted |
+| 23.42 – 26.6| Full four-row comparison stays on screen; CTA "Which amount could you realistically invest every month?"; rows highlighted in turn (23.85–25.6), then all held |
+
+Captions show the narration verbatim (amounts and durations in green) in a band below the disclaimer, at most two lines, never over the chart.

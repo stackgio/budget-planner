@@ -5,7 +5,7 @@ Cues line up with the visual reveals in index.html (see timing.md).
 import sys, wave
 import numpy as np
 
-SR, DUR = 48000, 25.2
+SR, DUR = 48000, 26.6
 out = np.zeros(int(SR * DUR))
 
 
@@ -36,11 +36,12 @@ def put(t, s, gain):
     i = int(t * SR); out[i:i + len(s)] += s[:len(out) - i] * gain
 
 
-# duration reveals: rising pitch across the four rows
+# hook: the two results land (≈26 years, then ≈6½ years)
+put(0.85, tick(620), .09)
+put(1.10, tick(990), .09)
+# chart: each duration reveal, rising pitch across the four rows
 for t, f in [(9.80, 660), (12.55, 740), (15.11, 830), (17.55, 990)]:
     put(t, tick(f), .12)
-put(18.86, chime([784, 1175]), .10)     # SAME GOAL. DIFFERENT TIMELINES.
-put(23.20, swish(), .05)                # rows become choices
 
 pcm = (np.clip(out, -1, 1) * 32767).astype(np.int16)
 with wave.open(sys.argv[1] if len(sys.argv) > 1 else "sfx.wav", "wb") as w:
