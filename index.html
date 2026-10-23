@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>70/20/10 Budget Planner</title>
+<meta name="description" content="Monthly and biweekly 70/20/10 budget system: needs, investing, fun.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Netlify-inspired palette */
+    --teal: #00ad9f;
+    --teal-deep: #014847;
+    --aqua: #32e6e2;
+    --navy: #0e1e25;
+    --bg: #f4fbfa;
+    --surface: #ffffff;
+    --surface-2: #e8f6f4;
+    --text: #0e1e25;
+    --muted: #4d6168;
+    --border: #d3e8e5;
+    --needs: #00ad9f;
+    --invest: #2a6fdb;
+    --fun: #f2994a;
+    --good: #0c8a5f;
+    --warn: #c0392b;
+    --shadow: 0 1px 2px rgba(14,30,37,.06), 0 8px 24px rgba(14,30,37,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1e25;
+      --surface: #142a33;
+      --surface-2: #183641;
+      --text: #e9f6f5;
+      --muted: #9db4b9;
+      --border: #24434d;
+      --needs: #32e6e2;
+      --invest: #6ea8ff;
+      --fun: #ffb26b;
+      --good: #4ade9a;
+      --warn: #ff7a6b;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1e25;
+    --surface: #142a33;
+    --surface-2: #183641;
+    --text: #e9f6f5;
+    --muted: #9db4b9;
+    --border: #24434d;
+    --needs: #32e6e2;
+    --invest: #6ea8ff;
+    --fun: #ffb26b;
+    --good: #4ade9a;
+    --warn: #ff7a6b;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px 64px; }
+
+  header.hero {
+    background: linear-gradient(135deg, var(--teal-deep), #016b66 55%, var(--teal));
+    color: #fff;
+    padding: 40px 0 88px;
+  }
+  .hero .wrap { padding-bottom: 0; }
+  .hero-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .eyebrow { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--aqua); font-weight: 700; }
+  h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.1; margin: 8px 0 8px; font-weight: 800; }
+  .hero p { margin: 0; color: #d4f3f1; max-width: 620px; }
+  .theme-btn {
+    background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.25);
+    border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  }
+  .income-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+  .income-pill {
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+    border-radius: 14px; padding: 10px 16px; min-width: 150px;
+  }
+  .income-pill small { display: block; color: #bfeeea; font-size: 12px; }
+  .income-pill strong { font-size: 22px; }
+  .income-pill input {
+    width: 120px; font: inherit; font-size: 22px; font-weight: 700; color: #fff;
+    background: transparent; border: none; border-bottom: 1px dashed rgba(255,255,255,.5); padding: 0;
+  }
+  .income-pill input:focus { outline: none; border-bottom-color: var(--aqua); }
+
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: -56px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
+    padding: 20px; box-shadow: var(--shadow);
+  }
+  .bucket-card .label { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--muted); font-size: 14px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+  .bucket-card .amount { font-size: 30px; font-weight: 800; margin: 6px 0 2px; font-variant-numeric: tabular-nums; }
+  .bucket-card .sub { font-size: 13px; color: var(--muted); }
+  .bar { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin-top: 14px; }
+  .bar > span { display: block; height: 100%; border-radius: 999px; transition: width .3s; }
+
+  section { margin-top: 40px; }
+  h2 { font-size: 22px; margin: 0 0 4px; font-weight: 800; }
+  .section-sub { color: var(--muted); margin: 0 0 16px; font-size: 15px; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .split-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+  .group-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+  .group-head h3 { margin: 0; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+  .group-head .meta { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .rows { list-style: none; margin: 0; padding: 0; }
+  .rows li {
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 15px;
+  }
+  .rows li:last-child { border-bottom: none; }
+  .rows .name { min-width: 0; }
+  .rows .name small { display: block; color: var(--muted); font-size: 12px; }
+  .money-in { display: flex; align-items: center; gap: 2px; font-variant-numeric: tabular-nums; }
+  .money-in input {
+    width: 84px; text-align: right; font: inherit; font-weight: 600; color: var(--text);
+    background: var(--surface-2); border: 1px solid transparent; border-radius: 8px; padding: 4px 8px;
+  }
+  .money-in input:focus { outline: none; border-color: var(--teal); }
+  .num { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .total-row { display: flex; justify-content: space-between; padding-top: 10px; margin-top: 4px; border-top: 2px solid var(--border); font-weight: 700; }
+  .status { font-size: 13px; font-weight: 700; margin-top: 8px; }
+  .status.ok { color: var(--good); }
+  .status.over { color: var(--warn); }
+
+  .callout {
+    background: var(--surface-2); border-left: 4px solid var(--teal); border-radius: 12px;
+    padding: 16px 18px; font-size: 15px;
+  }
+  .callout h3 { margin: 0 0 6px; font-size: 16px; }
+  .callout ul { margin: 0; padding-left: 18px; }
+  .callout li { margin: 4px 0; }
+
+  .check-card h3 { margin: 0; font-size: 18px; }
+  .check-card .when { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+  .acct { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); margin-left: 6px; vertical-align: middle; }
+
+  .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .flow .card { padding: 16px; }
+  .flow .step { font-size: 12px; font-weight: 700; color: var(--teal); letter-spacing: .06em; text-transform: uppercase; }
+  .flow .amt { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .flow .desc { font-size: 13px; color: var(--muted); }
+
+  .leftover-big { font-size: 40px; font-weight: 800; color: var(--good); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .leftover-big.neg { color: var(--warn); }
+
+  .feedback li { margin: 8px 0; }
+  .tag { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-right: 6px; text-transform: uppercase; letter-spacing: .04em; }
+  .tag.win { background: rgba(12,138,95,.12); color: var(--good); }
+  .tag.fix { background: rgba(242,153,74,.16); color: var(--fun); }
+  .tag.risk { background: rgba(192,57,43,.12); color: var(--warn); }
+
+  .checklist label { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .checklist label:last-child { border-bottom: none; }
+  .checklist input { margin-top: 4px; accent-color: var(--teal); width: 16px; height: 16px; flex: none; }
+  .checklist input:checked + span { text-decoration: line-through; color: var(--muted); }
+
+  .btn {
+    font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+    border-radius: 10px; padding: 8px 14px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text);
+  }
+  .btn:hover { border-color: var(--teal); }
+  footer { margin-top: 48px; color: var(--muted); font-size: 13px; text-align: center; }
+
+  @media (max-width: 860px) {
+    .flow { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 760px) {
+    .cards, .split, .split-3 { grid-template-columns: 1fr; }
+    .cards { margin-top: -56px; }
+  }
+  @media (max-width: 420px) {
+    .flow { grid-template-columns: 1fr; }
+    .money-in input { width: 72px; }
+  }
+  @media print {
+    .theme-btn, .btn { display: none; }
+    header.hero { padding-bottom: 40px; }
+    .cards { margin-top: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-top">
+      <span class="eyebrow">Money Control · 70 / 20 / 10</span>
+      <button class="theme-btn" id="themeBtn" type="button">Toggle theme</button>
+    </div>
+    <h1>My Budget System</h1>
+    <p>Every dollar has a job. Needs run the life, investing builds the future, fun keeps it sustainable.</p>
+    <div class="income-row">
+      <div class="income-pill">
+        <small>Per paycheck (biweekly)</small>
+        $<input id="paycheck" type="number" inputmode="decimal" step="0.01" min="0" aria-label="Paycheck amount">
+      </div>
+      <div class="income-pill">
+        <small>Monthly (2 checks)</small>
+        <strong id="monthly">$0</strong>
+      </div>
+      <div class="income-pill">
+        <small>Yearly (26 checks)</small>
+        <strong id="yearly">$0</strong>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="cards" id="bucketCards"></div>
+
+  <section>
+    <div class="callout">
+      <h3>What I fixed in your original budget</h3>
+      <ul>
+        <li><strong>It didn't add up.</strong> Bills ($1,601.66) + P2P savings ($400) + Travel ($50) + Birthday ($50) = $2,101.66, which is <strong>$26.86 over</strong> the 70% Needs limit of $2,074.80.</li>
+        <li><strong>Travel and birthdays are wants, not needs.</strong> I moved them into the Fun 10% as sinking funds. Your 20% investing stays untouched.</li>
+        <li><strong>Savings belongs in the 70%.</strong> The $400 peer-to-peer saving is your safety net, so it sits in "Needs &amp; Security".</li>
+        <li><strong>The leftover now has a job.</strong> Instead of floating, the extra $73.14 goes to an emergency buffer.</li>
+        <li><strong>You actually earn more than $2,964.</strong> Biweekly means 26 checks a year, not 24. Two months a year you get a <strong>3rd paycheck</strong>, about $2,964 extra per year. It has its own plan below.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Monthly Breakdown</h2>
+    <p class="section-sub">Edit any amount. Totals, leftovers, and paycheck splits update automatically.</p>
+    <div class="split-3" id="groups"></div>
+  </section>
+
+  <section>
+    <h2>Biweekly Paycheck System</h2>
+    <p class="section-sub">Same plan every payday: each paycheck covers <strong>half</strong> of every monthly item. No juggling which check pays which bill.</p>
+    <div class="flow" id="flow"></div>
+    <div class="split" style="margin-top:16px" id="checks"></div>
+  </section>
+
+  <section>
+    <h2>Leftover Money</h2>
+    <p class="section-sub">What's left in each bucket after every planned expense.</p>
+    <div class="split">
+      <div class="card">
+        <div class="label" style="color:var(--muted);font-weight:600;font-size:14px">Flexible money each month</div>
+        <div class="leftover-big" id="leftoverBig">$0</div>
+        <div class="sub" style="color:var(--muted);font-size:13px" id="leftoverSub"></div>
+        <ul class="rows" style="margin-top:12px" id="leftoverRows"></ul>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 8px;font-size:16px">What to do with it (in order)</h3>
+        <ol style="margin:0;padding-left:18px;font-size:15px">
+          <li><strong>Emergency fund to 1 month of bills</strong> (about $1,600) in a high-yield savings account (HYSA).</li>
+          <li><strong>Kill the debt.</strong> If it charges 8% or more, add the leftover to the $50 payment until it's gone.</li>
+          <li><strong>Build the emergency fund to 3 months</strong> (about $4,800–$6,000).</li>
+          <li><strong>Then send it to investing.</strong> At that point your real split becomes about 67/23/10.</li>
+        </ol>
+        <div class="callout" style="margin-top:14px">
+          <h3>3rd paycheck months (2× a year)</h3>
+          <div id="thirdCheck"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Honest Feedback</h2>
+    <p class="section-sub">From one advisor to a 22-year-old who's already ahead of most people.</p>
+    <div class="split">
+      <div class="card feedback">
+        <ul style="list-style:none;margin:0;padding:0;font-size:15px">
+          <li><span class="tag win">Win</span>Investing 20% at 22 puts you ahead of most people your age. About $593/mo at a 7% average return grows to roughly <strong id="projection">$1.5M</strong> by 62.</li>
+          <li><span class="tag win">Win</span>Low debt payment, and you have a plan for travel and birthdays. That's real discipline.</li>
+          <li><span class="tag fix">Fix</span><strong>Phone + WiFi at $166.66 is high.</strong> A prepaid carrier like Mint, Visible, or US Mobile costs $15–$30. Cutting $60–$80 here is the fastest raise you'll get.</li>
+          <li><span class="tag fix">Fix</span><strong>Rent is 34% of take-home.</strong> That's OK, but don't let it go higher. A future roommate or a cheaper place frees up hundreds.</li>
+          <li><span class="tag fix">Fix</span><strong>A $200 car rental is money you don't get back.</strong> When the lease or rental ends, a reliable used car you own can be cheaper over time.</li>
+        </ul>
+      </div>
+      <div class="card feedback">
+        <ul style="list-style:none;margin:0;padding:0;font-size:15px">
+          <li><span class="tag risk">Risk</span><strong>Peer-to-peer savings (sou-sou / pool) isn't insured and pays no interest.</strong> It's fine if you trust the group, but keep a separate emergency fund in a HYSA that belongs only to you.</li>
+          <li><span class="tag risk">Risk</span><strong>Know your debt's interest rate.</strong> A credit card at 25% beats any investment return. Pay it off first.</li>
+          <li><span class="tag fix">Where to invest</span>Get any employer 401(k) match first. That's free money. Next, a <strong>Roth IRA</strong>: $7,113/yr fits under the 2026 limit. Use a broad index fund (total market or S&amp;P 500). Automate it on payday.</li>
+          <li><span class="tag fix">Habit</span>Do a 10-minute money check every payday, and adjust this page every 3 months.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Payday Checklist</h2>
+    <p class="section-sub">Run this every time $<span id="ckAmt">1,482</span> hits. Your checkmarks are saved in this browser.</p>
+    <div class="card checklist" id="checklist"></div>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="resetChecks" type="button">Clear checklist</button>
+      <button class="btn" id="resetAll" type="button">Reset budget to defaults</button>
+      <button class="btn" onclick="window.print()" type="button">Print / Save PDF</button>
+    </div>
+  </section>
+
+  <footer>Built for 70/20/10. Assumes $1,482 is take-home (after tax). Educational planning tool, not individual tax or legal advice.</footer>
+</main>
+
+<script>
+(function () {
+  const STORE_KEY = 'budget-702010-v1';
+  const CHECK_KEY = 'budget-702010-checks';
+
+  const DEFAULTS = {
+    paycheck: 1482,
+    items: [
+      // Needs & Security (70%)
+      { id: 'rent',     bucket: 'needs', name: 'Rent',               note: '',                         amt: 1000 },
+      { id: 'phone',    bucket: 'needs', name: 'WiFi & phone',       note: 'Cut target: about $100',   amt: 166.66 },
+      { id: 'car',      bucket: 'needs', name: 'Car rental',         note: '',                         amt: 200 },
+      { id: 'gas',      bucket: 'needs', name: 'Gas',                note: '',                         amt: 100 },
+      { id: 'maint',    bucket: 'needs', name: 'Car maintenance',    note: 'Sinking fund',             amt: 25 },
+      { id: 'debt',     bucket: 'needs', name: 'Debt payments',      note: '',                         amt: 50 },
+      { id: 'hair',     bucket: 'needs', name: 'Haircut',            note: 'Personal care',            amt: 60 },
+      { id: 'p2p',      bucket: 'needs', name: 'Peer-to-peer saving', note: 'Savings / security',      amt: 400 },
+      { id: 'buffer',   bucket: 'needs', name: 'Emergency buffer',   note: 'Absorbs the leftover',     amt: 73.14 },
+      // Investing (20%)
+      { id: 'invest',   bucket: 'invest', name: 'Investing',         note: 'Roth IRA / index funds',   amt: 592.80 },
+      // Fun (10%)
+      { id: 'travel',   bucket: 'fun', name: 'Travel fund',          note: 'Sinking fund',             amt: 50 },
+      { id: 'bday',     bucket: 'fun', name: 'Birthday fund',        note: 'Sinking fund',             amt: 50 },
+      { id: 'funmoney', bucket: 'fun', name: 'Fun money',            note: 'Guilt-free spending',      amt: 196.40 }
+    ]
+  };
+
+  const BUCKETS = {
+    needs:  { label: 'Needs & Security', pct: 0.70, color: 'var(--needs)',  acct: 'Bills checking' },
+    invest: { label: 'Investing',        pct: 0.20, color: 'var(--invest)', acct: 'Brokerage' },
+    fun:    { label: 'Fun',              pct: 0.10, color: 'var(--fun)',    acct: 'Fun account' }
+  };
+
+  const CHECKLIST = [
+    'Paycheck lands in main checking',
+    'Move half of rent + bills to Bills checking',
+    'Send peer-to-peer savings contribution',
+    'Auto-transfer to Roth IRA / brokerage and buy the index fund',
+    'Move travel + birthday money to savings sub-accounts',
+    'Move fun money to Fun account (spend it guilt-free)',
+    'Put the emergency buffer in your HYSA',
+    'Check: main checking should be near $0. Every dollar has a job.'
+  ];
+
+  function load(key, fallback) {
+    try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+    catch (e) { return fallback; }
+  }
+  function save(key, val) {
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { /* storage unavailable */ }
+  }
+
+  let state = load(STORE_KEY, null);
+  if (!state || !Array.isArray(state.items)) state = JSON.parse(JSON.stringify(DEFAULTS));
+
+  const fmt = (n) => (n < 0 ? '-' : '') + '$' + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmt0 = (n) => '$' + Math.round(n).toLocaleString('en-US');
+  const r2 = (n) => Math.round(n * 100) / 100;
+  const $ = (id) => document.getElementById(id);
+
+  function totals() {
+    const monthly = state.paycheck * 2;
+    const out = {};
+    for (const k in BUCKETS) {
+      const target = r2(monthly * BUCKETS[k].pct);
+      const spent = r2(state.items.filter(i => i.bucket === k).reduce((s, i) => s + (+i.amt || 0), 0));
+      out[k] = { target, spent, left: r2(target - spent) };
+    }
+    return { monthly, buckets: out };
+  }
+
+  function renderGroups() {
+    const host = $('groups');
+    host.innerHTML = '';
+    for (const k in BUCKETS) {
+      const b = BUCKETS[k];
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML =
+        '<div class="group-head"><h3><span class="dot" style="background:' + b.color + '"></span>' + b.label +
+        ' <span class="acct">' + Math.round(b.pct * 100) + '%</span></h3><span class="meta" data-meta="' + k + '"></span></div>' +
+        '<ul class="rows"></ul>' +
+        '<div class="total-row"><span>Total</span><span class="num" data-total="' + k + '"></span></div>' +
+        '<div class="status" data-status="' + k + '"></div>';
+      const ul = card.querySelector('ul');
+      state.items.filter(i => i.bucket === k).forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML =
+          '<span class="name">' + item.name + (item.note ? '<small>' + item.note + '</small>' : '') + '</span>' +
+          '<span class="money-in">$<input type="number" inputmode="decimal" step="0.01" min="0" aria-label="' + item.name + '"></span>';
+        const input = li.querySelector('input');
+        input.value = (+item.amt).toFixed(2);
+        input.addEventListener('input', () => { item.amt = parseFloat(input.value) || 0; update(); });
+        ul.appendChild(li);
+      });
+      host.appendChild(card);
+    }
+  }
+
+  function update() {
+    save(STORE_KEY, state);
+    const t = totals();
+    $('monthly').textContent = fmt(t.monthly);
+    $('yearly').textContent = fmt0(state.paycheck * 26);
+    $('ckAmt').textContent = state.paycheck.toLocaleString('en-US', { maximumFractionDigits: 2 });
+
+    // Bucket cards
+    $('bucketCards').innerHTML = Object.keys(BUCKETS).map(k => {
+      const b = BUCKETS[k], v = t.buckets[k];
+      const pct = v.target > 0 ? Math.min(100, (v.spent / v.target) * 100) : 0;
+      return '<div class="card bucket-card"><div class="label"><span class="dot" style="background:' + b.color + '"></span>' +
+        b.label + ' · ' + Math.round(b.pct * 100) + '%</div>' +
+        '<div class="amount">' + fmt(v.target) + '</div>' +
+        '<div class="sub">' + fmt(r2(v.target / 2)) + ' per paycheck · ' + fmt(v.spent) + ' planned</div>' +
+        '<div class="bar"><span style="width:' + pct + '%;background:' + (v.left < -0.004 ? 'var(--warn)' : b.color) + '"></span></div></div>';
+    }).join('');
+
+    // Group totals/status
+    for (const k in BUCKETS) {
+      const v = t.buckets[k];
+      document.querySelector('[data-total="' + k + '"]').textContent = fmt(v.spent);
+      document.querySelector('[data-meta="' + k + '"]').textContent = 'Limit ' + fmt(v.target);
+      const st = document.querySelector('[data-status="' + k + '"]');
+      if (v.left < -0.004) { st.className = 'status over'; st.textContent = 'Over by ' + fmt(-v.left); }
+      else if (v.left > 0.004) { st.className = 'status ok'; st.textContent = fmt(v.left) + ' unassigned'; }
+      else { st.className = 'status ok'; st.textContent = 'Balanced. Every dollar has a job.'; }
+    }
+
+    // Flow: per-paycheck transfers by account
+    const half = (k) => r2(t.buckets[k].spent / 2);
+    const needsHalf = half('needs'), investHalf = half('invest'), funHalf = half('fun');
+    const remain = r2(state.paycheck - needsHalf - investHalf - funHalf);
+    $('flow').innerHTML = [
+      ['1 · Payday', fmt(state.paycheck), 'Lands in main checking'],
+      ['2 · Needs', fmt(needsHalf), 'To Bills checking + savings'],
+      ['3 · Invest', fmt(investHalf), 'Auto-transfer to brokerage'],
+      ['4 · Fun', fmt(funHalf), 'To Fun account + sinking funds']
+    ].map(s => '<div class="card"><div class="step">' + s[0] + '</div><div class="amt">' + s[1] + '</div><div class="desc">' + s[2] + '</div></div>').join('');
+
+    // Paycheck cards
+    const rowsFor = () => state.items.map(i =>
+      '<li><span class="name">' + i.name + '<span class="acct">' + BUCKETS[i.bucket].acct + '</span></span><span class="num">' + fmt(r2(i.amt / 2)) + '</span></li>'
+    ).join('');
+    const checkCard = (title, when) =>
+      '<div class="card check-card"><h3>' + title + '</h3><div class="when">' + when + '</div><ul class="rows">' + rowsFor() + '</ul>' +
+      '<div class="total-row"><span>Left in checking</span><span class="num" style="color:' + (remain < -0.004 ? 'var(--warn)' : 'var(--good)') + '">' + fmt(remain) + '</span></div></div>';
+    $('checks').innerHTML =
+      checkCard('Paycheck A', 'First check of the month. Pays half of everything.') +
+      checkCard('Paycheck B', 'Second check of the month. Same split, so rent is fully covered.');
+
+    // Leftover
+    const buffer = state.items.find(i => i.id === 'buffer');
+    const unassigned = r2(t.buckets.needs.left + t.buckets.invest.left + t.buckets.fun.left);
+    const flexible = r2(unassigned + (buffer ? +buffer.amt : 0));
+    const big = $('leftoverBig');
+    big.textContent = fmt(flexible);
+    big.classList.toggle('neg', flexible < 0);
+    $('leftoverSub').textContent = 'Emergency buffer (' + fmt(buffer ? +buffer.amt : 0) + ') + unassigned (' + fmt(unassigned) + '). That\'s ' + fmt(flexible * 12) + ' per year.';
+    $('leftoverRows').innerHTML = Object.keys(BUCKETS).map(k =>
+      '<li><span class="name"><span class="dot" style="background:' + BUCKETS[k].color + ';margin-right:8px"></span>' + BUCKETS[k].label + '</span><span class="num">' + fmt(t.buckets[k].left) + '</span></li>'
+    ).join('');
+
+    // 3rd paycheck
+    const p = state.paycheck;
+    $('thirdCheck').innerHTML =
+      '<ul class="rows">' +
+      '<li><span class="name">Emergency fund (HYSA)<small>Until 3 months is fully funded</small></span><span class="num">' + fmt(r2(p * 0.5)) + '</span></li>' +
+      '<li><span class="name">Extra investing<small>Roth IRA top-up</small></span><span class="num">' + fmt(r2(p * 0.3)) + '</span></li>' +
+      '<li><span class="name">Travel / reward yourself</span><span class="num">' + fmt(r2(p * 0.2)) + '</span></li>' +
+      '</ul><div class="sub" style="color:var(--muted);font-size:13px;margin-top:6px">Your budget runs on 2 checks, so this check is 100% extra. Don\'t let it disappear.</div>';
+
+    // Projection: monthly invest, 7%/yr, 40 years
+    const m = t.buckets.invest.spent, rm = 0.07 / 12, n = 40 * 12;
+    const fv = m * ((Math.pow(1 + rm, n) - 1) / rm);
+    $('projection').textContent = fv >= 1e6 ? '$' + (fv / 1e6).toFixed(1) + 'M' : fmt0(fv);
+  }
+
+  function renderChecklist() {
+    const checks = load(CHECK_KEY, {});
+    $('checklist').innerHTML = CHECKLIST.map((txt, i) =>
+      '<label><input type="checkbox" data-i="' + i + '"' + (checks[i] ? ' checked' : '') + '><span>' + txt + '</span></label>'
+    ).join('');
+    $('checklist').querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => {
+      const c = load(CHECK_KEY, {}); c[cb.dataset.i] = cb.checked; save(CHECK_KEY, c);
+    }));
+  }
+
+  // Income input
+  const pc = $('paycheck');
+  pc.value = state.paycheck;
+  pc.addEventListener('input', () => { state.paycheck = parseFloat(pc.value) || 0; update(); });
+
+  $('resetChecks').addEventListener('click', () => { save(CHECK_KEY, {}); renderChecklist(); });
+  $('resetAll').addEventListener('click', () => {
+    state = JSON.parse(JSON.stringify(DEFAULTS));
+    pc.value = state.paycheck;
+    renderGroups(); update();
+  });
+
+  // Theme toggle
+  const root = document.documentElement;
+  const savedTheme = load('budget-theme', null);
+  if (savedTheme) root.setAttribute('data-theme', savedTheme);
+  $('themeBtn').addEventListener('click', () => {
+    const cur = root.getAttribute('data-theme') ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next); save('budget-theme', next);
+  });
+
+  renderGroups();
+  update();
+  renderChecklist();
+})();
+</script>
+</body>
+</html>
