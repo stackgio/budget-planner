@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Budget OS</title>
+
+<!-- PWA: makes Safari save it properly as a standalone app -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="My Budget">
+<meta name="mobile-web-app-capable" content="yes">
+
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: #060A14;
+  color: #E8ECF4;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+body {
+  padding: 0 0 80px 0;
+}
+
+/* grid bg */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(242,183,5,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242,183,5,0.04) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* ── HEADER ── */
+.header {
+  text-align: center;
+  padding: 48px 0 32px;
+}
+.pill {
+  display: inline-block;
+  background: rgba(242,183,5,0.1);
+  border: 1px solid rgba(242,183,5,0.35);
+  color: #F2B705;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 5px 18px;
+  border-radius: 100px;
+  margin-bottom: 20px;
+}
+.big-title {
+  font-size: clamp(52px, 14vw, 96px);
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 0.88;
+  color: #F2B705;
+  text-shadow: 0 0 60px rgba(242,183,5,0.3);
+}
+.sub {
+  font-size: 11px;
+  color: #788AA4;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 14px;
+  line-height: 1.8;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+/* ── CARDS ── */
+.card {
+  background: #0D1424;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+/* ── KPI STRIP ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.kpi-box {
+  background: #0D1424;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 18px 12px;
+  text-align: center;
+}
+.kpi-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #4A5A74;
+  margin-bottom: 10px;
+  font-family: monospace;
+}
+.kpi-value {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+.kpi-sub {
+  font-size: 9px;
+  color: #4A5A74;
+  margin-top: 5px;
+  font-family: monospace;
+}
+.c-gold   { color: #F2B705; }
+.c-green  { color: #05D69E; }
+.c-blue   { color: #4DA6FF; }
+.c-purple { color: #A78BFA; }
+.c-red    { color: #FF6B6B; }
+
+/* ── SPLIT BAR ── */
+.bar-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #4A5A74;
+  margin-bottom: 14px;
+  font-family: monospace;
+}
+.bar-track {
+  display: flex;
+  height: 12px;
+  border-radius: 100px;
+  overflow: hidden;
+  gap: 3px;
+  margin-bottom: 20px;
+}
+.bar-needs   { flex: 55; background: #4DA6FF; border-radius: 100px; }
+.bar-invest  { flex: 20; background: #05D69E; border-radius: 100px; }
+.bar-goals   { flex: 15; background: #A78BFA; border-radius: 100px; }
+.bar-fun     { flex: 10; background: #F2B705; border-radius: 100px; }
+.legs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+@media (max-width: 640px) {
+  .legs { grid-template-columns: repeat(2, 1fr); }
+}
+.leg {
+  background: #121C31;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 14px 12px;
+  min-width: 0;
+}
+.leg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+.leg-tag {
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #4A5A74;
+  margin-bottom: 5px;
+  font-family: monospace;
+}
+.leg-pct {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 5px;
+  letter-spacing: -1px;
+}
+.leg-mo { font-size: 10px; color: #788AA4; font-family: monospace; }
+.leg-bw { font-size: 9px; color: #4A5A74; font-family: monospace; margin-top: 2px; }
+.leg-st {
+  font-size: 8px;
+  font-family: monospace;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  line-height: 1.6;
+  letter-spacing: 0.3px;
+  color: #788AA4;
+}
+.leg-st b { font-weight: 700; }
+
+/* ── PLAN VS INCOME ── */
+.pvi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.pvi {
+  background: #121C31;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 14px 12px;
+  min-width: 0;
+}
+.pvi-head {
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #4A5A74;
+  margin-bottom: 10px;
+  font-family: monospace;
+}
+.pvi-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 10px;
+  font-family: monospace;
+  color: #788AA4;
+  padding: 4px 0;
+  font-variant-numeric: tabular-nums;
+}
+.pvi-row b { color: #E8ECF4; font-weight: 700; }
+.pvi-row.diff { border-top: 1px solid rgba(255,255,255,0.08); margin-top: 4px; padding-top: 8px; }
+.pvi-row.diff b { color: #FF6B6B; }
+.pvi-note {
+  font-size: 9px;
+  font-family: monospace;
+  color: rgba(255,107,107,0.85);
+  line-height: 1.7;
+  margin-top: 12px;
+}
+.pvi-note strong { color: #fff; }
+
+/* ── SECTION HEAD ── */
+.sec-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 24px 0 10px;
+}
+.sec-badge {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 100px;
+  white-space: nowrap;
+  font-family: monospace;
+}
+.sn { background: rgba(77,166,255,0.12); color: #4DA6FF; border: 1px solid rgba(77,166,255,0.28); }
+.si { background: rgba(5,214,158,0.1); color: #05D69E; border: 1px solid rgba(5,214,158,0.25); }
+.sg { background: rgba(167,139,250,0.1); color: #A78BFA; border: 1px solid rgba(167,139,250,0.28); }
+.sf { background: rgba(242,183,5,0.1); color: #F2B705; border: 1px solid rgba(242,183,5,0.25); }
+.sec-line { flex: 1; height: 1px; background: rgba(255,255,255,0.07); }
+.sec-budget {
+  font-size: 9px;
+  color: #4A5A74;
+  white-space: nowrap;
+  font-family: monospace;
+}
+.sec-budget b { color: #E8ECF4; }
+
+/* ── SUB DIVIDER ── */
+.sub-div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0 6px;
+}
+.sd-text {
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #4A5A74;
+  white-space: nowrap;
+  font-family: monospace;
+}
+.sd-line { flex: 1; height: 1px; background: rgba(255,255,255,0.04); }
+
+/* ── EXPENSE ROWS ── */
+.exp-list { display: flex; flex-direction: column; gap: 6px; }
+.exp-row {
+  background: #0D1424;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 13px;
+  padding: 13px 14px;
+  display: grid;
+  grid-template-columns: 22px 26px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.15s, background 0.15s;
+}
+.exp-row:active { opacity: 0.8; }
+.exp-row.done {
+  border-color: rgba(5,214,158,0.3);
+  background: rgba(5,214,158,0.04);
+}
+.exp-row.done::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: #05D69E;
+  border-radius: 13px 0 0 13px;
+}
+.exp-row.done .exp-name {
+  text-decoration: line-through;
+  color: #4A5A74;
+}
+.chk {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  border: 2px solid rgba(255,255,255,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #05D69E;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.exp-row.done .chk {
+  background: rgba(5,214,158,0.15);
+  border-color: #05D69E;
+}
+.exp-ico { font-size: 18px; text-align: center; }
+.exp-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #E8ECF4;
+  transition: color 0.15s;
+  letter-spacing: -0.2px;
+}
+.exp-note {
+  font-size: 8px;
+  color: #4A5A74;
+  font-family: monospace;
+  margin-top: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.exp-right { text-align: right; }
+.amt { font-size: 17px; font-weight: 800; color: #E8ECF4; letter-spacing: -0.5px; }
+.amt-sub { font-size: 8px; color: #4A5A74; font-family: monospace; margin-top: 2px; }
+
+/* ── CALLOUT ── */
+.callout {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 8px;
+}
+.callout.blue   { background: rgba(77,166,255,0.06); border: 1px solid rgba(77,166,255,0.2); }
+.callout.green  { background: rgba(5,214,158,0.06); border: 1px solid rgba(5,214,158,0.2); }
+.callout.gold   { background: rgba(242,183,5,0.06); border: 1px solid rgba(242,183,5,0.2); }
+.callout.purple { background: rgba(167,139,250,0.06); border: 1px solid rgba(167,139,250,0.2); }
+.c-ico { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.c-txt {
+  font-size: 10px;
+  font-family: monospace;
+  line-height: 1.7;
+}
+.callout.blue   .c-txt { color: rgba(77,166,255,0.9); }
+.callout.green  .c-txt { color: rgba(5,214,158,0.9); }
+.callout.gold   .c-txt { color: rgba(242,183,5,0.9); }
+.callout.purple .c-txt { color: rgba(167,139,250,0.9); }
+.c-txt strong { color: #fff; }
+
+/* target / actual / remaining mini-stats inside callouts */
+.tar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 8px 0 6px;
+}
+.tar > span {
+  background: rgba(0,0,0,0.25);
+  border-radius: 8px;
+  padding: 7px 8px;
+  font-variant-numeric: tabular-nums;
+}
+.tar > span > span { display: block; font-size: 7px; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.75; }
+.tar b { display: block; font-size: 12px; color: #fff; margin-top: 2px; }
+
+/* ── CHECKLIST ── */
+.cl-card {
+  background: #0D1424;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 28px;
+  margin-top: 16px;
+  text-align: center;
+}
+.cl-pct {
+  font-size: 64px;
+  font-weight: 900;
+  letter-spacing: -3px;
+  color: #F2B705;
+  line-height: 1;
+}
+.cl-lbl {
+  font-size: 9px;
+  color: #4A5A74;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 4px;
+  margin-bottom: 20px;
+  font-family: monospace;
+}
+.cl-bg {
+  background: rgba(255,255,255,0.06);
+  height: 10px;
+  border-radius: 100px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.cl-fill {
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, #05D69E, #F2B705);
+  transition: width 0.5s ease;
+}
+.cl-msg {
+  font-size: 10px;
+  color: #788AA4;
+  letter-spacing: 0.5px;
+  font-family: monospace;
+}
+
+/* ── ANNUAL GOALS ── */
+.goals-card {
+  border: 1px solid rgba(242,183,5,0.22);
+  border-radius: 20px;
+  padding: 24px;
+  margin-top: 16px;
+  background: linear-gradient(135deg, rgba(242,183,5,0.07) 0%, rgba(5,214,158,0.05) 100%);
+}
+.goals-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #F2B705;
+  margin-bottom: 18px;
+  letter-spacing: -0.5px;
+}
+.goals-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.goal-box {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 16px 12px;
+  text-align: center;
+  min-width: 0;
+}
+.goal-lbl {
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: #4A5A74;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  font-family: monospace;
+}
+.goal-val {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+.goal-sub {
+  font-size: 8px;
+  color: #4A5A74;
+  margin-top: 5px;
+  line-height: 1.5;
+  font-family: monospace;
+}
+
+/* ── TABLE ── */
+.tbl-card {
+  background: #0D1424;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 24px;
+  margin-top: 16px;
+  overflow-x: auto;
+}
+.tbl-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #F2B705;
+  margin-bottom: 16px;
+  letter-spacing: -0.5px;
+}
+table { width: 100%; border-collapse: collapse; min-width: 280px; }
+th {
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #4A5A74;
+  padding: 0 0 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  font-family: monospace;
+}
+th:last-child, td:last-child { text-align: right; }
+td {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: #E8ECF4;
+}
+td.m { font-family: monospace; font-size: 11px; font-weight: 400; }
+tr:last-child td { border-bottom: none; }
+.cn { color: #4DA6FF; }
+.ci { color: #05D69E; }
+.cg { color: #A78BFA; }
+.cf { color: #F2B705; }
+.tot td { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; }
+.tot td:last-child { color: #F2B705; font-weight: 700; }
+.inc td { color: #788AA4; }
+.inc td:last-child { color: #E8ECF4; }
+.dif td:last-child { color: #FF6B6B; font-weight: 700; }
+
+/* ── TIPS ── */
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+.tip {
+  background: #0D1424;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 18px 14px;
+}
+.tip-ico { font-size: 20px; margin-bottom: 10px; }
+.tip-head {
+  font-size: 13px;
+  font-weight: 800;
+  color: #F2B705;
+  margin-bottom: 7px;
+  letter-spacing: -0.2px;
+}
+.tip-body {
+  font-size: 10px;
+  color: #788AA4;
+  line-height: 1.6;
+  font-family: monospace;
+}
+.tip-body strong { color: #E8ECF4; }
+
+/* ── RESET ── */
+.reset-wrap { text-align: center; margin-top: 32px; }
+.reset-btn {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #4A5A74;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 12px 26px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: monospace;
+  -webkit-tap-highlight-color: transparent;
+}
+.reset-btn:active { background: rgba(242,183,5,0.06); border-color: rgba(242,183,5,0.3); color: #F2B705; }
+
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  font-size: 8px;
+  color: #4A5A74;
+  letter-spacing: 2px;
+  font-family: monospace;
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="wrap">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="pill">💰 Personal Finance OS · Age 22</div>
+  <div class="big-title">MY BUDGET</div>
+  <div class="sub">55 / 20 / 15 / 10 &nbsp;·&nbsp; $1,482 BIWEEKLY &nbsp;·&nbsp; $2,964 MONTHLY</div>
+</div>
+
+<!-- KPI -->
+<div class="kpi-grid">
+  <div class="kpi-box">
+    <div class="kpi-label">Per Paycheck</div>
+    <div class="kpi-value c-gold">$1,482</div>
+    <div class="kpi-sub">every 2 weeks</div>
+  </div>
+  <div class="kpi-box">
+    <div class="kpi-label">Bills Cleared</div>
+    <div class="kpi-value c-green" id="cleared">0 / 0</div>
+    <div class="kpi-sub">tap to check off</div>
+  </div>
+  <div class="kpi-box">
+    <div class="kpi-label">Still Owed</div>
+    <div class="kpi-value c-blue" id="owed">$0</div>
+    <div class="kpi-sub">unchecked items</div>
+  </div>
+  <div class="kpi-box">
+    <div class="kpi-label">P2P Goal / Yr</div>
+    <div class="kpi-value c-purple">$4,800</div>
+    <div class="kpi-sub">$400 × 12 months</div>
+  </div>
+</div>
+
+<!-- SPLIT BAR CARD -->
+<div class="card">
+  <div class="bar-label">55 / 20 / 15 / 10 Split — Per $1,482 Paycheck</div>
+  <div class="bar-track">
+    <div class="bar-needs"></div>
+    <div class="bar-invest"></div>
+    <div class="bar-goals"></div>
+    <div class="bar-fun"></div>
+  </div>
+  <div class="legs">
+    <div class="leg">
+      <div class="leg-dot" style="background:#4DA6FF"></div>
+      <div class="leg-tag">Needs</div>
+      <div class="leg-pct c-blue">55%</div>
+      <div class="leg-mo">$1,630.20 / mo</div>
+      <div class="leg-bw">$815.10 / paycheck</div>
+      <div class="leg-st">Actual $800.83<br><b class="c-green">✓ $14.27 under</b></div>
+    </div>
+    <div class="leg">
+      <div class="leg-dot" style="background:#05D69E"></div>
+      <div class="leg-tag">Investing</div>
+      <div class="leg-pct c-green">20%</div>
+      <div class="leg-mo">$592.80 / mo</div>
+      <div class="leg-bw">$296.40 / paycheck</div>
+      <div class="leg-st">Actual $296.40<br><b class="c-green">✓ on target</b></div>
+    </div>
+    <div class="leg">
+      <div class="leg-dot" style="background:#A78BFA"></div>
+      <div class="leg-tag">Goals</div>
+      <div class="leg-pct c-purple">15%</div>
+      <div class="leg-mo">$444.60 / mo</div>
+      <div class="leg-bw">$222.30 / paycheck</div>
+      <div class="leg-st">Actual $250.00<br><b class="c-purple">▲ $27.70 over</b></div>
+    </div>
+    <div class="leg">
+      <div class="leg-dot" style="background:#F2B705"></div>
+      <div class="leg-tag">Guilt-Free</div>
+      <div class="leg-pct c-gold">10%</div>
+      <div class="leg-mo">$296.40 / mo</div>
+      <div class="leg-bw">$148.20 / paycheck</div>
+      <div class="leg-st">Actual $148.20<br><b class="c-green">✓ on target</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- PLAN VS INCOME -->
+<div class="card">
+  <div class="bar-label">Plan vs Income — Reality Check</div>
+  <div class="pvi-grid">
+    <div class="pvi">
+      <div class="pvi-head">Per Paycheck</div>
+      <div class="pvi-row"><span>Income</span><b>$1,482.00</b></div>
+      <div class="pvi-row"><span>Planned</span><b>$1,495.43</b></div>
+      <div class="pvi-row diff"><span>Difference</span><b>−$13.43</b></div>
+    </div>
+    <div class="pvi">
+      <div class="pvi-head">Monthly</div>
+      <div class="pvi-row"><span>Income</span><b>$2,964.00</b></div>
+      <div class="pvi-row"><span>Planned</span><b>$2,990.86</b></div>
+      <div class="pvi-row diff"><span>Difference</span><b>−$26.86</b></div>
+    </div>
+  </div>
+  <div class="pvi-note">⚠️ Your plan is <strong>$13.43/paycheck ($26.86/mo) over</strong> your income. Goals run $27.70 over target and Needs run $14.27 under, so trimming Goals by $13.43/paycheck would balance it exactly.</div>
+</div>
+
+<!-- NEEDS -->
+<div class="sec-head">
+  <span class="sec-badge sn">🏠 Needs — 55%</span>
+  <div class="sec-line"></div>
+  <div class="sec-budget">Budget <b>$815.10 / paycheck</b></div>
+</div>
+<div class="exp-list">
+  <div class="exp-row" data-id="rent" data-amt="500" onclick="toggle(this)">
+    <div class="chk">✓</div>
+    <div class="exp-ico">🏠</div>
+    <div><div class="exp-name">Rent</div><div class="exp-note">half per paycheck</div></div>
+    <div class="exp-right"><div class="amt">$500</div><div class="amt-sub">$1,000/mo</div></div>
+  </div>
+  <div class="exp-row" data-id="wifi" data-amt="83.33" onclick="toggle(this)">
+    <div class="chk">✓</div>
+    <div class="exp-ico">📶</div>
+    <div><div class="exp-name">WiFi &amp; Phone</div><div class="exp-note">half per paycheck</div></div>
+    <div class="exp-right"><div class="amt">$83.33</div><div class="amt-sub">$166.66/mo</div></div>
+  </div>
+  <div class="exp-row" data-id="car" data-amt="100" onclick="toggle(this)">
+    <div class="chk">✓</div>
+    <div class="exp-ico">🚗</div>
+    <div><div class="exp-name">Car Rental</div><div class="exp-note">half per paycheck</div></div>
+    <div class="exp-right"><div class="amt">$100</div><div class="amt-sub">$200/mo</div></div>
+  </div>
+  <div class="exp-row" data-id="gas" data-amt="50" onclick="toggle(this)">
+    <div class="chk">✓</div>
+    <div class="exp-ico">⛽</div>
+    <div><div class="exp-name">Gas</div><div class="exp-note">half per paycheck</div></div>
+    <div class="exp-right"><div class="amt">$50</div><div class="amt-sub">$100/mo</div></div>
+  </div>
+  <div class="exp-row" data-id="maint" data-amt="12.50" onclick="toggle(this)">
+    <div class="chk">✓</div>
+    <div class="exp-ico">🔧</div>
+    <div><div class="exp-name">Car Maintenance</div><div class="exp-note">half per paycheck</div></div>
+    <div class="exp-right"><div class="amt">$12.50</div><div class="amt-sub">$25/mo</div></div>
+  </div>
+  <div class="exp-row" data-id="debt" data-amt="25" onclick="toggle(this)">
+    <div class="chk">✓</div>
+    <div class="exp-ico">💳</div>
+    <div><div class="exp-name">Debt Payment</div><div class="exp-note">half per paycheck</div></div>
+    <div class="exp-right"><div class="amt">$25</div><div class="amt-sub">$50/mo</div></div>
+  </div>
+  <div class="exp-row" data-id="hair" data-amt="30" onclick="toggle(this)">
+    <div class="chk">✓</div>
+    <div class="exp-ico">✂️</div>
+    <div><div class="exp-name">Haircut</div><div class="exp-note">half per paycheck</div></div>
+    <div class="exp-right"><div class="amt">$30</div><div class="amt-sub">$60/mo</div></div>
+  </div>
+</div>
+<div class="callout blue" style="margin-top:10px">
+  <span class="c-ico">💡</span>
+  <span class="c-txt">
+    <span class="tar">
+      <span><span>Target</span><b>$815.10</b></span>
+      <span><span>Actual</span><b>$800.83</b></span>
+      <span><span>Remaining</span><b>$14.27</b></span>
+    </span>
+    Needs total = <strong>$800.83/paycheck</strong> ($1,601.66/mo). You're <strong>$14.27 under</strong> your 55% target per paycheck ($28.54/mo). Bills are covered with room to spare.
+  </span>
+</div>
+
+<!-- INVESTING -->
+<div class="sec-head">
+  <span class="sec-badge si">📈 Investing — 20%</span>
+  <div class="sec-line"></div>
+  <div class="sec-budget">Budget <b>$296.40 / paycheck</b></div>
+</div>
+<div class="exp-list">
+  <div class="exp-row" data-id="broker" data-amt="296.40" onclick="toggle(this)">
+    <div class="chk">✓</div>
+    <div class="exp-ico">📊</div>
+    <div><div class="exp-name">Index Funds / Brokerage</div><div class="exp-note">full 20% · auto-invest on payday</div></div>
+    <div class="exp-right"><div class="amt">$296.40</div><div class="amt-sub">$592.80/mo</div></div>
+  </div>
+</div>
+<div class="callout green" style="margin-top:10px">
+  <span class="c-ico">🚀</span>
+  <span class="c-txt"><strong>$296.40 × 26 pays = $7,706.40/yr invested.</strong> Auto-transfer same day paycheck hits. Estimate only: at an assumed 10% avg annual return over 30 yrs, that could grow to roughly <strong>$1.27M</strong>. Returns are not guaranteed.</span>
+</div>
+
+<!-- GOALS -->
+<div class="sec-head">
+  <span class="sec-badge sg">🎯 Goals — 15%</span>
+  <div class="sec-line"></div>
+  <div class="sec-budget">Budget <b>$222.30 / paycheck</b></div>
+</div>
+<div class="exp-list">
+  <div class="exp-row" data-id="p2p" data-amt="200" onclick="toggle(this)">
+    <div class="chk">✓</div>
+    <div class="exp-ico">🏦</div>
+    <div><div class="exp-name">P2P Savings</div><div class="exp-note">savings + emergency fund · $4,800/yr</div></div>
+    <div class="exp-right"><div class="amt">$200</div><div class="amt-sub">$400/mo</div></div>
+  </div>
+  <div class="exp-row" data-id="travel" data-amt="25" onclick="toggle(this)">
+    <div class="chk">✓</div>
+    <div class="exp-ico">✈️</div>
+    <div><div class="exp-name">Travel Fund</div><div class="exp-note">half per paycheck · $600/yr</div></div>
+    <div class="exp-right"><div class="amt">$25</div><div class="amt-sub">$50/mo</div></div>
+  </div>
+  <div class="exp-row" data-id="bday" data-amt="25" onclick="toggle(this)">
+    <div class="chk">✓</div>
+    <div class="exp-ico">🎂</div>
+    <div><div class="exp-name">Birthday Fund</div><div class="exp-note">half per paycheck · $600/yr</div></div>
+    <div class="exp-right"><div class="amt">$25</div><div class="amt-sub">$50/mo</div></div>
+  </div>
+</div>
+<div class="callout purple" style="margin-top:10px">
+  <span class="c-ico">🎯</span>
+  <span class="c-txt">
+    <span class="tar">
+      <span><span>Target</span><b>$222.30</b></span>
+      <span><span>Actual</span><b>$250.00</b></span>
+      <span><span>Over</span><b>+$27.70</b></span>
+    </span>
+    Goal target = <strong>$222.30/paycheck</strong> ($444.60/mo). Current goal contributions = <strong>$250/paycheck</strong> ($500/mo). You're contributing <strong>$27.70 above</strong> your 15% target ($55.40/mo). Extra toward goals is a good habit, just keep an eye on the overall plan.
+  </span>
+</div>
+
+<!-- GUILT-FREE -->
+<div class="sec-head">
+  <span class="sec-badge sf">🎉 Guilt-Free Spending — 10%</span>
+  <div class="sec-line"></div>
+  <div class="sec-budget">Budget <b>$148.20 / paycheck</b></div>
+</div>
+<div class="exp-list">
+  <div class="exp-row" data-id="fun" data-amt="148.20" onclick="toggle(this)">
+    <div class="chk">✓</div>
+    <div class="exp-ico">🎮</div>
+    <div><div class="exp-name">Guilt-Free Spending</div><div class="exp-note">eat out · entertainment · vibes · whatever — guilt-free</div></div>
+    <div class="exp-right"><div class="amt">$148.20</div><div class="amt-sub">$296.40/mo</div></div>
+  </div>
+</div>
+<div class="callout gold" style="margin-top:10px">
+  <span class="c-ico">🎉</span>
+  <span class="c-txt">Guilt-free money — <strong>$148.20/paycheck ($296.40/mo)</strong>. Spend it guilt-free because the other categories already have jobs. If you don't use all of it, you can roll it forward or put the extra toward one of your goals.</span>
+</div>
+
+<!-- CHECKLIST -->
+<div class="cl-card">
+  <div class="cl-pct" id="clPct">0%</div>
+  <div class="cl-lbl">Paycheck Checklist Complete</div>
+  <div class="cl-bg"><div class="cl-fill" id="clBar" style="width:0%"></div></div>
+  <div class="cl-msg" id="clMsg">Tap any row above to mark it paid ↑</div>
+</div>
+
+<!-- ANNUAL -->
+<div class="goals-card">
+  <div class="goals-title">🔮 Your Year in Numbers</div>
+  <div class="goals-grid">
+    <div class="goal-box">
+      <div class="goal-lbl">P2P Saved</div>
+      <div class="goal-val c-purple">$4,800</div>
+      <div class="goal-sub">$400/mo × 12<br>savings goal ✓</div>
+    </div>
+    <div class="goal-box">
+      <div class="goal-lbl">Travel + Bday</div>
+      <div class="goal-val c-purple">$1,200</div>
+      <div class="goal-sub">$100/mo × 12<br>planned &amp; ready</div>
+    </div>
+    <div class="goal-box">
+      <div class="goal-lbl">Goals Total</div>
+      <div class="goal-val c-purple">$6,000</div>
+      <div class="goal-sub">$500/mo × 12<br>P2P + travel + bday</div>
+    </div>
+    <div class="goal-box">
+      <div class="goal-lbl">Brokerage</div>
+      <div class="goal-val c-green">$7,706.40</div>
+      <div class="goal-sub">$296.40 × 26<br>biweekly paychecks</div>
+    </div>
+    <div class="goal-box">
+      <div class="goal-lbl">Guilt-Free</div>
+      <div class="goal-val c-gold">$3,556.80</div>
+      <div class="goal-sub">$296.40/mo × 12<br>spend it, no guilt</div>
+    </div>
+    <div class="goal-box">
+      <div class="goal-lbl">30yr Estimate</div>
+      <div class="goal-val c-gold">~$1.27M</div>
+      <div class="goal-sub">assumes 10% avg return<br>not guaranteed 💪</div>
+    </div>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="tbl-card">
+  <div class="tbl-title">📋 Monthly Breakdown</div>
+  <table>
+    <thead>
+      <tr><th>Expense</th><th>Category</th><th>Monthly</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Rent</td><td class="m cn">Needs</td><td class="m">$1,000.00</td></tr>
+      <tr><td>WiFi &amp; Phone</td><td class="m cn">Needs</td><td class="m">$166.66</td></tr>
+      <tr><td>Car Rental</td><td class="m cn">Needs</td><td class="m">$200.00</td></tr>
+      <tr><td>Gas</td><td class="m cn">Needs</td><td class="m">$100.00</td></tr>
+      <tr><td>Car Maintenance</td><td class="m cn">Needs</td><td class="m">$25.00</td></tr>
+      <tr><td>Debt Payment</td><td class="m cn">Needs</td><td class="m">$50.00</td></tr>
+      <tr><td>Haircut</td><td class="m cn">Needs</td><td class="m">$60.00</td></tr>
+      <tr><td>P2P Savings</td><td class="m cg">Goals</td><td class="m">$400.00</td></tr>
+      <tr><td>Travel Fund</td><td class="m cg">Goals</td><td class="m">$50.00</td></tr>
+      <tr><td>Birthday Fund</td><td class="m cg">Goals</td><td class="m">$50.00</td></tr>
+      <tr><td>Index Funds</td><td class="m ci">Investing</td><td class="m">$592.80</td></tr>
+      <tr><td>Guilt-Free Spending</td><td class="m cf">Guilt-Free</td><td class="m">$296.40</td></tr>
+      <tr class="tot"><td><b>Planned Total</b></td><td></td><td class="m"><b>$2,990.86</b></td></tr>
+      <tr class="inc"><td>Monthly Income</td><td></td><td class="m">$2,964.00</td></tr>
+      <tr class="dif"><td>Difference</td><td class="m c-red">over</td><td class="m">−$26.86</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- TIPS -->
+<div class="tips-grid">
+  <div class="tip">
+    <div class="tip-ico">⚡</div>
+    <div class="tip-head">Automate Day 1</div>
+    <div class="tip-body">Paycheck hits → <strong>$200 to P2P + $296.40 to brokerage</strong> before anything else.</div>
+  </div>
+  <div class="tip">
+    <div class="tip-ico">🚗</div>
+    <div class="tip-head">Car Is the Leak</div>
+    <div class="tip-body">$200/mo rental = <strong>$2,400/yr</strong>. Cut it $50/mo = $600 more for goals or investing.</div>
+  </div>
+  <div class="tip">
+    <div class="tip-ico">💳</div>
+    <div class="tip-head">Kill That Debt</div>
+    <div class="tip-body">Once debt is gone, <strong>that $50/mo closes your $26.86 gap</strong> with room left over.</div>
+  </div>
+  <div class="tip">
+    <div class="tip-ico">📅</div>
+    <div class="tip-head">Check Every Pay</div>
+    <div class="tip-body">Come back every payday, tap off items, reset. <strong>Consistency wins at 22.</strong></div>
+  </div>
+</div>
+
+<div class="reset-wrap">
+  <button class="reset-btn" onclick="resetAll()">↺ New Paycheck — Reset</button>
+</div>
+
+<div class="footer">BUDGET OS &nbsp;·&nbsp; 55 / 20 / 15 / 10 &nbsp;·&nbsp; 22 &amp; BUILDING 💰</div>
+
+</div><!-- /wrap -->
+
+<script>
+var ROWS = [];
+var KEY = 'budget_checks_v1';
+
+// ── STORAGE: tries localStorage first, falls back to cookies ──
+// This fixes Safari PWA (Add to Home Screen) which wipes localStorage on close.
+function storageSave(key, val) {
+  var str = JSON.stringify(val);
+  // 1. localStorage
+  try { localStorage.setItem(key, str); } catch(e) {}
+  // 2. cookie fallback (persists across PWA sessions, expires 30 days)
+  try {
+    var exp = new Date();
+    exp.setDate(exp.getDate() + 30);
+    document.cookie = key + '=' + encodeURIComponent(str) + ';expires=' + exp.toUTCString() + ';path=/;SameSite=Lax';
+  } catch(e) {}
+}
+
+function storageLoad(key) {
+  // 1. Try localStorage first
+  try {
+    var raw = localStorage.getItem(key);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  // 2. Fall back to cookie
+  try {
+    var name = key + '=';
+    var parts = document.cookie.split(';');
+    for (var i = 0; i < parts.length; i++) {
+      var c = parts[i].trim();
+      if (c.indexOf(name) === 0) {
+        return JSON.parse(decodeURIComponent(c.substring(name.length)));
+      }
+    }
+  } catch(e) {}
+  return null;
+}
+
+function storageClear(key) {
+  try { localStorage.removeItem(key); } catch(e) {}
+  try { document.cookie = key + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;'; } catch(e) {}
+}
+
+function init() {
+  // row count comes from the page, never hardcoded
+  ROWS = Array.prototype.slice.call(document.querySelectorAll('.exp-row'));
+  load();
+}
+
+function toggle(row) {
+  row.classList.toggle('done');
+  save();
+  update();
+}
+
+function save() {
+  var state = {};
+  for (var i = 0; i < ROWS.length; i++) {
+    state[ROWS[i].dataset.id] = ROWS[i].classList.contains('done') ? 1 : 0;
+  }
+  storageSave(KEY, state);
+}
+
+function load() {
+  var state = storageLoad(KEY);
+  if (state) {
+    for (var i = 0; i < ROWS.length; i++) {
+      if (state[ROWS[i].dataset.id]) {
+        ROWS[i].classList.add('done');
+      } else {
+        ROWS[i].classList.remove('done');
+      }
+    }
+  }
+  update();
+}
+
+function update() {
+  var total = ROWS.length;
+  var done = 0;
+  var owed = 0;
+  for (var i = 0; i < ROWS.length; i++) {
+    if (ROWS[i].classList.contains('done')) {
+      done++;
+    } else {
+      owed += parseFloat(ROWS[i].dataset.amt) || 0;
+    }
+  }
+
+  var clEl = document.getElementById('cleared');
+  var owEl = document.getElementById('owed');
+  var pctEl = document.getElementById('clPct');
+  var barEl = document.getElementById('clBar');
+  var msgEl = document.getElementById('clMsg');
+
+  if (clEl) clEl.textContent = done + ' / ' + total;
+  if (owEl) owEl.textContent = '$' + Math.round(owed).toLocaleString('en-US');
+
+  var pct = total > 0 ? Math.round(done / total * 100) : 0;
+  if (pctEl) pctEl.textContent = pct + '%';
+  if (barEl) barEl.style.width = pct + '%';
+
+  var msgs = [
+    'Tap any row above to mark it paid',
+    'Good start — keep going!',
+    'Halfway there — locked in!',
+    'Almost done — finish strong!',
+    'ALL CLEAR — paycheck done!'
+  ];
+  var idx = pct === 100 ? 4 : pct >= 75 ? 3 : pct >= 50 ? 2 : pct >= 25 ? 1 : 0;
+  if (msgEl) msgEl.textContent = msgs[idx];
+}
+
+function resetAll() {
+  storageClear(KEY);
+  for (var i = 0; i < ROWS.length; i++) {
+    ROWS[i].classList.remove('done');
+  }
+  update();
+}
+
+window.onload = init;
+</script>
+</body>
+</html>
