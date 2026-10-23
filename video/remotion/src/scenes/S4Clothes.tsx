@@ -40,11 +40,11 @@ export const S4Clothes: React.FC = () => {
         </RevealLine>
       </div>
       <Cutout
-        name="sneakers_sport" x={-30} y={mix(1500, 960, p(t, T.shoes, T.shoes + 0.45, BACK))} w={620} rot={-6}
+        name="sneakers_sport" x={-10} y={mix(1500, 830, p(t, T.shoes, T.shoes + 0.45, BACK))} w={580} rot={-6}
         opacity={p(t, T.shoes, T.shoes + 0.1)}
       />
       <Cutout
-        name="sneakers_hightop" x={520} y={mix(1500, 860, p(t, T.shoes + 0.14, T.shoes + 0.6, BACK))} w={560} rot={4}
+        name="sneakers_hightop" x={540} y={mix(1500, 770, p(t, T.shoes + 0.14, T.shoes + 0.6, BACK))} w={520} rot={4}
         opacity={p(t, T.shoes + 0.14, T.shoes + 0.24)}
       />
     </AbsoluteFill>
