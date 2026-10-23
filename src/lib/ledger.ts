@@ -101,8 +101,7 @@ export function latestPaycheck(data: AppData, today: ISODate): Paycheck | null {
 }
 
 export function paycheckRange(p: Paycheck): DateRange {
-  const end = p.nextPayday > p.date ? addDays(p.nextPayday, -1) : p.date;
-  return { start: p.date, end };
+  return { start: p.periodStart, end: p.periodEnd };
 }
 
 export function sumReserved(p: Paycheck): Cents {

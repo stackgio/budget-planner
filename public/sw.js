@@ -1,6 +1,6 @@
 // Offline support: caches the app shell. Financial data lives in
 // localStorage and is never touched or sent anywhere by this worker.
-const CACHE = 'spend-smarter-v1';
+const CACHE = 'spend-smarter-v2';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', (event) => {

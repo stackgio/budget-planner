@@ -17,6 +17,11 @@
   --over: #ff7a6b;
   --over-soft: rgba(255, 122, 107, 0.14);
   --blue: #6cb6ff;
+  /* Budget buckets — validated as an adjacent set on the dark surface; always shown with their names. */
+  --b-needs: #3987e5;
+  --b-investing: #199e70;
+  --b-goals: #9085e9;
+  --b-fun: #d95926;
   --radius: 18px;
   --radius-sm: 12px;
   --nav-h: 64px;
@@ -216,5 +221,70 @@ textarea.input { min-height: 72px; resize: vertical; }
 
 details.more summary { list-style: none; cursor: pointer; color: var(--green); font-weight: 650; padding: 8px 2px; }
 details.more summary::-webkit-details-marker { display: none; }
+
+/* ---------- budget manager ---------- */
+.subtabs { margin-bottom: 14px; }
+.subtabs button { font-size: 13px; padding: 10px 2px; }
+.bucket-card { position: relative; overflow: hidden; animation: rise 0.3s ease both; }
+.bucket-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--bucket); }
+.bucket-head { display: flex; align-items: center; gap: 8px; }
+.bucket-name { font-size: 18px; font-weight: 750; letter-spacing: -0.01em; }
+.bucket-pct { font-size: 12px; font-weight: 700; color: var(--text-3); background: var(--surface-2); border-radius: 99px; padding: 2px 8px; }
+.bucket-dot { width: 10px; height: 10px; border-radius: 3px; background: var(--bucket); flex: none; display: inline-block; }
+.bucket-big { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; margin: 8px 0 0; }
+.kv { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; font-size: 15px; }
+.kv + .kv { border-top: 1px solid var(--border); }
+.kv .k { color: var(--text-2); }
+.kv .v { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.kv.sub .k { padding-left: 14px; font-size: 14px; }
+.kv.sub .v { font-weight: 600; font-size: 14px; }
+.kv.total .k, .kv.total .v { color: var(--text); font-weight: 800; }
+.stacked { display: flex; height: 12px; border-radius: 99px; background: var(--surface-3); overflow: hidden; gap: 2px; margin: 12px 0 6px; }
+.stacked > span { display: block; height: 100%; transition: width 0.45s ease; }
+.stacked > span:first-child { border-radius: 99px 0 0 99px; }
+.stacked > span.hatch { background-image: repeating-linear-gradient(135deg, var(--bucket) 0 3px, transparent 3px 7px) !important; background-color: transparent !important; opacity: 0.9; }
+.stacked > span.over { background: var(--over) !important; }
+.line-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; width: 100%; background: none; border: 0; text-align: left; color: inherit; min-height: 52px; }
+.line-row + .line-row { border-top: 1px solid var(--border); }
+.line-row .name { font-weight: 650; }
+.line-row .meta { font-size: 13px; color: var(--text-3); margin-top: 2px; }
+.mini-bucket { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+.mini-bucket > button, .mini-bucket > div { background: var(--surface-2); border: 0; border-radius: 12px; padding: 9px 8px; text-align: left; min-width: 0; color: inherit; }
+.mini-bucket .lbl { font-size: 11px; font-weight: 700; color: var(--text-3); display: flex; align-items: center; gap: 5px; white-space: nowrap; overflow: hidden; }
+.mini-bucket .val { font-size: 15px; font-weight: 750; margin-top: 3px; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bucket-chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.bucket-chips.two { grid-template-columns: 1fr 1fr; }
+.bucket-chip { border: 1px solid var(--border); background: var(--surface-2); color: var(--text-2); border-radius: 12px; padding: 8px 4px; font-size: 13px; font-weight: 700; min-height: 44px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bucket-chip.on { border-color: var(--bucket); color: var(--text); background: color-mix(in srgb, var(--bucket) 18%, var(--surface-2)); }
+.mode-toggle.on button.on { background: var(--b-goals); color: #120d2c; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; border-radius: 99px; padding: 4px 10px; background: var(--surface-2); color: var(--text-2); }
+.pill.debt { background: color-mix(in srgb, var(--b-goals) 22%, transparent); color: #cfc8ff; }
+.pct-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.pct-grid .input { text-align: center; padding: 12px 6px; font-weight: 750; }
+.hbar { display: grid; grid-template-columns: 84px 1fr; gap: 4px 10px; align-items: center; font-size: 13px; }
+.hbar .track { position: relative; height: 22px; }
+.hbar .t, .hbar .a { position: absolute; left: 0; height: 9px; border-radius: 0 4px 4px 0; }
+.hbar .t { top: 0; background: var(--surface-3); }
+.hbar .a { top: 11px; background: var(--bucket); }
+.hbar .a.over { background: var(--over); }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+table.tbl th + th, table.tbl td + td { padding-left: 10px; }
+table.tbl th { font-weight: 600; color: var(--text-3); text-align: right; padding: 0 0 6px; }
+table.tbl th:first-child, table.tbl td:first-child { text-align: left; }
+table.tbl td { text-align: right; padding: 8px 0; border-top: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+.delta-up { color: var(--warn); }
+.delta-down { color: var(--green); }
+.check { display: flex; gap: 10px; align-items: center; font-size: 15px; min-height: 44px; }
+.check input { width: 22px; height: 22px; accent-color: var(--green); }
+@keyframes rise { from { transform: translateY(8px); opacity: 0; } }
+
+@media print {
+  :root { --bg: #fff; --surface: #fff; --surface-2: #f2f3f4; --surface-3: #dfe2e5; --border: #d7dbe0; --text: #111; --text-2: #333; --text-3: #555; }
+  html, body { background: #fff; color: #111; }
+  .bottom-nav, .toasts, .no-print, .sheet-backdrop { display: none !important; }
+  .app { padding: 0; max-width: none; }
+  .card, .list { break-inside: avoid; }
+  * { animation: none !important; transition: none !important; }
+}
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

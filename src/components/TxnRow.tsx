@@ -4,7 +4,7 @@ import { formatCents } from '../lib/money';
 import { formatDay } from '../lib/dates';
 import { useStore } from '../store';
 
-const KIND_ICONS: Record<string, string> = { cc_payment: '💳', transfer: '🔄', savings: '🏦', uncle: '👤', refund: '↩️' };
+const KIND_ICONS: Record<string, string> = { cc_payment: '💳', transfer: '🔄', savings: '🏦', uncle: '👤', refund: '↩️', debt_payment: '📉' };
 
 export function TxnRow({ txn, onOpen, showDate }: { txn: Transaction; onOpen: (t: Transaction) => void; showDate?: boolean }) {
   const { data } = useStore();

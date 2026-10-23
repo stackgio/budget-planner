@@ -10,6 +10,9 @@ import { GearIcon, PlusIcon } from '../components/Icons';
 import type { Transaction } from '../lib/types';
 import type { Tab } from '../App';
 import { IS_ARTIFACT } from '../platform';
+import { BUCKET_LABELS, BUCKETS } from '../lib/types';
+import { budgetNotices, currentPaycheck, paycheckView } from '../lib/budget';
+import { bucketStyle, money } from '../components/budget/parts';
 
 export function Home({ onAdd, onOpen, go }: { onAdd: () => void; onOpen: (t: Transaction) => void; go: (t: Tab) => void }) {
   const { data, today, cloud } = useStore();
@@ -30,6 +33,8 @@ export function Home({ onAdd, onOpen, go }: { onAdd: () => void; onOpen: (t: Tra
       sincePaycheck: paycheck ? totalSpent(data, { start: paycheck.date, end: today }) : null,
       top: topCategory(data, monthToDate),
       budget: budgetStatus(data, today),
+      plan: data.settings.budgetMode === 'paycheck' ? currentPaycheck(data, today) : null,
+      budgetNotices: data.settings.budgetMode === 'paycheck' ? budgetNotices(data, today, 2).filter((n) => n.level === 'over' || n.level === 'near') : [],
       warnings: categoryBudgets(data, today).filter((r) => r.level !== 'ok').sort((a, b) => b.percent - a.percent),
       recommendation: weeklyRecommendation(data, today),
       recent: activeTransactions(data)
@@ -56,6 +61,9 @@ export function Home({ onAdd, onOpen, go }: { onAdd: () => void; onOpen: (t: Tra
         </div>
       </header>
 
+      {stats.plan ? (
+        <PlanHero plan={stats.plan} go={go} />
+      ) : (
       <section className="card" aria-label="Spending budget">
         {b ? (
           <>
@@ -84,10 +92,18 @@ export function Home({ onAdd, onOpen, go }: { onAdd: () => void; onOpen: (t: Tra
           </div>
         )}
       </section>
+      )}
 
       <button className="btn primary add-cta" onClick={onAdd}>
         <PlusIcon /> Add Expense
       </button>
+
+      {stats.budgetNotices.map((n) => (
+        <div key={n.id} className={`notice ${n.level}`} style={{ marginTop: 10 }}>
+          <span>{n.level === 'over' ? '▲' : '●'}</span>
+          <span>{n.text}</span>
+        </div>
+      ))}
 
       {stats.warnings.map((w) => (
         <div key={w.category.id} className={`notice ${w.level}`} style={{ marginTop: 10 }}>
@@ -162,6 +178,33 @@ export function Home({ onAdd, onOpen, go }: { onAdd: () => void; onOpen: (t: Tra
         </div>
       )}
     </>
+  );
+}
+
+function PlanHero({ plan, go }: { plan: NonNullable<ReturnType<typeof currentPaycheck>>; go: (t: Tab) => void }) {
+  const { data } = useStore();
+  const v = paycheckView(data, plan.paycheck);
+  return (
+    <section className="card" aria-label="Paycheck budget">
+      <span className="hero-label">This pay period · {formatDay(plan.paycheck.periodStart)} – {formatDay(plan.paycheck.periodEnd)}</span>
+      <div className="hero-value num">{money(v.totals.remaining)}</div>
+      <div className="muted">{v.totals.remaining >= 0 ? 'left in your paycheck budget' : 'over your paycheck budget'}</div>
+      <div className="mini-bucket">
+        {BUCKETS.map((b) => (
+          <button key={b} style={bucketStyle(b)} onClick={() => go('budget')} aria-label={`${BUCKET_LABELS[b]} ${money(v.buckets[b].remaining)} left`}>
+            <div className="lbl"><span className="bucket-dot" />{BUCKET_LABELS[b]}</div>
+            <div className="val" style={{ color: v.buckets[b].remaining < 0 ? 'var(--over)' : undefined }}>{money(v.buckets[b].remaining)}</div>
+          </button>
+        ))}
+      </div>
+      <div className="small faint" style={{ marginTop: 8 }}>Budget left, not your bank balance.</div>
+      {plan.stale && (
+        <div className="notice near" style={{ marginTop: 12 }}>
+          <span>📅</span>
+          <span>This pay period has ended. <button className="link" onClick={() => go('budget')}>Add your next paycheck</button> to start a fresh budget.</span>
+        </div>
+      )}
+    </section>
   );
 }
 

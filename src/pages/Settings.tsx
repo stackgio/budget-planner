@@ -9,31 +9,7 @@ import { ConfirmDialog, Segmented } from '../components/ui';
 import { ChevronLeft } from '../components/Icons';
 import type { AppData } from '../lib/types';
 import { IS_ARTIFACT } from '../platform';
-import { artifactDownload } from '../lib/cloud';
-
-async function deliverFile(name: string, mime: string, content: string, share: boolean): Promise<string | null> {
-  if (IS_ARTIFACT) {
-    const r = await artifactDownload(name, content);
-    return r === 'unavailable' ? 'Saving files isn\'t available in this view. Open the app in claude.ai and try again.' : null;
-  }
-  const blob = new Blob([content], { type: mime });
-  if (share) {
-    const file = new File([blob], name, { type: mime });
-    if (navigator.canShare?.({ files: [file] })) {
-      await navigator.share({ files: [file], title: name });
-      return null;
-    }
-  }
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = name;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
-  return null;
-}
+import { deliverFile } from '../lib/files';
 
 export function Settings({ onBack }: { onBack: () => void }) {
   const { data, today, apply, toast, persisted, saveError, cloud, cloudMessage } = useStore();
@@ -155,6 +131,8 @@ export function Settings({ onBack }: { onBack: () => void }) {
           <li><b>Savings & investing</b> are tracked separately from spending.</li>
           <li><b>Refunds</b> reduce the original purchase's category.</li>
           <li><b>Uncle's money</b> is never counted as your income or spending.</li>
+          <li><b>Debt payments</b> aren't spending: they count toward Goals and lower the debt's balance. Paying a card for purchases you already recorded is a credit card payment, not a debt payment.</li>
+          <li><b>Budget plans</b> are kept apart from what you actually spend. A planned bill is only reserved until you record the payment — never both.</li>
           <li>All math uses whole cents. Every entry has a permanent ID shared in exports.</li>
         </ul>
       </section>
@@ -163,7 +141,7 @@ export function Settings({ onBack }: { onBack: () => void }) {
         <button className="btn danger block" onClick={() => setConfirmErase(true)}>Erase all data on this device</button>
       </section>
 
-      <p className="center faint small" style={{ marginTop: 18 }}>Spend Smarter · {IS_ARTIFACT ? 'account storage' : 'local-only'} · v1</p>
+      <p className="center faint small" style={{ marginTop: 18 }}>Spend Smarter · {IS_ARTIFACT ? 'account storage' : 'local-only'} · v2</p>
 
       {pending && (
         <ConfirmDialog

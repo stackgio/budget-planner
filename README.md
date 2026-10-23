@@ -15,6 +15,7 @@ category is suggested (from your previous entries first, then keyword rules) —
 - **History** — search, filter by category and date, daily/weekly/monthly totals, edit, delete with confirmation, undo, and a Recently deleted bin with restore.
 - **Reports** — by month, pay period or week: totals, category breakdown, daily chart, 8-week trend, budget performance, needs vs. wants (plus a monthly comparison), largest purchases, opportunities to cut back, savings calculator.
 - **Money rules** — credit card payments, transfers, savings and uncle's money are tracked but never counted as spending; refunds reduce the original purchase. See [docs/DATA_FORMAT.md](docs/DATA_FORMAT.md).
+- **55/20/15/10 Budget Manager** (Budget tab) — each paycheck is split into Needs 55% · Investing 20% · Goals 15% · Guilt-Free 10% (editable, must total 100%). Prefilled per-paycheck plan (rent, phone, car, gas, savings goals, allowance…) that's never recorded as paid until you confirm a payment. Dashboard with four bucket cards, unpaid bills shown as *reserved*, paycheck or month view, calm notices, Debt Payoff Mode (redirects planned investing to debt without inventing transactions), debt balances, paycheck reviews with recommendations from your actual entries, and a monthly summary with charts and CSV / PDF export. Expenses you add update it instantly.
 - **Backups** — JSON and CSV export, import with merge-by-id (no duplicates) or replace-all.
 
 ## Where your data lives (please read)
@@ -57,9 +58,11 @@ Then open `https://<your-user>.github.io/budget-planner/` in Safari and Add to H
 
 ```
 src/lib/        pure logic — money (cents), dates, ledger (all totals), ops (validated edits),
-                suggest (categories), insights, reports, backup (JSON/CSV), storage
+                suggest (categories), insights, reports, backup (JSON/CSV), storage,
+                budget (55/20/15/10 calculations), budgetOps (plan/paycheck edits), budgetReport (CSV)
+src/components/budget/  Budget Manager screens: Overview, Plan, Paychecks, Review, sheets
 src/pages/      Home, History, Reports, Budget, Settings
 src/components/ ExpenseForm (quick entry), charts, shared UI
-tests/          unit tests for the 10 required scenarios and more
+tests/          unit tests: core.test.ts (expense tracker), budget.test.ts (Budget Manager)
 scripts/e2e.mjs browser test of the same scenarios through the UI
 ```

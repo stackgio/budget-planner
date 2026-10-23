@@ -89,19 +89,21 @@ try {
   await page.getByRole('button', { name: 'Save', exact: true }).click();
   check((await stat('Today')) === '$132.19', `Refund reduces today's total (got ${await stat('Today')})`);
 
-  // 6. Paycheck with reserved money.
+  // 6. Paycheck → automatic 55/20/15/10 budget.
   await page.locator('.nav-btn', { hasText: 'Budget' }).click();
-  await page.getByRole('button', { name: '+ Add paycheck' }).click();
-  await page.getByLabel('Paycheck amount (take-home)').fill('2000');
-  await page.getByLabel('Bills').fill('900');
-  await page.getByLabel('Debt payments').fill('200');
-  await page.getByLabel('Savings').fill('250');
-  await page.getByLabel('Investing').fill('150');
-  check((await page.getByLabel('Spending allowance').inputValue()) === '500.00', 'Allowance excludes reserved money ($500)');
+  await page.getByRole('button', { name: 'Add paycheck', exact: true }).click();
+  check((await page.getByLabel('Net paycheck (take-home)').inputValue()) === '1482.00', 'Paycheck defaults to the $1,482 baseline');
+  const preview = await page.locator('.sheet').textContent();
+  check(['$815.10', '$296.40', '$222.30', '$148.20'].every((x) => preview.includes(x)), 'Paycheck preview shows 815.10 / 296.40 / 222.30 / 148.20');
   await shot('03-paycheck');
-  await page.getByRole('button', { name: 'Save paycheck' }).click();
+  await page.locator('.sheet').getByRole('button', { name: 'Add paycheck' }).click();
+  const funBig = () => page.locator('.bucket-card', { hasText: 'Guilt-Free' }).locator('.bucket-big').textContent();
+  // Guilt-Free so far: McDonald's 12.50 + Amazon 24.99 − 10 refund + Coffee 6.50 = 33.99
+  check((await funBig()) === '$114.21', `Guilt-Free remaining 148.20 − 33.99 (got ${await funBig()})`);
+  check(await page.locator('.notice', { hasText: 'planned Goals' }).isVisible(), 'Warns that planned Goals exceed the 15% target');
 
   // 7. Category budget warning.
+  await page.getByRole('radio', { name: 'Plan' }).click();
   await page.locator('.cat-row', { hasText: 'Eating Out' }).click();
   await page.getByLabel(/Spending limit/).fill('15');
   await page.getByRole('button', { name: 'Save', exact: true }).click();
@@ -109,7 +111,8 @@ try {
   check(await page.locator('.notice.near', { hasText: 'Eating Out' }).isVisible(), 'Warns at 80% of Eating Out budget');
   await add('Taco Bell', '5');
   check(await page.locator('.notice.over', { hasText: 'Eating Out' }).isVisible(), 'Warns when over Eating Out budget');
-  check((await page.locator('.hero-value').textContent()) === '$362.81', `Remaining budget = 500 − 137.19 (got ${await page.locator('.hero-value').textContent()})`);
+  // 1482 − 137.19 spent − 683.33 unpaid bills (rent, phone + Wi-Fi, car)
+  check((await page.locator('.hero-value').textContent()) === '$661.48', `Paycheck budget remaining (got ${await page.locator('.hero-value').textContent()})`);
 
   // 8. Credit card payment is not spending.
   await page.locator('.nav-add').click();
@@ -118,6 +121,7 @@ try {
   check(await page.locator('.notice.info', { hasText: 'Credit card payment' }).isVisible(), 'Detects credit card payment');
   await page.getByRole('button', { name: 'Save', exact: true }).click();
   check((await stat('Today')) === '$137.19', 'Credit card payment not double counted');
+  check((await page.locator('.hero-value').textContent()) === '$661.48', 'Card payment leaves the budget unchanged');
   await shot('04-dashboard');
 
   // 9. Export JSON, erase, import.
@@ -155,7 +159,76 @@ try {
   await page2.locator('.nav-btn', { hasText: 'Reports' }).click();
   await page2.screenshot({ path: `${shots}06-reports.png`, fullPage: true });
   await page2.locator('.nav-btn', { hasText: 'Budget' }).click();
+  await page2.getByRole('radio', { name: 'Dashboard' }).click();
+  const hero2 = () => page2.locator('.hero-value').first().textContent();
+  check((await hero2()) === '$661.48', `Budget dashboard after restart (got ${await hero2()})`);
+
+  // Internal transfer with set-asides: not spending.
+  const add2 = async (desc, amt) => {
+    await page2.locator('.nav-add').click();
+    await page2.getByLabel('What did you spend money on?').fill(desc);
+    await page2.getByLabel('Amount in dollars').fill(amt);
+  };
+  await add2('Transfer to Bills Checking', '300');
+  check(await page2.locator('.notice.info', { hasText: 'Transfer' }).isVisible(), 'Detects an internal transfer');
+  await page2.getByLabel('From account').fill('Main Checking');
+  await page2.getByLabel('To account').fill('Bills Checking');
+  for (const [i, [label, amt]] of [['Capital One', '100'], ['Household bills', '100'], ['American Express', '100']].entries()) {
+    await page2.getByRole('button', { name: '+ Add set-aside' }).click();
+    await page2.getByLabel(`Set-aside ${i + 1} name`).fill(label);
+    await page2.getByLabel(`Set-aside ${i + 1} amount`).fill(amt);
+  }
+  await page2.screenshot({ path: `${shots}09-transfer.png`, fullPage: true });
+  await page2.getByRole('button', { name: 'Save', exact: true }).click();
+  check((await hero2()) === '$661.48', 'A $300 transfer does not change the budget');
+
+  // Confirm the rent payment: moves from reserved to spent, total unchanged.
+  await page2.locator('.bucket-card', { hasText: 'Needs' }).locator('summary').click();
+  await page2.getByRole('button', { name: 'Record payment for Rent' }).click();
+  await page2.locator('.sheet').getByRole('button', { name: 'Save payment' }).click();
+  const needsText = await page2.locator('.bucket-card', { hasText: 'Needs' }).first().textContent();
+  check(needsText.includes('✓ Paid'), 'Rent shows as paid');
+  check((await hero2()) === '$661.48', 'Paying a reserved bill is not counted twice');
+
+  // McDonald's → Guilt-Free goes down by exactly 14.50, with a live preview.
+  const funBefore = await page2.locator('.bucket-card', { hasText: 'Guilt-Free' }).locator('.bucket-big').textContent();
+  await add2("McDonald's", '14.50');
+  const hint = await page2.locator('.sheet').textContent();
+  check(hint.includes('Guilt-Free: $94.71 left after this'), `Shows Guilt-Free left before saving (before ${funBefore})`);
+  await page2.getByRole('button', { name: 'Save', exact: true }).click();
+  const dup = page2.getByRole('button', { name: 'Save anyway' });
+  if (await dup.isVisible().catch(() => false)) await dup.click();
+  check((await page2.locator('.bucket-card', { hasText: 'Guilt-Free' }).locator('.bucket-big').textContent()) === '$94.71', 'Guilt-Free updates instantly (109.21 − 14.50)');
   await page2.screenshot({ path: `${shots}07-budget.png`, fullPage: true });
+
+  // Debt Payoff Mode: redirects investing, records nothing.
+  const countBefore = await page2.evaluate(() => JSON.parse(localStorage.getItem('spend-smarter:data:v1')).transactions.length);
+  await page2.getByRole('radio', { name: 'Debt Payoff Mode' }).click();
+  const inv = await page2.locator('.bucket-card', { hasText: 'Investing' }).first().textContent();
+  check(inv.includes('Redirected to debt payoff') && inv.includes('−$296.40'), 'Debt Payoff Mode shows redirected investing');
+  const countAfter = await page2.evaluate(() => JSON.parse(localStorage.getItem('spend-smarter:data:v1')).transactions.length);
+  check(countBefore === countAfter, 'Debt Payoff Mode creates no transactions');
+  await page2.screenshot({ path: `${shots}10-debt-mode.png`, fullPage: true });
+  await page2.getByRole('radio', { name: 'Normal Budget' }).click();
+
+  // Percentages must total 100%.
+  await page2.getByRole('radio', { name: 'Plan' }).click();
+  await page2.getByLabel('Needs percent').fill('50');
+  check(await page2.locator('.notice.over', { hasText: '95%' }).isVisible(), 'Percentages not totaling 100% are flagged');
+  check(await page2.getByRole('button', { name: 'Save split' }).isDisabled(), 'Cannot save a split that is not 100%');
+  await page2.getByLabel('Needs percent').fill('55');
+  await page2.screenshot({ path: `${shots}11-plan.png`, fullPage: true });
+
+  // Reviews and export.
+  await page2.getByRole('radio', { name: 'Review' }).click();
+  await page2.screenshot({ path: `${shots}12-review.png`, fullPage: true });
+  await page2.getByRole('radio', { name: 'Monthly summary' }).click();
+  await page2.screenshot({ path: `${shots}13-monthly.png`, fullPage: true });
+  const [rep] = await Promise.all([page2.waitForEvent('download'), page2.getByRole('button', { name: 'Export CSV' }).click()]);
+  await rep.saveAs(`${shots}monthly.csv`);
+  check(readFileSync(`${shots}monthly.csv`, 'utf8').includes('Remaining budget'), 'Monthly report exports as CSV');
+  const overflowBudget = await page2.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+  check(!overflowBudget, 'Budget pages fit the phone width');
   await page2.goto(`${BASE}#/settings`);
   await page2.screenshot({ path: `${shots}08-settings.png`, fullPage: true });
   const overflow = await page2.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);

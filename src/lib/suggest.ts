@@ -34,6 +34,7 @@ const KIND_RULES: Array<[RegExp, TxnKind]> = [
   [/\buncle\b/, 'uncle'],
   [/\b(refund|refunded|returned|return)\b/, 'refund'],
   [/\b(credit card|card) (bill|payment)\b|\bpa(y|id|yment)( off)? (my |the )?(visa|mastercard|amex|discover|capital one|chase|citi|credit card|card)\b/, 'cc_payment'],
+  [/\b(debt payoff|pay off debt|payoff payment|extra (debt|loan) payment|loan payoff)\b/, 'debt_payment'],
   [/\b(savings|invest|investing|investment|401k|ira|roth|brokerage|robinhood|fidelity|vanguard|schwab|hysa|emergency fund)\b/, 'savings'],
   [/\b(transfer|transferred|move money|moved money|zelle to me|venmo to bank)\b/, 'transfer'],
 ];

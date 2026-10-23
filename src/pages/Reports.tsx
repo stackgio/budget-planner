@@ -10,6 +10,7 @@ import { BarChart } from '../components/BarChart';
 import { Progress, Segmented, StatusChip } from '../components/ui';
 import { ChevronLeft, ChevronRight } from '../components/Icons';
 import { TxnRow } from '../components/TxnRow';
+import { targetsFor } from '../lib/budget';
 
 type PeriodKind = 'month' | 'pay' | 'week';
 
@@ -243,7 +244,11 @@ function overallBudget(data: ReturnType<typeof useStore>['data'], period: Report
   if (period.kind === 'pay') {
     if (s.budgetMode === 'biweekly' && s.customBudgetCents > 0) return { label: '2-week budget', spent, budget: s.customBudgetCents };
     const p = data.paychecks.find((x) => paycheckRange(x).start === period.range.start);
-    if (p) return { label: 'Spending allowance', spent, budget: p.allowanceCents };
+    if (p) {
+      // Consumption spending comes out of the Needs and Guilt-Free buckets.
+      const t = targetsFor(p);
+      return { label: 'Needs + Guilt-Free budget', spent, budget: t.needs + t.fun };
+    }
   }
   if (period.kind === 'month' && s.budgetMode === 'monthly' && s.customBudgetCents > 0) return { label: 'Monthly budget', spent, budget: s.customBudgetCents };
   return null;

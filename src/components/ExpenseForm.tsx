@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
-import type { NeedWant, Transaction, TxnKind } from '../lib/types';
-import { KIND_HELP, KIND_LABELS } from '../lib/types';
+import type { Bucket, NeedWant, Transaction, TransferAllocation, TxnKind } from '../lib/types';
+import { BUCKET_LABELS, BUCKETS, KIND_HELP, KIND_LABELS } from '../lib/types';
 import { centsToInput, formatCents, parseCents } from '../lib/money';
 import { addDays, formatDay } from '../lib/dates';
 import { recentDescriptions, suggest } from '../lib/suggest';
@@ -8,10 +8,13 @@ import { findDuplicate, refundedAmount } from '../lib/ledger';
 import { addTransaction, deleteTransaction, restoreTransaction, updateTransaction, ValidationError, type TxnDraft } from '../lib/ops';
 import { useStore } from '../store';
 import { ConfirmDialog, Segmented, Sheet } from './ui';
+import { linesForDate, paycheckFor, paycheckView, resolveTxn, suggestBudget } from '../lib/budget';
+import { BucketPicker, money } from './budget/parts';
 
 export type FormTarget = { mode: 'new' } | { mode: 'edit'; txn: Transaction } | { mode: 'refund'; of: Transaction };
 
-const KINDS: TxnKind[] = ['expense', 'refund', 'cc_payment', 'transfer', 'savings', 'uncle'];
+const KINDS: TxnKind[] = ['expense', 'refund', 'cc_payment', 'transfer', 'savings', 'debt_payment', 'uncle'];
+const ACCOUNTS = ['Main Checking', 'Bills Checking', 'Savings'];
 
 export function ExpenseSheet({ target, onClose, onSwitch }: { target: FormTarget; onClose: () => void; onSwitch: (t: FormTarget) => void }) {
   const { data, today, apply } = useStore();
@@ -37,6 +40,16 @@ export function ExpenseSheet({ target, onClose, onSwitch }: { target: FormTarget
   const [confirmDuplicate, setConfirmDuplicate] = useState<Transaction | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(!editing && !refundSource);
+  const [bucket, setBucket] = useState<Bucket | null>(editing?.bucket ?? null);
+  const [bucketTouched, setBucketTouched] = useState(!!editing?.bucket);
+  const [planLineId, setPlanLineId] = useState<string | null>(editing?.planLineId ?? null);
+  const [lineTouched, setLineTouched] = useState(!!editing);
+  const [debtId, setDebtId] = useState<string | null>(editing?.debtId ?? data.budget.debtPayoff.debtId ?? null);
+  const [fromAccount, setFromAccount] = useState(editing?.transfer?.fromAccount ?? '');
+  const [toAccount, setToAccount] = useState(editing?.transfer?.toAccount ?? '');
+  const [allocations, setAllocations] = useState<Array<{ label: string; amount: string; planLineId: string | null }>>(
+    editing?.transfer?.allocations.map((a) => ({ label: a.label, amount: centsToInput(a.amountCents), planLineId: a.planLineId })) ?? [],
+  );
   const amountRef = useRef<HTMLInputElement>(null);
 
   const suggestion = useMemo(() => suggest(data, description), [data, description]);
@@ -45,6 +58,20 @@ export function ExpenseSheet({ target, onClose, onSwitch }: { target: FormTarget
   const effectivePayment = paymentTouched ? paymentMethod : suggestion.paymentMethod;
   const effectiveNeed = needTouched ? needWant : suggestion.needWant;
   const isSpending = effectiveKind === 'expense' || (effectiveKind === 'refund' && !refundOf);
+  const budgetable = isSpending || effectiveKind === 'savings' || effectiveKind === 'debt_payment';
+  const budgetSuggestion = useMemo(
+    () => suggestBudget(data, { kind: effectiveKind, description, categoryId: effectiveCategory, date }),
+    [data, effectiveKind, description, effectiveCategory, date],
+  );
+  const effectiveLine = lineTouched ? planLineId : budgetSuggestion.planLineId;
+  const lineOptions = useMemo(() => {
+    const all = linesForDate(data, date);
+    if (effectiveKind === 'savings') return all.filter((l) => l.type === 'contribution' && l.goal !== 'debt');
+    if (effectiveKind === 'debt_payment') return all.filter((l) => l.type === 'contribution' && l.goal === 'debt');
+    return all.filter((l) => l.type !== 'contribution');
+  }, [data, date, effectiveKind]);
+  const chosenLine = lineOptions.find((l) => l.id === effectiveLine) ?? null;
+  const effectiveBucket: Bucket | null = bucketTouched ? bucket : chosenLine?.bucket ?? budgetSuggestion.bucket;
 
   const recents = useMemo(() => (showSuggestions ? recentDescriptions(data, description, 8) : []), [data, description, showSuggestions]);
   const categories = data.categories.filter((c) => !c.archived || c.id === effectiveCategory);
@@ -74,8 +101,40 @@ export function ExpenseSheet({ target, onClose, onSwitch }: { target: FormTarget
       needWant: isSpending || effectiveKind === 'refund' ? effectiveNeed : null,
       notes,
       refundOf: effectiveKind === 'refund' ? refundOf : null,
+      // Only store a bucket you chose (or for savings, where it decides Investing vs Goals);
+      // otherwise it follows the line / category so fixing a category fixes its entries.
+      bucket: effectiveKind === 'savings' ? effectiveBucket : isSpending && bucketTouched ? bucket : null,
+      planLineId: budgetable && chosenLine ? chosenLine.id : null,
+      debtId: effectiveKind === 'debt_payment' ? debtId : null,
+      transfer: effectiveKind === 'transfer' ? {
+        fromAccount,
+        toAccount,
+        allocations: allocations.map((a): TransferAllocation => ({ label: a.label, amountCents: parseCents(a.amount) ?? -1, planLineId: a.planLineId })),
+      } : null,
     };
   }
+
+  /** What's left in the entry's bucket for its pay period once it's saved — computed on a copy, never saved. */
+  const preview = useMemo(() => {
+    const draft = (() => {
+      const cents = parseCents(amount);
+      if (!budgetable || !description.trim() || !cents) return null;
+      return { kind: effectiveKind, description, amountCents: cents, date, categoryId: effectiveCategory, refundOf: effectiveKind === 'refund' ? refundOf : null,
+        bucket: effectiveKind === 'savings' ? effectiveBucket : isSpending && bucketTouched ? bucket : null, planLineId: chosenLine?.id ?? null, debtId };
+    })();
+    const p = paycheckFor(data, date);
+    if (!draft || !p) return null;
+    try {
+      const next = editing ? updateTransaction(data, editing.id, draft) : addTransaction(data, draft).data;
+      const txn = editing ? next.transactions.find((t) => t.id === editing.id)! : next.transactions[next.transactions.length - 1];
+      const r = resolveTxn(next, txn);
+      if (!r) return null;
+      const s = paycheckView(next, next.paychecks.find((x) => x.id === p.id)!).buckets[r.bucket];
+      return { bucket: r.bucket, remaining: s.remaining, flow: r.flow };
+    } catch {
+      return null;
+    }
+  }, [data, amount, budgetable, description, effectiveKind, date, effectiveCategory, refundOf, effectiveBucket, isSpending, bucketTouched, bucket, chosenLine, debtId, editing]);
 
   function save(skipDuplicateCheck = false) {
     setError(null);
@@ -91,8 +150,9 @@ export function ExpenseSheet({ target, onClose, onSwitch }: { target: FormTarget
         apply((d) => updateTransaction(d, editing.id, draft), { toast: 'Changes saved' });
       } else {
         const { txn } = addTransaction(data, draft);
+        const left = preview ? ` · ${BUCKET_LABELS[preview.bucket]} ${preview.remaining >= 0 ? `${formatCents(preview.remaining)} left` : `${formatCents(-preview.remaining)} over`}` : '';
         apply((d) => ({ ...d, transactions: [...d.transactions, txn] }), {
-          toast: `Saved ${txn.description} · ${formatCents(txn.amountCents)}`,
+          toast: `Saved ${txn.description} · ${formatCents(txn.amountCents)}${left}`,
           undo: (d) => deleteTransaction(d, txn.id),
         });
       }
@@ -244,6 +304,66 @@ export function ExpenseSheet({ target, onClose, onSwitch }: { target: FormTarget
               ))}
             </select>
           </label>
+        )}
+
+        {budgetable && (
+          <div className="field">
+            <div className="row between">
+              <span className="small muted" style={{ fontWeight: 600 }}>{effectiveKind === 'expense' || effectiveKind === 'refund' ? 'Counts toward' : effectiveKind === 'savings' ? 'Goes to' : 'Counts toward Goals · debt payoff'}</span>
+              {preview && (
+                <span className="small num" style={{ color: preview.remaining < 0 ? 'var(--over)' : 'var(--text-2)' }}>
+                  {BUCKET_LABELS[preview.bucket]}: {preview.remaining >= 0 ? `${formatCents(preview.remaining)} left after this` : `${money(preview.remaining)} after this`}
+                </span>
+              )}
+            </div>
+            {effectiveKind !== 'debt_payment' && (!refundOf || effectiveKind !== 'refund') && (
+              <BucketPicker
+                value={effectiveBucket}
+                options={effectiveKind === 'savings' ? (['investing', 'goals'] as const) : BUCKETS}
+                onChange={(b) => { setBucket(b); setBucketTouched(true); }}
+              />
+            )}
+            {effectiveKind === 'debt_payment' && data.debts.some((d) => !d.archived) && (
+              <select className="input" aria-label="Which debt" value={debtId ?? ''} onChange={(e) => setDebtId(e.target.value || null)}>
+                <option value="">Not linked to a debt</option>
+                {data.debts.filter((d) => !d.archived || d.id === debtId).map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+              </select>
+            )}
+            {lineOptions.length > 0 && (!refundOf || effectiveKind !== 'refund') && (
+              <select className="input" aria-label="Budget line" value={chosenLine?.id ?? ''} onChange={(e) => { setPlanLineId(e.target.value || null); setLineTouched(true); }}>
+                <option value="">{effectiveKind === 'savings' ? 'No specific goal' : 'No budget line'}</option>
+                {lineOptions.map((l) => <option key={l.id} value={l.id}>{l.name} · {BUCKET_LABELS[l.bucket]}</option>)}
+              </select>
+            )}
+          </div>
+        )}
+
+        {effectiveKind === 'transfer' && (
+          <div className="stack">
+            <div className="grid-2">
+              <label className="field"><span>From account</span><input className="input" list="accounts" value={fromAccount} maxLength={40} onChange={(e) => setFromAccount(e.target.value)} placeholder="Main Checking" /></label>
+              <label className="field"><span>To account</span><input className="input" list="accounts" value={toAccount} maxLength={40} onChange={(e) => setToAccount(e.target.value)} placeholder="Bills Checking" /></label>
+            </div>
+            <datalist id="accounts">{ACCOUNTS.map((a) => <option key={a} value={a} />)}</datalist>
+            <div className="field">
+              <span>Set aside for (optional)</span>
+              {allocations.map((a, i) => (
+                <div key={i} className="row" style={{ gap: 6 }}>
+                  <input className="input grow" aria-label={`Set-aside ${i + 1} name`} value={a.label} placeholder="Capital One" maxLength={60} onChange={(e) => setAllocations(allocations.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))} />
+                  <input className="input num" style={{ width: 96 }} aria-label={`Set-aside ${i + 1} amount`} inputMode="decimal" value={a.amount} placeholder="0.00" onChange={(e) => setAllocations(allocations.map((x, j) => (j === i ? { ...x, amount: e.target.value.replace(/[^\d.,$]/g, '') } : x)))} />
+                  <button type="button" className="icon-btn" aria-label={`Remove set-aside ${i + 1}`} onClick={() => setAllocations(allocations.filter((_, j) => j !== i))}>✕</button>
+                </div>
+              ))}
+              {allocations.map((a, i) => linesForDate(data, date).some((l) => l.type === 'bill') && (
+                <select key={`l${i}`} className="input" aria-label={`Set-aside ${i + 1} budget line`} value={a.planLineId ?? ''} onChange={(e) => setAllocations(allocations.map((x, j) => (j === i ? { ...x, planLineId: e.target.value || null } : x)))}>
+                  <option value="">{a.label || `Set-aside ${i + 1}`}: not a budget bill</option>
+                  {linesForDate(data, date).filter((l) => l.type === 'bill').map((l) => <option key={l.id} value={l.id}>{a.label || `Set-aside ${i + 1}`} → {l.name}</option>)}
+                </select>
+              ))}
+              <button type="button" className="link" style={{ alignSelf: 'flex-start' }} onClick={() => setAllocations([...allocations, { label: '', amount: '', planLineId: null }])}>+ Add set-aside</button>
+              <span className="small faint" style={{ fontWeight: 400 }}>Earmarks only — the transfer and its set-asides never count as spending. Bills stay reserved until you record the actual payment.</span>
+            </div>
+          </div>
         )}
 
         <details className="more" open={!!editing && (!!editing.notes || editing.kind !== 'expense')}>

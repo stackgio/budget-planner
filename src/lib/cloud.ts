@@ -4,9 +4,11 @@
  * (`data/users/<id>/…`), which nobody else can read — not even other people
  * the artifact is shared with. It follows the signed-in person across devices.
  *
- * Layout: one `meta` document (categories, paychecks, settings) plus
+ * Layout: one `meta` document (categories, settings, budget plan, debts),
+ * paychecks bucketed by year (`pay.YYYY`, each carries its frozen plan), and
  * transaction documents bucketed by month (chunked to stay well under the
- * 256 KiB document limit). Only buckets that changed are written.
+ * 256 KiB document limit). Only buckets that changed are written. Older
+ * accounts kept paychecks inside `meta`; those are still read.
  */
 import type { AppData, Transaction } from './types';
 import { sanitizeData } from './backup';
@@ -45,7 +47,14 @@ function bucketKey(t: Transaction): string {
 
 function toDocs(data: AppData): Map<string, Record<string, unknown>> {
   const docs = new Map<string, Record<string, unknown>>();
-  docs.set('meta', { schemaVersion: 1, categories: data.categories, paychecks: data.paychecks, settings: data.settings });
+  docs.set('meta', { schemaVersion: data.schemaVersion, categories: data.categories, settings: data.settings, budget: data.budget, debts: data.debts });
+  const byYear = new Map<string, AppData['paychecks']>();
+  for (const p of data.paychecks) {
+    const y = p.date.slice(0, 4);
+    if (!byYear.has(y)) byYear.set(y, []);
+    byYear.get(y)!.push(p);
+  }
+  for (const [y, list] of byYear) docs.set(`pay.${y}`, { paychecks: [...list].sort((a, b) => a.id.localeCompare(b.id)) });
   const byMonth = new Map<string, Transaction[]>();
   for (const t of data.transactions) {
     const k = bucketKey(t);
@@ -61,8 +70,12 @@ function toDocs(data: AppData): Map<string, Record<string, unknown>> {
 
 function assemble(meta: Record<string, unknown> | undefined, buckets: Iterable<Record<string, unknown>>): AppData {
   const transactions: unknown[] = [];
-  for (const b of buckets) if (Array.isArray(b.transactions)) transactions.push(...b.transactions);
-  return sanitizeData({ ...(meta ?? {}), transactions }).data;
+  const paychecks: unknown[] = Array.isArray(meta?.paychecks) ? [...meta.paychecks] : [];
+  for (const b of buckets) {
+    if (Array.isArray(b.transactions)) transactions.push(...b.transactions);
+    if (Array.isArray(b.paychecks)) paychecks.push(...b.paychecks);
+  }
+  return sanitizeData({ ...(meta ?? {}), paychecks, transactions }).data;
 }
 
 export async function connectCloud(): Promise<Cloud | null> {

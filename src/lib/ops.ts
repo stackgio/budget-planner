@@ -2,8 +2,9 @@
  * Immutable state transitions. Each returns a new AppData or throws a
  * ValidationError with a message suitable for showing to the user.
  */
-import type { AppData, Category, Paycheck, Settings, Transaction, TxnKind } from './types';
-import { isISODate } from './dates';
+import type { AppData, Bucket, Category, Paycheck, Settings, Transaction, TransferInfo, TxnKind } from './types';
+import { BUCKETS } from './types';
+import { addDays, isISODate } from './dates';
 import { newId, slugify } from './ids';
 import { refundedAmount } from './ledger';
 import { OTHER_CATEGORY_ID } from './defaults';
@@ -21,7 +22,28 @@ export type TxnDraft = {
   needWant?: Transaction['needWant'];
   notes?: string;
   refundOf?: string | null;
+  bucket?: Bucket | null;
+  planLineId?: string | null;
+  debtId?: string | null;
+  transfer?: TransferInfo | null;
 };
+
+function cleanTransfer(t: TransferInfo | null | undefined, amountCents: number): TransferInfo | null {
+  if (!t) return null;
+  const fromAccount = t.fromAccount.trim().slice(0, 40);
+  const toAccount = t.toAccount.trim().slice(0, 40);
+  const allocations = t.allocations
+    .map((a) => ({ label: a.label.trim().slice(0, 60), amountCents: a.amountCents, planLineId: a.planLineId || null }))
+    .filter((a) => a.label || a.amountCents);
+  for (const a of allocations) {
+    if (!a.label) throw new ValidationError('Give each set-aside a name, like "Capital One".');
+    if (!Number.isSafeInteger(a.amountCents) || a.amountCents <= 0) throw new ValidationError('Each set-aside needs an amount greater than $0.');
+  }
+  const total = allocations.reduce((s, a) => s + a.amountCents, 0);
+  if (total > amountCents) throw new ValidationError(`Set-asides add up to ${formatCents(total)}, more than the ${formatCents(amountCents)} transfer.`);
+  if (!fromAccount && !toAccount && !allocations.length) return null;
+  return { fromAccount, toAccount, allocations };
+}
 
 const nowStamp = () => new Date().toISOString();
 
@@ -38,6 +60,11 @@ function normalizeTxn(data: AppData, draft: TxnDraft, existing?: Transaction): T
   let categoryId: string | null = null;
   let refundOf: string | null = null;
   let needWant = draft.needWant ?? null;
+  let bucket: Bucket | null = draft.bucket ?? null;
+  let planLineId: string | null = draft.planLineId || null;
+  let debtId: string | null = null;
+  let transfer: TransferInfo | null = null;
+  if (bucket && !BUCKETS.includes(bucket)) throw new ValidationError('Pick a budget bucket.');
 
   if (draft.kind === 'expense') {
     categoryId = draft.categoryId ?? OTHER_CATEGORY_ID;
@@ -55,12 +82,25 @@ function normalizeTxn(data: AppData, draft: TxnDraft, existing?: Transaction): T
       // A refund always reduces the original purchase's category.
       categoryId = original.categoryId;
       needWant = original.needWant;
+      bucket = original.bucket;
+      planLineId = original.planLineId;
     } else {
       categoryId = draft.categoryId ?? OTHER_CATEGORY_ID;
       if (!data.categories.some((c) => c.id === categoryId)) throw new ValidationError('Pick a category.');
     }
   } else {
     needWant = null;
+    if (draft.kind === 'savings') {
+      if (bucket && bucket !== 'investing' && bucket !== 'goals') throw new ValidationError('Savings go to Investing or Goals.');
+    } else if (draft.kind === 'debt_payment') {
+      bucket = null;
+      debtId = draft.debtId || null;
+      if (debtId && !data.debts.some((d) => d.id === debtId)) throw new ValidationError('That debt was not found.');
+    } else {
+      bucket = null;
+      planLineId = null;
+      if (draft.kind === 'transfer') transfer = cleanTransfer(draft.transfer, draft.amountCents);
+    }
   }
 
   const stamp = nowStamp();
@@ -78,6 +118,10 @@ function normalizeTxn(data: AppData, draft: TxnDraft, existing?: Transaction): T
     createdAt: existing?.createdAt ?? stamp,
     updatedAt: stamp,
     deletedAt: existing?.deletedAt ?? null,
+    bucket,
+    planLineId,
+    debtId,
+    transfer,
   };
 }
 
@@ -99,8 +143,8 @@ export function updateTransaction(data: AppData, id: string, draft: TxnDraft): A
   // Keep linked refunds in the same category as their purchase.
   const transactions = data.transactions.map((t) => {
     if (t.id === id) return updated;
-    if (t.kind === 'refund' && t.refundOf === id && t.categoryId !== updated.categoryId) {
-      return { ...t, categoryId: updated.categoryId, needWant: updated.needWant, updatedAt: updated.updatedAt };
+    if (t.kind === 'refund' && t.refundOf === id && (t.categoryId !== updated.categoryId || t.bucket !== updated.bucket || t.planLineId !== updated.planLineId)) {
+      return { ...t, categoryId: updated.categoryId, needWant: updated.needWant, bucket: updated.bucket, planLineId: updated.planLineId, updatedAt: updated.updatedAt };
     }
     return t;
   });
@@ -147,7 +191,7 @@ export function purgeTransaction(data: AppData, id: string): AppData {
 
 // ---------- categories ----------
 
-export function addCategory(data: AppData, name: string, emoji = '🏷️', budgetCents: number | null = null): AppData {
+export function addCategory(data: AppData, name: string, emoji = '🏷️', budgetCents: number | null = null, bucket: Bucket = 'fun'): AppData {
   const trimmed = name.trim();
   if (!trimmed) throw new ValidationError('Give the category a name.');
   if (data.categories.some((c) => c.name.toLowerCase() === trimmed.toLowerCase() && !c.archived)) {
@@ -155,7 +199,8 @@ export function addCategory(data: AppData, name: string, emoji = '🏷️', budg
   }
   let id = slugify(trimmed);
   while (data.categories.some((c) => c.id === id)) id = `${slugify(trimmed)}-${newId().slice(0, 4)}`;
-  const category: Category = { id, name: trimmed, emoji: emoji || '🏷️', budgetCents, archived: false };
+  if (!BUCKETS.includes(bucket)) throw new ValidationError('Pick a budget bucket.');
+  const category: Category = { id, name: trimmed, emoji: emoji || '🏷️', budgetCents, archived: false, bucket };
   return { ...data, categories: [...data.categories, category] };
 }
 
@@ -171,6 +216,7 @@ export function updateCategory(data: AppData, id: string, patch: Partial<Omit<Ca
   if (patch.budgetCents !== undefined && patch.budgetCents !== null && (!Number.isSafeInteger(patch.budgetCents) || patch.budgetCents < 0)) {
     throw new ValidationError('Budget must be $0 or more.');
   }
+  if (patch.bucket !== undefined && !BUCKETS.includes(patch.bucket)) throw new ValidationError('Pick a budget bucket.');
   if (patch.archived && id === OTHER_CATEGORY_ID) throw new ValidationError('"Other" is always kept as a fallback.');
   return { ...data, categories: data.categories.map((c) => (c.id === id ? { ...c, ...patch } : c)) };
 }
@@ -185,7 +231,9 @@ export function removeCategory(data: AppData, id: string): AppData {
 
 // ---------- paychecks ----------
 
-export type PaycheckDraft = Omit<Paycheck, 'id'>;
+/** Older paycheck shape (allowance + reserved). Budget fields are filled in when missing. */
+export type PaycheckDraft = Omit<Paycheck, 'id' | 'periodStart' | 'periodEnd' | 'overtimeCents' | 'plan'> &
+  Partial<Pick<Paycheck, 'periodStart' | 'periodEnd' | 'overtimeCents' | 'plan'>>;
 
 export function validatePaycheck(p: PaycheckDraft): void {
   if (!isISODate(p.date)) throw new ValidationError('Pick the paycheck date.');
@@ -202,8 +250,16 @@ export function validatePaycheck(p: PaycheckDraft): void {
 
 export function savePaycheck(data: AppData, draft: PaycheckDraft, id?: string): AppData {
   validatePaycheck(draft);
-  if (id) return { ...data, paychecks: data.paychecks.map((p) => (p.id === id ? { ...draft, id } : p)) };
-  return { ...data, paychecks: [...data.paychecks, { ...draft, id: newId() }] };
+  const existing = id ? data.paychecks.find((p) => p.id === id) : undefined;
+  const full: Omit<Paycheck, 'id'> = {
+    ...draft,
+    periodStart: draft.periodStart ?? draft.date,
+    periodEnd: draft.periodEnd ?? addDays(draft.nextPayday, -1),
+    overtimeCents: draft.overtimeCents ?? 0,
+    plan: draft.plan ?? existing?.plan ?? { percents: { ...data.budget.percents }, lines: data.budget.lines.map((l) => ({ ...l })), debtPayoff: { ...data.budget.debtPayoff }, settledLineIds: [] },
+  };
+  if (id) return { ...data, paychecks: data.paychecks.map((p) => (p.id === id ? { ...full, id } : p)) };
+  return { ...data, paychecks: [...data.paychecks, { ...full, id: newId() }] };
 }
 
 export function deletePaycheck(data: AppData, id: string): AppData {
