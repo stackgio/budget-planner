@@ -36,7 +36,13 @@ export function App() {
   }, [recovered, toast]);
 
   const go = useCallback((t: Tab) => {
-    window.location.hash = `/${t}`;
+    // Plain #tokens so a view can be linked; settings stays out of the URL.
+    try {
+      if (t === 'settings') history.replaceState(null, '', window.location.pathname + window.location.search);
+      else window.location.hash = t;
+    } catch {
+      // some embedded views refuse URL changes; the tab still switches
+    }
     setTab(t);
     window.scrollTo({ top: 0 });
   }, []);

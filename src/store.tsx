@@ -3,6 +3,12 @@ import type { AppData } from './lib/types';
 import { loadData, requestPersistentStorage, saveData } from './lib/storage';
 import { todayISO } from './lib/dates';
 import { ValidationError } from './lib/ops';
+import { mergeData } from './lib/backup';
+import { connectCloud, type Cloud } from './lib/cloud';
+import { IS_ARTIFACT } from './platform';
+
+/** Where data is being kept, for the artifact build. */
+export type CloudState = 'off' | 'connecting' | 'saving' | 'saved' | 'unavailable' | 'error';
 
 export interface Toast {
   id: number;
@@ -22,6 +28,8 @@ interface StoreValue {
   saveError: string | null;
   persisted: boolean | null;
   recovered: boolean;
+  cloud: CloudState;
+  cloudMessage: string | null;
 }
 
 const StoreContext = createContext<StoreValue | null>(null);
@@ -60,9 +68,70 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const nextToast = useRef(1);
   const today = useToday();
+  const [cloud, setCloud] = useState<CloudState>(IS_ARTIFACT ? 'connecting' : 'off');
+  const [cloudMessage, setCloudMessage] = useState<string | null>(null);
+  const cloudRef = useRef<Cloud | null>(null);
+  const changedBeforeCloud = useRef(false);
+
+  const saveLocal = useCallback((next: AppData) => {
+    try {
+      saveData(browserStore, next);
+      setSaveError(null);
+    } catch (e) {
+      // In the artifact build the account copy is the real one; the browser copy is a cache.
+      if (IS_ARTIFACT && cloudRef.current) return;
+      setSaveError(
+        e instanceof DOMException && e.name === 'QuotaExceededError'
+          ? 'Storage is full — your latest change was not saved. Export a backup now.'
+          : 'Your latest change could not be saved on this device. Export a backup now.',
+      );
+    }
+  }, []);
 
   useEffect(() => {
-    requestPersistentStorage().then(setPersisted);
+    if (!IS_ARTIFACT) return;
+    let off: (() => void) | undefined;
+    let cancelled = false;
+    connectCloud()
+      .then(async (c) => {
+        if (cancelled) return;
+        if (!c) {
+          setCloud('unavailable');
+          return;
+        }
+        c.onStatus((st, msg) => {
+          setCloud(st);
+          setCloudMessage(msg ?? null);
+        });
+        const remote = await c.load();
+        if (cancelled) return;
+        let next = dataRef.current;
+        let upload = true;
+        if (remote) {
+          next = changedBeforeCloud.current ? mergeData(remote, dataRef.current).data : remote;
+          upload = changedBeforeCloud.current;
+        }
+        cloudRef.current = c;
+        dataRef.current = next;
+        setData(next);
+        saveLocal(next);
+        if (upload) c.save(next);
+        else setCloud('saved');
+        off = c.subscribe((fresh) => {
+          dataRef.current = fresh;
+          setData(fresh);
+          saveLocal(fresh);
+        });
+      })
+      .catch(() => !cancelled && setCloud('unavailable'));
+    return () => {
+      cancelled = true;
+      off?.();
+    };
+  }, [saveLocal]);
+
+  useEffect(() => {
+    if (!IS_ARTIFACT) requestPersistentStorage().then(setPersisted);
   }, []);
 
   // Reload if another tab changed the data.
@@ -89,20 +158,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     [dismissToast],
   );
 
-  const commit = useCallback((next: AppData) => {
-    dataRef.current = next;
-    setData(next);
-    try {
-      saveData(browserStore, next);
-      setSaveError(null);
-    } catch (e) {
-      setSaveError(
-        e instanceof DOMException && e.name === 'QuotaExceededError'
-          ? 'Storage is full — your latest change was not saved. Export a backup now.'
-          : 'Your latest change could not be saved on this device. Export a backup now.',
-      );
-    }
-  }, []);
+  const commit = useCallback(
+    (next: AppData) => {
+      dataRef.current = next;
+      setData(next);
+      saveLocal(next);
+      if (cloudRef.current) cloudRef.current.save(next);
+      else changedBeforeCloud.current = true;
+    },
+    [saveLocal],
+  );
 
   const apply: StoreValue['apply'] = useCallback<StoreValue['apply']>(
     (fn, opts) => {
@@ -124,8 +189,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo<StoreValue>(
-    () => ({ data, today, apply, toast, toasts, dismissToast, saveError, persisted, recovered: initial?.recovered ?? false }),
-    [data, today, apply, toast, toasts, dismissToast, saveError, persisted, initial],
+    () => ({ data, today, apply, toast, toasts, dismissToast, saveError, persisted, recovered: initial?.recovered ?? false, cloud, cloudMessage }),
+    [data, today, apply, toast, toasts, dismissToast, saveError, persisted, initial, cloud, cloudMessage],
   );
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

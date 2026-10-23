@@ -28,6 +28,14 @@ category is suggested (from your previous entries first, then keyword rules) —
 - **Export a backup regularly** (Settings → Export backup) and save it to Files / iCloud Drive.
 - Privacy: no analytics, no third-party scripts, a strict Content-Security-Policy, and CSV exports are protected against spreadsheet formula injection.
 
+## claude.ai Artifact version
+
+`node scripts/build-artifact.mjs out.html` builds a single-file version for publishing as a claude.ai Artifact.
+In that build, data is saved to the signed-in person's private space in the artifact's database
+(`data/users/<id>/…`, readable only by that person), so it follows them across devices. The browser copy is
+only a cache. Exports use the viewer's download prompt. If account storage isn't available (e.g. signed out),
+the app says "This browser only" and keeps data in the browser. Deleting the artifact deletes its data.
+
 ## Run it
 
 ```bash

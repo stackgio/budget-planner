@@ -9,9 +9,10 @@ import { TxnRow } from '../components/TxnRow';
 import { GearIcon, PlusIcon } from '../components/Icons';
 import type { Transaction } from '../lib/types';
 import type { Tab } from '../App';
+import { IS_ARTIFACT } from '../platform';
 
 export function Home({ onAdd, onOpen, go }: { onAdd: () => void; onOpen: (t: Transaction) => void; go: (t: Tab) => void }) {
-  const { data, today } = useStore();
+  const { data, today, cloud } = useStore();
 
   const stats = useMemo(() => {
     const month = monthRange(today);
@@ -47,9 +48,12 @@ export function Home({ onAdd, onOpen, go }: { onAdd: () => void; onOpen: (t: Tra
           <div className="brand-mark" aria-hidden>$</div>
           <h1>Spend Smarter</h1>
         </div>
-        <button className="icon-btn" aria-label="Settings & backups" onClick={() => go('settings')}>
-          <GearIcon />
-        </button>
+        <div className="row" style={{ gap: 8 }}>
+          {IS_ARTIFACT && <SyncBadge state={cloud} onClick={() => go('settings')} />}
+          <button className="icon-btn" aria-label="Settings & backups" onClick={() => go('settings')}>
+            <GearIcon />
+          </button>
+        </div>
       </header>
 
       <section className="card" aria-label="Spending budget">
@@ -158,5 +162,16 @@ export function Home({ onAdd, onOpen, go }: { onAdd: () => void; onOpen: (t: Tra
         </div>
       )}
     </>
+  );
+}
+
+function SyncBadge({ state, onClick }: { state: string; onClick: () => void }) {
+  const label =
+    state === 'saved' ? 'Saved' : state === 'saving' ? 'Saving…' : state === 'connecting' ? 'Connecting…' : state === 'error' ? 'Not saved' : 'This browser only';
+  const tone = state === 'saved' || state === 'saving' ? 'ok' : state === 'connecting' ? '' : 'near';
+  return (
+    <button className={`chip-status ${tone}`} style={{ border: 0, minHeight: 32 }} onClick={onClick} aria-label={`Storage: ${label}`}>
+      {state === 'saved' ? '✓ ' : ''}{label}
+    </button>
   );
 }

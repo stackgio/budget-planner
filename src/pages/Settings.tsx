@@ -8,14 +8,20 @@ import { centsToInput, parseCents } from '../lib/money';
 import { ConfirmDialog, Segmented } from '../components/ui';
 import { ChevronLeft } from '../components/Icons';
 import type { AppData } from '../lib/types';
+import { IS_ARTIFACT } from '../platform';
+import { artifactDownload } from '../lib/cloud';
 
-async function deliverFile(name: string, mime: string, content: string, share: boolean) {
+async function deliverFile(name: string, mime: string, content: string, share: boolean): Promise<string | null> {
+  if (IS_ARTIFACT) {
+    const r = await artifactDownload(name, content);
+    return r === 'unavailable' ? 'Saving files isn\'t available in this view. Open the app in claude.ai and try again.' : null;
+  }
   const blob = new Blob([content], { type: mime });
   if (share) {
     const file = new File([blob], name, { type: mime });
     if (navigator.canShare?.({ files: [file] })) {
       await navigator.share({ files: [file], title: name });
-      return;
+      return null;
     }
   }
   const url = URL.createObjectURL(blob);
@@ -26,25 +32,29 @@ async function deliverFile(name: string, mime: string, content: string, share: b
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 2000);
+  return null;
 }
 
 export function Settings({ onBack }: { onBack: () => void }) {
-  const { data, today, apply, toast, persisted, saveError } = useStore();
+  const { data, today, apply, toast, persisted, saveError, cloud, cloudMessage } = useStore();
   const fileRef = useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState<{ result: MergeResult; replace: AppData; name: string } | null>(null);
   const [confirmErase, setConfirmErase] = useState(false);
   const [confirmReplace, setConfirmReplace] = useState(false);
   const [newMethod, setNewMethod] = useState('');
   const [small, setSmall] = useState(centsToInput(data.settings.smallPurchaseCents));
-  const canShare = typeof navigator !== 'undefined' && !!navigator.canShare;
+  const canShare = !IS_ARTIFACT && typeof navigator !== 'undefined' && !!navigator.canShare;
 
   const active = data.transactions.filter((t) => !t.deletedAt).length;
   const kb = (storageBytes(data) / 1024).toFixed(1);
 
   async function exportFile(kind: 'json' | 'csv', share = false) {
     try {
-      if (kind === 'json') await deliverFile(`spend-smarter-backup-${today}.json`, 'application/json', toBackupJSON(data), share);
-      else await deliverFile(`spend-smarter-${today}.csv`, 'text/csv', toCSV(data), share);
+      const problem =
+        kind === 'json'
+          ? await deliverFile(`spend-smarter-backup-${today}.json`, 'application/json', toBackupJSON(data), share)
+          : await deliverFile(`spend-smarter-${today}.csv`, 'text/csv', toCSV(data), share);
+      if (problem) toast(problem, 'error');
     } catch (e) {
       if ((e as Error).name !== 'AbortError') toast('Export failed. Try again.', 'error');
     }
@@ -77,6 +87,7 @@ export function Settings({ onBack }: { onBack: () => void }) {
 
       {saveError && <div className="banner">{saveError}</div>}
 
+      {IS_ARTIFACT ? <ArtifactStorageCard cloud={cloud} message={cloudMessage} active={active} paychecks={data.paychecks.length} kb={kb} /> : (
       <section className="card">
         <h2 className="card-title">Your data</h2>
         <p style={{ marginTop: 0, lineHeight: 1.5 }}>
@@ -90,6 +101,7 @@ export function Settings({ onBack }: { onBack: () => void }) {
           <li>Export a backup regularly (e.g. every payday) and keep it in Files or iCloud Drive.</li>
         </ul>
       </section>
+      )}
 
       <section className="card stack">
         <h2 className="card-title" style={{ margin: 0 }}>Backup & export</h2>
@@ -151,7 +163,7 @@ export function Settings({ onBack }: { onBack: () => void }) {
         <button className="btn danger block" onClick={() => setConfirmErase(true)}>Erase all data on this device</button>
       </section>
 
-      <p className="center faint small" style={{ marginTop: 18 }}>Spend Smarter · local-only · v1</p>
+      <p className="center faint small" style={{ marginTop: 18 }}>Spend Smarter · {IS_ARTIFACT ? 'account storage' : 'local-only'} · v1</p>
 
       {pending && (
         <ConfirmDialog
@@ -204,5 +216,34 @@ export function Settings({ onBack }: { onBack: () => void }) {
         />
       )}
     </>
+  );
+}
+
+function ArtifactStorageCard({ cloud, message, active, paychecks, kb }: { cloud: string; message: string | null; active: number; paychecks: number; kb: string }) {
+  const account = cloud === 'saved' || cloud === 'saving' || cloud === 'error';
+  return (
+    <section className="card">
+      <h2 className="card-title">Your data</h2>
+      {account ? (
+        <p style={{ marginTop: 0, lineHeight: 1.5 }}>
+          Your entries are saved to <b>your Claude account</b>, in a private space of this app that only you can read. They're there whenever you open this
+          app signed in, on any device.
+        </p>
+      ) : cloud === 'connecting' ? (
+        <p style={{ marginTop: 0, lineHeight: 1.5 }}>Connecting to your account…</p>
+      ) : (
+        <p style={{ marginTop: 0, lineHeight: 1.5 }}>
+          <b>Account storage isn't available in this view</b> (for example when signed out), so entries are kept only in this browser and may be cleared.
+          Open the app in claude.ai while signed in to save to your account.
+        </p>
+      )}
+      {message && <div className="notice over" style={{ marginBottom: 10 }}><span>▲</span><span>{message}</span></div>}
+      <ul className="muted small" style={{ lineHeight: 1.6, paddingLeft: 18 }}>
+        <li>{active} entries · {paychecks} paychecks · {kb} KB</li>
+        <li>People you share this app with can't see your entries; each person gets their own private space.</li>
+        <li>Your data is stored with this app. If the app is deleted from your claude.ai artifacts, the data is deleted with it.</li>
+        <li>Export a backup regularly (e.g. every payday) and keep it somewhere safe.</li>
+      </ul>
+    </section>
   );
 }
