@@ -1,128 +1,121 @@
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
-import {C, FONT_BODY, FONT_HEAD, IN, IN_OUT, OUT, mix, money, p} from '../lib';
+import {BACK, C, FONT_BODY, FONT_HEAD, IN, IN_OUT, OUT, mix, money, p} from '../lib';
 import {T} from '../timing';
-import {Glass, Photo, RevealLine, useT} from '../ui';
-import {Heart, Post} from '../social';
+import {RevealLine, useT} from '../ui';
+import {Heart} from '../social';
+import {POSES, Stickman} from '../stick';
 
-const DEBITS = [
-  {label: 'Auto loan', amt: 940, at: 26.4},
-  {label: 'Pay-later haul', amt: 273, at: 26.9},
-  {label: 'Credit card', amt: 610, at: 27.4},
-  {label: 'Rent', amt: 1050, at: 27.9},
+const BILLS = [
+  {label: 'CAR LOAN', amt: 940, at: 26.4},
+  {label: 'PAY LATER', amt: 273, at: 26.9},
+  {label: 'CREDIT CARD', amt: 610, at: 27.4},
+  {label: 'RENT', amt: 1050, at: 27.9},
 ];
-const START = 2430;
+const START = 2430; // illustrative checking balance
 
-const balanceAt = (t: number) => DEBITS.reduce((b, d) => b - d.amt * p(t, d.at, d.at + 0.3, OUT), START);
+const Panel: React.FC<{x: number; label: string; color: string; children: React.ReactNode}> = ({x, label, color, children}) => (
+  <div style={{position: 'absolute', left: x, top: 470, width: 490, height: 780, borderRadius: 30, background: 'rgba(245,247,245,0.035)', border: `1.5px solid ${C.line}`, overflow: 'hidden'}}>
+    <div style={{position: 'absolute', left: 26, top: 22, fontFamily: FONT_BODY, fontWeight: 900, fontSize: 26, letterSpacing: '0.2em', color}}>{label}</div>
+    {children}
+  </div>
+);
 
-const BalanceCard: React.FC<{t: number}> = ({t}) => {
-  const bal = balanceAt(t);
-  const neg = bal < 0;
-  // sparkline of the balance over the scene
-  const pts = Array.from({length: 40}, (_, i) => {
-    const tt = mix(26.0, Math.max(26.01, Math.min(t, 28.4)), i / 39);
-    return [20 + i * 10.5, 150 - ((balanceAt(tt) + 600) / (START + 600)) * 130];
-  });
-  return (
-    <Glass style={{left: 550, top: 470, width: 490, height: 820, padding: 34, boxSizing: 'border-box'}}>
-      <div style={{fontFamily: FONT_BODY, fontWeight: 800, fontSize: 24, letterSpacing: '0.2em', color: C.gray}}>CHECKING · ILLUSTRATIVE</div>
-      <div
-        style={{
-          fontFamily: FONT_HEAD, fontWeight: 900, fontSize: 92, letterSpacing: '-0.04em', marginTop: 10,
-          color: neg ? C.red : C.white, fontVariantNumeric: 'tabular-nums',
-        }}
-      >
-        {money(bal)}
-      </div>
-      <svg width={430} height={170} style={{marginTop: 4}}>
-        <polyline points={pts.map((q) => q.join(',')).join(' ')} fill="none" stroke={neg ? C.red : C.gray} strokeWidth={5} strokeLinejoin="round" strokeLinecap="round" />
-        <line x1={20} x2={430} y1={150 - (600 / (START + 600)) * 130} y2={150 - (600 / (START + 600)) * 130} stroke="rgba(245,247,245,0.18)" strokeDasharray="6 8" strokeWidth={2} />
-      </svg>
-      <div style={{marginTop: 14}}>
-        {DEBITS.map((d, i) => {
-          const k = p(t, d.at, d.at + 0.3, OUT);
-          return (
-            <div
-              key={i}
-              style={{
-                display: 'flex', justifyContent: 'space-between', padding: '18px 0', borderTop: `1.5px solid ${C.line}`,
-                fontFamily: FONT_BODY, fontSize: 32, opacity: k, transform: `translateX(${(1 - k) * 40}px)`,
-              }}
-            >
-              <span style={{color: C.white, fontWeight: 600}}>{d.label}</span>
-              <span style={{color: C.red, fontWeight: 800, fontVariantNumeric: 'tabular-nums'}}>−${d.amt.toLocaleString('en-US')}</span>
-            </div>
-          );
-        })}
-      </div>
-      {t >= 28.05 && (
-        <div
-          style={{
-            position: 'absolute', left: 34, bottom: 34, padding: '10px 18px', borderRadius: 12, background: C.red, color: '#fff',
-            fontFamily: FONT_BODY, fontWeight: 900, fontSize: 28, letterSpacing: '0.14em', transform: `scale(${mix(1.4, 1, p(t, 28.05, 28.2, OUT))})`,
-          }}
-        >
-          OVERDRAWN
-        </div>
-      )}
-    </Glass>
-  );
-};
-
-// 0:26.0–0:31.0 — split screen: the post vs. the balance; then nobody cares.
+// 0:26.0–0:31.0 — public image vs. private reality; then the audience doesn't care.
 export const S7Trap: React.FC = () => {
   const t = useT();
-  const enter = p(t, 25.95, 26.3, OUT);
-  const toCrowd = p(t, 28.75, 29.1, IN_OUT);
-  const likes = Math.round(mix(1284, 2431, p(t, 26.1, T.approval + 0.3, OUT)));
-  const fadeIcons = 1 - p(t, T.people2, T.people2 + 0.6, IN_OUT);
-  const approvalPulse = 1 + 0.06 * Math.sin(p(t, T.approval, T.approval + 0.35) * Math.PI);
+  const enter = p(t, 25.95, 26.25, OUT);
+  const toCrowd = p(t, 28.7, 29.0, IN_OUT);
   const exit = p(t, 30.8, 31.0, IN);
-
-  // feed scroll in the crowd shot: the post flicks past twice
-  const scroll1 = p(t, 29.15, 29.6, IN_OUT);
-  const scroll2 = p(t, 29.75, 30.2, IN_OUT);
+  const bal = BILLS.reduce((b, d) => b - d.amt * p(t, d.at, d.at + 0.3, OUT), START);
+  const likes = Math.round(mix(1284, 2431, p(t, 26.1, T.approval + 0.3, OUT)));
+  const pulse = 1 + 0.12 * Math.sin(p(t, T.approval, T.approval + 0.35) * Math.PI);
+  const careless = p(t, T.dont - 0.1, T.dont + 0.3, IN_OUT);
 
   return (
     <AbsoluteFill style={{background: C.bg, opacity: enter * (1 - exit)}}>
-      {/* split layout */}
-      <AbsoluteFill style={{opacity: 1 - toCrowd, transform: `translateX(${-toCrowd * 300}px)`}}>
-        <Photo src="man_bags_car.jpg" blur={22} dark={0.78} />
-        <div style={{position: 'absolute', left: 64, top: 214}}>
-          <RevealLine t={t} at={26.05} size={96}>LOOKING RICH</RevealLine>
-          <RevealLine t={t} at={T.look} size={96} color={C.green}>≠ BEING RICH</RevealLine>
-        </div>
-        <div style={{position: 'absolute', left: 40, top: 470, transform: `translateY(${(1 - enter) * 80}px) scale(${approvalPulse})`, transformOrigin: '50% 60%'}}>
-          <Post photo="man_bags_car.jpg" pos="50% 35%" width={490} imgH={560} likes={`${likes.toLocaleString('en-US')} likes`} liked caption="just a regular tuesday 💅" />
-        </div>
-        <BalanceCard t={t} />
-      </AbsoluteFill>
+      <div style={{position: 'absolute', left: 64, top: 206}}>
+        <RevealLine t={t} at={26.02} size={100}>LOOKING RICH</RevealLine>
+        <RevealLine t={t} at={T.look - 0.05} size={100} color={C.green}>≠ BEING RICH</RevealLine>
+      </div>
 
-      {/* the people he's trying to impress */}
-      {toCrowd > 0 && (
-        <AbsoluteFill style={{opacity: toCrowd, transform: `translateX(${(1 - toCrowd) * 300}px)`}}>
-          <Photo src="people_phones.jpg" zoom={mix(1.05, 1.12, p(t, 28.8, 31, IN_OUT))} dark={0.4} pos="40% 50%" />
-          <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(11,13,12,0.75), rgba(11,13,12,0.1) 35%, rgba(11,13,12,0.1) 60%, rgba(11,13,12,0.85))'}} />
-          {[scroll1, scroll2].map((s, i) =>
-            s > 0 && s < 1 ? (
-              <div key={i} style={{position: 'absolute', left: 290, top: mix(1500, -900, s), filter: `blur(${Math.sin(s * Math.PI) * 6}px)`}}>
-                <Post photo="man_bags_car.jpg" pos="50% 35%" width={500} imgH={560} likes="" iconOpacity={fadeIcons} />
-              </div>
-            ) : null,
-          )}
+      {/* split: public vs private */}
+      <AbsoluteFill style={{opacity: 1 - toCrowd, transform: `translateY(${toCrowd * -60}px)`}}>
+        <Panel x={40} label="IN PUBLIC" color={C.green}>
+          <div style={{position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 55%, rgba(54,224,121,0.14), rgba(0,0,0,0) 65%)'}} />
+          <Stickman x={245} y={560} scale={0.82} pose={POSES.flex} face="grin" glasses={1} bags={1} />
           <div
             style={{
-              position: 'absolute', left: 0, right: 0, top: 640, display: 'flex', justifyContent: 'center', opacity: p(t, 30.15, 30.35),
+              position: 'absolute', left: 0, right: 0, bottom: 34, display: 'flex', justifyContent: 'center',
+              transform: `scale(${pulse})`,
             }}
           >
-            <div
-              style={{
-                display: 'flex', alignItems: 'center', gap: 16, padding: '18px 30px', borderRadius: 999, background: 'rgba(11,13,12,0.82)',
-                border: `1.5px solid ${C.line}`, fontFamily: FONT_BODY, fontWeight: 800, fontSize: 38, color: C.gray,
-              }}
-            >
-              <Heart size={44} stroke={C.gray} /> 0 new likes · scrolled past
+            <div style={{display: 'flex', alignItems: 'center', gap: 12, padding: '12px 24px', borderRadius: 999, background: 'rgba(11,13,12,0.85)', fontFamily: FONT_HEAD, fontWeight: 900, fontSize: 44, color: C.white}}>
+              <Heart size={48} fill={C.red} stroke={C.red} /> {likes.toLocaleString('en-US')}
             </div>
+          </div>
+        </Panel>
+        <Panel x={550} label="IN PRIVATE" color={C.red}>
+          <div style={{position: 'absolute', left: 26, top: 70, fontFamily: FONT_BODY, fontWeight: 700, fontSize: 24, color: C.gray}}>Checking (illustrative)</div>
+          <div style={{position: 'absolute', left: 24, top: 100, fontFamily: FONT_HEAD, fontWeight: 900, fontSize: 104, letterSpacing: '-0.045em', color: bal < 0 ? C.red : C.white, fontVariantNumeric: 'tabular-nums'}}>
+            {money(bal)}
+          </div>
+          {/* bills piling up */}
+          {BILLS.map((b, i) => {
+            const k = p(t, b.at, b.at + 0.3, BACK);
+            if (t < b.at) return null;
+            return (
+              <div
+                key={i}
+                style={{
+                  position: 'absolute', left: 30 + (i % 2) * 14, top: mix(120, 260 + i * 70, k), width: 300, padding: '12px 18px', borderRadius: 10,
+                  background: '#F1EEE6', color: '#141614', transform: `rotate(${[-4, 3, -2, 4][i]}deg)`, opacity: Math.min(1, k * 2),
+                  boxShadow: '0 10px 20px rgba(0,0,0,0.45)', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  fontFamily: FONT_BODY, fontWeight: 900, fontSize: 28,
+                }}
+              >
+                <span>{b.label}</span>
+                <span style={{color: C.red, fontSize: 22, letterSpacing: '0.1em'}}>DUE</span>
+              </div>
+            );
+          })}
+          <Stickman x={250} y={650} scale={0.62} pose={POSES.slump} face="frown" sweat={p(t, 27.4, 27.7)} />
+        </Panel>
+      </AbsoluteFill>
+
+      {/* the audience: scrolling, not caring */}
+      {toCrowd > 0 && (
+        <AbsoluteFill style={{opacity: toCrowd}}>
+          <div
+            style={{
+              position: 'absolute', left: 290, top: mix(560, 470, toCrowd) - p(t, 30.1, 30.6, IN) * 160, width: 500, padding: 22, borderRadius: 28,
+              background: '#151917', border: `1.5px solid ${C.line}`, display: 'flex', alignItems: 'center', gap: 20, opacity: 1 - p(t, 30.25, 30.6),
+              boxShadow: '0 30px 60px rgba(0,0,0,0.5)',
+            }}
+          >
+            <div style={{width: 120, height: 120, borderRadius: 20, background: 'rgba(54,224,121,0.12)', position: 'relative', overflow: 'hidden'}}>
+              <Stickman x={60} y={150} scale={0.32} pose={POSES.flex} face="grin" glasses={1} bags={1} />
+            </div>
+            <div style={{fontFamily: FONT_BODY, color: C.white}}>
+              <div style={{fontWeight: 800, fontSize: 30}}>totally.rich</div>
+              <div style={{display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, fontFamily: FONT_HEAD, fontWeight: 900, fontSize: 40, opacity: 1 - careless * 0.7}}>
+                <Heart size={40} fill={careless > 0.5 ? 'none' : C.red} stroke={careless > 0.5 ? C.gray : C.red} />
+                {careless > 0.5 ? <span style={{color: C.gray}}>seen · 0 new</span> : likes.toLocaleString('en-US')}
+              </div>
+            </div>
+          </div>
+          {[0, 1, 2, 3].map((i) => {
+            const turned = i === 1 ? careless : 0;
+            const yawn = i === 2 && t > T.dont + 0.1 && t < T.care + 0.4;
+            return (
+              <Stickman
+                key={i} x={190 + i * 233} y={1090} scale={0.78} pose={POSES.phone} color={C.gray} phone="right"
+                face={yawn ? 'open' : 'flat'} flip={turned > 0.5}
+              />
+            );
+          })}
+          <div style={{position: 'absolute', left: 0, right: 0, top: 680, textAlign: 'center', fontFamily: FONT_BODY, fontWeight: 800, fontSize: 34, letterSpacing: '0.12em', color: C.gray, opacity: p(t, T.probably, T.probably + 0.3)}}>
+            *SCROLLS PAST*
           </div>
         </AbsoluteFill>
       )}

@@ -1,7 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, Img, useCurrentFrame} from 'remotion';
-import {C, FONT_BODY, FONT_HEAD, FPS, IN_OUT, OUT, cut, img, mix, p} from './lib';
-import {CAPTIONS, Cap} from './timing';
+import {C, FONT_BODY, FONT_HEAD, FPS, IN_OUT, OUT, cut, img, p} from './lib';
+import {GROUPS, Group, W as Wd} from './timing';
 
 export const useT = () => useCurrentFrame() / FPS;
 
@@ -117,38 +117,60 @@ export const PriceTag: React.FC<{price: string; label?: string; debt?: number; s
   );
 };
 
-const colorOf = (c?: string) => (c === 'g' ? C.green : c === 'r' ? C.red : C.white);
+/** Caption Y overrides per time window, so subtitles never cover key graphics. */
+const CAPTION_Y: [number, number, number][] = [];
+export const CAPTION_TOP = 1300;
 
-/** Narration captions: phrase-level, gentle rise-in, keyword color only. */
+/**
+ * Word-by-word subtitles. Every spoken word appears; upcoming words in the group are dimmed,
+ * spoken words go full white (or brand green for key phrases) with a small pop as they're said.
+ */
 export const Captions: React.FC = () => {
   const t = useT();
-  const cap = CAPTIONS.find((c: Cap) => t >= c.s - 0.02 && t < c.e + 0.12);
-  if (!cap) return null;
-  const k = p(t, cap.s - 0.02, cap.s + 0.16, OUT);
-  const o = p(t, cap.e - 0.02, cap.e + 0.12, IN_OUT);
+  const idx = GROUPS.findIndex((g: Group, i: number) => {
+    const next = GROUPS[i + 1];
+    const end = Math.min(g.e + 0.1, next ? next.words[0].s - 0.03 : 99);
+    return t >= g.words[0].s - 0.04 && t < end;
+  });
+  if (idx < 0) return null;
+  const grp = GROUPS[idx];
+  const s0 = grp.words[0].s - 0.04;
+  const k = p(t, s0, s0 + 0.12, OUT);
+  const yo = CAPTION_Y.find(([a, b]) => t >= a && t < b);
+  const top = grp.y ?? (yo ? yo[2] : CAPTION_TOP);
   return (
     <div
       style={{
-        position: 'absolute', left: 120, right: 120, top: 1352, textAlign: 'center',
-        opacity: k * (1 - o), transform: `translateY(${(1 - k) * 16}px) scale(${mix(0.97, 1, k)})`,
+        position: 'absolute', left: 110, right: 110, top, display: 'flex', justifyContent: 'center',
+        opacity: k, transform: `translateY(${(1 - k) * 12}px)`,
       }}
     >
-      {cap.lines.map((line, i) => (
-        <div
-          key={i}
-          style={{
-            fontFamily: FONT_BODY, fontWeight: 800, fontSize: 62, lineHeight: 1.16, letterSpacing: '-0.012em',
-            color: C.white, textShadow: '0 3px 0 rgba(0,0,0,0.55), 0 6px 24px rgba(0,0,0,0.75), 0 0 3px rgba(0,0,0,0.9)',
-          }}
-        >
-          {line.map((wd, j) => (
-            <span key={j} style={{color: colorOf(wd.c)}}>
-              {wd.text}
-              {j < line.length - 1 ? ' ' : ''}
+      <div
+        style={{
+          display: 'flex', flexWrap: 'wrap', justifyContent: 'center', columnGap: 22, rowGap: 0,
+          padding: '10px 26px 14px', borderRadius: 24, background: 'rgba(8,10,9,0.52)',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.35)', maxWidth: 860,
+        }}
+      >
+        {grp.words.map((wd: Wd, j: number) => {
+          const said = t >= wd.s - 0.02;
+          const pop = p(t, wd.s - 0.02, wd.s + 0.08, OUT) - p(t, wd.s + 0.08, wd.s + 0.22, IN_OUT);
+          const amp = wd.g ? 0.07 : 0.035;
+          return (
+            <span
+              key={j}
+              style={{
+                display: 'inline-block', fontFamily: FONT_BODY, fontWeight: 800, fontSize: 64, lineHeight: 1.18,
+                letterSpacing: '-0.012em', color: said && wd.g ? C.green : C.white, opacity: said ? 1 : 0.4,
+                transform: `scale(${1 + amp * pop})`, transformOrigin: '50% 80%',
+                textShadow: '0 3px 10px rgba(0,0,0,0.7)',
+              }}
+            >
+              {wd.w}
             </span>
-          ))}
-        </div>
-      ))}
+          );
+        })}
+      </div>
     </div>
   );
 };

@@ -2,119 +2,85 @@ import React from 'react';
 import {AbsoluteFill, Img} from 'remotion';
 import {C, FONT_BODY, FONT_HEAD, IN, IN_OUT, OUT, cut, mix, p, shake} from '../lib';
 import {T} from '../timing';
-import {Photo, PriceTag, useT} from '../ui';
-import {ITEMS, stackPos} from './S5Cart';
+import {Photo, RevealLine, useT} from '../ui';
+import {CART_TOTAL} from './S5Cart';
 
-const FIG = {x: 160, y: 340, w: 762, h: 960};
+const FIG = {x: 250, y: 420, w: 690, h: 870};
 const at = (nx: number, ny: number) => ({x: FIG.x + nx * FIG.w, y: FIG.y + ny * FIG.h});
-// Where each purchase "lives" on the outfit, and where its tag hangs.
-const ANCHORS = [at(0.72, 0.24), at(0.93, 0.42), at(0.48, 0.4), at(0.12, 0.58), at(0.72, 0.94)];
-const TAGS = [
-  {x: 420, y: 520, rot: -6},
-  {x: 935, y: 640, rot: 5},
-  {x: 360, y: 690, rot: 4},
-  {x: 215, y: 1060, rot: -5},
-  {x: 935, y: 1170, rot: 6},
-];
+const JACKET = at(0.9, 0.4);
+const SHOE = at(0.11, 0.57);
 const FACE = at(0.77, 0.09);
 
-// 0:19.5–0:23.2 — the purchases become debt labels attached to the outfit.
+/** A debt tag that drops in on a string and clips onto the outfit. */
+const DebtTag: React.FC<{t: number; at: number; anchor: {x: number; y: number}; dx: number; dy: number; big?: boolean; amount: string}> = ({
+  t, at, anchor, dx, dy, big, amount,
+}) => {
+  const k = p(t, at - 0.25, at + 0.05, OUT);
+  const settle = t > at ? Math.sin((t - at) * 14) * Math.exp(-(t - at) * 5) * 10 : 0;
+  if (t < at - 0.25) return null;
+  const tx = anchor.x + dx;
+  const ty = mix(anchor.y - 700, anchor.y + dy, k);
+  const w = big ? 300 : 220;
+  return (
+    <>
+      <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
+        <line x1={anchor.x} y1={anchor.y} x2={tx} y2={ty} stroke={C.red} strokeWidth={4} opacity={p(k, 0.7, 1)} />
+        <circle cx={anchor.x} cy={anchor.y} r={10} fill={C.red} opacity={p(k, 0.9, 1)} />
+      </svg>
+      <div
+        style={{
+          position: 'absolute', left: tx - w / 2, top: ty, width: w, padding: big ? '16px 0 18px' : '12px 0 14px', textAlign: 'center',
+          background: C.red, color: '#fff', borderRadius: 16, transform: `rotate(${(dx > 0 ? 6 : -6) + settle}deg)`, transformOrigin: '50% 0%',
+          boxShadow: '0 20px 40px rgba(255,87,87,0.35)', clipPath: 'polygon(50% 0, 100% 14%, 100% 100%, 0 100%, 0 14%)',
+        }}
+      >
+        <div style={{width: 18, height: 18, borderRadius: 9, background: 'rgba(0,0,0,0.5)', margin: '0 auto 6px'}} />
+        <div style={{fontFamily: FONT_BODY, fontWeight: 900, fontSize: big ? 26 : 22, letterSpacing: '0.2em'}}>DEBT</div>
+        <div style={{fontFamily: FONT_HEAD, fontWeight: 900, fontSize: big ? 66 : 52, letterSpacing: '-0.02em'}}>{amount}</div>
+      </div>
+    </>
+  );
+};
+
+// 0:19.5–0:23.2 — "Imagine literally wearing your debt." Debt tags clip onto the outfit.
 export const S5Wear: React.FC = () => {
   const t = useT();
-  const inK = p(t, 19.5, 20.0, OUT);
+  const inK = p(t, 19.5, 19.95, OUT);
   const exit = p(t, 22.92, 23.2, IN);
-  const zoom = mix(1, 1.55, p(t, T.thats, T.thats + 0.16, OUT));
-  const sk = shake(t, T.thats + 0.05, 16, 0.35);
-  const sk2 = shake(t, T.debt2, 12, 0.25);
-  const flash = t > T.thats ? Math.max(0, Math.sin((t - T.thats) * Math.PI * 4)) * (1 - p(t, T.thats, T.s5End)) : 0;
-  const redGlow = p(t, T.wearing, T.debt2 + 0.3, IN_OUT);
-  const label = p(t, T.debt2, T.debt2 + 0.14, OUT);
-
+  const zoom = mix(1, 1.45, p(t, T.thats, T.thats + 0.18, OUT));
+  const sk = shake(t, T.debt2, 10, 0.25);
+  const sk2 = shake(t, T.thats + 0.05, 10, 0.3);
+  const red = p(t, T.wearing, T.debt2 + 0.3, IN_OUT);
   return (
-    <AbsoluteFill
-      style={{
-        background: C.bg, opacity: p(t, 19.45, 19.6),
-        transform: `translateX(${-exit * 1100}px)`, filter: exit > 0 ? `blur(${exit * 10}px)` : undefined,
-      }}
-    >
+    <AbsoluteFill style={{background: C.bg, opacity: p(t, 19.45, 19.6), transform: `translateX(${-exit * 1100}px)`}}>
       <Photo src="stage_floor.jpg" zoom={1.1} pos="50% 75%" />
-      <AbsoluteFill style={{background: `radial-gradient(ellipse 70% 45% at 50% 55%, rgba(255,87,87,${0.06 + redGlow * 0.16}), rgba(0,0,0,0) 70%)`}} />
+      <AbsoluteFill style={{background: `radial-gradient(ellipse 70% 45% at 60% 55%, rgba(255,87,87,${0.05 + red * 0.15}), rgba(0,0,0,0) 70%)`}} />
+
+      {/* headline, revealed with the words */}
+      <div style={{position: 'absolute', left: 60, top: 200, opacity: 1 - p(t, T.thats, T.thats + 0.15)}}>
+        <RevealLine t={t} at={T.wearing - 0.05} size={118}>WEARING</RevealLine>
+        <RevealLine t={t} at={T.your - 0.05} size={118} color={C.red}>YOUR DEBT</RevealLine>
+      </div>
 
       <AbsoluteFill style={{transform: `translate(${sk.x + sk2.x}px, ${sk.y + sk2.y}px) scale(${zoom})`, transformOrigin: `${FACE.x}px ${FACE.y}px`}}>
         <Img
           src={cut('man_fullbody')}
-          style={{
-            position: 'absolute', left: FIG.x, top: FIG.y + (1 - inK) * 260, width: FIG.w, opacity: inK,
-            filter: 'drop-shadow(0 34px 40px rgba(0,0,0,0.65))',
-          }}
+          style={{position: 'absolute', left: FIG.x, top: FIG.y + (1 - inK) * 240, width: FIG.w, opacity: inK, filter: 'drop-shadow(0 34px 40px rgba(0,0,0,0.65))'}}
         />
-        {/* strings */}
-        <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
-          {ITEMS.map((_, i) => {
-            const k = p(t, 19.62 + i * 0.07, 20.25 + i * 0.07, OUT);
-            const debt = p(t, T.wearing + i * 0.07, T.wearing + 0.3 + i * 0.07, IN_OUT);
-            const a = ANCHORS[i];
-            const g = TAGS[i];
-            return (
-              <g key={i} opacity={p(k, 0.85, 1)}>
-                <line x1={a.x} y1={a.y} x2={g.x} y2={g.y} stroke={debt > 0.5 ? C.red : 'rgba(245,247,245,0.75)'} strokeWidth={3} />
-                <circle cx={a.x} cy={a.y} r={7} fill={debt > 0.5 ? C.red : C.white} />
-              </g>
-            );
-          })}
-        </svg>
-        {ITEMS.map((it, i) => {
-          const k = p(t, 19.62 + i * 0.07, 20.25 + i * 0.07, OUT);
-          const debt = p(t, T.wearing + i * 0.07, T.wearing + 0.3 + i * 0.07, IN_OUT);
-          const s = stackPos(i);
-          const g = TAGS[i];
-          return (
-            <div
-              key={i}
-              style={{
-                position: 'absolute', left: mix(s.x, g.x, k), top: mix(s.y, g.y, k), width: 0, height: 0,
-                transform: `rotate(${mix(s.rot, g.rot, k)}deg)`,
-              }}
-            >
-              <PriceTag price={`$${it.price}`} label="PRICE" debt={debt} style={{left: -105, top: -56}} />
-            </div>
-          );
-        })}
+        <DebtTag t={t} at={T.wearing + 0.15} anchor={SHOE} dx={-30} dy={110} amount="−$220" />
+        <DebtTag t={t} at={T.debt2} anchor={JACKET} dx={-40} dy={150} big amount={`−$${CART_TOTAL}`} />
       </AbsoluteFill>
 
-      {/* Red flash on "That's crazy!" */}
-      <AbsoluteFill style={{boxShadow: `inset 0 0 260px 60px rgba(255,87,87,${flash * 0.55})`, background: `rgba(255,87,87,${flash * 0.08})`}} />
-
-      {/* WEARING DEBT label */}
-      {t >= T.debt2 && (
+      {/* comedic beat on "That's crazy!" */}
+      {t >= T.thats && (
         <div
           style={{
-            position: 'absolute', left: 0, right: 0, top: 196, display: 'flex', justifyContent: 'center',
-            transform: `rotate(-3deg) scale(${mix(1.8, 1, label)})`, opacity: label,
+            position: 'absolute', left: 70, top: 190, fontFamily: FONT_HEAD, fontWeight: 900, fontSize: 210, color: C.white,
+            letterSpacing: '-0.04em', transform: `rotate(-5deg) scale(${mix(1.6, 1, p(t, T.thats, T.thats + 0.18, OUT))})`, transformOrigin: 'left center',
+            opacity: p(t, T.thats, T.thats + 0.08), textShadow: '0 10px 40px rgba(0,0,0,0.7)',
           }}
         >
-          <div
-            style={{
-              background: C.red, color: '#fff', fontFamily: FONT_HEAD, fontWeight: 900, fontSize: 104, letterSpacing: '-0.03em',
-              padding: '10px 34px 6px', borderRadius: 18, boxShadow: '0 20px 50px rgba(255,87,87,0.45)',
-            }}
-          >
-            WEARING DEBT
-          </div>
-        </div>
-      )}
-
-      {/* Comedic warning badge */}
-      {t >= T.thats + 0.08 && (
-        <div
-          style={{
-            position: 'absolute', left: 60, top: 336, padding: '14px 26px', borderRadius: 16, background: 'rgba(11,13,12,0.85)',
-            border: `2px solid ${C.red}`, color: C.red, fontFamily: FONT_BODY, fontWeight: 900, fontSize: 40, letterSpacing: '0.08em',
-            transform: `rotate(-4deg) scale(${mix(0.6, 1, p(t, T.thats + 0.08, T.thats + 0.25, OUT))})`,
-            opacity: 0.75 + 0.25 * Math.sin((t - T.thats) * 30),
-          }}
-        >
-          ⚠ OVER BUDGET
+          🤯
         </div>
       )}
     </AbsoluteFill>

@@ -1,90 +1,60 @@
 import React from 'react';
-import {AbsoluteFill, Img} from 'remotion';
-import {C, FONT_BODY, FONT_HEAD, IN, IN_OUT, OUT, cut, mix, p} from '../lib';
+import {AbsoluteFill} from 'remotion';
+import {C, FONT_HEAD, IN_OUT, OUT, mix, p} from '../lib';
 import {T} from '../timing';
-import {Glass, Photo, RevealLine, useT} from '../ui';
+import {RevealLine, useT} from '../ui';
+import {POSES, Stickman, lerpPose} from '../stick';
 
-const Check: React.FC<{t: number; at: number}> = ({t, at}) => {
-  const ring = p(t, at, at + 0.4, OUT);
-  const tick = p(t, at + 0.2, at + 0.5, OUT);
-  return (
-    <svg width={120} height={120} viewBox="0 0 120 120" style={{filter: `drop-shadow(0 0 ${18 * ring}px ${C.green})`}}>
-      <circle cx={60} cy={60} r={52} fill="rgba(54,224,121,0.12)" stroke={C.green} strokeWidth={7} strokeDasharray={327} strokeDashoffset={327 * (1 - ring)} transform="rotate(-90 60 60)" />
-      <path d="M36 62 L53 78 L86 44" fill="none" stroke={C.green} strokeWidth={9} strokeLinecap="round" strokeLinejoin="round" strokeDasharray={80} strokeDashoffset={80 * (1 - tick)} />
-    </svg>
-  );
-};
+const HIP = {x: 540, y: 1060};
 
-// 0:30.95–0:35.7 — "Nah." Walk away from the setup; my money, my priorities.
+// 0:30.9–0:35.7 — "Nah." The payoff: debt to impress = already lost. He snaps the card.
 export const S8Rule: React.FC = () => {
   const t = useT();
-  const nahK = p(t, T.nah, T.nah + 0.18, OUT);
-  const toPhoto = p(t, 31.5, 31.8, IN_OUT);
-  const cardIn = p(t, 31.75, 32.15, OUT);
-  const swipe = p(t, 33.08, 33.45, IN);
   const exit = p(t, 35.38, 35.7, IN_OUT);
+  const nahK = p(t, T.nah, T.nah + 0.16, OUT);
+  const nahOut = p(t, 31.55, 31.85, IN_OUT);
+  const wave = Math.sin((t - T.nah) * 16) * 0.5 + 0.5;
+  const toHold = p(t, 31.6, 31.9, IN_OUT);
+  const toSnap = p(t, T.lost - 0.08, T.lost + 0.1, OUT);
+  const toProud = p(t, T.lost + 0.25, T.lost + 0.55, IN_OUT);
+  let pose = lerpPose(POSES.nahL, POSES.nahR, t < 31.6 ? wave : 0.5);
+  if (toHold > 0) pose = lerpPose(pose, POSES.holdUp, toHold);
+  if (toSnap > 0) pose = lerpPose(POSES.holdUp, POSES.snap, toSnap);
+  if (toProud > 0) pose = lerpPose(POSES.snap, POSES.proud, toProud);
+  const glow = p(t, T.debt3, T.debt3 + 0.25) * (1 - toSnap);
+  const crowd = p(t, T.impress, T.impress + 0.3, OUT) * (1 - p(t, T.lost, T.lost + 0.3));
+  const win = p(t, T.lost, T.lost + 0.5, OUT);
 
   return (
-    <AbsoluteFill style={{background: '#050606', opacity: 1 - exit}}>
+    <AbsoluteFill style={{background: '#070908', opacity: 1 - exit}}>
+      <AbsoluteFill style={{background: `radial-gradient(ellipse 70% 45% at 50% 62%, rgba(54,224,121,${0.04 + win * 0.18}), rgba(0,0,0,0) 70%)`}} />
+
       {/* NAH. */}
-      <AbsoluteFill style={{justifyContent: 'center', alignItems: 'center', opacity: 1 - toPhoto}}>
-        <div
-          style={{
-            fontFamily: FONT_HEAD, fontWeight: 900, fontSize: 330, letterSpacing: '-0.05em', color: C.white,
-            transform: `scale(${mix(1.25, 1, nahK)}) translateY(${-toPhoto * 120}px)`, marginTop: -160,
-          }}
-        >
-          NAH<span style={{color: C.green}}>.</span>
-        </div>
-      </AbsoluteFill>
+      <div
+        style={{
+          position: 'absolute', left: 0, right: 0, top: 360, textAlign: 'center', fontFamily: FONT_HEAD, fontWeight: 900, fontSize: 300,
+          letterSpacing: '-0.05em', color: C.white, transform: `scale(${mix(1.25, 1, nahK)}) translateY(${-nahOut * 80}px)`, opacity: nahK * (1 - nahOut),
+        }}
+      >
+        NAH<span style={{color: C.green}}>.</span>
+      </div>
 
-      {t >= 31.45 && (
-        <AbsoluteFill style={{opacity: toPhoto}}>
-          <Photo
-            src="man_walking_away.jpg" zoom={mix(1.0, 1.1, p(t, 31.5, 35.7, IN_OUT))} dark={0.35} pos="50% 60%"
-            style={{filter: 'saturate(0.85) contrast(1.05)'}}
-          />
-          <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(11,13,12,0.9) 0%, rgba(11,13,12,0.25) 42%, rgba(11,13,12,0.2) 62%, rgba(11,13,12,0.85) 100%)'}} />
+      {/* the payoff line */}
+      <div style={{position: 'absolute', left: 64, top: 230}}>
+        <RevealLine t={t} at={T.impress - 0.05} size={104}>DEBT TO IMPRESS</RevealLine>
+        <RevealLine t={t} at={T.already - 0.05} size={104} color={C.red}>= ALREADY LOST.</RevealLine>
+      </div>
 
-          {/* The purchase he skips */}
-          {swipe < 1 && (
-            <Glass
-              style={{
-                left: 90, top: 300, width: 900, height: 230, opacity: cardIn * (1 - p(swipe, 0.6, 1)), overflow: 'hidden',
-                transform: `translate(${(1 - cardIn) * 0 - swipe * 1150}px, ${(1 - cardIn) * 60}px) rotate(${-swipe * 14}deg)`,
-              }}
-            >
-              <Img src={cut('car_highway')} style={{position: 'absolute', right: -40, top: 50, width: 470, opacity: 0.95}} />
-              <div style={{position: 'absolute', left: 36, top: 32, fontFamily: FONT_BODY}}>
-                <div style={{fontWeight: 800, fontSize: 24, letterSpacing: '0.2em', color: C.gray}}>FINANCE OFFER</div>
-                <div style={{fontFamily: FONT_HEAD, fontWeight: 900, fontSize: 56, color: C.white, marginTop: 6}}>$940/mo</div>
-                <div style={{fontWeight: 600, fontSize: 26, color: C.gray, marginTop: 2}}>72 months · to look the part</div>
-              </div>
-            </Glass>
-          )}
-          {t >= T.impress - 0.1 && swipe < 1 && (
-            <div
-              style={{
-                position: 'absolute', left: 90 - swipe * 1150, top: 552, padding: '14px 28px', borderRadius: 999,
-                background: 'rgba(11,13,12,0.85)', border: `2px solid ${C.green}`, color: C.green,
-                fontFamily: FONT_BODY, fontWeight: 900, fontSize: 32, letterSpacing: '0.12em',
-                opacity: p(t, T.impress - 0.1, T.impress + 0.05) * (1 - swipe),
-              }}
-            >
-              ✕ NOT FOR ME
-            </div>
-          )}
+      {/* faded audience appears on "impress somebody" */}
+      {[170, 910].map((x, i) => (
+        <Stickman key={i} x={x} y={1090} scale={0.72} pose={POSES.phone} color={C.gray} face="flat" phone="right" opacity={crowd * 0.45} flip={i === 1} />
+      ))}
 
-          {/* My money. My priorities. */}
-          <div style={{position: 'absolute', left: 64, top: 300}}>
-            <div style={{opacity: p(t, T.already - 0.05, T.already + 0.1), marginBottom: 10}}>
-              <Check t={t} at={T.already - 0.05} />
-            </div>
-            <RevealLine t={t} at={T.ive} size={140}>MY MONEY.</RevealLine>
-            <RevealLine t={t} at={T.already + 0.05} size={118} color={C.green}>MY PRIORITIES.</RevealLine>
-          </div>
-        </AbsoluteFill>
-      )}
+      <Stickman
+        x={HIP.x} y={HIP.y} scale={1.08} pose={pose} color={C.green}
+        face={toProud > 0.5 ? 'smile' : t < 31.6 ? 'smirk' : 'flat'}
+        card={toHold > 0.3 ? 'right' : undefined} cardGlow={glow} cardBroken={toSnap > 0 ? p(t, T.lost - 0.02, T.lost + 0.45, OUT) : 0}
+      />
     </AbsoluteFill>
   );
 };

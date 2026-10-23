@@ -3,7 +3,7 @@ import {Easing, interpolate, staticFile} from 'remotion';
 export const FPS = 30;
 export const W = 1080;
 export const H = 1920;
-export const DURATION_S = 39.0;
+export const DURATION_S = 38.5;
 
 export const C = {
   bg: '#0B0D0C',

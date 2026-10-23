@@ -2,9 +2,11 @@ import React from 'react';
 import {AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame} from 'remotion';
 import {C, FPS} from './lib';
 import {SCENES, SFX} from './timing';
-import {Captions, Finish, Watermark} from './ui';
+import {Captions, Finish} from './ui';
 import {S1Hook} from './scenes/S1Hook';
-import {S2S3Car} from './scenes/S2S3Car';
+import {S2Car} from './scenes/S2Car';
+import {S3Calendar} from './scenes/S3Calendar';
+import {S3Alts} from './scenes/S3Alts';
 import {S4Clothes} from './scenes/S4Clothes';
 import {S5Cart} from './scenes/S5Cart';
 import {S5Wear} from './scenes/S5Wear';
@@ -16,7 +18,9 @@ import {S9CTA} from './scenes/S9CTA';
 type SceneKey = keyof typeof SCENES;
 const LAYERS: [SceneKey, React.FC][] = [
   ['hook', S1Hook],
-  ['car', S2S3Car],
+  ['car', S2Car],
+  ['calendar', S3Calendar],
+  ['alts', S3Alts],
   ['clothes', S4Clothes],
   ['cart', S5Cart],
   ['wear', S5Wear],
@@ -35,14 +39,12 @@ const Scene: React.FC<{k: SceneKey; C: React.FC}> = ({k, C: Comp}) => {
 };
 
 export const Main: React.FC = () => {
-  const t = useCurrentFrame() / FPS;
   return (
     <AbsoluteFill style={{background: C.bg}}>
       {LAYERS.map(([k, Comp]) => (
         <Scene key={k} k={k} C={Comp} />
       ))}
       <Captions />
-      {t < 35.4 && <Watermark opacity={0.42} />}
       <Finish />
       <Audio src={staticFile('vo.mp3')} volume={1} />
       {SFX.map(([s, f, v], i) => (

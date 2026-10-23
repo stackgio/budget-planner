@@ -1,107 +1,104 @@
-# Stack With Gio — "3 Things I REFUSE to Go Into Debt For"
+# Stack With Gio — "3 Things I REFUSE to Go Into Debt For" (FINAL)
 
-**Final render:** `StackWithGio_3ThingsNoDebt_1080x1920.mp4`
-1080×1920 · 9:16 · H.264 High@4.2 · yuv420p (TV range, BT.709) · 30 fps CFR · 1170 frames · 39.0 s · AAC 256 kbps 48 kHz · faststart
+**Deliverable:** `StackWithGio_3ThingsNoDebt_FINAL.mp4`
 
-The voiceover is the original ElevenLabs file, unchanged in speed, pitch and content. It ends at 37.76 s, and the last 1.2 s holds the CTA. There is no music.
+| Spec | Value |
+|---|---|
+| Resolution / aspect | 1080×1920, 9:16 |
+| Video | H.264 High@4.2, yuv420p TV range BT.709, CRF 16 |
+| Frame rate / length | 30 fps CFR, 1155 frames, 38.5 s |
+| Audio | AAC 256 kbps, 48 kHz |
+| Captions | Burned in |
+| Delivery | faststart |
+
+The original ElevenLabs narration is unchanged: no re-voicing, speed change or script edits. It ends at 37.76 s, and the end card holds for 0.74 s after that. There is no music.
+
+The earlier cut (`StackWithGio_3ThingsNoDebt_1080x1920.mp4`) is kept for comparison.
 
 ---
 
-## 1. Pipeline
+## What changed vs. the previous cut
 
-| Step | Tool used |
-|---|---|
-| Voice timing | ffmpeg `silencedetect` for pauses, plus sherpa-onnx Zipformer (offline ASR) for token timestamps. Phrase-initial words are snapped to the silence boundaries. |
-| Assets | Adobe Stock **free-tier** photos, licensed through the Adobe connector (licenses are on the connected Adobe account) |
-| Cutouts | `rembg` with the ISNet model, run locally. Enclosed mask holes are filled for white products. |
-| Motion graphics | **Remotion 4.0.538** (React), rendered with the preinstalled headless Chromium |
-| SFX | Synthesized procedurally in numpy (`tools/make_sfx.py`). No third-party samples. |
-| Master | ffmpeg: full→TV range, loudnorm to −14 LUFS / −1 dBTP |
-
-Not used: Canva image generation (it returned only a 200 px preview), Adobe cloud background removal (its output host is blocked from this environment), Higgsfield (not enough credits), and stock footage or video clips (stills plus motion design only).
-
-## 2. Editable source
-
-```
-video/
-  remotion/                 ← Remotion project (npm i; npm run studio / node render.mjs Main out/x.mp4)
-    src/timing.ts           ← ALL word timings, scene windows, captions, SFX cues (edit here first)
-    src/lib.ts              ← palette, fonts, easing helpers
-    src/ui.tsx              ← Captions, Kicker, RevealLine, PriceTag, Glass card, grain/vignette, watermark
-    src/social.tsx          ← generic (unbranded) social post + notification components
-    src/scenes/S1Hook … S9CTA.tsx
-    public/                 ← vo.mp3 (original), img/, cut/ (cutouts), sfx/
-  assets/raw, assets/cut    ← full-res licensed stock + cutouts
-  tools/                    ← ASR, cutout, mask-fill, SFX generators; raw word timestamps
-  deliverables/             ← final MP4 + this file
-```
-
-The `remotion/out/` master has full-range color and is not loudness-normalized. Use `deliverables/` for upload.
-
-## 3. Timestamped scene plan (as built)
-
-| Time | Narration | Visual | On-screen text |
-|---|---|---|---|
-| 0.00–2.37 | "Three things I refuse to go into debt for." | Car, hi-top sneakers, shopping bag and watch slam in on a dark stage (car and title are on screen from frame 0). A red DEBT stamp hits at 1.92 with a shake and the objects desaturate. A green strike crosses it out at 2.10 and the stamp splits apart. | **3 THINGS** / I REFUSE TO **FINANCE** |
-| 2.30–5.38 | "Number one, an expensive car." | Whip-push right. A real luxury sedan drives in from the right with motion trail, reflection and contact shadow. The payment card slides up on "car". | NUMBER ONE · **EXPENSIVE CAR.** · CAR PAYMENT $700 / MONTH |
-| 5.38–9.52 | "Imagine paying seven hundred to a thousand dollars every month for a car," | Slow push-in. Amount pulses on "seven" and counts $700→$1,000 on "to a thousand". A wallet appears and monthly red chips (JAN–JUN −$850) fly into the card. | **$700–$1,000 / MONTH** · caption "Imagine paying..." |
-| 9.52–13.49 | "when that money could go towards saving, traveling, or building your future." | The car drives off left. The payment card morphs into a green header, then three masked panels wipe in on the exact words: coin jar (balance counts to $10,200), real beach, first-home savings goal bar (68%). | SAVE · TRAVEL · BUILD WEALTH · "12 months × $850 set aside" · "Illustrative · contributions only, no returns assumed" |
-| 13.30–16.08 | "Number two, clothes and shoes." | A shopping bag flies in and becomes a mask that opens into a boutique (object-matched transition). The rack sharpens on "clothes" and two sneakers drop in on "shoes". | NUMBER TWO · **CLOTHES & SHOES** |
-| 16.08–19.73 | "That SHEIN cart, designer clothes, expensive sneakers…" | A hand holds a phone showing a generic, unbranded cart. Items add on each spoken item and the total climbs ("or 4 payments… pay later"). Paper price tags stack beside the phone. | captions: "That SHEIN cart," / "designer clothes," / "expensive sneakers..." |
-| 19.73–22.94 | "Imagine literally wearing your debt. That's crazy!" | The tags fly onto a person's outfit (sweater, jacket, jeans, both shoes) on strings. On "wearing" they flip into red DEBT labels. On "debt" a big label slams in. On "That's crazy!" there's a zoom punch to the face, a red flash, a warning badge and a record scratch. | **WEARING DEBT** · ⚠ OVER BUDGET · caption "That's crazy!" |
-| 22.94–26.01 | "And number three, impressing people." | Camera viewfinder (REC, focus box) on a man posing on a luxury SUV. A shutter flash on "impressing" turns it into a social post with likes counting and hearts floating. On "people" the camera pulls back and desaturates, and two bill notifications drop in. | NUMBER THREE · **IMPRESSING PEOPLE** · "Payment due tomorrow: $940" · "Balance $4,812 · 29.99% APR" |
-| 26.01–30.98 | "Going broke trying to look rich, just to get approval from people who probably don't even care?" | Split screen: the post (likes rising, pulse on "approval") against an illustrative checking balance with a sparkline falling $2,430 → −$443 as debits land, then OVERDRAWN. Cut to real people scrolling their phones: the post flicks past twice and the icons fade. | **LOOKING RICH ≠ BEING RICH** · "0 new likes · scrolled past" + captions |
-| 30.98–35.45 | "Nah. If I have to go into debt just to impress somebody, I've already lost." | Hard cut to black for "NAH." Then a man walks away (back to camera). A $940/mo finance offer gets "✕ NOT FOR ME" and is swiped away. A green check draws on with a chime. | **NAH.** · **MY MONEY. / MY PRIORITIES.** + captions |
-| 35.45–39.00 | "What's one thing YOU refuse to go into debt for?" | The three categories return as balanced tiles (car, sneakers, the posed photo). The headline and comment pill come in, with a breathing glow and bouncing arrow through the hold. | 1 CAR · 2 CLOTHES & SHOES · 3 IMPRESSING PEOPLE · **WHAT'S YOUR #1?** · COMMENT BELOW ↓ · @stackwithgio |
-
-Captions sit at y≈1352–1500, clear of the bottom platform UI and the right-side buttons (120 px side margins). They only appear where a scene title doesn't already carry the words. Green is used for emphasis and red for debt or negative outcomes. A subtle @stackwithgio watermark appears throughout and more prominently on the end card.
-
-**SFX (all mixed −14 to −20 dB under the voice):** impact, whooshes, stamp, snap, car pass, counter ticks, coins, pops, cart click, warning, record scratch, shutter, notification ding, success chime. Exact cues are in `src/timing.ts → SFX`.
-
-## 4. Asset list
-
-All photos are Adobe Stock, free tier, licensed through the connected Adobe account. Stock asset IDs:
-
-| Use | File | Adobe Stock ID |
+| Area | Before | Now |
 |---|---|---|
-| Hook car (front) | car_sedan_front | 1679211632 (3D render) |
-| Luxury sedan (S2, S9, offer card) | car_highway | 723267806 |
-| Hi-top sneakers | sneakers_hightop | 590431879 |
-| White leather sneakers | sneakers_sport | 458288797 |
-| Shopping bag (hook + mask transition) | shopping_bag | 137879615 |
-| Watch | watch | 326751362 |
-| Wallet | wallet | 167669545 |
-| Coin jar / savings | jar | 392880626 |
-| Beach | beach | 162055578 |
-| Boutique clothing | boutique | 611889511 |
-| Hand + phone (cart) | phone_hand | 613367215 |
-| Outfit model (wearing debt) | man_fullbody | 463923453 |
-| Man posing on SUV (post) | man_black_suv | 375119094 |
-| Man w/ bags by sports car (split screen) | man_bags_car | 553457045 |
-| People on phones | people_phones | 329968565 |
-| Man walking away | man_walking_away | 472996566 |
-| Dark stage floor | stage_floor | 321610006 |
+| **Hook (0–2.4 s)** | "3 THINGS / I REFUSE TO FINANCE" over objects and a DEBT stamp | **"I REFUSE TO LOOK RICH ON CREDIT."** is on screen from frame 0. Purchases (a car, sneakers, a phone with likes) swipe onto a credit card, and the "balance owed" climbs $0 → $51,720. The three things are introduced as numbered chips (1 CAR · 2 CLOTHES · 3 IMPRESSING PEOPLE) by 1.4 s. The card turns red on "debt". |
+| **Car (2.3–10.9 s)** | The same car on stage for about 7 s, with a slow push-in | The car and **$700–$1,000/MONTH** appear together at about 2.6 s, two seconds earlier than before. A **new scene** then stamps 12 monthly payments onto a calendar (−$850 each), with a running total to $10,200. On "when that money could…" the tiles flip from red to green. |
+| **Alternatives (10.6–13.3 s)** | Three stacked cards | Three **distinct full-screen cuts** on the spoken words: SAVE (coin jar, $10,200/yr*), TRAVEL (beach), BUILD WEALTH (first-home fund bar). A persistent note reads "*Hypothetical: $850/mo saved for 12 months. No returns assumed." |
+| **Shopping (16–19.9 s)** | Cart with tiny thumbnails plus five floating price tags | Larger cart with clear product photos (cardigan, leather jacket, jeans, hi-tops, leather sneakers). Each item adds on its spoken word, and there are **no floating tags**. Checkout flips to "Paid later ✓ Now you owe it". |
+| **Wearing debt (19.5–23 s)** | Five tags flipping colors | **WEARING / YOUR DEBT** is revealed with the words. Two red debt tags drop in on strings and clip onto the outfit: −$220 on the sneaker, and −$873 (the cart total) on the jacket on "debt". On "That's crazy!" there's a zoom punch to the face with 🤯. |
+| **Impressing people (22.9–31 s)** | Stock photos and a social-post mockup | **Stickman story.** The flexer taps a card ("APPROVED $2,480 · ON CREDIT"), grabs bags, puts on sunglasses and poses ("POSTING…", camera flash). Fans react with hearts. Next comes **LOOKING RICH ≠ BEING RICH**: IN PUBLIC (posing, likes rising) against IN PRIVATE (slumped and sweating, bills piling up, one big balance $2,430 → −$443). The audience then scrolls past: one yawns, one turns away, and the post goes "seen · 0 new". |
+| **Payoff (31–35.4 s)** | "MY MONEY. MY PRIORITIES." over a photo | Hard cut to **NAH.** with a wave-off. A green "me" stickman holds up a credit card, which glows red on "debt". The faded audience appears on "impress somebody". **DEBT TO IMPRESS = ALREADY LOST.** lands, and he **snaps the card in half** on "lost", then stands proud. |
+| **Ending (35.3–38.5 s)** | Three tiles, a headline, a button and a watermark | Clean matte black with the question **WHAT'S ONE THING YOU REFUSE TO GO INTO DEBT FOR?** large and word-synced (YOU / REFUSE in green), plus one line, "Tell me in the comments ↓", and @stackwithgio. It ends 0.74 s after the last word. |
+| **Captions** | Partial, phrase-level | **Every spoken word**, word-by-word (details below). |
+| **SFX** | 40+ cues | 10 subtle cues: stamp, three whooshes, cart click, stamp, record scratch, shutter, impact, card snap. |
 
-These were licensed but not used: 218655099, 364713497 (key-fob cutout had mask holes), 302710422.
+## Captions
 
-Fonts are Inter and Inter Display, installed locally (OFL). SFX are original synthesis.
+- **Style:** Inter ExtraBold at 64 px. Words are white once spoken, with brand green on key phrases (about 17% of words). Upcoming words in a group show at 40% opacity, and each word gets a small pop as it's spoken (larger for green words). A soft dark backing pill sits behind each group.
+- **Grouping:** 3–6 words per group, at most two lines. Four groups are shorter on purpose: "Number one," "That's crazy!" "Nah." and "impressing people."
+- **Green words:** refuse · $700 · thousand dollars · saving · traveling · SHEIN cart · wearing your debt · impressing people · look rich · impress · already lost.
+- **Placement:** the lower-middle safe area (top at y = 1300, max width 860 px, centered). Every scene keeps its graphics, figures and characters above y ≈ 1290, so nothing important is covered.
+- **Timing:** taken from the measured word timestamps in `src/timing.ts → GROUPS`. A group appears 0.04 s before its first word and leaves at its last word's end or the next group's start.
+- **Wording:** the words are the narration's own, with two formatting choices. "seven hundred" is shown as "$700", and "SHEIN" is spelled as the brand.
+- **End card exception:** the final question is not repeated as a subtitle, because the large end-card headline is that exact sentence, revealed word-by-word in sync. A second copy would duplicate it.
 
-**Illustrative-only elements:** the cart UI, social post (handle "totally.rich"), notifications and checking balance are generic mockups. They use no real brand UI or logo, and no real account data. "SHEIN" appears only in the spoken-word caption.
+## Timestamped scene plan
 
-## 5. Render inspection summary
+| Time | Narration | Scene |
+|---|---|---|
+| 0.00–2.37 | Three things I refuse to go into debt for. | Hook: credit card + climbing balance, 3 chips |
+| 2.30–5.38 | Number one, an expensive car. | Car + $700–$1,000/MONTH card |
+| 5.38–10.9 | Imagine paying $700 to a thousand dollars every month for a car, when that money could… | Calendar: 12 × −$850 → $10,200; flips green |
+| 10.6–13.3 | …go towards saving, traveling, or building your future. | Full-screen cuts: SAVE / TRAVEL / BUILD WEALTH |
+| 13.3–16.1 | Number two, clothes and shoes. | Shopping-bag mask → boutique, CLOTHES & SHOES |
+| 16.08–19.4 | That SHEIN cart, designer clothes, expensive sneakers… | Phone cart fills, $873, "paid later" |
+| 19.73–22.94 | Imagine literally wearing your debt. That's crazy! | Debt tags clip onto outfit; 🤯 zoom |
+| 22.9–25.7 | And number three, impressing people. | Stickman buys on credit, poses, fans react |
+| 26.0–28.7 | Going broke trying to look rich, just to get approval | LOOKING RICH ≠ BEING RICH split |
+| 28.7–30.6 | from people who probably don't even care? | Audience scrolls past, yawns, turns away |
+| 30.98–35.0 | Nah. If I have to go into debt just to impress somebody, I've already lost. | NAH. → card glows red → DEBT TO IMPRESS = ALREADY LOST. → card snapped |
+| 35.45–38.5 | What's one thing YOU refuse to go into debt for? | Word-synced question end card |
 
-Checked on the final encoded MP4:
+## Financial figures (all labeled as hypothetical or illustrative)
 
-- **Specs:** 1080×1920, 30/1 fps, 1170 frames, 39.0 s; H.264 yuv420p TV range; AAC 48 kHz.
-- **Opening:** frame 0 already shows "3 THINGS" and the car. All three objects are on screen by 0.6 s and "I REFUSE TO FINANCE" by 0.9 s.
-- **Frozen/missing frames:** `freezedetect` (0.8 s) found none, and `blackdetect` (0.1 s) found none. During QC I found and fixed a ~0.3 s near-empty frame at 2.45 s (car entrance now starts at 2.30 s).
-- **Sync:** cross-correlating the output audio against the original voiceover gives a 0 ms offset. Captions and beats are keyed to the measured word times. Expect ±40–80 ms ASR precision on words inside a phrase. Phrase starts are snapped to measured pauses.
-- **Audio:** no music. Output integrated loudness is −14.0 LUFS with a −1.0 dBFS peak. The narration was −20.3 LUFS, so the master was raised about 6 dB through ffmpeg loudnorm. The voice's −3 dB peaks needed limiting, so loudnorm used its dynamic mode rather than a pure linear gain.
-- **Text and numbers:** spelling checked on stills. Dollar figures are consistent: $700–$1,000/mo, $850 × 12 = $10,200, cart $64 + $289 + $120 + $220 + $180 = $873, and the balance $2,430 − 940 − 273 − 610 − 1,050 = −$443.
-- **Safe areas and overlap:** titles sit between y 196 and 640, and captions between y 1352 and 1500. The cart total was clipping against the phone bezel, and the "OVER BUDGET" badge was colliding with a tag during the zoom. Both were fixed before the final render.
-- **CTA:** "WHAT'S YOUR #1?" is on screen from 36.3 s and "COMMENT BELOW ↓" from 36.9 s. With the 1.2 s hold after the voice, the CTA stays readable for about 2.1 s.
+- **Car payment:** $700–$1,000 per month. $850 is the midpoint, and $850 × 12 = $10,200.
+- **Cart:** $64 + $289 + $120 + $220 + $180 = $873. The big debt tag shows −$873 and the sneaker tag −$220.
+- **Checking balance:** $2,430 − $940 (car loan) − $273 (pay later) − $610 (card) − $1,050 (rent) = −$443. The bill amounts drive the count; the screen shows only bill names and the balance.
+- **Hook card:** $48,900 + $1,240 + $1,580 = $51,720, shown as an illustrative "balance owed".
+- **Home fund:** the 68% goal bar is labeled as contributions only, with no returns assumed.
 
-**Known limitations:**
-- Visuals are animated stills, not stock video. Stock video hosts weren't reachable here, and the cart and social screens are designed mockups.
-- "The person looks down at the outfit" is done as a zoom punch plus warning flash, because the stock model faces the camera.
-- Different stock models appear in scenes 5–8, rather than one recurring character.
+## Assets
+
+- **Stock photos:** Adobe Stock free tier, licensed through the connected Adobe account. IDs used are 723267806, 1679211632 (unused in this cut), 590431879, 458288797, 137879615, 167669545, 392880626, 162055578, 611889511, 613367215, 463923453 and 321610006. New in this cut: **198182642** (leather jacket), **305638580** (cardigan) and **78694659** (jeans).
+- **Original graphics:** the stickman characters are an SVG rig in `src/stick.tsx`. The credit card, calendar, cart UI, terminal and bills are drawn in code. None imitate a real brand interface.
+- **Fonts:** Inter and Inter Display. JetBrains Mono for the card number.
+- **SFX:** synthesized in `tools/make_sfx.py`.
+
+## QC performed on the exported file
+
+- **Specs:** verified with ffprobe (1080×1920, 30/1, 1155 frames, 38.5 s, H.264 yuv420p TV range, AAC).
+- **Sync:** cross-correlated the output audio with the original voiceover at 1–8 s, 15–22 s and 30–37 s, with a **0 ms offset** in every window. The narration is intact; only overall gain changed, from −20.3 to **−14.0 LUFS**, with a −1.0 dBFS peak.
+- **Frozen or black frames:** `freezedetect` (0.6 s) and `blackdetect` (0.07 s) found **none**. This pass caught and fixed a 0.1 s black gap at 10.5 s and a static final hold.
+- **Visual review:** I reviewed a frame every 0.5 s across the whole export (77 frames), plus full-resolution checks of the opening and the caption crops. This pass fixed:
+  - the clipped "IN PRIVATE" stickman;
+  - "*SCROLLS PAST*" overlapping the crowd;
+  - an undersized 🤯 beat;
+  - caption words colliding during the pop;
+  - the hook headline touching the frame edge at frame 0.
+- **Caption coverage:** compared all caption words programmatically against the ASR transcript, and every spoken word is present in order.
+
+**Not verifiable here:**
+- Caption timing inside a phrase relies on ASR token timestamps, which are accurate to roughly ±40–80 ms. Phrase starts are snapped to measured pauses.
+- I reviewed frames and measured the audio, but I can't watch the video in real time with sound in this environment.
+- I didn't check against each platform's live UI overlay; layouts follow common safe zones.
+
+## Remaining limitations
+
+- The car, alternatives and shopping sections use animated stills, not video footage. Stock video hosts aren't reachable from this environment.
+- The stickman animation is pose-to-pose interpolation of a code-built rig, not hand-drawn frame animation.
+- The photo model in "wearing debt" faces the camera, so the comedic beat is a zoom punch rather than him looking down at the outfit.
+
+## Source
+
+- **Project:** `video/remotion/`. Edit `src/timing.ts` (word timings, caption groups, SFX) and `src/scenes/*.tsx`.
+- **Render:** `npm i && node render.mjs Main out/final_raw.mp4`, then the ffmpeg master step (loudnorm −14 LUFS / −1 dBTP, TV range).

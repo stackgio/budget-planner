@@ -1,109 +1,94 @@
 import React from 'react';
-import {AbsoluteFill, Img} from 'remotion';
-import {C, FONT_BODY, IN_OUT, OUT, img, mix, p, rand} from '../lib';
+import {AbsoluteFill} from 'remotion';
+import {BACK, C, FONT_BODY, FONT_HEAD, IN_OUT, OUT, p, rand} from '../lib';
 import {T} from '../timing';
 import {Kicker, Photo, RevealLine, useT} from '../ui';
-import {Heart, Notice, Post} from '../social';
+import {Heart} from '../social';
+import {POSES, Stickman, lerpPose} from '../stick';
 
-const FRAME = {x: 90, y: 590, w: 900, h: 700};
+const HIP = {x: 330, y: 1020};
+const S = 1.12;
 
-const Viewfinder: React.FC<{t: number}> = ({t}) => {
-  const blink = Math.floor(t * 2.5) % 2 === 0;
-  const c = 'rgba(245,247,245,0.9)';
-  const corner = (s: React.CSSProperties) => <div style={{position: 'absolute', width: 70, height: 70, borderColor: c, borderStyle: 'solid', ...s}} />;
-  const focus = p(t, 23.3, 23.7, OUT);
-  return (
-    <div style={{position: 'absolute', inset: 0, fontFamily: FONT_BODY, color: c}}>
-      {corner({left: 30, top: 30, borderWidth: '5px 0 0 5px'})}
-      {corner({right: 30, top: 30, borderWidth: '5px 5px 0 0'})}
-      {corner({left: 30, bottom: 30, borderWidth: '0 0 5px 5px'})}
-      {corner({right: 30, bottom: 30, borderWidth: '0 5px 5px 0'})}
-      <div style={{position: 'absolute', left: 60, top: 56, fontWeight: 800, fontSize: 30, letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: 12}}>
-        <span style={{width: 18, height: 18, borderRadius: 9, background: C.red, opacity: blink ? 1 : 0.25}} /> REC
-      </div>
-      <div style={{position: 'absolute', right: 60, top: 56, fontWeight: 700, fontSize: 28, letterSpacing: '0.1em'}}>4K · 60</div>
-      {/* focus square on the subject */}
-      <div
-        style={{
-          position: 'absolute', left: 520, top: 110, width: 220, height: 220, border: `4px solid ${C.green}`,
-          transform: `scale(${mix(1.6, 1, focus)})`, opacity: focus,
-        }}
-      />
-    </div>
-  );
-};
-
-// 0:22.9–0:26.2 — the flex photo, the likes, then the bills.
+// 0:22.9–0:26.2 — the flexer buys on credit, suits up, and poses for approval.
 export const S6Impress: React.FC = () => {
   const t = useT();
   const enter = p(t, 22.92, 23.2, OUT);
-  const shot = t >= T.impressing;
-  const flash = shot ? 1 - p(t, T.impressing, T.impressing + 0.35) : 0;
-  const toPost = p(t, T.impressing + 0.05, T.impressing + 0.45, OUT);
-  const pull = p(t, T.people1, T.people1 + 0.6, IN_OUT);
-  const likes = Math.round(mix(0, 1284, p(t, T.impressing + 0.3, 25.6, OUT)));
   const exit = p(t, 25.95, 26.25, IN_OUT);
-
-  // Frame morphs from camera viewfinder to a post card, then the camera pulls back.
-  const scale = mix(1, 0.62, pull);
-  const ty = mix(0, -150, pull);
-  const imgH = mix(FRAME.h, 560, toPost);
-  const cardW = FRAME.w;
+  const approved = t >= 23.55;
+  const toBags = p(t, 23.95, 24.3, IN_OUT);
+  const toPose = p(t, T.impressing - 0.1, T.impressing + 0.15, BACK);
+  const pose = toPose > 0 ? lerpPose(POSES.bags, POSES.flex, toPose) : lerpPose(POSES.tap, POSES.bags, toBags);
+  const glasses = p(t, 24.3, 24.6, OUT);
+  const flash = t >= T.impressing ? 1 - p(t, T.impressing, T.impressing + 0.4) : 0;
+  const fans = p(t, T.people1 - 0.1, T.people1 + 0.25, BACK);
 
   return (
-    <AbsoluteFill
-      style={{
-        background: C.bg, transform: `translateX(${(1 - enter) * 1100}px)`, filter: enter < 1 ? `blur(${(1 - enter) * 10}px)` : undefined,
-        opacity: 1 - exit,
-      }}
-    >
-      <Photo src="man_black_suv.jpg" zoom={1.25} blur={18} dark={mix(0.55, 0.8, pull)} pos="70% 50%" style={{filter: `saturate(${1 - pull * 0.8})`}} />
-
-      <div style={{position: 'absolute', left: 70, top: 228, opacity: 1 - pull}}>
-        <Kicker t={t} at={T.number3}>NUMBER THREE</Kicker>
+    <AbsoluteFill style={{background: C.bg, opacity: 1 - exit, transform: `translateX(${(1 - enter) * 1100}px)`}}>
+      <Photo src="stage_floor.jpg" zoom={1.08} pos="50% 72%" dark={0.25} />
+      <div style={{position: 'absolute', left: 70, top: 226}}>
+        <Kicker t={t} at={T.number3 - 0.1}>NUMBER THREE</Kicker>
       </div>
-      <div style={{position: 'absolute', left: 64, top: 316, opacity: 1 - pull}}>
-        <RevealLine t={t} at={T.impressing - 0.05} size={124}>IMPRESSING</RevealLine>
-        <RevealLine t={t} at={T.impressing + 0.25} size={124}>PEOPLE</RevealLine>
+      <div style={{position: 'absolute', left: 64, top: 316}}>
+        <RevealLine t={t} at={T.impressing - 0.08} size={124}>IMPRESSING</RevealLine>
+        <RevealLine t={t} at={T.impressing + 0.12} size={124} color={C.green}>PEOPLE</RevealLine>
       </div>
 
+      {/* card terminal: the purchase goes on credit */}
       <div
         style={{
-          position: 'absolute', left: FRAME.x, top: FRAME.y, width: cardW,
-          transform: `translateY(${ty}px) scale(${scale})`, transformOrigin: '50% 0%',
+          position: 'absolute', left: 560, top: 860, width: 190, height: 240, borderRadius: 24, background: '#1b201d', border: `3px solid ${C.line}`,
+          opacity: 1 - toBags, transform: `translateY(${toBags * 40}px)`, boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
         }}
       >
-        {!shot ? (
-          <div style={{position: 'relative', width: FRAME.w, height: FRAME.h, borderRadius: 34, overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,0.6)'}}>
-            <Img src={img('man_black_suv.jpg')} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: '78% 40%', transform: `scale(${mix(1.15, 1.05, p(t, 23.0, 24.7, IN_OUT))})`}} />
-            <Viewfinder t={t} />
-          </div>
-        ) : (
-          <div style={{position: 'relative'}}>
-            <Post photo="man_black_suv.jpg" pos="78% 40%" width={cardW} imgH={imgH} likes={`${likes.toLocaleString('en-US')} likes`} liked={likes > 40} caption="new whip, who dis 😎🔥" />
-            {/* floating hearts */}
-            {Array.from({length: 9}).map((_, i) => {
-              const s = T.impressing + 0.3 + i * 0.11;
-              const k = p(t, s, s + 0.9, OUT);
-              if (t < s || k >= 1) return null;
-              return (
-                <div key={i} style={{position: 'absolute', left: 700 + rand(i) * 140, top: 560 - k * 420, opacity: 1 - k, transform: `scale(${0.7 + rand(i + 9) * 0.6})`}}>
-                  <Heart size={70} fill={C.red} stroke={C.red} />
-                </div>
-              );
-            })}
-          </div>
-        )}
-        <div style={{position: 'absolute', inset: 0, background: '#fff', opacity: flash, borderRadius: 34}} />
+        <div
+          style={{
+            margin: 16, height: 110, borderRadius: 12, background: approved ? 'rgba(54,224,121,0.18)' : '#0d100f', border: `2px solid ${approved ? C.green : C.line}`,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: FONT_BODY, color: approved ? C.green : C.gray,
+          }}
+        >
+          <div style={{fontWeight: 900, fontSize: 22, letterSpacing: '0.12em'}}>{approved ? 'APPROVED ✓' : 'TAP CARD'}</div>
+          {approved && <div style={{fontFamily: FONT_HEAD, fontWeight: 900, fontSize: 40, color: C.white}}>$2,480</div>}
+        </div>
+        <div style={{textAlign: 'center', fontFamily: FONT_BODY, fontWeight: 800, fontSize: 20, letterSpacing: '0.16em', color: C.red}}>ON CREDIT</div>
       </div>
 
-      {/* Reality: bills arrive as the camera pulls back */}
-      {t >= 25.6 && (
-        <>
-          <Notice title="AUTO LOAN" body="Payment due tomorrow: $940" style={{top: mix(1500, 1035, p(t, 25.62, 25.95, OUT)), opacity: p(t, 25.62, 25.75)}} />
-          <Notice title="CREDIT CARD" body="Balance $4,812 · 29.99% APR" style={{top: mix(1500, 1180, p(t, 25.82, 26.15, OUT)), opacity: p(t, 25.82, 25.95)}} />
-        </>
+      {/* camera frame + flash when he poses */}
+      {t >= T.impressing - 0.05 && (
+        <div
+          style={{
+            position: 'absolute', left: HIP.x - 250, top: 640, width: 500, height: 640, borderRadius: 30, border: '4px solid rgba(245,247,245,0.85)',
+            opacity: p(t, T.impressing - 0.05, T.impressing + 0.1) * (1 - p(t, 25.2, 25.5)),
+          }}
+        >
+          <div style={{position: 'absolute', left: 18, top: 14, display: 'flex', alignItems: 'center', gap: 10, fontFamily: FONT_BODY, fontWeight: 800, fontSize: 24, color: C.white}}>
+            <span style={{width: 14, height: 14, borderRadius: 7, background: C.red}} /> POSTING…
+          </div>
+        </div>
       )}
+      <AbsoluteFill style={{background: `radial-gradient(circle at ${HIP.x}px 820px, rgba(255,255,255,${flash * 0.85}), rgba(255,255,255,0) ${200 + flash * 500}px)`}} />
+
+      <Stickman
+        x={HIP.x} y={HIP.y} scale={S} pose={pose} face={toPose > 0.5 ? 'grin' : 'smile'} glasses={glasses}
+        bags={toBags} card={toBags < 0.5 ? 'right' : undefined}
+      />
+
+      {/* the people he's impressing */}
+      {[0, 1].map((i) => (
+        <div key={i} style={{opacity: Math.min(1, fans * 2), transform: `translateY(${(1 - fans) * 60}px)`}}>
+          <Stickman x={720 + i * 190} y={1060} scale={0.82} pose={POSES.phone} color={C.gray} face="smile" phone="right" />
+          {Array.from({length: 3}).map((_, j) => {
+            const s = T.people1 + 0.05 + j * 0.15 + i * 0.07;
+            const k = p(t, s, s + 0.8, OUT);
+            if (t < s || k >= 1) return null;
+            return (
+              <div key={j} style={{position: 'absolute', left: 700 + i * 190 + rand(i * 3 + j) * 40, top: 780 - k * 200, opacity: 1 - k}}>
+                <Heart size={54} fill={C.red} stroke={C.red} />
+              </div>
+            );
+          })}
+        </div>
+      ))}
     </AbsoluteFill>
   );
 };
+
