@@ -1,0 +1,6 @@
+# One narration line per row. Lines become cue ids L1, L2, ... in narration.json.
+You open your phone, and boom. A dividend just hit.
+Fifteen dollars and fifty-two cents.
+For doing absolutely nothing.
+So naturally, I'm retiring.
+Starting next quarter. Maybe.

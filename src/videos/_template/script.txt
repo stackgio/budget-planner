@@ -1,0 +1,4 @@
+# One narration line per row. Lines become cue ids L1, L2, ... in narration.json.
+# Keep this file identical to what the voice actually says.
+Replace this with the first line of your script.
+And this with the second.

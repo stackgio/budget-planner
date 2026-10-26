@@ -1,0 +1,228 @@
+{
+  "source": "placeholder-piper",
+  "audio": "videos/dividend-1552/narration.wav",
+  "durationMs": 12305,
+  "lines": [
+    {
+      "id": "L1",
+      "text": "You open your phone, and boom. A dividend just hit.",
+      "startMs": 250,
+      "endMs": 3192
+    },
+    {
+      "id": "L2",
+      "text": "Fifteen dollars and fifty-two cents.",
+      "startMs": 3542,
+      "endMs": 5729
+    },
+    {
+      "id": "L3",
+      "text": "For doing absolutely nothing.",
+      "startMs": 6079,
+      "endMs": 7677
+    },
+    {
+      "id": "L4",
+      "text": "So naturally, I'm retiring.",
+      "startMs": 8027,
+      "endMs": 10007
+    },
+    {
+      "id": "L5",
+      "text": "Starting next quarter. Maybe.",
+      "startMs": 10357,
+      "endMs": 11955
+    }
+  ],
+  "words": [
+    {
+      "text": " You",
+      "startMs": 250,
+      "endMs": 418,
+      "timestampMs": 334,
+      "confidence": null
+    },
+    {
+      "text": " open",
+      "startMs": 452,
+      "endMs": 677,
+      "timestampMs": 564,
+      "confidence": null
+    },
+    {
+      "text": " your",
+      "startMs": 710,
+      "endMs": 935,
+      "timestampMs": 823,
+      "confidence": null
+    },
+    {
+      "text": " phone,",
+      "startMs": 969,
+      "endMs": 1362,
+      "timestampMs": 1165,
+      "confidence": null
+    },
+    {
+      "text": " and",
+      "startMs": 1395,
+      "endMs": 1564,
+      "timestampMs": 1479,
+      "confidence": null
+    },
+    {
+      "text": " boom.",
+      "startMs": 1597,
+      "endMs": 1990,
+      "timestampMs": 1794,
+      "confidence": null
+    },
+    {
+      "text": " A",
+      "startMs": 2024,
+      "endMs": 2080,
+      "timestampMs": 2052,
+      "confidence": null
+    },
+    {
+      "text": " dividend",
+      "startMs": 2114,
+      "endMs": 2563,
+      "timestampMs": 2338,
+      "confidence": null
+    },
+    {
+      "text": " just",
+      "startMs": 2597,
+      "endMs": 2821,
+      "timestampMs": 2709,
+      "confidence": null
+    },
+    {
+      "text": " hit.",
+      "startMs": 2855,
+      "endMs": 3192,
+      "timestampMs": 3023,
+      "confidence": null
+    },
+    {
+      "text": " Fifteen",
+      "startMs": 3542,
+      "endMs": 3967,
+      "timestampMs": 3754,
+      "confidence": null
+    },
+    {
+      "text": " dollars",
+      "startMs": 4004,
+      "endMs": 4429,
+      "timestampMs": 4216,
+      "confidence": null
+    },
+    {
+      "text": " and",
+      "startMs": 4465,
+      "endMs": 4648,
+      "timestampMs": 4557,
+      "confidence": null
+    },
+    {
+      "text": " fifty-two",
+      "startMs": 4684,
+      "endMs": 5207,
+      "timestampMs": 4946,
+      "confidence": null
+    },
+    {
+      "text": " cents.",
+      "startMs": 5243,
+      "endMs": 5730,
+      "timestampMs": 5486,
+      "confidence": null
+    },
+    {
+      "text": " For",
+      "startMs": 6080,
+      "endMs": 6240,
+      "timestampMs": 6160,
+      "confidence": null
+    },
+    {
+      "text": " doing",
+      "startMs": 6273,
+      "endMs": 6541,
+      "timestampMs": 6407,
+      "confidence": null
+    },
+    {
+      "text": " absolutely",
+      "startMs": 6573,
+      "endMs": 7109,
+      "timestampMs": 6841,
+      "confidence": null
+    },
+    {
+      "text": " nothing.",
+      "startMs": 7141,
+      "endMs": 7677,
+      "timestampMs": 7409,
+      "confidence": null
+    },
+    {
+      "text": " So",
+      "startMs": 8027,
+      "endMs": 8167,
+      "timestampMs": 8097,
+      "confidence": null
+    },
+    {
+      "text": " naturally,",
+      "startMs": 8209,
+      "endMs": 8976,
+      "timestampMs": 8592,
+      "confidence": null
+    },
+    {
+      "text": " I'm",
+      "startMs": 9017,
+      "endMs": 9199,
+      "timestampMs": 9108,
+      "confidence": null
+    },
+    {
+      "text": " retiring.",
+      "startMs": 9241,
+      "endMs": 10008,
+      "timestampMs": 9624,
+      "confidence": null
+    },
+    {
+      "text": " Starting",
+      "startMs": 10358,
+      "endMs": 10759,
+      "timestampMs": 10558,
+      "confidence": null
+    },
+    {
+      "text": " next",
+      "startMs": 10790,
+      "endMs": 10991,
+      "timestampMs": 10890,
+      "confidence": null
+    },
+    {
+      "text": " quarter.",
+      "startMs": 11021,
+      "endMs": 11523,
+      "timestampMs": 11272,
+      "confidence": null
+    },
+    {
+      "text": " Maybe.",
+      "startMs": 11553,
+      "endMs": 11955,
+      "timestampMs": 11754,
+      "confidence": null
+    }
+  ]
+}

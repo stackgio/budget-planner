@@ -1,0 +1,50 @@
+{
+  "name": "stack-with-gio-studio",
+  "version": "1.0.0",
+  "description": "Stack With Gio short-form video production system",
+  "repository": {},
+  "license": "UNLICENSED",
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24"
+  },
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@remotion/captions": "4.0.538",
+    "@remotion/cli": "4.0.538",
+    "@remotion/elevenlabs": "4.0.538",
+    "@remotion/fonts": "4.0.538",
+    "@remotion/google-fonts": "4.0.538",
+    "@remotion/layout-utils": "4.0.538",
+    "@remotion/media": "4.0.538",
+    "@remotion/transitions": "4.0.538",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.538",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@remotion/eslint-config-flat": "4.0.538",
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "eslint": "10.12.0",
+    "prettier": "3.8.1",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "dev": "remotion studio",
+    "build": "remotion bundle",
+    "upgrade": "remotion upgrade",
+    "lint": "eslint src && tsc",
+    "preview": "node scripts/preview-frames.ts",
+    "align": "node scripts/align-narration.ts",
+    "render": "scripts/render.sh",
+    "qc": "scripts/qc.sh",
+    "sync": "node scripts/check-sync.ts",
+    "new-video": "scripts/new-video.sh",
+    "sfx": "scripts/make-sfx.sh"
+  },
+  "allowScripts": {
+    "esbuild": false
+  }
+}
