@@ -1,0 +1,25 @@
+{
+  "name": "stack-with-gio-graph-videos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Stack With Gio historical investing graph videos (Remotion)",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "render": "bash scripts/render.sh",
+    "qc": "bash scripts/qc.sh"
+  },
+  "dependencies": {
+    "@fontsource/inter": "5.1.1",
+    "@remotion/cli": "4.0.538",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.538",
+    "zod": "3.22.3"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "tsx": "^4.19.2",
+    "typescript": "5.6.3"
+  }
+}

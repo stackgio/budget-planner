@@ -1,0 +1,6 @@
+node_modules/
+out/
+projects/*/out.mp4
+projects/*/qc/
+.remotion/
+projects/_selftest*/
