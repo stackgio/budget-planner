@@ -50,6 +50,8 @@ export const specSchema = z.object({
 		kicker: z.string().optional(), // small label above, e.g. "WHAT IF..."
 	}),
 	counterLabel: z.string().default('Your investment'),
+	/** Optional age clock, e.g. "invested the day you were born": age on the start date. */
+	age: z.object({start: z.number().min(0).max(110), label: z.string().default('AGE')}).optional(),
 	series: z.array(seriesSchema).min(1).max(4),
 	events: z.array(eventSchema).default([]),
 	result: z.object({
