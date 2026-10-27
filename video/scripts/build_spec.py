@@ -124,6 +124,8 @@ def main():
         **({"highlight": render(story["hook"]["highlight"], "hook")} if story["hook"].get("highlight") else {}),
         **({"kicker": render(story["hook"]["kicker"], "hook")} if story["hook"].get("kicker") else {}),
     }
+    if story.get("age") is not None:
+        spec["age"] = story["age"]
     if story.get("counterLabel"):
         spec["counterLabel"] = render(story["counterLabel"], "counterLabel")
     spec["question"] = render(story["question"], "question")
@@ -165,6 +167,17 @@ def main():
             notes.append(f"event '{e['title']}' {e['date']} snapped to trading day {dates[ei]}")
         ev = dict(e)
         ev["date"] = dates[ei]
+        # A fact tied to its own date (peak_*, trough_*) must sit on that date's event.
+        for m in TOKEN.finditer(e["title"] + " " + (e.get("subtitle") or "")):
+            tk, at, field = m.group(1), m.group(2), m.group(3)
+            kind = field.split("_")[0]
+            if not at and kind in ("peak", "trough") and tk in calc["facts"]:
+                fact_date = calc["facts"][tk].get(f"{kind}_date")
+                if fact_date and fact_date != dates[ei]:
+                    unverified.append(
+                        f"event '{e['title']}' on {dates[ei]} uses {m.group(0)} which belongs to {fact_date} — "
+                        f"use {{{tk}@{dates[ei]}.value:money}} or move the event"
+                    )
         ev["title"] = render(e["title"], "event")
         if e.get("subtitle"):
             ev["subtitle"] = render(e["subtitle"], "event")

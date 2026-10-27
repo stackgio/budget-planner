@@ -3,9 +3,10 @@ import {interpolate, Easing} from 'remotion';
 import type {Spec} from '../schema';
 import type {Timeline} from '../lib/timeline';
 import {valueAt} from '../lib/timeline';
-import {formatCompact, formatDate, parseISO} from '../lib/format';
+import {formatCompact, formatDate, formatMoney, parseISO} from '../lib/format';
 import {seriesColor, theme} from '../theme';
 import {EventCallout} from './EventCallout';
+import {TipTags, investedText, type Tag} from './TipTags';
 
 export const CHART = {x: 56, y: 780, w: 968, h: 690};
 // Plot area inside the chart box (room for y labels on the left, years below).
@@ -129,6 +130,30 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 	});
 
 	const gainloss = spec.colorMode === 'gainloss';
+
+	// Callout windows (tip tags step aside while a callout is on screen)
+	const calloutUntil = tl.events.map((ev, k) => {
+		const next = tl.events[k + 1];
+		return Math.min(next ? next.frame - 8 : Infinity, tl.resultFrame - 6, ev.holdEnd + 40);
+	});
+	let tagOpacity = 1;
+	tl.events.forEach((ev, k) => {
+		const o = interpolate(frame, [ev.frame - 12, ev.frame - 4, calloutUntil[k] + 6, calloutUntil[k] + 14], [1, 0, 0, 1], {
+			extrapolateLeft: 'clamp',
+			extrapolateRight: 'clamp',
+		});
+		tagOpacity = Math.min(tagOpacity, o);
+	});
+	const tags: Tag[] = spec.series.map((s, i) => {
+		const v = valueAt(s.values, p);
+		const c = valueAt(s.contributed, p);
+		return {
+			text: formatMoney(v),
+			bg: gainloss && !s.color ? (v >= c ? theme.up : theme.down) : seriesColor(spec, i),
+			y: y(v),
+		};
+	});
+	tags.push({text: investedText(valueAt(base, p)), bg: theme.ink, y: y(valueAt(base, p))});
 	const colorOf = (i: number) => seriesColor(spec, i);
 
 	return (
@@ -288,26 +313,20 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 						);
 					})}
 
-					{/* invested label */}
-					<text
-						x={baseConst ? PAD.l + 12 : Math.max(PAD.l + 120, tipX - 16)}
-						y={y(valueAt(base, p)) - 16}
-						textAnchor={baseConst ? 'start' : 'end'}
-						fontSize={25}
-						fontWeight={600}
-						fill={theme.muted}
-						stroke={theme.bg[spec.background]}
-						strokeWidth={8}
-						paintOrder="stroke"
-					>
-						{`${formatCompact(valueAt(base, baseConst ? 0 : p))} invested`}
-					</text>
 				</svg>
+
+				<TipTags
+					tags={tags}
+					tipX={tipX}
+					chartW={CHART.w}
+					plotTop={PAD.t}
+					plotBottom={PAD.t + PH}
+					opacity={tagOpacity}
+				/>
 
 				{tl.events.map((ev, k) => {
 					const s = spec.series.find((ss) => ss.id === ev.event.seriesId) ?? spec.series[0];
-					const next = tl.events[k + 1];
-					const until = Math.min(next ? next.frame - 8 : Infinity, tl.resultFrame - 6, ev.holdEnd + 40);
+					const until = calloutUntil[k];
 					return (
 						<EventCallout
 							key={`c${k}`}

@@ -15,6 +15,31 @@ export const Counter: React.FC<{spec: Spec; tl: Timeline; frame: number}> = ({sp
 	const date = spec.series[0].dates[idx];
 	const gainloss = spec.colorMode === 'gainloss';
 	const appear = 1;
+	// Whole years elapsed since the first data date, added to the starting age.
+	const ageNow = (() => {
+		if (!spec.age) return null;
+		const [y0, m0, d0] = spec.series[0].dates[0].split('-').map(Number);
+		const [y1, m1, d1] = date.split('-').map(Number);
+		const before = m1 < m0 || (m1 === m0 && d1 < d0);
+		return spec.age.start + (y1 - y0) - (before ? 1 : 0);
+	})();
+	const ageBlock =
+		ageNow === null ? null : (
+			<div
+				style={{
+					marginLeft: 'auto',
+					fontSize: 58,
+					fontWeight: 900,
+					color: theme.ink,
+					letterSpacing: -1,
+					lineHeight: 1,
+					fontVariantNumeric: 'tabular-nums',
+				}}
+			>
+				{`${spec.age!.label} ${ageNow}`}
+			</div>
+		);
+
 	const rows = spec.series.map((s, i) => {
 		const v = valueAt(s.values, p);
 		const c = valueAt(s.contributed, p);
@@ -48,6 +73,7 @@ export const Counter: React.FC<{spec: Spec; tl: Timeline; frame: number}> = ({sp
 				<div style={{display: 'flex', alignItems: 'center', gap: 16}}>
 					<TickerBadge ticker={r.s.ticker} logo={r.s.logo} color={theme.ink} size={52} />
 					<div style={{fontSize: 30, fontWeight: 700, color: theme.muted}}>{spec.counterLabel}</div>
+					{ageBlock}
 				</div>
 				<div style={{display: 'flex', alignItems: 'baseline', gap: 22, marginTop: 6}}>
 					<div
@@ -96,7 +122,10 @@ export const Counter: React.FC<{spec: Spec; tl: Timeline; frame: number}> = ({sp
 					</div>
 				</div>
 			))}
-			<div style={{marginTop: 6}}>{dateChip}</div>
+			<div style={{marginTop: 6, display: 'flex', alignItems: 'center'}}>
+				{dateChip}
+				{ageBlock}
+			</div>
 		</div>
 	);
 };

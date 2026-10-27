@@ -11,7 +11,7 @@ done
 mk() { mkdir -p "$T/$1"; echo "$2" > "$T/$1/scenario.json"; echo "$3" > "$T/$1/story.json"; }
 mk lump '{"mode":"lump_sum","assets":[{"ticker":"DEMO","label":"Synthetic Co","data":"projects/_selftest/data/DEMO.json"}],"amount":10000,"start":"2016-01-04","end":"2026-10-23","dividends":"none"}' \
 '{"durationSec":22,"hook":{"kicker":"SYNTHETIC TEST DATA","lines":["$10,000 into","a test stock","in 2016"],"highlight":"$10,000"},"counterLabel":"Test portfolio",
- "events":[{"date":"2017-09-04","title":"All-time high","subtitle":"Worth {DEMO.peak_value:money}","tone":"up","zoom":1.15},
+ "events":[{"date":"2017-09-04","title":"All-time high","subtitle":"Worth {DEMO@2017-09-04.value:money}","tone":"up","zoom":1.15},
            {"date":"2024-08-27","title":"The bottom","subtitle":"Down {DEMO.max_drawdown_pct:pctabs} from the peak","tone":"down","zoom":1.2}],
  "result":{"headline":"{DEMO.total_return_pct:pct} in {DEMO.years:int} years","headlineTone":"down","subline":"from $10,000 in {DEMO.start_date:month}",
    "stats":[{"label":"Total return","value":"{DEMO.total_return_pct:pct}","tone":"down"},{"label":"Peak value","value":"{DEMO.peak_value:money}","tone":"up"},
@@ -23,7 +23,7 @@ mk cmp '{"mode":"compare","assets":[{"ticker":"DEMO","label":"Synthetic A","data
  "result":{"headline":"B ends {DEMOB.multiple:x}","stats":[{"label":"A","value":"{DEMO.final_value:money}"},{"label":"B","value":"{DEMOB.final_value:money}","tone":"up"}]},
  "question":"Which would you pick?","footnote":"SYNTHETIC TEST DATA — self-test only."}'
 mk dca '{"mode":"dca","assets":[{"ticker":"DEMOB","label":"Synthetic B","data":"projects/_selftest/data/DEMOB.json"}],"monthly":100,"start":"2016-01-04","end":"2026-10-23","dividends":"none"}' \
-'{"durationSec":20,"hook":{"kicker":"SYNTHETIC TEST DATA","lines":["$100 a month","into a test stock"],"highlight":"$100 a month"},"counterLabel":"Portfolio value",
+'{"durationSec":20,"hook":{"kicker":"SYNTHETIC TEST DATA","lines":["$100 a month","into a test stock"],"highlight":"$100 a month"},"counterLabel":"Portfolio value","age":{"start":0},
  "result":{"headline":"{DEMOB.multiple:x} your money","subline":"{DEMOB.invested:money} invested","stats":[{"label":"Gain","value":"{DEMOB.gain:money}","tone":"up"},{"label":"Buys","value":"{DEMOB.num_buys:int}"}]},
  "question":"Could you stick with $100 a month?","footnote":"SYNTHETIC TEST DATA — self-test only."}'
 

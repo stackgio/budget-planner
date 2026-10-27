@@ -100,7 +100,7 @@ Rules:
 Structure (default 20–25 s; go longer only if the story needs it, max ~35 s):
 - **0–2 s:** hook on screen, and the line starts moving at 0.5 s (`timing.drawStartSec`).
 - **Development:** the real path, with calendar time evenly paced.
-- **Turning point:** 1–3 `events` at verified dates (peak, crash, squeeze, split, earnings shock). Each gets slow motion (`slowdown`, `windowDays`), a hold (`holdSec`), a push-in (`zoom` 1.1–1.3) and a callout whose subtitle uses tokens.
+- **Turning point:** 1–3 `events` at verified dates (peak, crash, squeeze, split, earnings shock). Each gets slow motion (`slowdown`, `windowDays`), a hold (`holdSec`), a push-in (`zoom` 1.1–1.3) and a callout whose subtitle uses tokens. Event numbers must use dated tokens such as `{T@YYYY-MM-DD.value:money}` or `.close:price`. Never put an undated `peak_*` or `trough_*` fact on an event at a different date; `build_spec.py` flags it.
 - **Payoff:** about 7 s before the end the result card appears. Its `headline` is a verdict line, e.g. `{GME.multiple:x} your money` or `{T.total_return_pct:pct} in {T.years:int} years`. The big counter already shows the dollar value, so don't repeat it. Use 2–4 stats.
 - **Ending:** about 3.4 s before the end, one compelling question tied to the story replaces the hook, e.g. "Would you have held through −80%?"
 
@@ -117,6 +117,7 @@ Write `projects/<slug>/story.json`:
  "durationSec": 23, "background": "white", "colorMode": "gainloss", "dynamicY": true, "yScale": "linear",
  "hook": {"kicker": "OPTIONAL SMALL LABEL", "lines": ["Line one", "line two"], "highlight": "substring in green"},
  "counterLabel": "Your $10,000",
+ "age": {"start": 0},
  "events": [{"date": "YYYY-MM-DD", "title": "Short", "subtitle": "Close {T@YYYY-MM-DD.close:price}", "tone": "up", "zoom": 1.22, "holdSec": 0.8, "slowdown": 3, "windowDays": 40}],
  "result": {"kicker": "TODAY", "headline": "{T.multiple:x} your money", "headlineTone": "up",
             "subline": "$10,000 → {T.final_value:money}",
@@ -126,6 +127,10 @@ Write `projects/<slug>/story.json`:
  "colors": ["optional hex per series"]
 }
 ```
+Value tags ride the tip of the line automatically: a green or red pill with the current value and a black "Invested $X" pill. They step aside while a callout is on screen.
+
+Age clock: for ideas like "invested when you were born", "at age 18" or "since your kid was born", add `"age": {"start": <age on the start date>}`. An "AGE N" label then counts up with the date. Leave it out otherwise.
+
 Logos: if `video/public/logos/<TICKER>.png` or `.svg` exists, set `"logo": "logos/<TICKER>.png"` on that asset in `scenario.json`. If none exists, try to download the official logo, e.g. from Wikimedia Commons, into `public/logos/`. Use only a correct, current, clean file. Otherwise the typographic ticker badge is used automatically. Never draw or fake a logo.
 
 Then run `python3 scripts/build_spec.py projects/<slug>`. Fix every `UNVERIFIED` line by replacing the literal number with a token, or prove it and leave a note. Fix every `WARNING` as well. Read the printed hook, events, result and question exactly as they will appear.
