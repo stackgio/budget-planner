@@ -134,7 +134,7 @@ Then run `python3 scripts/build_spec.py projects/<slug>`. Fix every `UNVERIFIED`
 
 `bash scripts/render.sh <slug>` → `projects/<slug>/out.mp4`. This typechecks, then exports 1080×1920, 30 fps, H.264 High, yuv420p, bt709, with no audio. The chart, counter and callouts all read one frame→data-index timeline, so they can't drift apart.
 
-If a new idea needs something the components can't express, extend the components in `src/` as reusable, typed and data-driven parts. Keep the design system: white canvas, green growth, red loss, charcoal type, light-gray grid, no glow, no fake 3D and no stickmen. Then run `bash scripts/selftest.sh` to make sure nothing else broke.
+If a new idea needs something the components can't express, extend the components in `src/` as reusable, typed and data-driven parts. Keep the design system: white canvas, bold black L-shaped axes (y-axis + x-axis), green growth, red loss, charcoal type, light-gray grid, no glow, no fake 3D and no stickmen. Then run `bash scripts/selftest.sh` to make sure nothing else broke.
 
 ## 6. Quality control (actually do it)
 

@@ -40,7 +40,7 @@ Literal `$`, `%` or `x` numbers that aren't scenario inputs are flagged `UNVERIF
 
 - `GraphVideo.tsx`: composition (one per video, driven by `spec.json`)
 - `lib/timeline.ts`: maps each frame to a fractional data index, with event slow-motion, holds, end easing and a smoothed y-domain. Every visual reads from it, so the line and counter stay in sync.
-- `components/LineChart.tsx`: SVG chart with gain/loss clipping against the cost basis, a cross-fading y-grid, year axis, camera push-ins, event markers and a live tip.
+- `components/LineChart.tsx`: SVG chart with the signature bold black L-shaped axes, gain/loss clipping against the cost basis, a cross-fading y-grid, year axis, camera push-ins, event markers and a live tip.
 - `components/Header.tsx`: hook (visible on frame 0), later swapped for the closing question
 - `components/Counter.tsx`: big value counter (single) or ranked rows (compare), plus date chip and % change
 - `components/EventCallout.tsx`: editorial callout card placed beside the point, on the side not yet drawn

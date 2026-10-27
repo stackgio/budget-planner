@@ -170,19 +170,27 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 						<g key={`t${t.v}`} opacity={t.o}>
 							<line x1={PAD.l} x2={PAD.l + PW} y1={y(t.v)} y2={y(t.v)} stroke={theme.grid} strokeWidth={2} />
 							<text
-								x={PAD.l - 18}
+								x={PAD.l - 20}
 								y={y(t.v) + 9}
 								textAnchor="end"
 								fontSize={26}
-								fontWeight={600}
-								fill={theme.faint}
+								fontWeight={700}
+								fill={theme.charcoal}
 								style={{fontVariantNumeric: 'tabular-nums'}}
 							>
 								{formatCompact(t.v)}
 							</text>
 						</g>
 					))}
-					<line x1={PAD.l} x2={PAD.l + PW} y1={PAD.t + PH} y2={PAD.t + PH} stroke={theme.gridStrong} strokeWidth={2} />
+					{/* L-shaped axes: bold y-axis + x-axis (signature look) */}
+					<path
+						d={`M${PAD.l},${PAD.t - 18}L${PAD.l},${PAD.t + PH}L${PAD.l + PW},${PAD.t + PH}`}
+						fill="none"
+						stroke={theme.ink}
+						strokeWidth={6}
+						strokeLinejoin="miter"
+						strokeLinecap="square"
+					/>
 					{years.map((yr) => (
 						<text
 							key={yr.label}
@@ -190,8 +198,8 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 							y={PAD.t + PH + 44}
 							textAnchor="middle"
 							fontSize={26}
-							fontWeight={600}
-							fill={yr.x <= tipX ? theme.charcoal : theme.gridStrong}
+							fontWeight={700}
+							fill={yr.x <= tipX ? theme.ink : theme.faint}
 						>
 							{yr.label}
 						</text>
