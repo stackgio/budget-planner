@@ -62,3 +62,19 @@ Captions show the narration verbatim (amounts and durations in green) in a band 
 | 20.57 – 21.89 | Returns aren't guaranteed | Disclaimer turns amber |
 | 22.11 – 24.59 | but your monthly contribution makes a big difference | Contribution column 22.25–24.85 |
 | 24.97 – 27.48 | Which amount could you realistically invest every month? | CTA 24.85; rows highlighted in turn 25.25–27.2; all held to 28.8 |
+
+## v4: hook towers, tighter pauses, choice-card ending
+
+Pauses over 0.28 s are shortened (1.28 s removed; speech untouched); the times below are in
+original-voiceover seconds, mapped to video time by `toOld()` / `warp.json`.
+
+| Time (s) | Visual |
+|----------|--------|
+| 0.00 – 0.85 | Two towers on one baseline (height = exact years, 15 px/yr): ≈26 YEARS (matte black, $100/mo) and ≈6½ YEARS (green, $1,000/mo); both are readable by 0.6 s |
+| 1.97 / 4.15 | Each column punches in on its spoken number; the other column dims |
+| 5.25 – 6.0 | Towers collapse; $100,000 → goal badge; chart builds (unchanged from v3) |
+| rows | Bigger readouts (amount 60 px, years 68 px); "YEARS SAVED" pills removed, shaded gaps kept |
+| 24.55 – 25.45 | Rows narrow to amount-only cards, then move into a 2×2 grid: $100 / $250 / $500 / $1,000 with ≈ years |
+| 25.0 – 25.7 | "You don't need $1,000 a month to start." / "Which amount fits your budget?" (on screen); cards outline one by one 25.75–27.0 |
+
+Captions are white on matte-black pills (keywords in green), at most two lines, at y = 1330.

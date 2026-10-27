@@ -34,3 +34,13 @@ Which amount could you realistically invest every month?
 | 23.4 – end | Which amount could you realistically invest every month? | Full comparison + question |
 
 The hook says "about six and a half", not "just 6": $1,000/month reaches $100,000 in month 77 (6.42 years).
+
+## Optional pickup for v4's ending
+
+v4 shows "You don't need $1,000 a month to start. Which amount fits your budget?" on screen, while the
+recorded voice still asks "Which amount could you realistically invest every month?". To make the voice
+match, record this one line with the same voice and settings:
+
+```
+You don't need a thousand a month to start. Which amount fits your budget?
+```
