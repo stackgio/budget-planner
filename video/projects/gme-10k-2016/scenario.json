@@ -1,0 +1,8 @@
+{
+  "mode": "lump_sum",
+  "assets": [{"ticker": "GME", "label": "GameStop", "data": "data/GME.json"}],
+  "amount": 10000,
+  "start": "2016-01-04",
+  "end": "2026-10-23",
+  "dividends": "none"
+}

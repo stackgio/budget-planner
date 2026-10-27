@@ -105,7 +105,7 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 
 	// --- camera: subtle drift + push-in on events
 	let zoom = interpolate(frame, [0, tl.durationInFrames], [1, 1.025]);
-	let focusX = tipX;
+	let focusX = PAD.l; // drift anchored on the y-axis so its labels never crop
 	let focusY = PAD.t + PH / 2;
 	for (const ev of tl.events) {
 		const env =
@@ -300,6 +300,19 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 					const s = spec.series.find((ss) => ss.id === ev.event.seriesId) ?? spec.series[0];
 					const next = tl.events[k + 1];
 					const until = Math.min(next ? next.frame - 8 : Infinity, tl.resultFrame - 6, ev.holdEnd + 40);
+					// region still on screen at this event's full push-in (same origin as the camera above),
+					// trimmed to the platform-UI safe zone, so the card is never cropped
+					const ez = ev.event.zoom ?? 1;
+					const epx = xs[ev.index];
+					const fx = epx < CHART.w / 2 ? epx * 0.5 : epx + (CHART.w - epx) * 0.5;
+					const fy = 0.5 * y(s.values[ev.index]) + 0.5 * (PAD.t + PH);
+					const safeR = Math.min(CHART.w, theme.width - theme.safe.right - CHART.x);
+					const vis = {
+						l: fx - fx / ez,
+						r: fx + (safeR - fx) / ez,
+						t: fy - fy / ez,
+						b: fy + (CHART.h - fy) / ez,
+					};
 					return (
 						<EventCallout
 							key={`c${k}`}
@@ -312,6 +325,7 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 							plotTop={PAD.t}
 							plotLeft={PAD.l}
 							plotBottom={PAD.t + PH}
+							vis={vis}
 							dateLabel={formatDate(spec.series[0].dates[ev.index], 'long')}
 						/>
 					);

@@ -13,13 +13,15 @@ type Props = {
 	plotTop: number;
 	plotLeft: number;
 	plotBottom: number;
+	/** visible area of the zoomed layer, in layer coordinates */
+	vis: {l: number; r: number; t: number; b: number};
 	dateLabel: string;
 };
 
 const CARD_W = 470;
 
 /** Editorial callout: leader line + white card. Lives inside the zoomed chart layer. */
-export const EventCallout: React.FC<Props> = ({ev, frame, until, px, py, chartW, plotTop, plotLeft, plotBottom, dateLabel}) => {
+export const EventCallout: React.FC<Props> = ({ev, frame, until, px, py, chartW, plotTop, plotLeft, plotBottom: rawBottom, vis, dateLabel}) => {
 	const appear = ev.frame - 4;
 	if (frame < appear || frame > until + 12) return null;
 	const inP = interpolate(frame, [appear, appear + 12], [0, 1], {
@@ -29,10 +31,14 @@ export const EventCallout: React.FC<Props> = ({ev, frame, until, px, py, chartW,
 	const outP = interpolate(frame, [until, until + 12], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
 	const o = Math.min(inP, outP);
 
-	const mid = (plotTop + plotBottom) / 2;
+	const top = Math.max(plotTop, vis.t + 8);
+	const plotBottom = Math.min(rawBottom, vis.b - 8);
+	const visL = Math.max(plotLeft, vis.l + 8);
+	const visR = Math.min(chartW, vis.r) - 8;
+	const mid = (top + plotBottom) / 2;
 	const above = py > mid; // point low -> card above it
 	const cardH = ev.event.subtitle ? 128 : 84;
-	const side = px + 36 + CARD_W <= chartW - 8 ? 'right' : px - 36 - CARD_W >= plotLeft ? 'left' : 'stack';
+	const side = px + 36 + CARD_W <= visR ? 'right' : px - 36 - CARD_W >= visL ? 'left' : 'stack';
 	let cardTop: number;
 	let cardLeft: number;
 	let lx1 = px;
@@ -41,12 +47,13 @@ export const EventCallout: React.FC<Props> = ({ev, frame, until, px, py, chartW,
 	let ly2: number;
 	if (side === 'stack') {
 		const gap = 70;
-		cardTop = above ? Math.max(plotTop - 10, py - gap - cardH) : Math.min(plotBottom - cardH, py + gap);
-		cardLeft = Math.max(8, Math.min(chartW - CARD_W - 8, px - CARD_W / 2));
+		cardTop = above ? Math.max(top - 10, py - gap - cardH) : Math.min(plotBottom - cardH, py + gap);
+		// lean into the not-yet-drawn space right of the point so the card hides as little line as possible
+		cardLeft = Math.max(visL, Math.min(visR - CARD_W, px - 40));
 		ly2 = above ? cardTop + cardH : cardTop;
 	} else {
 		// beside the point, nudged away from the line's vertical position
-		cardTop = Math.max(plotTop - 10, Math.min(plotBottom - cardH, above ? py - cardH - 30 : py + 30));
+		cardTop = Math.max(top - 10, Math.min(plotBottom - cardH, above ? py - cardH - 30 : py + 30));
 		cardLeft = side === 'right' ? px + 36 : px - 36 - CARD_W;
 		lx1 = side === 'right' ? px + 14 : px - 14;
 		ly1 = py;

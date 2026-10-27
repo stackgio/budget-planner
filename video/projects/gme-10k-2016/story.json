@@ -1,0 +1,69 @@
+{
+ "durationSec": 24,
+ "background": "white",
+ "colorMode": "gainloss",
+ "dynamicY": true,
+ "yScale": "linear",
+ "hook": {
+  "kicker": "GAMESTOP · 2016",
+  "lines": [
+   "Your {GME.invested:compact} fell to",
+   "{GME.trough_value:money}.",
+   "Then this happened"
+  ],
+  "highlight": "Then this happened"
+ },
+ "counterLabel": "Your $10,000 in GME",
+ "events": [
+  {
+   "date": "2020-04-03",
+   "title": "Rock bottom",
+   "subtitle": "{GME@2020-04-03.gain_pct:pct} · worth {GME@2020-04-03.value:money}",
+   "tone": "down",
+   "zoom": 1.1,
+   "holdSec": 0.8,
+   "slowdown": 2,
+   "windowDays": 40
+  },
+  {
+   "date": "2021-01-27",
+   "title": "The short squeeze",
+   "subtitle": "{GME@2021-01-27.gain_pct:pct} · worth {GME@2021-01-27.value:money}",
+   "tone": "up",
+   "zoom": 1.0,
+   "holdSec": 1.0,
+   "slowdown": 4,
+   "windowDays": 25
+  }
+ ],
+ "result": {
+  "kicker": "TODAY",
+  "headline": "{GME.multiple:x} your money",
+  "headlineTone": "up",
+  "subline": "$10,000 → {GME.final_value:money}",
+  "stats": [
+   {
+    "label": "Total return",
+    "value": "{GME.total_return_pct:pct}",
+    "tone": "up"
+   },
+   {
+    "label": "Lowest (Apr 2020)",
+    "value": "{GME.trough_value:money}",
+    "tone": "down"
+   },
+   {
+    "label": "Peak (Jan 2021)",
+    "value": "{GME.peak_value:money}",
+    "tone": "up"
+   },
+   {
+    "label": "Per year",
+    "value": "{GME.cagr_pct:pct}",
+    "tone": "up"
+   }
+  ]
+ },
+ "question": "Would you have sold at {GME.peak_value:compact}?",
+ "footnote": "auto"
+}
