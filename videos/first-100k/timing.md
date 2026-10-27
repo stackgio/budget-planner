@@ -45,3 +45,20 @@ Bar lengths use exact months/12 on a shared 0–30-year scale (27 px per year):
 | 23.42 – 26.6| Full four-row comparison stays on screen; CTA "Which amount could you realistically invest every month?"; rows highlighted in turn (23.85–25.6), then all held |
 
 Captions show the narration verbatim (amounts and durations in green) in a band below the disclaimer, at most two lines, never over the chart.
+
+## v3: re-timed to the new voiceover (27.79 s, recorded from voiceover-script.md)
+
+| Speech (s)    | Words | Visual |
+|---------------|-------|--------|
+| 0.03 – 3.16   | Your first hundred thousand could take about / twenty-six (1.97) years… | $100 bar 0.55–1.95, ≈26 lands 1.97 |
+| 3.55 – 4.99   | or about / six and a half (4.15) | "…or" 3.5; $1,000 bar 3.6–4.15, ≈6½ lands 4.15; YEARS SAVED gap 4.25–5.1 |
+| 5.25 – 6.0    | (pause into setup) | Hook exits; $100,000 → badge; axis 5.75 |
+| 5.45 – 6.37   | Starting from zero | $0 card 5.60 |
+| 6.50 – 8.43   | assuming eight percent annual growth | 8% card 6.55; both shrink into footnote/disclaimer 8.45–9.15 |
+| 8.87 / 11.13  | Invest a hundred dollars a month / about twenty-six years | $100 row 9.15, bar 9.75–11.05, ≈26 at 11.13 |
+| 12.39 / 13.80 | Two hundred fifty / about sixteen years | ≈16 at 13.80 |
+| 15.09 / 16.38 | Five hundred / about eleven years | ≈11 at 16.38 |
+| 17.65 / 18.85 | A thousand / about six and a half years | ≈6½ at 18.85 |
+| 20.57 – 21.89 | Returns aren't guaranteed | Disclaimer turns amber |
+| 22.11 – 24.59 | but your monthly contribution makes a big difference | Contribution column 22.25–24.85 |
+| 24.97 – 27.48 | Which amount could you realistically invest every month? | CTA 24.85; rows highlighted in turn 25.25–27.2; all held to 28.8 |

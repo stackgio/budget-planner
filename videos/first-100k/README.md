@@ -1,7 +1,7 @@
-# Stack With Gio — "Your first $100,000" v2 (1080×1920, 26.6 s)
+# Stack With Gio — "Your first $100,000" v3 (1080×1920, 28.8 s)
 
-- `stackwithgio_first-100k_v2_1080x1920.mp4`: the finished video (H.264 High, 30 fps, AAC 48 kHz, -14.8 LUFS, -0.9 dBFS peak).
-  v1 (25.2 s, closing on choice cards) is in git history.
+- `stackwithgio_first-100k_v3_1080x1920.mp4`: the finished video (H.264 High, 30 fps, AAC 48 kHz, -15.0 LUFS, -0.9 dBFS peak).
+  It uses the new voiceover (`voiceover.mp3`, recorded from `voiceover-script.md`). v1 and v2 are in git history.
 - `index.html`: the whole animation. `renderAt(t)` draws any moment deterministically.
   - Open `index.html?t=12.6` to see a still, or `index.html?play` to watch it play silently in real time.
   - Data, timings and layout constants sit at the top of the script.
@@ -16,8 +16,8 @@ Rebuild:
 python3 sfx.py sfx.wav
 NODE_PATH=$(npm root -g) node render.js frames silent.mp4
 ffmpeg -i silent.mp4 -i voiceover.mp3 -i sfx.wav -filter_complex \
-  "[1:a]aresample=48000,volume=6dB[v];[2:a]volume=6dB[s];[v][s]amix=inputs=2:normalize=0:duration=longest,alimiter=limit=0.89:level=false,apad,atrim=0:26.6[a]" \
-  -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 256k -ar 48000 -movflags +faststart -t 26.6 out.mp4
+  "[1:a]aresample=48000,volume=6dB[v];[2:a]volume=6dB[s];[v][s]amix=inputs=2:normalize=0:duration=longest,alimiter=limit=0.89:level=false,apad,atrim=0:28.8[a]" \
+  -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 256k -ar 48000 -movflags +faststart -t 28.8 out.mp4
 ```
 
 The fonts are Inter and Inter Display, installed locally.

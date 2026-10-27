@@ -45,12 +45,12 @@
 // ---------- data (from model.py; bar lengths use exact months / 12) ----------
 // $100 307 mo = 25.58 y · $250 196 mo = 16.33 y · $500 128 mo = 10.67 y · $1,000 77 mo = 6.42 y
 const ROWS = [
-  { amt: "$100",   dur: "26", months: 307, tIn: 7.85,  bar: [8.55, 9.75],   tDur: 9.80 },
-  { amt: "$250",   dur: "16", months: 196, tIn: 11.17, bar: [11.55, 12.50], tDur: 12.55 },
-  { amt: "$500",   dur: "11", months: 128, tIn: 13.89, bar: [14.15, 15.05], tDur: 15.11 },
-  { amt: "$1,000", dur: "6½", months: 77,  tIn: 16.37, bar: [16.65, 17.50], tDur: 17.55 },
+  { amt: "$100",   dur: "26", months: 307, tIn: 9.15,  bar: [9.75, 11.05],  tDur: 11.13 },
+  { amt: "$250",   dur: "16", months: 196, tIn: 12.39, bar: [12.75, 13.75], tDur: 13.80 },
+  { amt: "$500",   dur: "11", months: 128, tIn: 15.09, bar: [15.35, 16.33], tDur: 16.38 },
+  { amt: "$1,000", dur: "6½", months: 77,  tIn: 17.65, bar: [17.95, 18.80], tDur: 18.85 },
 ];
-const DURATION = 26.6;   // VO ends 24.86; the final comparison + question hold to 26.6
+const DURATION = 28.8;   // VO ends 27.48; the final comparison + question hold to 28.8
 
 // ---------- layout ----------
 const CX = 72, CW = 866, ROW_Y0 = 420, ROW_H = 140, ROW_GAP = 14;
@@ -150,7 +150,7 @@ function build() {
     o.track = el("a track"); S(o.track, { width: TRACK_W + "px", height: HOOK_BAR_H + "px", borderRadius: "15px" });
     o.bar = el("a bar"); S(o.bar, { height: HOOK_BAR_H + "px", borderRadius: "15px" });
     o.dot = el("a dot", CHECK);
-    o.dur = makeDur(stage, r.dur, 68, 30, false);
+    o.dur = makeDur(stage, r.dur, 68, 30);
     return o;
   });
   // hook comparison: the $100 finish line drops onto the $1,000 bar and the gap is shaded as time saved
@@ -232,20 +232,21 @@ function build() {
 
   // ---- captions (verbatim narration, ≤2 lines) ----
   E.caps = [
-    [0.00, 1.16, "Here’s how long it could take"],
-    [1.16, 3.86, `to build your first ${G("$100,000")} portfolio`],
-    [4.18, 5.32, `Starting from ${G("zero")},`],
-    [5.40, 7.48, `assuming ${G("8%")} annual growth:`],
-    [7.66, 9.45, `Invest ${G("$100")} a month —`],
-    [9.49, 11.08, `about ${G("26 years")}.`],
-    [11.17, 12.27, `${G("$250")} —`],
-    [12.32, 13.84, `about ${G("16 years")}.`],
-    [13.89, 14.81, `${G("$500")} —`],
-    [14.85, 16.32, `about ${G("11 years")}.`],
-    [16.37, 17.27, `${G("$1,000")} —`],
-    [17.30, 19.05, `about ${G("6½ years")}.`],
-    [19.27, 20.80, "Returns aren’t guaranteed,"],
-    [20.84, 23.36, `but your ${G("monthly contribution")}<br>makes a big difference.`],
+    [0.00, 1.97, `Your first ${G("$100K")} could take about`],
+    [1.97, 3.42, `${G("26 years")}…`],
+    [3.55, 5.10, `or about ${G("6½")}.`],
+    [5.45, 6.47, `Starting from ${G("zero")},`],
+    [6.50, 8.62, `assuming ${G("8%")} annual growth:`],
+    [8.87, 10.66, `Invest ${G("$100")} a month —`],
+    [10.78, 12.30, `about ${G("26 years")}.`],
+    [12.39, 13.48, `${G("$250")} —`],
+    [13.57, 14.99, `about ${G("16 years")}.`],
+    [15.09, 16.06, `${G("$500")} —`],
+    [16.11, 17.56, `about ${G("11 years")}.`],
+    [17.65, 18.56, `${G("$1,000")} —`],
+    [18.62, 20.45, `about ${G("6½ years")}.`],
+    [20.57, 22.06, "Returns aren’t guaranteed,"],
+    [22.11, 24.86, `but your ${G("monthly contribution")}<br>makes a big difference.`],
   ].map(([t0, t1, html]) => { const m = maskEl("cap", html, 136); m.i.className = "in cap"; m.t0 = t0; m.t1 = t1; return m; });
 
   // ---- ending question ----
@@ -267,42 +268,43 @@ function renderAt(t) {
   pos(E.wm, (W - E.wm.getBoundingClientRect().width) / 2, 200);
 
   // ================= HOOK (0 – 3.9 s) =================
-  const pf = eio(P(t, 3.86, 4.6));          // $100,000 → goal badge
-  const hx = eo(P(t, 3.82, 4.18));          // hook exit
+  const pf = eio(P(t, 5.28, 6.0));          // $100,000 → goal badge
+  const hx = eo(P(t, 5.25, 5.6));          // hook exit
   pos(E.yf, (W - E.wYf) / 2, 282 - hx * 40, 1, 1 - hx);
   pos(E.ct, (W - E.wCt) / 2, 568 - hx * 40, 1, 1 - hx);
-  pos(E.or, (W - E.wOr) / 2, 818 - hx * 40, 1, eo(P(t, .7, 1.0)) * (1 - hx));
-  E.hookC.style.transform = `scale(${1 + .045 * eio(P(t, 1.35, 3.85))})`;
+  pos(E.or, (W - E.wOr) / 2, 818 - hx * 40, 1, eo(P(t, 3.5, 3.8)) * (1 - hx));
+  E.hookC.style.transform = `scale(${1 + .045 * eio(P(t, 2.0, 5.25))})`;
   {
-    const yA = HOOK[0].y - hx * 50, yB = HOOK[1].y - hx * 50, op = 1 - eo(P(t, 3.82, 4.2));
+    const yA = HOOK[0].y - hx * 50, yB = HOOK[1].y - hx * 50, op = 1 - eo(P(t, 5.25, 5.62));
     const refX = X0 + PX * ROWS[0].yrs, endX = X0 + PX * ROWS[3].yrs;
-    const rp = eo(P(t, 1.45, 1.85));
+    const rp = eo(P(t, 4.25, 4.55));
     S(E.hRef, { height: (yB - yA) + "px", opacity: rp * op, transformOrigin: "0 0",
       transform: `translate(${refX - 1.5}px,${yA + HOOK_BAR_Y + HOOK_BAR_H}px) scaleY(${rp})` });
-    const sp = eio(P(t, 1.75, 2.35));
+    const sp = eio(P(t, 4.4, 4.9));
     E.hShade.style.width = (refX - endX) * sp + "px";
     pos(E.hShade, endX, yB + HOOK_BAR_Y, 1, (sp > 0 ? 1 : 0) * op);
-    const lp = eo(P(t, 2.25, 2.6));
+    const lp = eo(P(t, 4.8, 5.1));
     pos(E.hSaved, (endX + refX - E.wHSaved) / 2, yB + HOOK_BAR_Y - 1 + (1 - lp) * 8, 1, lp * op);
   }
   E.hook.forEach((o, k) => {
-    const y = o.y - hx * 50, op = 1 - eo(P(t, 3.82 + k * .05, 4.15 + k * .05));
+    const y = o.y - hx * 50, op = 1 - eo(P(t, 5.25 + k * .05, 5.58 + k * .05));
     S(o.bg, { width: CW + "px", height: HOOK_H + "px" });
     pos(o.bg, CX, y, 1, op);
     pos(o.lab, CX + PAD, y + 12, 1, op);
     pos(o.track, X0, y + HOOK_BAR_Y, 1, op);
-    const pb = k === 0 ? eio(P(t, .08, 1.0)) : eio(P(t, .55, 1.15));
+    const pb = k === 0 ? eio(P(t, .55, 1.95)) : eio(P(t, 3.6, 4.15));
     o.bar.style.width = PX * o.r.yrs * pb + "px";
     pos(o.bar, X0, y + HOOK_BAR_Y, 1, op * (pb > 0 ? 1 : 0));
-    const dp = eo(P(t, k === 0 ? .92 : 1.12, k === 0 ? 1.15 : 1.35));
+    const dp = eo(P(t, k === 0 ? 1.88 : 4.08, k === 0 ? 2.15 : 4.35));
     pos(o.dot, X0 + PX * o.r.yrs - 15, y + HOOK_BAR_Y, 1, op * dp);
     o.dot.style.transform += ` scale(${L(.5, 1, dp)})`; o.dot.style.transformOrigin = "15px 15px";
     // duration: reveals as its bar lands, with a short punch-in
-    const rp = eo(P(t, k === 0 ? .85 : 1.1, k === 0 ? 1.15 : 1.4));
-    const wD = layDur(o.dur, 1, "#0A6343", "#0A6343");
-    const sc = 1 + .16 * (1 - eo(P(t, k === 0 ? .85 : 1.1, k === 0 ? 1.45 : 1.7)));
+    const td = k === 0 ? 1.97 : 4.15;
+    const rp = eo(P(t, td, td + .3));
+    const wD = layDur(o.dur, rp, "#0A6343", "#0A6343");
+    const sc = 1 + .16 * (1 - eo(P(t, td, td + .6))) * (t >= td ? 1 : 0);
     o.dur.g.style.transformOrigin = `${wD}px ${o.dur.lh / 2}px`;
-    pos(o.dur.g, X0 + TRACK_W - wD, y + 10, sc, op * rp);
+    pos(o.dur.g, X0 + TRACK_W - wD, y + 10, sc, op);
   });
 
   // badge + flying $100,000
@@ -311,7 +313,7 @@ function renderAt(t) {
   const ax = BX + 66 + E.wGoal + 12, ay = BY + (BH - 46) / 2;
   const bw = ax - BX + wAmtB + 26;
   const pb = P(pf, 0.55, 1);
-  const pulse = 1 + 0.05 * bump(t, 18.95, 19.55);
+  const pulse = 1 + 0.05 * bump(t, 20.25, 20.85);
   S(E.badge, { width: bw + "px", transformOrigin: `${bw / 2}px 38px` });
   E.badge.style.transform = `translate(${BX}px,${BY}px) scale(${L(.6, 1, eo(pb)) * pulse})`;
   E.badge.style.opacity = eo(pb);
@@ -322,40 +324,40 @@ function renderAt(t) {
   pos(E.big, bx, by, L(1, amtS, pf) * pulse);
   E.big.style.color = mix("#13865B", "#FFFFFF", P(pf, .55, .9));
   E.same.m.style.width = E.wSame + 40 + "px";
-  pos(E.same.m, BX + bw + 22, BY + 21); rise(E.same.i, eo(P(t, 4.6, 4.95)));
+  pos(E.same.m, BX + bw + 22, BY + 21); rise(E.same.i, eo(P(t, 6.0, 6.35)));
   E.title.m.style.width = "700px";
-  pos(E.title.m, CX, 352); rise(E.title.i, eo(P(t, 4.3, 4.7)));
+  pos(E.title.m, CX, 352); rise(E.title.i, eo(P(t, 5.7, 6.1)));
 
-  // ================= ASSUMPTIONS (4.2 – 7.8 s) =================
+  // ================= ASSUMPTIONS (5.6 – 9.0 s) =================
   const ay2 = rowY(3) + ROW_H;                // chart bottom
   const fy = ay2 + 108;                       // footnote line
   const dy = fy + 44;                         // disclaimer box
   E.as.forEach((o, k) => {
-    const tin = k ? 5.42 : 4.20;
-    const pin = eo(P(t, tin, tin + .4)), pout = eio(P(t, 7.32 + k * .06, 7.8 + k * .06));
+    const tin = k ? 6.55 : 5.60;
+    const pin = eo(P(t, tin, tin + .4)), pout = eio(P(t, 8.45 + k * .06, 8.95 + k * .06));
     S(o.bg, { width: "418px", height: "236px" });
     const x0 = k ? 590 : 72, y0 = 560;
     const tx = k ? (W - E.wDisc) / 2 : (W - E.wFoot) / 2, ty = k ? dy : fy - 8;
     pos(o.bg, L(x0, tx, pout), L(y0 + (1 - pin) * 60, ty, pout), L(1, .35, pout), pin * (1 - eo(P(pout, .3, .9))));
   });
   E.foot.m.style.width = E.wFoot + 4 + "px";
-  pos(E.foot.m, (W - E.wFoot) / 2, fy); rise(E.foot.i, eo(P(t, 7.55, 7.9)));
+  pos(E.foot.m, (W - E.wFoot) / 2, fy); rise(E.foot.i, eo(P(t, 8.7, 9.05)));
   // disclaimer: neutral while the chart builds, amber from the spoken qualification on
-  const dIn = eo(P(t, 7.65, 8.0)), dAmb = eo(P(t, 19.27, 19.6));
+  const dIn = eo(P(t, 8.8, 9.15)), dAmb = eo(P(t, 20.57, 20.9));
   S(E.disc, { color: mix("#4A5260", "#5A4310", dAmb), background: `rgba(244,232,200,${dAmb})`,
     borderColor: `rgba(201,164,74,${dAmb})` });
-  pos(E.disc, (W - E.wDisc) / 2, dy + (1 - dIn) * 20, 1 + .04 * bump(t, 19.27, 19.9), dIn);
+  pos(E.disc, (W - E.wDisc) / 2, dy + (1 - dIn) * 20, 1 + .04 * bump(t, 20.57, 21.2), dIn);
   E.disc.style.transformOrigin = `${E.wDisc / 2}px 40px`;
 
   // ================= CHART =================
   const refX = X0 + PX * ROWS[0].yrs;          // the $100 row's finish line
-  const emph = eio(P(t, 20.95, 21.35)) * (1 - eio(P(t, 23.1, 23.4)));
+  const emph = eio(P(t, 22.25, 22.65)) * (1 - eio(P(t, 24.55, 24.85)));
   ROWS.forEach((r, i) => {
     // activeness: newest row leads; final comparison = all rows; ending walks through the choices
     const k = [[r.tIn - .15, 1]];
     if (i < 3) k.push([ROWS[i + 1].tIn - .15, 1], [ROWS[i + 1].tIn + .2, 0]);
-    k.push([18.8, i === 3 ? 1 : 0], [19.15, .85], [23.4, .85], [23.75, .5], [25.55, .5], [25.9, 1]);
-    const a = clamp(kf(t, k) + .5 * bump(t, 23.85 + .42 * i, 24.45 + .42 * i));
+    k.push([20.1, i === 3 ? 1 : 0], [20.45, .85], [24.85, .85], [25.2, .5], [27.15, .5], [27.5, 1]);
+    const a = clamp(kf(t, k) + .5 * bump(t, 25.25 + .45 * i, 25.85 + .45 * i));
 
     const R = { x: CX, y: rowY(i), w: CW, h: ROW_H };
     const show = eo(P(t, r.tIn - .12, r.tIn + .25)), sx = (1 - show) * -36;
@@ -372,7 +374,7 @@ function renderAt(t) {
     r.amtV.style.color = mix(mixH("#5E6570", "#13171E", a), "#0A6343", emph);
     r.unit.style.color = mixH("#8A919C", "#4A5260", a);
     pos(r.amtG, R.x + PAD + sx, R.y + 12, 1, show);
-    const hp = eo(P(t, 20.95 + .12 * i, 21.35 + .12 * i)) * (1 - eio(P(t, 23.1, 23.4)));
+    const hp = eo(P(t, 22.25 + .12 * i, 22.65 + .12 * i)) * (1 - eio(P(t, 24.55, 24.85)));
     S(r.hl, { width: (r.wAmt + 28) + "px", opacity: hp,
       transform: `translate(${R.x + PAD - 14}px,${R.y + 17}px) scaleX(${L(.4, 1, hp)})` });
 
@@ -394,7 +396,7 @@ function renderAt(t) {
     r.barEl.style.background = mixH("#A9D3BC", "#13865B", Math.max(a, emph * .5));
     pos(r.barEl, X0, by, 1, pbar > 0 ? 1 : 0);
     const dotP = eo(P(t, r.bar[1] - .08, r.bar[1] + .22));
-    const dpulse = 1 + .22 * bump(t, 18.95 + .08 * i, 19.45 + .08 * i);
+    const dpulse = 1 + .22 * bump(t, 20.25 + .08 * i, 20.75 + .08 * i);
     S(r.dot, { opacity: dotP, transformOrigin: "15px 15px", background: mixH("#5FAE88", "#0A6343", Math.max(a, .5)),
       transform: `translate(${X0 + PX * r.yrs - 15}px,${by - 3}px) scale(${L(.5, 1, dotP) * dpulse})` });
 
@@ -414,16 +416,16 @@ function renderAt(t) {
   });
 
   // axis
-  pos(E.axis, X0, ay2 + 8, 1, eo(P(t, 4.35, 4.75)));
-  E.axis.style.transform = `translate(${X0}px,${ay2 + 8}px) scaleX(${eio(P(t, 4.35, 4.85))})`;
+  pos(E.axis, X0, ay2 + 8, 1, eo(P(t, 5.75, 6.15)));
+  E.axis.style.transform = `translate(${X0}px,${ay2 + 8}px) scaleX(${eio(P(t, 5.75, 6.25))})`;
   E.ticks.forEach((m, k) => {
     const x = X0 + PX * 10 * k;
     m.m.style.width = m.w + 4 + "px";
-    pos(m.m, x - m.w / 2 - 2, ay2 + 20); rise(m.i, eo(P(t, 4.45 + .1 * k, 4.8 + .1 * k)));
-    pos(E.tmarks[k], x - 1, ay2 + 4, 1, eo(P(t, 4.45 + .1 * k, 4.75 + .1 * k)));
+    pos(m.m, x - m.w / 2 - 2, ay2 + 20); rise(m.i, eo(P(t, 5.85 + .1 * k, 6.2 + .1 * k)));
+    pos(E.tmarks[k], x - 1, ay2 + 4, 1, eo(P(t, 5.85 + .1 * k, 6.15 + .1 * k)));
   });
   E.years.m.style.width = E.yearsW + 10 + "px";
-  pos(E.years.m, X0 + TRACK_W / 2 - E.yearsW / 2, ay2 + 56); rise(E.years.i, eo(P(t, 4.75, 5.1)));
+  pos(E.years.m, X0 + TRACK_W / 2 - E.yearsW / 2, ay2 + 56); rise(E.years.i, eo(P(t, 6.15, 6.5)));
 
   // ================= CAPTIONS + QUESTION =================
   const capY = dy + 116;
@@ -436,7 +438,7 @@ function renderAt(t) {
   });
   E.q.forEach((q, k) => {
     q.m.style.width = E.wQ[k] + 8 + "px";
-    pos(q.m, (W - E.wQ[k]) / 2, capY + k * 66); rise(q.i, eo(P(t, 23.42 + k * .14, 23.8 + k * .14)));
+    pos(q.m, (W - E.wQ[k]) / 2, capY + k * 66); rise(q.i, eo(P(t, 24.85 + k * .14, 25.23 + k * .14)));
   });
 }
 

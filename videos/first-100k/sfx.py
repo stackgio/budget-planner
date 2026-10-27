@@ -5,7 +5,7 @@ Cues line up with the visual reveals in index.html (see timing.md).
 import sys, wave
 import numpy as np
 
-SR, DUR = 48000, 26.6
+SR, DUR = 48000, 28.8
 out = np.zeros(int(SR * DUR))
 
 
@@ -37,10 +37,10 @@ def put(t, s, gain):
 
 
 # hook: the two results land (≈26 years, then ≈6½ years)
-put(0.85, tick(620), .09)
-put(1.10, tick(990), .09)
+put(1.97, tick(620), .09)
+put(4.15, tick(990), .09)
 # chart: each duration reveal, rising pitch across the four rows
-for t, f in [(9.80, 660), (12.55, 740), (15.11, 830), (17.55, 990)]:
+for t, f in [(11.13, 660), (13.80, 740), (16.38, 830), (18.85, 990)]:
     put(t, tick(f), .12)
 
 pcm = (np.clip(out, -1, 1) * 32767).astype(np.int16)
