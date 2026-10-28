@@ -71,3 +71,30 @@ expense arrives. There are no dollar amounts other than the narrated $500 and $1
 - One frame every 0.5 s (82 frames) checked for overlaps, clipping, empty frames and subtitle placement.
   Every transition was checked frame by frame.
 - Subtitle sync: the narration's pause timestamps in the export match the source voiceover.
+
+---
+
+# V3 polish pass (`stack-with-gio-debt-story-v3.mp4`)
+
+The V2 design is unchanged. Specs: 1080×1920, 30 fps, 40.8 s, −14.0 LUFS, −1.5 dB peak.
+
+1. **Hook:** the REPAIR BILL is already in frame on frame 0 (with the flat tire and the headline) and settles
+   with a small wobble. Its paper and thud sounds moved to 0.0 s.
+2. **"$289":** this was not a stored figure. It was an in-between frame of the $0 → $500 count-up animation.
+   The counter is gone, so only the narrated $500 and $1,000 ever appear, each shown whole on its word.
+   No new balance was added.
+3. **Subtitles 17% larger:** 58 → 68 px.
+4. **Subtitle position:** a fixed lower-middle band centred at about 72% of frame height (y 1300–1480),
+   narrowed to x 130–950 to clear the right-hand like/comment/share buttons. All scene art was raised
+   230 px (from 210) so it ends above the band.
+5. **Word-for-word timing:** two long groups were split at measured word boundaries so they never wrap to a
+   third line at the larger size: "Because paying off debt / is one thing." (32.96 s) and
+   "What's the one / unexpected expense" (37.68 s). There are now 32 groups.
+6. **No overlaps:** a frame was checked mid-way through every subtitle group. None overlaps a number, card,
+   jar, bill or label.
+7. **$500 vs $1,000:** two jars side by side. "$500" sits over a lower-filled jar, then a fuller "$1,000"
+   jar slides in beside it under a "BIGGER BUFFER" label. When the bill arrives, the $1,000 jar takes the main spot.
+8. **Holds:** a slow push-in on the "with vs without savings" split, and the tail cut from 0.7 s to 0.4 s
+   after the last word.
+9. **Ending:** the question, the three answer options and "DROP IT IN THE COMMENTS" are unchanged and
+   sit clear of the subtitles.

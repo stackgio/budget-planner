@@ -49,8 +49,10 @@ export const S01Hook: React.FC = () => {
 	const flat = tw(f, 0, 16, 0.35, 1, easeOut);
 	const zoomA = 2.15 + tw(f, 0, CUT, 0, 0.25) + tw(f, CUT - 4, CUT + 2, 0, 1.2, easeIn);
 	const blurA = tw(f, CUT - 4, CUT + 2, 0, 18);
-	const slap = tw(f, 4, 10, 0, 1, easeIn);
-	const skA = shake(f, 10, 10, 18);
+	// the repair bill is already on screen at frame 0, settling from its slap
+	const slap = 1;
+	const wobble = 7 * Math.exp(-f / 5) * Math.cos(f * 0.9);
+	const skA = shake(f, 0, 10, 16);
 
 	// ---- B/C: debt block ----
 	const inB = tw(f, CUT - 2, CUT + 8, 0, 1, easeOut);
@@ -184,7 +186,7 @@ export const S01Hook: React.FC = () => {
 					<AbsoluteFill style={{background: 'radial-gradient(ellipse 600px 900px at 540px 1150px, transparent 50%, rgba(255,60,60,0.35) 100%)', opacity: 0.5 + 0.5 * Math.sin(f / 3)}} />
 					<Svg>
 						<Marcus x={175} y={2000} scale={2.1} pose={P({...POSES.handsOnHead, gaze: 0.8})} expr="shocked" frame={f} fx={['sweat', 'shock']} seed={1} />
-						<g transform={`translate(${lerp(1400, 860, slap)} ${lerp(700, 1250, slap)}) rotate(${lerp(40, 9, slap)}) scale(2.3)`}>
+						<g transform={`translate(${lerp(1400, 860, slap)} ${lerp(700, 1250, slap)}) rotate(${lerp(40, 9, slap) + wobble}) scale(2.3)`}>
 							<Doc w={150} title="REPAIR BILL" accent={C.red} />
 						</g>
 					</Svg>

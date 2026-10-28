@@ -32,8 +32,8 @@ const TITLES: CaptionCue[] = [
 /** Subtle effects, kept well under the narration. */
 const SFX: [number, string, number][] = [
 	[0, 'hiss', 0.22],
-	[9, 'paper', 0.5],
-	[9, 'thud', 0.25],
+	[0, 'paper', 0.5],
+	[0, 'thud', 0.25],
 	[26, 'whoosh', 0.3],
 	...[42, 56, 70].map((f) => [f, 'thud', 0.28] as [number, string, number]),
 	[VO.everything, 'alert', 0.35],

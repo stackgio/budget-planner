@@ -26,25 +26,38 @@ const SPLIT = L(VO.without) - 4;
 const CARD_HIT = L(VO.creditCard) - 2;
 
 const J = {x: 300, base: 1430, w: 400};
-const LEVEL = (k: number) => -24 - k * ((J.w * 1.18 - 90) / 8) * 8;
+/** Side-by-side comparison slots for the $500 and $1,000 jars. */
+const A = {x: 285, s: 0.8};
+const B = {x: 790, s: 0.8};
 const BILL = {x: 850, y: 880, s: 1.6};
 
-const money = (v: number) => '$' + Math.round(v).toLocaleString('en-US');
+/** The narrated amount above a jar (jar-local space). Shown whole, never counted up. */
+const Amount: React.FC<{text: string; color: string; p: number}> = ({text, color, p}) => (
+	<g transform={`translate(0 ${-J.w * 1.18 - 74}) scale(${0.7 + 0.3 * p})`} opacity={Math.min(1, p * 1.5)}>
+		<text x={0} y={0} textAnchor="middle" fontFamily={FONT} fontWeight={900} fontSize={140} letterSpacing={-5} fill={color}>
+			{text}
+		</text>
+		<text x={0} y={50} textAnchor="middle" fontFamily={FONT} fontWeight={800} fontSize={34} letterSpacing={8} fill={C.gray}>
+			SAVED
+		</text>
+	</g>
+);
 
 export const S09SavingsComparison: React.FC = () => {
 	const f = useCurrentFrame();
+	// jar A: Scene 8's jar settles into the left slot and becomes the $500 example
 	const enter = tw(f, 0, 18);
-	const jx = lerp(JAR.x, J.x, enter);
+	const merge = tw(f, BILL_IN - 8, BILL_IN + 6);
+	const ax = lerp(JAR.x, A.x, enter) - 320 * merge;
+	const as = lerp(1.055, A.s, enter);
 	const jb = lerp(1437, J.base, enter);
-	const js = lerp(1.055, 1, enter);
-
-	const amount = tw(f, D500, D500 + 8, 0, 500, easeOut) + tw(f, D1000, D1000 + 14, 0, 500, easeOut);
-	const numIn = pop(f, D500, 12, 190);
-	const bump = pop(f, D1000 + 12, 10, 260) * (1 - tw(f, D1000 + 14, D1000 + 26));
+	const in500 = pop(f, D500, 12, 190);
+	// jar B: the $1,000 example slides in beside it, then takes the main slot for the bill
+	const in1000 = pop(f, D1000, 13, 170);
+	const jx = lerp(B.x, J.x, merge);
+	const js = lerp(B.s, 1, merge);
 	const paidOut = tw(f, PAY + 4, PAY + 20, 0, 0.26);
-	const fill = 0.4 + 0.4 * tw(f, D1000, D1000 + 18, 0, 1, easeOut) - paidOut;
-	const marker1000 = tw(f, D1000 + 10, D1000 + 20, 0, 1, easeOut);
-	const buffer = pop(f, D1000 + 18, 13, 170);
+	const buffer = pop(f, D1000 + 10, 13, 170);
 
 	const billIn = tw(f, BILL_IN, BILL_IN + 9, 0, 1, easeIn);
 	const paid = pop(f, PAY + 20, 9, 230);
@@ -68,39 +81,23 @@ export const S09SavingsComparison: React.FC = () => {
 	const ly = lerp(0, 1120 - 1150 * 0.56, split);
 
 	return (
-		<AbsoluteFill style={{opacity: out}}>
+		<AbsoluteFill style={{opacity: out, transform: `scale(${1 + 0.04 * tw(f, SPLIT + 12, 219)})`, transformOrigin: '540px 1000px'}}>
 			<AbsoluteFill style={{background: 'radial-gradient(ellipse 640px 700px at 420px 1150px, rgba(57,255,136,0.07), transparent 70%)'}} />
 			<AbsoluteFill style={{transform: `translate(${lx}px, ${ly}px) scale(${ls})`, transformOrigin: '0px 0px'}}>
 				<Svg>
 					<rect x={-400} y={1440} width={1900} height={900} fill="#101412" />
-					{/* jar with level markers */}
-					<g transform={`translate(${jx} ${jb}) scale(${js})`}>
-						<Jar w={J.w} fill={fill} />
-						{numIn > 0 ? (
-							<g transform={`translate(${J.w / 2 + 18} 0)`} opacity={enter}>
-								<line x1={0} x2={34} y1={LEVEL(0.4)} y2={LEVEL(0.4)} stroke={C.white} strokeWidth={5} />
-								<text x={44} y={LEVEL(0.4) + 12} fontFamily={FONT} fontWeight={900} fontSize={36} fill={C.white}>
-									$500
-								</text>
-								<g opacity={marker1000}>
-									<line x1={0} x2={34} y1={LEVEL(0.8)} y2={LEVEL(0.8)} stroke={C.green} strokeWidth={5} />
-									<text x={44} y={LEVEL(0.8) + 12} fontFamily={FONT} fontWeight={900} fontSize={36} fill={C.green}>
-										$1,000
-									</text>
-									<line x1={18} x2={18} y1={LEVEL(0.4) - 8} y2={LEVEL(0.8) + 8} stroke={C.green} strokeWidth={3} strokeDasharray="6 8" />
-								</g>
-							</g>
-						) : null}
-					</g>
-					{/* big balance number */}
-					{numIn > 0 ? (
-						<g transform={`translate(${jx} ${jb - J.w * 1.18 - 70}) scale(${(0.7 + 0.3 * numIn) * (1 + 0.06 * bump)})`}>
-							<text x={0} y={0} textAnchor="middle" fontFamily={FONT} fontWeight={900} fontSize={150} letterSpacing={-5} fill={C.green}>
-								{money(amount)}
-							</text>
-							<text x={0} y={52} textAnchor="middle" fontFamily={FONT} fontWeight={800} fontSize={34} letterSpacing={8} fill={C.gray}>
-								SAVED
-							</text>
+					{/* $500 jar (leaves when the bill arrives) */}
+					{merge < 1 ? (
+						<g transform={`translate(${ax} ${jb}) scale(${as})`} opacity={1 - merge}>
+							<Jar w={J.w} fill={0.4} />
+							{in500 > 0 ? <Amount text="$500" color={C.white} p={in500} /> : null}
+						</g>
+					) : null}
+					{/* $1,000 jar */}
+					{in1000 > 0 ? (
+						<g transform={`translate(${jx + (1 - in1000) * 260} ${jb}) scale(${js})`} opacity={Math.min(1, in1000 * 1.5)}>
+							<Jar w={J.w} fill={0.8 - paidOut} />
+							<Amount text="$1,000" color={C.green} p={in1000} />
 						</g>
 					) : null}
 					{buffer > 0 && split < 0.5 ? (
@@ -142,7 +139,7 @@ export const S09SavingsComparison: React.FC = () => {
 							<CheckBadge r={44} p={tw(f, PAY + 22, PAY + 30)} />
 						</g>
 					) : null}
-					<Marcus facing={-1} opacity={tw(f, 6, 14) * (1 - split)} x={975} y={1440} scale={0.75} pose={pose} expr={expr} frame={f + 738} fx={f > PAY + 24 ? ['sparkle'] : f > BILL_IN + 8 ? ['sweat'] : []} seed={9} />
+					<Marcus facing={-1} opacity={(f < BILL_IN ? tw(f, 6, 14) * tw(f, D1000 - 6, D1000, 1, 0) : tw(f, BILL_IN + 4, BILL_IN + 12)) * (1 - split)} x={975} y={1440} scale={0.75} pose={pose} expr={expr} frame={f + 738} fx={f > PAY + 24 ? ['sparkle'] : f > BILL_IN + 8 ? ['sweat'] : []} seed={9} />
 				</Svg>
 			</AbsoluteFill>
 			{/* split screen: with vs without savings */}

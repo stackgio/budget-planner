@@ -36,10 +36,12 @@ const RAW: Sub[] = [
 	{t: 28.0, end: 28.96, text: 'can help you handle'},
 	{t: 29.0, end: 29.76, text: 'an *unexpected expense*'},
 	{t: 29.8, end: 31.5, text: 'without reaching for a *credit card.*'},
-	{t: 32.0, end: 33.65, text: 'Because *paying off debt* is one thing.'},
+	{t: 32.0, end: 32.94, text: 'Because *paying off debt*'},
+	{t: 32.96, end: 33.65, text: 'is one thing.'},
 	{t: 34.05, end: 34.97, text: '*STAYING* out of debt?'},
 	{t: 35.39, end: 36.36, text: "That's the *real goal.*"},
-	{t: 36.94, end: 38.48, text: "What's the one *unexpected expense*"},
+	{t: 36.94, end: 37.66, text: "What's the one"},
+	{t: 37.68, end: 38.48, text: '*unexpected expense*'},
 	{t: 38.5, end: 40.32, text: 'that always messes up your *budget?*'},
 ];
 
@@ -61,10 +63,11 @@ export const Subtitles: React.FC = () => {
 		<div
 			style={{
 				position: 'absolute',
-				left: 90,
-				right: 90,
-				top: 1346,
-				height: 150,
+				// lower-middle safe band: centred at 72% height, clear of the right-hand button column
+				left: 130,
+				right: 130,
+				top: 1300,
+				height: 180,
 				display: 'flex',
 				alignItems: 'center',
 				justifyContent: 'center',
@@ -77,7 +80,7 @@ export const Subtitles: React.FC = () => {
 				style={{
 					fontFamily: FONT,
 					fontWeight: 800,
-					fontSize: 58,
+					fontSize: 68,
 					lineHeight: 1.22,
 					letterSpacing: -0.5,
 					textTransform: 'uppercase',

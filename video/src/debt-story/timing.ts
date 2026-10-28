@@ -59,7 +59,7 @@ export const VO = {
 	budgetEnd: s(40.32),
 };
 
-export const TOTAL_FRAMES = 1230;
+export const TOTAL_FRAMES = 1222;
 
 /** Scene windows in global frames: [from, to). Overlaps are transitions. */
 export const SCENES = {
