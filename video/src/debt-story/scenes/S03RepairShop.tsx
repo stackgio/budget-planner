@@ -3,7 +3,6 @@ import {AbsoluteFill, useCurrentFrame} from 'remotion';
 import {easeIn, easeOut, lerp, pop, tw} from '../anim';
 import {animate, Marcus, P, POSES} from '../Marcus';
 import {Car} from '../props/Car';
-import {ExpenseCard} from '../props/Cards';
 import {Doc} from '../props/Paper';
 import {Cam, CircleReveal, Svg} from '../Stage';
 import {C} from '../theme';
@@ -104,7 +103,7 @@ export const S03RepairShop: React.FC = () => {
 	return (
 		<CircleReveal cx={TIRE_SCREEN.x} cy={TIRE_SCREEN.y} r={reveal} ring={C.green} ringW={6}>
 			<AbsoluteFill style={{background: C.bg}}>
-				<Cam zoom={tw(f, 0, 46, 1.04, 1)} fx={540} fy={1100}>
+				<Cam zoom={tw(f, 0, 20, 1.04, 1) + tw(f, 24, 32, 0, 0.24, easeOut)} fx={MARCUS.x + 30} fy={1080}>
 					<Svg>
 						<Shop />
 						{/* two-post lift */}
@@ -138,6 +137,7 @@ export const S03RepairShop: React.FC = () => {
 							pose={pose}
 							expr={expr}
 							frame={f + 180}
+							fx={f > 30 ? ['sweat'] : f > 24 ? ['shock'] : []}
 							seed={3}
 						>
 							{(j) =>
@@ -150,10 +150,6 @@ export const S03RepairShop: React.FC = () => {
 						</Marcus>
 					</Svg>
 				</Cam>
-				{/* red expense card */}
-				<div style={{position: 'absolute', left: 60 - (1 - pop(f, 18, 16, 170)) * 560, top: 610}}>
-					<ExpenseCard w={450} title="UNEXPECTED EXPENSE" />
-				</div>
 				{/* estimate → bill flying toward the camera */}
 				{f >= FLY.start ? <FlyingDoc f={f} /> : null}
 			</AbsoluteFill>

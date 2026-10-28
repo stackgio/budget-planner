@@ -108,12 +108,12 @@ export const S04ExpenseStack: React.FC = () => {
 	let stackH = 0;
 	return (
 		<AbsoluteFill style={{transform: `translateX(${pan}px)`, filter: pan < -2 ? `blur(${Math.min(10, -pan / 60)}px)` : undefined}}>
-			<Cam zoom={tw(f, 0, 62, 1, 1.06)} fx={600} fy={1150} x={sk.x} y={sk.y}>
+			<Cam zoom={tw(f, 0, 62, 1, 1.08) + ITEMS.reduce((a, it) => a + 0.03 * tw(f, it.f + 7, it.f + 9) * tw(f, it.f + 9, it.f + 16, 1, 0), 0)} fx={600} fy={1150} x={sk.x} y={sk.y}>
 				<Svg>
 					<Room />
 					{/* desk top surface */}
 					<polygon points={`110,${DESK_TOP} 970,${DESK_TOP} 1020,${DESK_TOP + 52} 60,${DESK_TOP + 52}`} fill="url(#deskTop)" />
-					<Marcus x={310} y={DESK_TOP + 150} scale={1.3} pose={pose} expr={expr} frame={f + 214} noLegs seed={4} />
+					<Marcus x={310} y={DESK_TOP + 150} scale={1.3} pose={pose} expr={expr} frame={f + 214} noLegs fx={f > 22 && f < 32 ? ['shock'] : f >= 12 ? ['sweat'] : []} seed={4} />
 					<DeskFront />
 					{/* phone on a stand */}
 					<g transform={`translate(830 ${DESK_TOP - 50}) rotate(-8)`}>

@@ -2,131 +2,185 @@ import React from 'react';
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
 import {easeIn, easeOut, lerp, pop, tw} from '../anim';
 import {animate, Marcus, P, POSES} from '../Marcus';
-import {CreditCard, ExpenseCard, FundCard} from '../props/Cards';
+import {CreditCard} from '../props/Cards';
 import {CheckBadge} from '../props/Icons';
+import {Cash, Jar} from '../props/Jar';
+import {Doc} from '../props/Paper';
 import {Svg} from '../Stage';
 import {C, FONT} from '../theme';
 import {VO} from '../timing';
-import {FUND_CENTER} from './S07PlanToFund';
+import {JAR} from './S07PlanToFund';
 
+/*
+ * Illustrative example (not Gio's balances):
+ *  $500 saved → $1,000 = bigger buffer → a repair bill is paid from the jar
+ *  → split screen: without savings, the same bill lands on a credit card and debt grows.
+ */
 const START = 738;
 const L = (g: number) => g - START;
-const SLOT = {cx: 305, cy: 960, w: 490};
-const EXP = {left: 560, top: 610, w: 460};
-const CC = {left: 610, top: 1170, w: 380};
+const D500 = L(VO.d500);
+const D1000 = L(VO.d1000);
+const BILL_IN = L(VO.handle);
+const PAY = L(VO.unexpected) - 2;
+const SPLIT = L(VO.without) - 4;
+const CARD_HIT = L(VO.creditCard) - 2;
+
+const J = {x: 300, base: 1430, w: 400};
+const LEVEL = (k: number) => -24 - k * ((J.w * 1.18 - 90) / 8) * 8;
+const BILL = {x: 850, y: 880, s: 1.6};
 
 const money = (v: number) => '$' + Math.round(v).toLocaleString('en-US');
 
 export const S09SavingsComparison: React.FC = () => {
 	const f = useCurrentFrame();
-	const move = tw(f, 0, 20, 0, 1);
-	const w = lerp(FUND_CENTER.w, SLOT.w, move);
-	const cx = lerp(FUND_CENTER.cx, SLOT.cx, move);
-	const cy = lerp(FUND_CENTER.cy, SLOT.cy, move);
+	const enter = tw(f, 0, 18);
+	const jx = lerp(JAR.x, J.x, enter);
+	const jb = lerp(1437, J.base, enter);
+	const js = lerp(1.055, 1, enter);
 
-	const a500 = tw(f, L(VO.d500), L(VO.d500) + 10, 0, 500, easeOut);
-	const a1000 = tw(f, L(VO.d1000), L(VO.d1000) + 14, 0, 500, easeOut);
-	const bal = f < L(VO.d500) ? null : money(a500 + a1000);
-	const bump = pop(f, L(VO.d1000) + 12, 10, 260) * (1 - tw(f, L(VO.d1000) + 14, L(VO.d1000) + 26));
+	const amount = tw(f, D500, D500 + 8, 0, 500, easeOut) + tw(f, D1000, D1000 + 14, 0, 500, easeOut);
+	const numIn = pop(f, D500, 12, 190);
+	const bump = pop(f, D1000 + 12, 10, 260) * (1 - tw(f, D1000 + 14, D1000 + 26));
+	const paidOut = tw(f, PAY + 4, PAY + 20, 0, 0.26);
+	const fill = 0.4 + 0.4 * tw(f, D1000, D1000 + 18, 0, 1, easeOut) - paidOut;
+	const marker1000 = tw(f, D1000 + 10, D1000 + 20, 0, 1, easeOut);
+	const buffer = pop(f, D1000 + 18, 13, 170);
 
-	const expIn = pop(f, L(VO.handle), 12, 180);
-	const forward = tw(f, L(VO.handle) + 10, L(VO.handle) + 22, 0, 1, easeOut);
-	const line = tw(f, L(VO.unexpected), L(VO.unexpected) + 18, 0, 1, easeIn);
-	const checkF = L(VO.unexpected) + 18;
-	const check = tw(f, checkF, checkF + 8, 0, 1, easeOut);
-	const ccIn = tw(f, L(VO.handle), L(VO.handle) + 14, 0, 1, easeOut);
-	const notNeeded = pop(f, L(VO.creditCard) + 2, 13, 190);
-	const out = tw(f, 206, 214, 1, 0);
+	const billIn = tw(f, BILL_IN, BILL_IN + 9, 0, 1, easeIn);
+	const paid = pop(f, PAY + 20, 9, 230);
+	const split = tw(f, SPLIT, SPLIT + 12, 0, 1);
+	const right = tw(f, SPLIT + 4, SPLIT + 16, 0, 1, easeOut);
+	const toCard = tw(f, CARD_HIT - 10, CARD_HIT, 0, 1, easeIn);
+	const debtUp = pop(f, CARD_HIT + 2, 11, 180);
+	const out = tw(f, 213, 219, 1, 0);
 
 	const {pose, expr} = animate(f, [
-		{f: 0, pose: P({...POSES.stand, head: -14}), expr: 'curious'},
-		{f: L(VO.d500) + 6, pose: P({...POSES.lookUp, gaze: 0.8}), expr: 'happy', dur: 8},
-		{f: L(VO.d1000) + 12, pose: P({...POSES.fistPump, gaze: 0.8}), expr: 'happy', dur: 8, overshoot: true},
-		{f: L(VO.handle) + 8, pose: P({...POSES.lookUp, head: -26}), expr: 'curious', dur: 8},
-		{f: checkF + 6, pose: P({...POSES.thumbsUp, gaze: 0.6}), expr: 'relieved', dur: 8, overshoot: true},
+		{f: 0, pose: P({...POSES.stand, head: -10}), expr: 'curious'},
+		{f: D500 + 6, pose: P({...POSES.lookUp, gaze: 0.8}), expr: 'happy', dur: 8},
+		{f: D1000 + 14, pose: P({...POSES.fistPump, gaze: 0.8}), expr: 'happy', dur: 8, overshoot: true},
+		{f: BILL_IN + 8, pose: P({...POSES.flinch}), expr: 'shocked', dur: 5, overshoot: true},
+		{f: PAY + 24, pose: P({...POSES.thumbsUp, gaze: 0.6}), expr: 'relieved', dur: 8, overshoot: true},
 	]);
 
-	// transfer path: savings card top edge → expense card bottom-left
-	const p0 = {x: SLOT.cx + 150, y: SLOT.cy - (SLOT.w * 0.62) / 2 - 8};
-	const p1 = {x: EXP.left + 110, y: EXP.top + 132};
-	const pathD = `M ${p0.x} ${p0.y} C ${p0.x + 20} ${p0.y - 150}, ${p1.x - 40} ${p1.y + 140}, ${p1.x} ${p1.y + 8}`;
-	const pathLen = 360;
+	// left: the "with savings" story, compressed into a column on split
+	const ls = lerp(1, 0.56, split);
+	const lx = lerp(0, 270 - 520 * 0.56, split);
+	const ly = lerp(0, 1120 - 1150 * 0.56, split);
 
 	return (
 		<AbsoluteFill style={{opacity: out}}>
-			<AbsoluteFill style={{background: 'radial-gradient(ellipse 700px 700px at 400px 900px, rgba(57,255,136,0.07), transparent 70%)'}} />
-			{/* credit card, background */}
-			<div style={{position: 'absolute', left: CC.left, top: CC.top, opacity: ccIn * 0.85, transform: `translateY(${(1 - ccIn) * 40}px) rotate(4deg) scale(0.96)`}}>
-				<CreditCard w={CC.w} dim={0.55} />
-			</div>
-			{notNeeded > 0 ? (
-				<div
-					style={{
-						position: 'absolute',
-						left: CC.left + CC.w / 2 - 125,
-						top: CC.top + 80,
-						width: 250,
-						transform: `scale(${notNeeded}) rotate(-6deg)`,
-						padding: '12px 0',
-						borderRadius: 14,
-						border: `3px solid ${C.green}`,
-						background: 'rgba(11,13,12,0.85)',
-						textAlign: 'center',
-						fontFamily: FONT,
-						fontWeight: 900,
-						fontSize: 30,
-						letterSpacing: 2,
-						color: C.green,
-					}}
-				>
-					NOT NEEDED
-				</div>
-			) : null}
-			{/* unexpected expense */}
-			{expIn > 0 ? (
-				<div style={{position: 'absolute', left: EXP.left, top: EXP.top, transform: `scale(${expIn})`, transformOrigin: '50% 50%'}}>
-					<ExpenseCard w={EXP.w} title="UNEXPECTED EXPENSE" tone={check > 0.5 ? C.green : C.red} />
-				</div>
-			) : null}
-			<Svg>
-				{line > 0 ? (
-					<g>
-						<path d={pathD} fill="none" stroke={C.green} strokeWidth={6} strokeLinecap="round" strokeDasharray="2 16" strokeDashoffset={-f * 2} opacity={0.9} />
-						<path d={pathD} fill="none" stroke={C.green} strokeWidth={3} strokeDasharray={pathLen} strokeDashoffset={pathLen * (1 - line)} opacity={0.5} />
-						{[0, 0.33, 0.66].map((o) => {
-							const t = ((f / 22 + o) % 1) * line;
-							const bx = Math.pow(1 - t, 3) * p0.x + 3 * Math.pow(1 - t, 2) * t * (p0.x + 20) + 3 * (1 - t) * t * t * (p1.x - 40) + t * t * t * p1.x;
-							const by = Math.pow(1 - t, 3) * p0.y + 3 * Math.pow(1 - t, 2) * t * (p0.y - 150) + 3 * (1 - t) * t * t * (p1.y + 140) + t * t * t * (p1.y + 8);
-							return <circle key={o} cx={bx} cy={by} r={9} fill={C.green} />;
-						})}
-						<text x={p0.x - 24} y={p0.y - 64} textAnchor="end" fontFamily={FONT} fontWeight={800} fontSize={24} letterSpacing={2} fill={C.green} opacity={line}>
-							FROM SAVINGS
-						</text>
+			<AbsoluteFill style={{background: 'radial-gradient(ellipse 640px 700px at 420px 1150px, rgba(57,255,136,0.07), transparent 70%)'}} />
+			<AbsoluteFill style={{transform: `translate(${lx}px, ${ly}px) scale(${ls})`, transformOrigin: '0px 0px'}}>
+				<Svg>
+					<rect x={-400} y={1440} width={1900} height={900} fill="#101412" />
+					{/* jar with level markers */}
+					<g transform={`translate(${jx} ${jb}) scale(${js})`}>
+						<Jar w={J.w} fill={fill} />
+						{numIn > 0 ? (
+							<g transform={`translate(${J.w / 2 + 18} 0)`} opacity={enter}>
+								<line x1={0} x2={34} y1={LEVEL(0.4)} y2={LEVEL(0.4)} stroke={C.white} strokeWidth={5} />
+								<text x={44} y={LEVEL(0.4) + 12} fontFamily={FONT} fontWeight={900} fontSize={36} fill={C.white}>
+									$500
+								</text>
+								<g opacity={marker1000}>
+									<line x1={0} x2={34} y1={LEVEL(0.8)} y2={LEVEL(0.8)} stroke={C.green} strokeWidth={5} />
+									<text x={44} y={LEVEL(0.8) + 12} fontFamily={FONT} fontWeight={900} fontSize={36} fill={C.green}>
+										$1,000
+									</text>
+									<line x1={18} x2={18} y1={LEVEL(0.4) - 8} y2={LEVEL(0.8) + 8} stroke={C.green} strokeWidth={3} strokeDasharray="6 8" />
+								</g>
+							</g>
+						) : null}
 					</g>
-				) : null}
-				{check > 0 ? (
-					<g transform={`translate(${EXP.left + EXP.w - 10} ${EXP.top + 10}) scale(${0.4 + 0.6 * pop(f, checkF, 10, 220)})`}>
-						<circle r={60 * check} fill={C.green} opacity={0.15 * (1 - check) + 0.08} />
-						<CheckBadge r={38} p={check} />
-					</g>
-				) : null}
-			</Svg>
-			{/* savings card */}
-			<div
-				style={{
-					position: 'absolute',
-					left: 0,
-					top: 0,
-					transform: `translate(${cx - w / 2}px, ${cy - (w * 0.62) / 2}px) scale(${1 + 0.05 * forward + 0.04 * bump})`,
-					transformOrigin: `${w / 2}px ${(w * 0.62) / 2}px`,
-				}}
-			>
-				<FundCard w={w} balance={bal} meter={0.78} glow={0.5 + 0.5 * forward} />
-			</div>
-			<Svg>
-				<Marcus opacity={tw(f, 6, 14)} x={180} y={1490} scale={0.7} pose={pose} expr={expr} frame={f + 738} seed={9} />
-			</Svg>
-			<div style={{position: 'absolute', left: 0, right: 0, top: 1488, textAlign: 'center', fontFamily: FONT, fontWeight: 600, fontSize: 21, color: C.gray, opacity: tw(f, L(VO.handle), L(VO.handle) + 10) * 0.9}}>
+					{/* big balance number */}
+					{numIn > 0 ? (
+						<g transform={`translate(${jx} ${jb - J.w * 1.18 - 70}) scale(${(0.7 + 0.3 * numIn) * (1 + 0.06 * bump)})`}>
+							<text x={0} y={0} textAnchor="middle" fontFamily={FONT} fontWeight={900} fontSize={150} letterSpacing={-5} fill={C.green}>
+								{money(amount)}
+							</text>
+							<text x={0} y={52} textAnchor="middle" fontFamily={FONT} fontWeight={800} fontSize={34} letterSpacing={8} fill={C.gray}>
+								SAVED
+							</text>
+						</g>
+					) : null}
+					{buffer > 0 && split < 0.5 ? (
+						<g transform={`translate(540 600) scale(${buffer})`} opacity={(1 - split * 2) * (1 - billIn)}>
+							<rect x={-150} y={-40} width={300} height={80} rx={40} fill={C.greenSoft} stroke={C.green} strokeWidth={3} />
+							<text x={0} y={13} textAnchor="middle" fontFamily={FONT} fontWeight={900} fontSize={34} letterSpacing={2} fill={C.green}>
+								BIGGER BUFFER
+							</text>
+						</g>
+					) : null}
+					{/* the unexpected bill */}
+					{f >= BILL_IN ? (
+						<g transform={`translate(${lerp(1400, BILL.x, billIn)} ${BILL.y}) rotate(${lerp(30, 6, billIn)}) scale(${BILL.s})`}>
+							<Doc w={150} title="REPAIR BILL" accent={paid > 0.5 ? C.greenDeep : C.red} />
+							{paid > 0 ? (
+								<g transform={`translate(4 10) rotate(-14) scale(${1.6 - 0.6 * paid})`} opacity={Math.min(1, paid * 1.5)}>
+									<rect x={-56} y={-22} width={112} height={44} rx={6} fill="rgba(255,255,255,0.85)" stroke={C.greenDeep} strokeWidth={4} />
+									<text x={0} y={9} textAnchor="middle" fontFamily={FONT} fontWeight={900} fontSize={24} letterSpacing={2} fill={C.greenDeep}>
+										PAID
+									</text>
+								</g>
+							) : null}
+						</g>
+					) : null}
+					{/* cash flies from the jar to the bill */}
+					{[0, 1, 2].map((i) => {
+						const t = tw(f, PAY + i * 5, PAY + i * 5 + 12, 0, 1, easeIn);
+						if (t <= 0 || t >= 1) return null;
+						const x = lerp(jx, BILL.x - 40, t);
+						const y = lerp(jb - 250, BILL.y, t) - Math.sin(t * Math.PI) * 220;
+						return (
+							<g key={i} transform={`translate(${x} ${y}) rotate(${t * 40 - 20})`}>
+								<Cash w={170} />
+							</g>
+						);
+					})}
+					{paid > 0 ? (
+						<g transform={`translate(${BILL.x + 120} ${BILL.y - 160}) scale(${paid})`}>
+							<CheckBadge r={44} p={tw(f, PAY + 22, PAY + 30)} />
+						</g>
+					) : null}
+					<Marcus facing={-1} opacity={tw(f, 6, 14) * (1 - split)} x={975} y={1440} scale={0.75} pose={pose} expr={expr} frame={f + 738} fx={f > PAY + 24 ? ['sparkle'] : f > BILL_IN + 8 ? ['sweat'] : []} seed={9} />
+				</Svg>
+			</AbsoluteFill>
+			{/* split screen: with vs without savings */}
+			{split > 0 ? (
+				<>
+					<Svg>
+						<line x1={540} x2={540} y1={560} y2={1440} stroke="#2A3430" strokeWidth={4} opacity={split} />
+						<g opacity={split}>
+							<text x={270} y={640} textAnchor="middle" fontFamily={FONT} fontWeight={900} fontSize={44} letterSpacing={1} fill={C.green}>
+								WITH SAVINGS
+							</text>
+							<text x={810} y={640} textAnchor="middle" fontFamily={FONT} fontWeight={900} fontSize={44} letterSpacing={1} fill={C.red}>
+								WITHOUT
+							</text>
+						</g>
+					</Svg>
+					<div style={{position: 'absolute', left: 810 - 175, top: 1010, opacity: right, transform: `translateY(${(1 - right) * 50}px) scale(${1 + 0.05 * debtUp})`}}>
+						<CreditCard w={350} />
+					</div>
+					<Svg>
+						{right > 0 && toCard < 1 ? (
+							<g transform={`translate(${810} ${lerp(800, 1100, toCard)}) rotate(${lerp(-8, 4, toCard)}) scale(${lerp(1.3, 0.6, toCard)})`} opacity={right * (1 - toCard * 0.8)}>
+								<Doc w={150} title="REPAIR BILL" accent={C.red} />
+							</g>
+						) : null}
+						{debtUp > 0 ? (
+							<g transform={`translate(810 ${1310}) scale(${debtUp})`}>
+								<rect x={-210} y={-44} width={420} height={88} rx={44} fill={C.redSoft} stroke={C.red} strokeWidth={3} />
+								<path d="M -170 14 L -152 -16 L -134 14 Z" fill={C.red} />
+								<text x={22} y={14} textAnchor="middle" fontFamily={FONT} fontWeight={900} fontSize={38} letterSpacing={1} fill={C.red}>
+									DEBT GROWS
+								</text>
+							</g>
+						) : null}
+					</Svg>
+				</>
+			) : null}
+			<div style={{position: 'absolute', left: 0, right: 0, top: 1490, textAlign: 'center', fontFamily: FONT, fontWeight: 600, fontSize: 22, color: C.gray, opacity: tw(f, D500, D500 + 10) * 0.9}}>
 				Illustrative example. Expense costs vary.
 			</div>
 		</AbsoluteFill>

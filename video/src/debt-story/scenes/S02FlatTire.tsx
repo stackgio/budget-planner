@@ -3,17 +3,15 @@ import {AbsoluteFill, useCurrentFrame} from 'remotion';
 import {easeIn, easeOut, noise, pop, tw} from '../anim';
 import {animate, Marcus, P, POSES} from '../Marcus';
 import {Car, FRONT_WHEEL} from '../props/Car';
-import {ExpenseCard} from '../props/Cards';
-import {TireIcon} from '../props/Icons';
 import {Cam, CircleReveal, Svg} from '../Stage';
 import {C} from '../theme';
-import {HOOK_WARN} from './S01Hook';
+import {HOOK_WARN} from '../layout';
 
-const CAR = {x: 250, y: 1400, s: 1.25};
+export const CAR = {x: 250, y: 1400, s: 1.25};
 export const TIRE_SCREEN = {x: CAR.x + FRONT_WHEEL.x * CAR.s, y: CAR.y + FRONT_WHEEL.y * CAR.s + 14};
 
 /** Night skyline + street, parallax by camera progress `p`. */
-const Street: React.FC<{p: number}> = ({p}) => {
+export const Street: React.FC<{p: number}> = ({p}) => {
 	const bldg = [
 		[0, 860, 150],
 		[140, 760, 120],
@@ -113,7 +111,7 @@ export const S02FlatTire: React.FC = () => {
 									);
 								})
 							: null}
-						<Marcus x={250} y={1450} scale={1.05} pose={pose} expr={expr} frame={f + 140} seed={2} />
+						<Marcus x={250} y={1450} scale={1.05} pose={pose} expr={expr} frame={f + 140} fx={f > 30 ? ['sweat', 'anger'] : f > 18 ? ['shock'] : []} seed={2} />
 						{/* inspection reticle forming around the tyre */}
 						{ring > 0 ? (
 							<g transform={`translate(${TIRE_SCREEN.x} ${TIRE_SCREEN.y}) rotate(${ring * 60})`} opacity={ring}>
@@ -125,19 +123,20 @@ export const S02FlatTire: React.FC = () => {
 						) : null}
 					</Svg>
 				</Cam>
-				{/* expense notification beside the wheel */}
-				{f >= 25 ? (
-					<div style={{position: 'absolute', left: 560, top: 1010, transform: `scale(${pop(f, 25)})`, transformOrigin: '0% 100%'}}>
-						<ExpenseCard
-							w={400}
-							title="UNEXPECTED EXPENSE"
-							icon={
-								<svg width={56} height={56} viewBox="-50 -50 100 100">
-									<TireIcon r={40} />
-								</svg>
-							}
-						/>
-					</div>
+				{/* tyre-pressure warning light */}
+				{f >= 22 ? (
+					<Svg>
+						<g transform={`translate(${TIRE_SCREEN.x + 210} ${TIRE_SCREEN.y - 330}) scale(${pop(f, 22, 10, 220)})`}>
+							<rect x={-82} y={-82} width={164} height={164} rx={34} fill="#141716" stroke="#2C3230" strokeWidth={4} />
+							<circle r={70} fill={C.orange} opacity={0.12 + 0.1 * Math.sin(f / 2)} />
+							<path d="M -40 -30 Q -52 0 -36 34 L 36 34 Q 52 0 40 -30" fill="none" stroke={C.orange} strokeWidth={9} strokeLinecap="round" />
+							{[-24, -8, 8, 24].map((x) => (
+								<line key={x} x1={x} y1={34} x2={x} y2={46} stroke={C.orange} strokeWidth={7} strokeLinecap="round" />
+							))}
+							<rect x={-5} y={-24} width={10} height={32} rx={5} fill={C.orange} />
+							<circle cx={0} cy={20} r={6} fill={C.orange} />
+						</g>
+					</Svg>
 				) : null}
 			</AbsoluteFill>
 		</CircleReveal>

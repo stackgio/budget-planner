@@ -141,16 +141,23 @@ export const CreditCard: React.FC<{style?: React.CSSProperties; w?: number; dim?
 	);
 };
 
-export const PlanCard: React.FC<{style?: React.CSSProperties; title: string; icon: React.ReactNode; checked?: number; w?: number}> = ({style, title, icon, checked = 0, w = 540}) => (
+export const PlanCard: React.FC<{style?: React.CSSProperties; title: string; icon: React.ReactNode; checked?: number; w?: number; paper?: boolean}> = ({
+	style,
+	title,
+	icon,
+	checked = 0,
+	w = 540,
+	paper = false,
+}) => (
 	<div
 		style={{
 			...base,
 			width: w,
 			height: 150,
-			borderRadius: 26,
+			borderRadius: paper ? 6 : 26,
 			padding: '0 30px',
-			background: 'linear-gradient(160deg, #1B2220 0%, #141A18 100%)',
-			border: '2px solid #2B3431',
+			background: paper ? 'linear-gradient(170deg, #FBF8F1 0%, #EDE8DC 100%)' : 'linear-gradient(160deg, #1B2220 0%, #141A18 100%)',
+			border: paper ? '1px solid #D6D0C2' : '2px solid #2B3431',
 			boxShadow: '0 22px 50px rgba(0,0,0,0.55)',
 			display: 'flex',
 			alignItems: 'center',
@@ -158,12 +165,12 @@ export const PlanCard: React.FC<{style?: React.CSSProperties; title: string; ico
 			...style,
 		}}
 	>
-		<div style={{flex: 'none', width: 84, height: 84, borderRadius: 22, background: 'rgba(57,255,136,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{icon}</div>
+		<div style={{flex: 'none', width: 84, height: 84, borderRadius: 22, background: paper ? '#16241D' : 'rgba(57,255,136,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{icon}</div>
 		<div style={{flex: 1}}>
-			<div style={{fontWeight: 900, fontSize: 32, color: C.white, letterSpacing: 0.5}}>{title}</div>
+			<div style={{fontWeight: 900, fontSize: 32, color: paper ? '#1A1E1C' : C.white, letterSpacing: 0.5, whiteSpace: 'nowrap'}}>{title}</div>
 			<div style={{display: 'flex', gap: 10, marginTop: 14}}>
-				<div style={{width: 150, height: 10, borderRadius: 5, background: 'rgba(245,247,245,0.14)'}} />
-				<div style={{width: 80, height: 10, borderRadius: 5, background: 'rgba(245,247,245,0.1)'}} />
+				<div style={{width: 150, height: 10, borderRadius: 5, background: paper ? '#CFC9BC' : 'rgba(245,247,245,0.14)'}} />
+				<div style={{width: 80, height: 10, borderRadius: 5, background: paper ? '#DDD8CC' : 'rgba(245,247,245,0.1)'}} />
 			</div>
 		</div>
 		<svg width={52} height={52} viewBox="-26 -26 52 52" style={{opacity: checked > 0 ? 1 : 0.25}}>

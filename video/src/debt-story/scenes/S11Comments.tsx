@@ -9,10 +9,10 @@ import {VO} from '../timing';
 
 const START = 1100;
 const L = (g: number) => g - START;
-const ROW_Y = 810;
+const ROW_Y = 880;
 const ICONS = [
 	{label: 'FLAT TIRE', from: {x: 200, y: 900}, to: {x: 230, y: ROW_Y}, f: 6, node: <TireIcon r={46} />},
-	{label: 'CAR REPAIR', from: {x: 540, y: 720}, to: {x: 540, y: ROW_Y}, f: 12, node: <CarIcon s={1.25} />},
+	{label: 'CAR REPAIR', from: {x: 540, y: 820}, to: {x: 540, y: ROW_Y}, f: 12, node: <CarIcon s={1.25} />},
 	{label: 'RANDOM BILL', from: {x: 880, y: 900}, to: {x: 850, y: ROW_Y}, f: 18, node: <BillIcon s={0.95} />},
 ];
 
@@ -30,9 +30,19 @@ export const S11Comments: React.FC = () => {
 	]);
 	const facing: 1 | -1 = f < L(VO.expense) - 4 ? -1 : 1;
 
+	const q = tw(f, L(VO.whats) - 2, L(VO.whats) + 8, 0, 1, easeOut);
 	return (
 		<AbsoluteFill style={{opacity: fadeIn}}>
 			<Svg>
+				{/* the audience question */}
+				<g opacity={q} transform={`translate(540 ${(1 - q) * 24})`} fontFamily={FONT} fontWeight={900} textAnchor="middle" letterSpacing={-1.5}>
+					<text y={520} fontSize={84} fill={C.white}>
+						WHAT ALWAYS <tspan fill={C.green}>BREAKS</tspan>
+					</text>
+					<text y={606} fontSize={84} fill={C.white}>
+						YOUR BUDGET?
+					</text>
+				</g>
 				<ellipse cx={540} cy={1462} rx={300} ry={26} fill={C.green} opacity={0.05} />
 				<line x1={240} x2={840} y1={1462} y2={1462} stroke="#1E2523" strokeWidth={3} />
 				{ICONS.map((ic, i) => {
@@ -52,7 +62,7 @@ export const S11Comments: React.FC = () => {
 						</g>
 					);
 				})}
-				<Marcus x={540} y={1460} scale={0.98} facing={facing} pose={pose} expr={expr} frame={f + 1100} seed={11} />
+				<Marcus x={540} y={1470} scale={0.84} facing={facing} pose={pose} expr={expr} frame={f + 1100} seed={11} />
 			</Svg>
 			{prompt > 0 ? (
 				<div
@@ -60,7 +70,7 @@ export const S11Comments: React.FC = () => {
 						position: 'absolute',
 						left: 0,
 						right: 0,
-						top: 540,
+						top: 668,
 						display: 'flex',
 						justifyContent: 'center',
 						transform: `translateY(${(1 - prompt) * 30}px)`,

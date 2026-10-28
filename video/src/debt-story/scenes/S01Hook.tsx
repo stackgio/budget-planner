@@ -1,138 +1,195 @@
 import React from 'react';
-import {AbsoluteFill, interpolateColors, useCurrentFrame} from 'remotion';
-import {easeOut, pop, shake, tw} from '../anim';
-import {animate, Marcus, P, POSES} from '../Marcus';
-import {Warn} from '../props/Icons';
+import {AbsoluteFill, useCurrentFrame} from 'remotion';
+import {easeIn, easeOut, lerp, noise, pop, shake, tw} from '../anim';
+import {HOOK_WARN} from '../layout';
+import {animate, Marcus, P, POSES, type Joints} from '../Marcus';
+import {Car} from '../props/Car';
+import {TireIcon, Warn} from '../props/Icons';
+import {Doc, Envelope} from '../props/Paper';
 import {Cam, Svg} from '../Stage';
 import {C, FONT} from '../theme';
 import {VO} from '../timing';
+import {CAR, Street, TIRE_SCREEN} from './S02FlatTire';
 
-const BAR = {x0: 130, x1: 850, y: 770, h: 36};
-const STOP = VO.everything;
-const fillAt = (f: number) => {
-	// steady progress, then the stall + small knock-back
-	const moving = 0.34 + 0.24 * tw(f, 0, STOP, 0, 1, (t) => t);
-	return f < STOP ? moving : 0.58 - 0.025 * tw(f, STOP, STOP + 6, 0, 1, easeOut);
+/*
+ * 0.00–1.00  "I swear,"                      close-up: tyre squashing flat, repair bill slaps in
+ * 1.03–2.60  "the moment you start paying…"  whip-zoom to Marcus hammering his DEBT block down
+ * 2.92–4.17  "EVERYTHING decides to break."  setbacks crash in, the block grows back, Marcus loses it
+ */
+const CUT = 30;
+const HITS = [42, 56, 70];
+const BREAK = VO.everything;
+const FLOOR = 1500;
+const BLOCK = {x: 720, w: 380};
+
+const Hammer: React.FC<{j: Joints; s: number}> = ({j, s}) => {
+	const dx = j.handF.x - j.elbowF.x;
+	const dy = j.handF.y - j.elbowF.y;
+	const len = Math.hypot(dx, dy) || 1;
+	const ux = dx / len;
+	const uy = dy / len;
+	const L = 150 / s;
+	const ex = j.handF.x + ux * L;
+	const ey = j.handF.y + uy * L;
+	const ang = (Math.atan2(uy, ux) * 180) / Math.PI;
+	return (
+		<g>
+			<line x1={j.handF.x - ux * 20} y1={j.handF.y - uy * 20} x2={ex} y2={ey} stroke="#8A6A4A" strokeWidth={11} strokeLinecap="round" />
+			<g transform={`translate(${ex} ${ey}) rotate(${ang})`}>
+				<rect x={-16} y={-38} width={44} height={76} rx={8} fill="#4A5357" stroke="#6E797D" strokeWidth={3} />
+			</g>
+		</g>
+	);
 };
-/** Where the interrupting warning sits; Scene 2's reveal grows from here. */
-export const HOOK_WARN = {x: BAR.x0 + (BAR.x1 - BAR.x0) * 0.555, y: BAR.y + BAR.h / 2};
-
-const SIDE_WARNINGS = [
-	{f: STOP + 6, x: 215, y: 1090, s: 84},
-	{f: STOP + 11, x: 875, y: 1030, s: 96},
-	{f: STOP + 16, x: 170, y: 1340, s: 70},
-	{f: STOP + 21, x: 920, y: 1320, s: 78},
-];
 
 export const S01Hook: React.FC = () => {
 	const f = useCurrentFrame();
-	const fill = fillAt(f);
-	const hit = f >= STOP;
-	const sk = shake(f, STOP, 20, 16);
-	const barColor = interpolateColors(tw(f, STOP, STOP + 4), [0, 1], [C.green, C.red]);
-	const flash = tw(f, STOP, STOP + 3, 0, 1) * tw(f, STOP + 3, STOP + 22, 1, 0);
-	const push = tw(f, 0, STOP, 1, 1.05, (t) => t) + (hit ? 0.03 * pop(f, STOP, 9, 240) : 0);
 
+	// ---- A: close-up ----
+	const flat = tw(f, 0, 16, 0.35, 1, easeOut);
+	const zoomA = 2.15 + tw(f, 0, CUT, 0, 0.25) + tw(f, CUT - 4, CUT + 2, 0, 1.2, easeIn);
+	const blurA = tw(f, CUT - 4, CUT + 2, 0, 18);
+	const slap = tw(f, 4, 10, 0, 1, easeIn);
+	const skA = shake(f, 10, 10, 18);
+
+	// ---- B/C: debt block ----
+	const inB = tw(f, CUT - 2, CUT + 8, 0, 1, easeOut);
+	const hitsDone = HITS.filter((h) => f >= h).length;
+	const shrink = 1 - 0.09 * hitsDone + HITS.reduce((a, h) => a + (f >= h ? 0.03 * Math.sin(Math.min(1, (f - h) / 6) * Math.PI) : 0), 0);
+	const regrow = f >= BREAK + 10 ? 0.16 * pop(f, BREAK + 10, 9, 160) : 0;
+	const blockS = shrink + regrow;
+	const skC = shake(f, BREAK, 22, 20);
+	const flash = tw(f, BREAK, BREAK + 3) * tw(f, BREAK + 3, BREAK + 20, 1, 0);
+
+	const swing = (h: number) => [
+		{f: h - 8, pose: P({lean: -8, head: -6, armF: [176, -24], armB: [150, -10], legB: [-14, 4], legF: [16, 6]}), expr: 'determined' as const, dur: 6},
+		{f: h, pose: P({lean: 22, head: 8, armF: [92, 0], armB: [84, 4], legB: [-22, 6], legF: [24, 16]}), expr: 'determined' as const, dur: 4},
+	];
 	const {pose, expr} = animate(f, [
-		{f: 0, pose: P({...POSES.lookUp, gaze: 0.75}), expr: 'happy'},
-		{f: 40, pose: P({...POSES.lookUp, head: -18, gaze: 0.75}), expr: 'happy'},
-		{f: 56, pose: P({...POSES.fistPump, gaze: 0.6}), expr: 'happy', dur: 10, overshoot: true},
-		{f: 78, pose: P({...POSES.lookUp, gaze: 0.75}), expr: 'happy', dur: 14},
-		{f: STOP + 4, pose: P({...POSES.flinch, head: -22}), expr: 'shocked', dur: 4, overshoot: true},
-		{f: STOP + 16, pose: P({...POSES.confused, head: -24}), expr: 'confused', dur: 10},
-		{f: STOP + 30, pose: P({...POSES.confused, head: -8, armF: [20, 60]}), expr: 'confused', dur: 10},
+		{f: 0, pose: P({...POSES.stand}), expr: 'determined'},
+		...swing(HITS[0]),
+		...swing(HITS[1]),
+		...swing(HITS[2]),
+		{f: HITS[2] + 10, pose: P({lean: 4, head: -6, armF: [40, 30], armB: [-10, 8]}), expr: 'happy', dur: 8},
+		{f: BREAK + 4, pose: P({...POSES.flinch}), expr: 'shocked', dur: 4, overshoot: true},
+		{f: BREAK + 22, pose: P({...POSES.handsOnHead}), expr: 'frustrated', dur: 8, overshoot: true},
 	]);
-	// glances around at the warnings
-	const facing: 1 | -1 = f > STOP + 18 && f < STOP + 32 ? -1 : 1;
+	const holding = f < BREAK + 2;
+	const fx = f >= BREAK + 22 ? (['steam', 'anger'] as const) : f >= BREAK ? (['shock'] as const) : f >= HITS[2] + 6 ? (['sparkle'] as const) : [];
+
+	const crash = [
+		{f: BREAK + 2, x: 760, y: 1120, rot: 10, kind: 'doc' as const},
+		{f: BREAK + 7, x: 900, y: 1300, rot: -14, kind: 'env' as const},
+		{f: BREAK + 12, x: 560, y: 1330, rot: 18, kind: 'env' as const},
+	];
 
 	return (
 		<AbsoluteFill>
-			<Cam zoom={push} fx={540} fy={1000} x={sk.x} y={sk.y} rot={sk.r}>
-				{/* progress card */}
-				<div
-					style={{
-						position: 'absolute',
-						left: 90,
-						top: 660,
-						width: 900,
-						height: 238,
-						borderRadius: 34,
-						background: 'linear-gradient(160deg, #18201D 0%, #121715 100%)',
-						border: `2px solid ${hit ? 'rgba(255,85,85,0.55)' : '#26302C'}`,
-						boxShadow: hit ? '0 0 80px rgba(255,85,85,0.25), 0 30px 80px rgba(0,0,0,0.5)' : '0 30px 80px rgba(0,0,0,0.5)',
-						fontFamily: FONT,
-					}}
-				>
-					<div style={{position: 'absolute', left: 40, top: 32, fontWeight: 800, fontSize: 26, letterSpacing: 3, color: C.gray}}>DEBT PAYOFF</div>
-					<div
-						style={{
-							position: 'absolute',
-							right: 36,
-							top: 26,
-							padding: '8px 16px',
-							borderRadius: 999,
-							fontWeight: 800,
-							fontSize: 20,
-							letterSpacing: 2,
-							color: hit ? C.red : C.green,
-							background: hit ? C.redSoft : C.greenSoft,
-						}}
-					>
-						{hit ? 'INTERRUPTED' : 'ON TRACK'}
-					</div>
-					<div style={{position: 'absolute', left: 40, bottom: 30, fontWeight: 800, fontSize: 24, color: C.gray, letterSpacing: 2}}>DEBT</div>
-					<div style={{position: 'absolute', right: 40, bottom: 30, fontWeight: 900, fontSize: 26, color: C.green, letterSpacing: 1}}>$0</div>
-				</div>
-				<Svg>
-					<defs>
-						<linearGradient id="hookFill" x1="0" x2="1">
-							<stop offset="0" stopColor={barColor} stopOpacity={0.55} />
-							<stop offset="1" stopColor={barColor} />
-						</linearGradient>
-					</defs>
-					<rect x={BAR.x0} y={BAR.y} width={BAR.x1 - BAR.x0} height={BAR.h} rx={BAR.h / 2} fill="#232B28" />
-					<rect x={BAR.x0} y={BAR.y} width={(BAR.x1 - BAR.x0) * fill} height={BAR.h} rx={BAR.h / 2} fill="url(#hookFill)" />
-					{!hit ? (
-						<rect
-							x={BAR.x0 + (BAR.x1 - BAR.x0) * fill - 60}
-							y={BAR.y + 6}
-							width={50}
-							height={BAR.h - 12}
-							rx={10}
-							fill="#fff"
-							opacity={0.25 + 0.15 * Math.sin(f / 4)}
-						/>
-					) : null}
-					{/* finish flag */}
-					<g transform={`translate(${BAR.x1 + 46} ${BAR.y + BAR.h / 2})`}>
-						<line x1={-10} y1={22} x2={-10} y2={-34} stroke={C.green} strokeWidth={5} strokeLinecap="round" />
-						<path d="M -8 -34 L 22 -24 L -8 -12 Z" fill={C.green} />
-					</g>
-					{/* the interruption */}
-					{hit ? (
-						<g transform={`translate(${HOOK_WARN.x} ${HOOK_WARN.y - 6}) scale(${pop(f, STOP, 9, 260)}) rotate(${(1 - pop(f, STOP, 9, 260)) * -30})`}>
-							<circle r={64 + 10 * Math.sin((f - STOP) / 3)} fill={C.red} opacity={0.14} />
-							<Warn size={86} glow={0} />
-						</g>
-					) : null}
-					{/* ground glow */}
-					<ellipse cx={540} cy={1452} rx={360} ry={26} fill={hit ? C.red : C.green} opacity={0.06} />
-					<line x1={150} x2={930} y1={1452} y2={1452} stroke="#1E2523" strokeWidth={3} />
-					<Marcus x={540} y={1450} scale={1.2} pose={pose} expr={expr} frame={f} facing={facing} />
-					{SIDE_WARNINGS.map((w, i) => {
-						const p = pop(f, w.f, 10, 230);
-						if (p <= 0) return null;
-						const bob = Math.sin((f - w.f) / 5 + i) * 6;
-						return (
-							<g key={i} transform={`translate(${w.x} ${w.y + bob}) scale(${p}) rotate(${Math.sin((f + i * 9) / 6) * 6})`}>
-								<Warn size={w.s} glow={0.8} />
+			{/* B/C */}
+			{f >= CUT - 2 ? (
+				<AbsoluteFill style={{opacity: inB, transform: `scale(${lerp(1.18, 1, inB)})`, transformOrigin: '540px 1150px', filter: inB < 1 ? `blur(${(1 - inB) * 14}px)` : undefined}}>
+					<Cam x={skC.x} y={skC.y} rot={skC.r} zoom={1.3 + 0.05 * tw(f, CUT, BREAK) + 0.06 * pop(f, BREAK, 9, 240)} fx={520} fy={1460}>
+						<AbsoluteFill style={{background: `radial-gradient(ellipse 800px 700px at 540px 1150px, ${f >= BREAK ? '#2A1414' : '#13201A'} 0%, ${C.bg} 75%)`}} />
+						<Svg>
+							<rect x={-100} y={FLOOR} width={1280} height={700} fill="#101412" />
+							<line x1={-100} x2={1280} y1={FLOOR} y2={FLOOR} stroke="#26302C" strokeWidth={3} />
+							{/* the DEBT block */}
+							<g transform={`translate(${BLOCK.x} ${FLOOR}) scale(${blockS})`}>
+								<rect x={-BLOCK.w / 2 + 8} y={-BLOCK.w + 10} width={BLOCK.w} height={BLOCK.w} rx={18} fill="#000" opacity={0.4} />
+								<rect x={-BLOCK.w / 2} y={-BLOCK.w} width={BLOCK.w} height={BLOCK.w} rx={18} fill="#2A2D2E" stroke="#3E4344" strokeWidth={5} />
+								<rect x={-BLOCK.w / 2} y={-BLOCK.w} width={BLOCK.w} height={44} rx={18} fill="#34383A" />
+								{hitsDone > 0 ? <path d={`M ${-BLOCK.w / 2} -250 L -150 -230 L -170 -200 L -130 -170`} stroke="#151718" strokeWidth={5} fill="none" /> : null}
+								{hitsDone > 1 ? <path d={`M ${-BLOCK.w / 2} -110 L -140 -120 L -120 -80`} stroke="#151718" strokeWidth={5} fill="none" /> : null}
+								<text x={0} y={-BLOCK.w / 2 + 34} textAnchor="middle" fontFamily={FONT} fontWeight={900} fontSize={104} letterSpacing={4} fill={C.red}>
+									DEBT
+								</text>
 							</g>
-						);
-					})}
-				</Svg>
-			</Cam>
-			{/* red edge flash on the interruption */}
-			<AbsoluteFill style={{opacity: flash * 0.55, background: 'radial-gradient(ellipse 620px 1000px at 540px 960px, transparent 45%, rgba(255,60,60,0.55) 100%)'}} />
+							{/* chips + PAID pops */}
+							{HITS.map((h, i) =>
+								f >= h && f < h + 22 ? (
+									<g key={i}>
+										{Array.from({length: 6}, (_, k) => {
+											const t = (f - h) / 22;
+											const vx = -6 - noise(k + i * 9) * 8 - 6;
+											const vy = -10 - Math.abs(noise(k * 3 + i)) * 10;
+											return <rect key={k} x={BLOCK.x - (BLOCK.w / 2) * blockS + vx * (f - h)} y={1270 + vy * (f - h) + 0.9 * (f - h) ** 2} width={16} height={12} fill="#3E4344" opacity={1 - t} transform={`rotate(${k * 40} ${BLOCK.x - 190} 1270)`} />;
+										})}
+										<text x={BLOCK.x - 40 + i * 30} y={1040 - (f - h) * 5} textAnchor="middle" fontFamily={FONT} fontWeight={900} fontSize={64} fill={C.green} opacity={1 - (f - h) / 22}>
+											PAID
+										</text>
+									</g>
+								) : null,
+							)}
+							<Marcus x={250} y={FLOOR + 6} scale={1.22} pose={pose} expr={expr} frame={f} fx={[...fx]} seed={1}>
+								{(j) => (holding ? <Hammer j={j} s={1.22} /> : null)}
+							</Marcus>
+							{!holding ? (
+								<g transform={`translate(${lerp(400, 430, tw(f, BREAK, BREAK + 8))} ${lerp(1260, FLOOR - 20, tw(f, BREAK, BREAK + 8, 0, 1, easeIn))}) rotate(${lerp(-40, 82, tw(f, BREAK, BREAK + 8))})`}>
+									<line x1={-90} y1={0} x2={90} y2={0} stroke="#8A6A4A" strokeWidth={13} strokeLinecap="round" />
+									<rect x={80} y={-44} width={52} height={88} rx={9} fill="#4A5357" stroke="#6E797D" strokeWidth={3} />
+								</g>
+							) : null}
+							{/* setbacks crash in */}
+							{crash.map((c, i) => {
+								if (f < c.f) return null;
+								const t = tw(f, c.f, c.f + 6, 0, 1, easeIn);
+								return (
+									<g key={i} transform={`translate(${c.x} ${lerp(200, c.y, t)}) rotate(${lerp(c.rot * 3, c.rot, t)}) scale(1.5)`}>
+										{c.kind === 'doc' ? <Doc w={150} title="REPAIR BILL" accent={C.orange} /> : <Envelope w={170} label="BILL" />}
+									</g>
+								);
+							})}
+							{f >= BREAK + 4 ? (
+								<g transform={`translate(${lerp(1300, 330, tw(f, BREAK + 4, BREAK + 16, 0, 1, easeOut))} ${FLOOR - 90 - Math.abs(Math.sin(tw(f, BREAK + 4, BREAK + 16) * Math.PI * 2)) * 60}) rotate(${-tw(f, BREAK + 4, BREAK + 16) * 520})`}>
+									<TireIcon r={90} flat={false} />
+								</g>
+							) : null}
+							{f >= BREAK ? (
+								<g transform={`translate(${HOOK_WARN.x} ${HOOK_WARN.y}) scale(${pop(f, BREAK, 9, 260)})`}>
+									<Warn size={150} glow={0.6} />
+								</g>
+							) : null}
+						</Svg>
+					</Cam>
+					<AbsoluteFill style={{opacity: flash * 0.6, background: 'radial-gradient(ellipse 620px 1000px at 540px 1100px, transparent 40%, rgba(255,60,60,0.6) 100%)'}} />
+				</AbsoluteFill>
+			) : null}
+
+			{/* A: close-up of the tyre */}
+			{f < CUT + 2 ? (
+				<AbsoluteFill style={{filter: blurA > 0 ? `blur(${blurA}px)` : undefined, opacity: tw(f, CUT - 1, CUT + 2, 1, 0)}}>
+					<AbsoluteFill style={{background: C.bg}} />
+					<Cam zoom={zoomA} fx={TIRE_SCREEN.x} fy={TIRE_SCREEN.y} x={520 - TIRE_SCREEN.x + skA.x} y={1150 - TIRE_SCREEN.y + skA.y}>
+						<Svg>
+							<Street p={0.2} />
+							<g transform={`translate(${CAR.x} ${CAR.y}) scale(${CAR.s})`}>
+								<Car flat={flat} id="h1" />
+							</g>
+							{[0, 1, 2].map((i) => {
+								const t = ((f + i * 4) % 12) / 12;
+								return (
+									<path
+										key={i}
+										d={`M ${TIRE_SCREEN.x - 70 - t * 50} ${TIRE_SCREEN.y + 50 - i * 18} q -18 -6 -32 0`}
+										stroke={C.white}
+										strokeWidth={3}
+										fill="none"
+										strokeLinecap="round"
+										opacity={(1 - t) * 0.7}
+									/>
+								);
+							})}
+						</Svg>
+					</Cam>
+					<AbsoluteFill style={{background: 'radial-gradient(ellipse 600px 900px at 540px 1150px, transparent 50%, rgba(255,60,60,0.35) 100%)', opacity: 0.5 + 0.5 * Math.sin(f / 3)}} />
+					<Svg>
+						<Marcus x={175} y={2000} scale={2.1} pose={P({...POSES.handsOnHead, gaze: 0.8})} expr="shocked" frame={f} fx={['sweat', 'shock']} seed={1} />
+						<g transform={`translate(${lerp(1400, 860, slap)} ${lerp(700, 1250, slap)}) rotate(${lerp(40, 9, slap)}) scale(2.3)`}>
+							<Doc w={150} title="REPAIR BILL" accent={C.red} />
+						</g>
+					</Svg>
+				</AbsoluteFill>
+			) : null}
 		</AbsoluteFill>
 	);
 };

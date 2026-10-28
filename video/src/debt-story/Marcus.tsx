@@ -315,6 +315,72 @@ const Cap: React.FC<{gaze: number}> = ({gaze}) => {
 	);
 };
 
+export type Fx = 'sweat' | 'tears' | 'steam' | 'anger' | 'shock' | 'sparkle';
+
+/** Cartoon reaction effects, drawn in head-local space (facing right, head radius 44). */
+const HeadFx: React.FC<{fx: Fx[]; frame: number; gaze: number}> = ({fx, frame, gaze}) => {
+	const ex1 = lerp(-13, 6, gaze);
+	const ex2 = lerp(13, 27, gaze);
+	return (
+		<g>
+			{fx.includes('sweat') ? (
+				<g transform={`translate(${-38 + 2 * Math.sin(frame / 5)} ${-18 + ((frame * 1.6) % 26)})`} opacity={1 - ((frame * 1.6) % 26) / 34}>
+					<path d="M 0 -14 Q 9 0 0 7 Q -9 0 0 -14 Z" fill="#8FD3FF" stroke="#0B0D0C" strokeWidth={2} />
+				</g>
+			) : null}
+			{fx.includes('tears')
+				? [ex1, ex2].map((ex, i) => {
+						const w = Math.sin(frame / 2.2 + i) * 3;
+						const dir = i ? 1 : -1;
+						return (
+							<g key={i}>
+								<path
+									d={`M ${ex} 12 Q ${ex + dir * 14 + w} 30 ${ex + dir * 26} 62 L ${ex + dir * 34} 60 Q ${ex + dir * 20 - w} 28 ${ex + dir * 6} 10 Z`}
+									fill="#8FD3FF"
+									opacity={0.95}
+								/>
+								{[0, 1].map((k) => {
+									const t = ((frame + k * 7 + i * 4) % 14) / 14;
+									return <circle key={k} cx={ex + dir * (30 + t * 16)} cy={62 + t * 50} r={5 * (1 - t * 0.5)} fill="#8FD3FF" opacity={1 - t} />;
+								})}
+							</g>
+						);
+					})
+				: null}
+			{fx.includes('steam')
+				? [0, 1, 2].map((k) => {
+						const t = ((frame + k * 8) % 24) / 24;
+						return <circle key={k} cx={-24 + k * 22 + Math.sin(frame / 4 + k) * 5} cy={-74 - t * 60} r={10 + t * 14} fill="#D9DEDC" opacity={(1 - t) * 0.8} />;
+					})
+				: null}
+			{fx.includes('anger') ? (
+				<g transform={`translate(30 -34) scale(${1 + 0.12 * Math.sin(frame / 2)})`} stroke={C.red} strokeWidth={4.5} strokeLinecap="round" fill="none">
+					<path d="M -10 -3 Q -3 -3 -3 -10 M 3 -10 Q 3 -3 10 -3 M 10 3 Q 3 3 3 10 M -3 10 Q -3 3 -10 3" />
+				</g>
+			) : null}
+			{fx.includes('shock')
+				? [-50, -20, 10].map((a, k) => {
+						const len = 16 + 6 * Math.sin(frame / 2 + k);
+						const rad = ((a - 90) * Math.PI) / 180;
+						return (
+							<line key={k} x1={Math.cos(rad) * 66} y1={Math.sin(rad) * 66} x2={Math.cos(rad) * (66 + len)} y2={Math.sin(rad) * (66 + len)} stroke={C.white} strokeWidth={5} strokeLinecap="round" />
+						);
+					})
+				: null}
+			{fx.includes('sparkle')
+				? [
+						[58, -50, 0],
+						[70, -12, 6],
+						[-60, -58, 11],
+					].map(([x, y, o], k) => {
+						const t = 0.6 + 0.4 * Math.sin((frame + o) / 4);
+						return <path key={k} d={`M ${x} ${y - 12 * t} L ${x + 3} ${y - 3} L ${x + 12 * t} ${y} L ${x + 3} ${y + 3} L ${x} ${y + 12 * t} L ${x - 3} ${y + 3} L ${x - 12 * t} ${y} L ${x - 3} ${y - 3} Z`} fill={C.green} />;
+					})
+				: null}
+		</g>
+	);
+};
+
 const seg = (pts: V[]) => pts.map((p, i) => `${i ? 'L' : 'M'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
 
 export type MarcusProps = {
@@ -336,6 +402,7 @@ export type MarcusProps = {
 	/** draws held props between the back arm and the body */
 	behind?: (j: Joints) => React.ReactNode;
 	seed?: number;
+	fx?: Fx[];
 };
 
 export const Marcus: React.FC<MarcusProps> = ({
@@ -353,6 +420,7 @@ export const Marcus: React.FC<MarcusProps> = ({
 	children,
 	behind,
 	seed = 0,
+	fx = [],
 }) => {
 	const br = idle ? Math.sin((frame + seed * 13) / 21) : 0;
 	const p: Pose = {
@@ -388,6 +456,7 @@ export const Marcus: React.FC<MarcusProps> = ({
 					<circle cx={0} cy={0} r={L.headR} fill={C.white} />
 					<g transform="translate(0 5)"><Face expr={expr} gaze={p.gaze} blink={blink} /></g>
 					<g transform="translate(0 -7)"><Cap gaze={p.gaze} /></g>
+					{fx.length ? <HeadFx fx={fx} frame={frame} gaze={p.gaze} /> : null}
 				</g>
 				<path d={seg([j.shoulder, j.elbowF, j.handF])} stroke={C.white} strokeWidth={sw} />
 				<circle cx={j.handF.x} cy={j.handF.y} r={7.5} fill={C.white} />

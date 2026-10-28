@@ -84,7 +84,7 @@ export const S05Blocked: React.FC = () => {
 
 	return (
 		<AbsoluteFill style={{transform: `translateX(${panIn}px)`, filter: panIn > 2 ? `blur(${Math.min(10, panIn / 60)}px)` : undefined}}>
-			<Cam zoom={frozen ? 1.09 : 1 + 0.03 * tw(raw, 40, 126)} fx={460} fy={1100} x={sk.x} y={sk.y}>
+			<Cam zoom={(frozen ? 1.09 : 1 + 0.03 * tw(raw, 40, 126)) * 1.3} fx={440} fy={1440} x={sk.x} y={sk.y}>
 				<AbsoluteFill style={{filter: frozen ? 'grayscale(0.75) contrast(1.1)' : undefined}}>
 					<Svg>
 						<defs>
@@ -116,7 +116,7 @@ export const S05Blocked: React.FC = () => {
 						<g transform={`translate(${towerX} ${FLOOR})`}>
 							<BillTower f={f} extra={[NOT + 4, NOT + 12]} />
 						</g>
-						<Marcus x={mx} y={FLOOR + 30} scale={1.15} facing={-1} pose={pose} expr={keyed.expr} frame={f + 270} idle={!frozen} seed={5} />
+						<Marcus x={mx} y={FLOOR + 30} scale={1.15} facing={-1} pose={pose} expr={keyed.expr} frame={f + 270} idle={!frozen} fx={f >= NOT + 18 ? ['tears'] : f >= BRO + 6 ? ['anger', 'steam'] : f >= BRO ? ['shock'] : []} seed={5} />
 						{/* impact lines on the slam */}
 						{raw >= SLAM && raw < SLAM + 8
 							? [0, 1, 2, 3].map((i) => (
