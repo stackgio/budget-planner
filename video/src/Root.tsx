@@ -5,6 +5,7 @@ import {specSchema, type Spec} from './schema';
 import {theme} from './theme';
 // Studio preview only: synthetic pipeline self-test data, clearly labelled on screen.
 import placeholder from './placeholder-spec.json';
+import {DebtStoryCompositions} from './debt-story/Root';
 
 const calculateMetadata: CalculateMetadataFunction<Spec> = ({props}) => {
 	const spec = specSchema.parse(props);
@@ -16,6 +17,7 @@ const calculateMetadata: CalculateMetadataFunction<Spec> = ({props}) => {
  * --props=projects/<slug>/spec.json; duration comes from the spec.
  */
 export const RemotionRoot: React.FC = () => (
+	<>
 	<Composition
 		id="GraphVideo"
 		component={GraphVideo}
@@ -27,4 +29,6 @@ export const RemotionRoot: React.FC = () => (
 		defaultProps={specSchema.parse(placeholder)}
 		calculateMetadata={calculateMetadata}
 	/>
+	<DebtStoryCompositions />
+	</>
 );
