@@ -2,7 +2,7 @@ import React, {useMemo} from 'react';
 import {interpolate, Easing} from 'remotion';
 import type {Spec} from '../schema';
 import type {Timeline} from '../lib/timeline';
-import {valueAt} from '../lib/timeline';
+import {dateIndex, valueAt} from '../lib/timeline';
 import {formatCompact, formatDate, formatMoney, parseISO} from '../lib/format';
 import {seriesColor, theme} from '../theme';
 import {EventCallout} from './EventCallout';
@@ -112,7 +112,7 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 	let focusY = PAD.t + PH / 2;
 	for (const ev of tl.events) {
 		const env =
-			interpolate(frame, [ev.frame - 20, ev.frame, ev.holdEnd, ev.holdEnd + 26], [0, 1, 1, 0], {
+			interpolate(frame, [ev.frame - Math.max(4, Math.round(ev.event.leadSec * theme.fps)), ev.frame, ev.holdEnd, ev.holdEnd + 26], [0, 1, 1, 0], {
 				extrapolateLeft: 'clamp',
 				extrapolateRight: 'clamp',
 				easing: smooth,
@@ -148,6 +148,18 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 			extrapolateRight: 'clamp',
 		});
 		tagOpacity = Math.min(tagOpacity, o);
+	});
+	// the live value tag steps aside with the counter before the final reveal
+	tagOpacity = Math.min(tagOpacity, interpolate(frame, [tl.hideFrame, tl.hideFrame + 10], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}));
+
+	// Peak-to-trough markers: shaded span + dashed peak level grow with the line; a bracket and the
+	// verified drawdown label land when the line reaches the trough.
+	const drawdowns = spec.drawdowns.map((dd) => {
+		const s = spec.series.find((ss) => ss.id === dd.seriesId) ?? spec.series[0];
+		const i0 = dateIndex(s.dates, dd.from);
+		const i1 = dateIndex(s.dates, dd.to);
+		const toFrame = tl.progress.findIndex((q) => q >= i1);
+		return {dd, i0, i1, vPeak: s.values[i0], vTrough: s.values[i1], toFrame};
 	});
 	const tags: Tag[] = spec.series.map((s, i) => {
 		const v = valueAt(s.values, p);
@@ -291,6 +303,51 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 								))}
 						</>
 					)}
+
+					{/* drawdown markers */}
+					{drawdowns.map(({dd, i0, i1, vPeak, vTrough, toFrame}, k) => {
+						if (p <= i0) return null;
+						const x0 = xs[i0];
+						const x1 = xs[i1];
+						const xe = Math.min(tipX, x1);
+						const reached = frame >= toFrame && toFrame >= 0;
+						const grow = reached
+							? interpolate(frame, [toFrame, toFrame + 12], [0, 1], {extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic)})
+							: 0;
+						const yp = y(vPeak);
+						const yt = y(vTrough);
+						const bx = x1 + 30;
+						// bracket + label clear out as the recovering line approaches them; the shaded span stays as context
+						const labelO = reached
+							? grow * interpolate(tipX, [x1 + 4, bx + 6], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})
+							: 0;
+						return (
+							<g key={`dd${k}`}>
+								<rect x={x0} y={PAD.t - 18} width={Math.max(0, xe - x0)} height={PH + 18} fill={theme.down} opacity={0.07} />
+								<line x1={x0} x2={reached ? x1 + (bx + 12 - x1) * labelO : xe} y1={yp} y2={yp} stroke={theme.down} strokeWidth={3} strokeDasharray="10 8" />
+								<circle cx={x0} cy={yp} r={8} fill={theme.down} />
+								{grow > 0 && (
+									<g opacity={labelO}>
+										<line x1={bx} x2={bx} y1={yp} y2={yp + (yt - yp) * grow} stroke={theme.down} strokeWidth={5} />
+										<line x1={bx - 12} x2={bx + 12} y1={yp} y2={yp} stroke={theme.down} strokeWidth={5} />
+										{grow >= 1 && <line x1={x1 + 14} x2={bx + 12} y1={yt} y2={yt} stroke={theme.down} strokeWidth={5} />}
+									</g>
+								)}
+								{labelO > 0 && (
+									<g opacity={labelO}>
+										<text x={bx + 22} y={(yp + yt) / 2 + 8} fontSize={56} fontWeight={900} fill={theme.down} style={{fontVariantNumeric: 'tabular-nums'}}>
+											{dd.label}
+										</text>
+										{dd.sublabel && (
+											<text x={bx + 24} y={(yp + yt) / 2 + 44} fontSize={26} fontWeight={700} fill={theme.charcoal}>
+												{dd.sublabel}
+											</text>
+										)}
+									</g>
+								)}
+							</g>
+						);
+					})}
 
 					{/* event markers that have been passed */}
 					{tl.events.map((ev, k) =>

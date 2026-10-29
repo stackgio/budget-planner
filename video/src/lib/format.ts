@@ -17,7 +17,7 @@ export const formatCompact = (v: number) => {
 };
 
 export const formatPct = (v: number) =>
-	`${v >= 0 ? '+' : '\u2212'}${Math.abs(v) >= 100 ? Math.round(v).toLocaleString('en-US') : v.toFixed(1)}%`;
+	`${v >= 0 ? '+' : '\u2212'}${Math.abs(v) >= 100 ? Math.round(Math.abs(v)).toLocaleString('en-US') : Math.abs(v).toFixed(1)}%`;
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 

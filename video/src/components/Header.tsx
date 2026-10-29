@@ -38,6 +38,13 @@ export const Header: React.FC<{spec: Spec; frame: number; questionFrame: number}
 	const byHeight = avail / (spec.hook.lines.length * 1.06);
 	const byWidth = 880 / (longest * 0.56);
 	const fs = Math.floor(Math.min(96, byHeight, byWidth));
+	// Hero layout: one line (e.g. the amount) dominates; the rest are supporting lines.
+	const hero = spec.hook.hero;
+	const others = spec.hook.lines.filter((_, i) => i !== hero);
+	const supFs = Math.floor(Math.min(62, 880 / (Math.max(...others.map((l) => l.length), 1) * 0.54)));
+	const heroLine = hero === undefined ? '' : spec.hook.lines[hero] ?? '';
+	const heroFs = Math.floor(Math.min(176, 880 / (Math.max(heroLine.length, 1) * 0.6), avail - others.length * supFs * 1.1));
+	const heroIn = interpolate(frame, [0, 10], [0.92, 1], {extrapolateRight: 'clamp', easing: Easing.out(Easing.back(1.6))});
 	const qLen = spec.question.length;
 	const qfs = qLen > 60 ? 58 : qLen > 40 ? 66 : 74;
 
@@ -50,11 +57,33 @@ export const Header: React.FC<{spec: Spec; frame: number; questionFrame: number}
 							{spec.hook.kicker}
 						</div>
 					)}
-					{spec.hook.lines.map((l, i) => (
-						<div key={i} style={{fontSize: fs, fontWeight: 900, color: theme.ink, lineHeight: 1.04, letterSpacing: -2}}>
-							{renderLine(l, spec.hook.highlight)}
-						</div>
-					))}
+					{spec.hook.lines.map((l, i) =>
+						hero === undefined ? (
+							<div key={i} style={{fontSize: fs, fontWeight: 900, color: theme.ink, lineHeight: 1.04, letterSpacing: -2}}>
+								{renderLine(l, spec.hook.highlight)}
+							</div>
+						) : i === hero ? (
+							<div
+								key={i}
+								style={{
+									fontSize: heroFs,
+									fontWeight: 900,
+									color: theme.up,
+									lineHeight: 0.98,
+									letterSpacing: -5,
+									fontVariantNumeric: 'tabular-nums',
+									transform: `scale(${heroIn})`,
+									transformOrigin: 'left center',
+								}}
+							>
+								{l}
+							</div>
+						) : (
+							<div key={i} style={{fontSize: supFs, fontWeight: 800, color: theme.ink, lineHeight: 1.1, letterSpacing: -1}}>
+								{renderLine(l, spec.hook.highlight)}
+							</div>
+						),
+					)}
 				</div>
 			)}
 			{qIn > 0 && (

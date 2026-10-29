@@ -2,8 +2,8 @@ import React from 'react';
 import {theme} from '../theme';
 
 export const Brand: React.FC<{text: string; footnote: string}> = ({text, footnote}) => (
-	<div style={{position: 'absolute', left: theme.safe.left, right: theme.safe.right - 40, top: 1486}}>
-		<div style={{fontSize: 21, fontWeight: 500, color: theme.faint, lineHeight: 1.35}}>{footnote}</div>
+	<div style={{position: 'absolute', left: theme.safe.left, right: theme.safe.right - 40, top: 1478}}>
+		<div style={{fontSize: 23, fontWeight: 500, color: theme.faint, lineHeight: 1.35}}>{footnote}</div>
 		<div style={{display: 'flex', alignItems: 'center', gap: 12, marginTop: 14}}>
 			<svg width={30} height={30} viewBox="0 0 30 30">
 				<rect x={1} y={18} width={7} height={11} rx={2} fill={theme.up} />

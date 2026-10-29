@@ -14,6 +14,8 @@ export type Timeline = {
 	drawEnd: number;
 	resultFrame: number;
 	questionFrame: number;
+	/** frame from which the live counter/value tag start fading so the result card owns the final value */
+	hideFrame: number;
 	/** progress[f] = fractional data index drawn at frame f (0..N-1) */
 	progress: number[];
 	events: EventTiming[];
@@ -44,6 +46,9 @@ export const valueAt = (arr: number[], p: number) => {
 
 const DAY = 86400000;
 
+/** Index of the series date nearest to an ISO date. */
+export const dateIndex = (dates: string[], iso: string) => nearestIndex(dates.map(parseISO), parseISO(iso));
+
 export const buildTimeline = (spec: Spec, fps: number): Timeline => {
 	const durationInFrames = Math.round(spec.durationSec * fps);
 	const dates = spec.series[0].dates;
@@ -53,7 +58,9 @@ export const buildTimeline = (spec: Spec, fps: number): Timeline => {
 	const resultFrame = Math.round((spec.timing.resultSec ?? spec.durationSec - 7) * fps);
 	const questionFrame = Math.round((spec.timing.questionSec ?? spec.durationSec - 3.4) * fps);
 	const drawStart = Math.round(spec.timing.drawStartSec * fps);
-	const drawEnd = resultFrame - Math.round(0.6 * fps); // brief beat on the final value
+	const drawEnd = resultFrame - Math.round(spec.timing.landBeatSec * fps); // beat between landing and the result
+	const hideFrame = spec.timing.hideBeforeRevealSec > 0 ? drawEnd - Math.round(spec.timing.hideBeforeRevealSec * fps) : durationInFrames + 1000; // never (finite: interpolate needs finite ranges)
+	const paces = spec.pace.map((pc) => ({a: parseISO(pc.from), b: parseISO(pc.to), speed: pc.speed}));
 
 	// --- segment weights: calendar time, slowed around events, eased at the end
 	const span = times[n - 1] - times[0];
@@ -62,6 +69,7 @@ export const buildTimeline = (spec: Spec, fps: number): Timeline => {
 	for (let i = 0; i < n - 1; i++) {
 		const mid = (times[i] + times[i + 1]) / 2;
 		let w = Math.max(1, (times[i + 1] - times[i]) / DAY);
+		for (const pc of paces) if (mid >= pc.a && mid <= pc.b) w /= pc.speed;
 		spec.events.forEach((e, k) => {
 			const d = Math.abs(mid - times[evIdx[k]]) / DAY;
 			if (d < e.windowDays) {
@@ -173,5 +181,5 @@ export const buildTimeline = (spec: Spec, fps: number): Timeline => {
 		domainMax[fr] = cur;
 	}
 
-	return {durationInFrames, drawStart, drawEnd, resultFrame, questionFrame, progress, events, domainMax, domainMin};
+	return {durationInFrames, drawStart, drawEnd, resultFrame, questionFrame, hideFrame, progress, events, domainMax, domainMin};
 };

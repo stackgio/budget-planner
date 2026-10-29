@@ -1,7 +1,8 @@
 import React from 'react';
 import type {Spec} from '../schema';
 import type {Timeline} from '../lib/timeline';
-import {valueAt} from '../lib/timeline';
+import {valueAt, dateIndex} from '../lib/timeline';
+import {interpolate} from 'remotion';
 import {formatDate, formatMoney, formatPct} from '../lib/format';
 import {seriesColor, theme} from '../theme';
 import {TickerBadge} from './TickerBadge';
@@ -14,7 +15,31 @@ export const Counter: React.FC<{spec: Spec; tl: Timeline; frame: number}> = ({sp
 	const idx = Math.round(p);
 	const date = spec.series[0].dates[idx];
 	const gainloss = spec.colorMode === 'gainloss';
-	const appear = 1;
+	// Steps aside before the line lands so the result card owns the final value.
+	const appear = Math.min(
+		interpolate(frame, [tl.hideFrame, tl.hideFrame + 10], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}),
+		spec.result.value ? interpolate(frame, [tl.resultFrame - 2, tl.resultFrame + 6], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}) : 1,
+	);
+	// Number punch when the line hits an event.
+	const pulse = tl.events.reduce(
+		(m, ev) => Math.max(m, interpolate(frame, [ev.frame - 3, ev.frame + 3, ev.frame + 18], [0, 1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})),
+		0,
+	);
+	// Live drawdown readout: real value vs. the marked peak, shown from the peak until shortly after the trough.
+	const dd = spec.drawdowns[0];
+	const ddInfo = (() => {
+		if (!dd) return null;
+		const s = spec.series.find((ss) => ss.id === dd.seriesId) ?? spec.series[0];
+		const i0 = dateIndex(s.dates, dd.from);
+		const i1 = dateIndex(s.dates, dd.to);
+		if (p <= i0) return null;
+		// gone as soon as the line leaves the trough, so it never contradicts the recovering counter
+		const o = interpolate(p, [i1, i1 + 2], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+		if (o <= 0) return null;
+		// current value vs. the peak (matches the counter), frozen at the trough once reached
+		const pct = (valueAt(s.values, Math.min(p, i1)) / s.values[i0] - 1) * 100;
+		return pct > -0.5 ? null : {pct, o};
+	})();
 	// Whole years elapsed since the first data date, added to the starting age.
 	const ageNow = (() => {
 		if (!spec.age) return null;
@@ -84,6 +109,8 @@ export const Counter: React.FC<{spec: Spec; tl: Timeline; frame: number}> = ({sp
 							letterSpacing: -3,
 							fontVariantNumeric: 'tabular-nums',
 							lineHeight: 1.05,
+							transform: `scale(${1 + 0.07 * pulse})`,
+							transformOrigin: 'left center',
 						}}
 					>
 						{formatMoney(r.v)}
@@ -94,6 +121,23 @@ export const Counter: React.FC<{spec: Spec; tl: Timeline; frame: number}> = ({sp
 					<div style={{fontSize: 32, fontWeight: 800, color: r.color, fontVariantNumeric: 'tabular-nums'}}>
 						{formatPct(r.pct)}
 					</div>
+					{ddInfo && (
+						<div
+							style={{
+								opacity: ddInfo.o,
+								fontSize: 30,
+								fontWeight: 900,
+								color: '#fff',
+								background: theme.down,
+								padding: '8px 14px',
+								borderRadius: 12,
+								fontVariantNumeric: 'tabular-nums',
+								letterSpacing: 0.5,
+							}}
+						>
+							{`${formatPct(ddInfo.pct)} FROM PEAK`}
+						</div>
+					)}
 				</div>
 			</div>
 		);

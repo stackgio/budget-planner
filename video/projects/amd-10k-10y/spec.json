@@ -4,17 +4,40 @@
  "colorMode": "gainloss",
  "yScale": "linear",
  "dynamicY": true,
+ "timing": {
+  "drawStartSec": 0.1,
+  "resultSec": 17.4,
+  "landBeatSec": 0.15,
+  "hideBeforeRevealSec": 0.7
+ },
  "slug": "amd-10k-10y",
  "hook": {
   "lines": [
-   "AMD was $7.20",
-   "in 2016"
+   "POV: You invested",
+   "$10,000",
+   "in AMD 10 years ago\u2026"
   ],
-  "highlight": "$7.20",
-  "kicker": "$10,000 IN AMD"
+  "hero": 1
  },
- "counterLabel": "Your $10,000",
- "question": "Would you have held through \u221265.4%?",
+ "pace": [
+  {
+   "from": "2016-10-28",
+   "to": "2019-06-30",
+   "speed": 1.8
+  },
+  {
+   "from": "2021-11-29",
+   "to": "2022-10-14",
+   "speed": 0.55
+  },
+  {
+   "from": "2023-01-01",
+   "to": "2025-09-15",
+   "speed": 1.25
+  }
+ ],
+ "counterLabel": "Your investment",
+ "question": "Would you have held through a 65.4% crash?",
  "series": [
   {
    "id": "AMD",
@@ -7571,31 +7594,41 @@
  "events": [
   {
    "date": "2022-10-14",
-   "title": "Chip crash",
-   "subtitle": "Down to $77,694",
+   "title": "Peak to bottom",
+   "subtitle": "$224,875 \u2192 $77,694",
    "tone": "down",
-   "zoom": 1.1,
-   "holdSec": 0.9,
-   "slowdown": 3,
-   "windowDays": 50,
-   "place": "below"
+   "zoom": 1.22,
+   "holdSec": 1.0,
+   "slowdown": 1.4,
+   "windowDays": 30,
+   "place": "below",
+   "leadSec": 2.2
   },
   {
    "date": "2025-10-06",
    "title": "OpenAI deal",
    "subtitle": "Close $203.71",
    "tone": "up",
-   "zoom": 1.12,
-   "holdSec": 0.9,
-   "slowdown": 3,
-   "windowDays": 30
+   "zoom": 1.16,
+   "holdSec": 0.6,
+   "slowdown": 2.5,
+   "windowDays": 25,
+   "leadSec": 1.0
+  }
+ ],
+ "drawdowns": [
+  {
+   "from": "2021-11-29",
+   "to": "2022-10-14",
+   "label": "\u221265.4%",
+   "sublabel": "Nov 2021 \u2192 Oct 2022"
   }
  ],
  "result": {
-  "kicker": "TODAY",
+  "kicker": "TODAY IT'S WORTH",
   "headlineTone": "up",
   "headline": "80.3x your money",
-  "subline": "$10,000 \u2192 $803,389",
+  "value": "$803,389",
   "stats": [
    {
     "label": "Total return",

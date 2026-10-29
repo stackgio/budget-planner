@@ -7,13 +7,16 @@ export const ResultCard: React.FC<{spec: Spec; frame: number; fps: number; start
 	if (frame < start) return null;
 	const s = spring({frame: frame - start, fps, config: {damping: 18, stiffness: 140, mass: 0.8}});
 	const r = spec.result;
+	const reveal = Boolean(r.value);
+	// Final-value reveal: the number lands with a short, controlled overshoot.
+	const pop = spring({frame: frame - start - 2, fps, config: {damping: 11, stiffness: 170, mass: 0.7}});
 	return (
 		<div
 			style={{
 				position: 'absolute',
 				left: theme.safe.left - 16,
 				right: theme.safe.right - 56,
-				top: 820,
+				top: reveal ? 492 : 820,
 				transform: `translateY(${(1 - s) * 140}px)`,
 				opacity: interpolate(s, [0, 0.4], [0, 1], {extrapolateRight: 'clamp'}),
 				background: '#fff',
@@ -25,14 +28,31 @@ export const ResultCard: React.FC<{spec: Spec; frame: number; fps: number; start
 			}}
 		>
 			<div style={{fontSize: 28, fontWeight: 800, letterSpacing: 4, color: theme.muted}}>{r.kicker}</div>
+			{r.value && (
+				<div
+					style={{
+						fontSize: r.value.length > 9 ? 150 : 170,
+						fontWeight: 900,
+						letterSpacing: -6,
+						color: toneColor(r.headlineTone),
+						lineHeight: 1,
+						marginTop: 8,
+						fontVariantNumeric: 'tabular-nums',
+						transform: `scale(${interpolate(pop, [0, 1], [0.82, 1])})`,
+						transformOrigin: 'left center',
+					}}
+				>
+					{r.value}
+				</div>
+			)}
 			{r.headline && <div
 				style={{
-					fontSize: r.headline.length > 16 ? 76 : r.headline.length > 11 ? 96 : 116,
+					fontSize: reveal ? 58 : r.headline.length > 16 ? 76 : r.headline.length > 11 ? 96 : 116,
 					fontWeight: 900,
 					letterSpacing: -3,
-					color: toneColor(r.headlineTone),
+					color: reveal ? theme.ink : toneColor(r.headlineTone),
 					lineHeight: 1.05,
-					marginTop: 6,
+					marginTop: reveal ? 14 : 6,
 					fontVariantNumeric: 'tabular-nums',
 				}}
 			>

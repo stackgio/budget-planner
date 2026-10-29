@@ -123,7 +123,10 @@ def main():
         "lines": [render(l, "hook") for l in story["hook"]["lines"]],
         **({"highlight": render(story["hook"]["highlight"], "hook")} if story["hook"].get("highlight") else {}),
         **({"kicker": render(story["hook"]["kicker"], "hook")} if story["hook"].get("kicker") else {}),
+        **({"hero": story["hook"]["hero"]} if story["hook"].get("hero") is not None else {}),
     }
+    if story.get("pace"):
+        spec["pace"] = story["pace"]
     if story.get("age") is not None:
         spec["age"] = story["age"]
     if story.get("counterLabel"):
@@ -136,6 +139,7 @@ def main():
     keep = set(range(len(dates)))
     max_pts = story.get("maxPoints", 2600)
     ev_idx = [nearest(dates, e["date"]) for e in story.get("events", [])]
+    ev_idx += [nearest(dates, d[k]) for d in story.get("drawdowns", []) for k in ("from", "to")]
     if len(dates) > max_pts:
         bucket = len(dates) / (max_pts / 2)
         keep = {0, len(dates) - 1, *ev_idx}
@@ -162,7 +166,7 @@ def main():
         })
 
     spec["events"] = []
-    for e, ei in zip(story.get("events", []), ev_idx):
+    for e, ei in zip(story.get("events", []), ev_idx[: len(story.get("events", []))]):
         if dates[ei] != e["date"]:
             notes.append(f"event '{e['title']}' {e['date']} snapped to trading day {dates[ei]}")
         ev = dict(e)
@@ -187,10 +191,33 @@ def main():
     if [e["date"] for e in spec["events"]] != sorted(e["date"] for e in spec["events"]):
         raise SystemExit("events must be in chronological order")
 
+    # drawdown markers: the label must match the drop the series actually shows between the two dates
+    spec["drawdowns"] = []
+    for d in story.get("drawdowns", []):
+        s0 = next((s for s in calc["series"] if s["id"] == d.get("seriesId")), calc["series"][0])
+        i0, i1 = nearest(dates, d["from"]), nearest(dates, d["to"])
+        if i1 <= i0:
+            raise SystemExit(f"drawdown {d['from']}..{d['to']}: trough must come after peak")
+        v = s0["values"]
+        if v[i0] < max(v[: i0 + 1]) - 1e-9:
+            unverified.append(f"drawdown peak {dates[i0]} is not the running high at that date")
+        if v[i1] > min(v[i0 : i1 + 1]) + 1e-9:
+            unverified.append(f"drawdown trough {dates[i1]} is not the low between peak and trough")
+        actual = (v[i1] / v[i0] - 1) * 100
+        dd = {**d, "from": dates[i0], "to": dates[i1], "label": render(d["label"], "drawdown")}
+        if d.get("sublabel"):
+            dd["sublabel"] = render(d["sublabel"], "drawdown")
+        shown = float(re.sub(r"[^\d.]", "", dd["label"]) or "nan")
+        if abs(abs(actual) - shown) > 0.05 + 1e-9:
+            unverified.append(f"drawdown label {dd['label']} != series drop {actual:.2f}% ({dates[i0]} -> {dates[i1]})")
+        notes.append(f"drawdown {dates[i0]} {v[i0]:,.2f} -> {dates[i1]} {v[i1]:,.2f} = {actual:.4f}% (label {dd['label']})")
+        spec["drawdowns"].append(dd)
+
     r = story["result"]
     spec["result"] = {
         **{k: r[k] for k in ("kicker", "headlineTone") if k in r},
         **({"headline": render(r["headline"], "result")} if r.get("headline") else {}),
+        **({"value": render(r["value"], "result")} if r.get("value") else {}),
         **({"subline": render(r["subline"], "result")} if r.get("subline") else {}),
         "stats": [{"label": render(s["label"], "stat"), "value": render(s["value"], "stat"), "tone": s.get("tone", "neutral")} for s in r.get("stats", [])],
     }
@@ -208,7 +235,9 @@ def main():
     print("hook:", " / ".join(spec["hook"]["lines"]))
     for e in spec["events"]:
         print(f"event {e['date']}: {e['title']} — {e.get('subtitle', '')}")
-    print("result:", spec["result"].get("headline", "(none)"), "|", spec["result"].get("subline", ""))
+    for d in spec["drawdowns"]:
+        print(f"drawdown {d['from']} -> {d['to']}: {d['label']} {d.get('sublabel', '')}")
+    print("result:", spec["result"].get("value", ""), "|", spec["result"].get("headline", "(none)"), "|", spec["result"].get("subline", ""))
     for s in spec["result"]["stats"]:
         print(f"  {s['label']}: {s['value']}")
     print("question:", spec["question"])
