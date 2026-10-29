@@ -5,6 +5,8 @@ import {specSchema, type Spec} from './schema';
 import {theme} from './theme';
 // Studio preview only: synthetic pipeline self-test data, clearly labelled on screen.
 import placeholder from './placeholder-spec.json';
+import {DebtPayoff3Things, dp3Schema} from './debt-payoff-3/DebtPayoff3Things';
+import {TOTAL_FRAMES as DP3_FRAMES} from './debt-payoff-3/timing';
 
 const calculateMetadata: CalculateMetadataFunction<Spec> = ({props}) => {
 	const spec = specSchema.parse(props);
@@ -16,6 +18,7 @@ const calculateMetadata: CalculateMetadataFunction<Spec> = ({props}) => {
  * --props=projects/<slug>/spec.json; duration comes from the spec.
  */
 export const RemotionRoot: React.FC = () => (
+	<>
 	<Composition
 		id="GraphVideo"
 		component={GraphVideo}
@@ -27,4 +30,16 @@ export const RemotionRoot: React.FC = () => (
 		defaultProps={specSchema.parse(placeholder)}
 		calculateMetadata={calculateMetadata}
 	/>
+	{/* Production System 2.0 test: "3 Things to Do While Paying Off Debt" (temp timing until the VO is recorded) */}
+	<Composition
+		id="DebtPayoff3Things"
+		component={DebtPayoff3Things}
+		schema={dp3Schema}
+		width={theme.width}
+		height={theme.height}
+		fps={theme.fps}
+		durationInFrames={DP3_FRAMES}
+		defaultProps={{voiceover: null, draft: true}}
+	/>
+	</>
 );
