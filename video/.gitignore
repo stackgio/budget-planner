@@ -4,3 +4,5 @@ projects/*/out.mp4
 projects/*/qc/
 .remotion/
 projects/_selftest*/
+# licensed Adobe Stock media: not redistributed in git (see projects/debt-payoff-3-v2/ASSETS.md)
+public/debt-payoff-3-v2/stock/

@@ -4,6 +4,7 @@ import {ALT_PER_WEEK, ALT_TOTAL, PER_WEEK, TOTAL, WEEKS} from '../src/debt-payof
 import {AFTER_PAYMENT, AFTER_PURCHASE, PAYMENT, PURCHASE, START} from '../src/debt-payoff-3/scenes/S7Card';
 import {PHRASES, SCENES, TOTAL_FRAMES, VO_END} from '../src/debt-payoff-3/timing';
 import {count, money} from '../src/debt-payoff-3/ui';
+import * as V2 from '../src/debt-payoff-3-v2/numbers';
 
 let fails = 0;
 const ok = (cond: boolean, msg: string) => {
@@ -34,6 +35,12 @@ ok(TOTAL_FRAMES > VO_END, `video (${(TOTAL_FRAMES / 30).toFixed(2)} s) outlasts 
 const sc = Object.values(SCENES);
 ok(sc.every((w, i) => i === 0 || w[0] < sc[i - 1][1]), 'every scene overlaps the previous one (no black gaps)');
 ok(sc[sc.length - 1][1] === TOTAL_FRAMES, 'last scene runs to the final frame');
+
+// V2 must tell the same numbers as V1
+ok(V2.FUND === FUND_TARGET && V2.FUND_GOAL === FUND_GOAL, 'V2 emergency fund matches V1 ($500, goal $1,000)');
+ok(V2.PER_WEEK * V2.WEEKS === TOTAL && V2.ALT_PER_WEEK * V2.WEEKS === ALT_TOTAL, `V2 weekly figures match V1 (+${money(TOTAL)} in 4 weeks, ${money(ALT_TOTAL)} at $100/wk)`);
+ok(V2.CARD_START - V2.CARD_PAYMENT === AFTER_PAYMENT && V2.CARD_START - V2.CARD_PAYMENT + V2.CARD_PURCHASE === AFTER_PURCHASE, 'V2 card balance matches V1 ($1,000 → $700 → $1,000)');
+ok(V2.HOOK_BALANCE === 12480 && V2.ENDING_BALANCE < V2.HOOK_BALANCE, `V2 ending example balance decreases (${money(V2.HOOK_BALANCE)} → ${money(V2.ENDING_BALANCE)})`);
 
 console.log(fails ? `\n${fails} check(s) failed` : '\nall checks passed');
 process.exit(fails ? 1 : 0);
