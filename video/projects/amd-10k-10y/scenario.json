@@ -1,0 +1,8 @@
+{
+  "mode": "lump_sum",
+  "assets": [{"ticker": "AMD", "label": "AMD", "data": "data/AMD.json"}],
+  "amount": 10000,
+  "start": "2016-10-28",
+  "end": "2026-10-28",
+  "dividends": "none"
+}

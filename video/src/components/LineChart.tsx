@@ -106,7 +106,9 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 
 	// --- camera: subtle drift + push-in on events
 	let zoom = interpolate(frame, [0, tl.durationInFrames], [1, 1.025]);
-	let focusX = tipX;
+	// drift anchors on the y-axis so its labels never slide out of the chart box
+	let focusX = PAD.l;
+	let pushIn = 0;
 	let focusY = PAD.t + PH / 2;
 	for (const ev of tl.events) {
 		const env =
@@ -118,12 +120,15 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 		if (env > 0) {
 			const s = spec.series.find((ss) => ss.id === ev.event.seriesId) ?? spec.series[0];
 			zoom *= 1 + (ev.event.zoom - 1) * env;
+			pushIn = Math.max(pushIn, env);
 			// pull the origin halfway to the nearest edge so axis labels are not cropped
 			const px = xs[ev.index];
 			focusX = px < CHART.w / 2 ? px * 0.5 : px + (CHART.w - px) * 0.5;
 			focusY = 0.5 * y(s.values[ev.index]) + 0.5 * (PAD.t + PH);
 		}
 	}
+	// axis labels fade during a push-in rather than being cropped mid-glyph
+	const labelO = 1 - pushIn;
 	const endDim = interpolate(frame, [tl.resultFrame - 4, tl.resultFrame + 12], [1, 0.14], {
 		extrapolateLeft: 'clamp',
 		extrapolateRight: 'clamp',
@@ -195,6 +200,7 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 						<g key={`t${t.v}`} opacity={t.o}>
 							<line x1={PAD.l} x2={PAD.l + PW} y1={y(t.v)} y2={y(t.v)} stroke={theme.grid} strokeWidth={2} />
 							<text
+								opacity={labelO}
 								x={PAD.l - 20}
 								y={y(t.v) + 9}
 								textAnchor="end"
@@ -224,6 +230,7 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 							textAnchor="middle"
 							fontSize={26}
 							fontWeight={700}
+							opacity={labelO}
 							fill={yr.x <= tipX ? theme.ink : theme.faint}
 						>
 							{yr.label}

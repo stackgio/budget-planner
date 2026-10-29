@@ -30,7 +30,8 @@ export const EventCallout: React.FC<Props> = ({ev, frame, until, px, py, chartW,
 	const o = Math.min(inP, outP);
 
 	const mid = (plotTop + plotBottom) / 2;
-	const above = py > mid; // point low -> card above it
+	const place = ev.event.place ?? 'auto';
+	const above = place === 'auto' ? py > mid : place === 'above'; // point low -> card above it
 	const cardH = ev.event.subtitle ? 128 : 84;
 	const side = px + 36 + CARD_W <= chartW - 8 ? 'right' : px - 36 - CARD_W >= plotLeft ? 'left' : 'stack';
 	let cardTop: number;
@@ -42,7 +43,9 @@ export const EventCallout: React.FC<Props> = ({ev, frame, until, px, py, chartW,
 	if (side === 'stack') {
 		const gap = 70;
 		cardTop = above ? Math.max(plotTop - 10, py - gap - cardH) : Math.min(plotBottom - cardH, py + gap);
-		cardLeft = Math.max(8, Math.min(chartW - CARD_W - 8, px - CARD_W / 2));
+		// right margin leaves room for the push-in and the platform's right-side UI zone
+		// lean toward the side not yet drawn so the card hides less of the path so far
+		cardLeft = Math.max(8, Math.min(chartW - CARD_W - 80, px - CARD_W * 0.2));
 		ly2 = above ? cardTop + cardH : cardTop;
 	} else {
 		// beside the point, nudged away from the line's vertical position

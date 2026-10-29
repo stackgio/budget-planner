@@ -1,0 +1,69 @@
+{
+ "durationSec": 24,
+ "background": "white",
+ "colorMode": "gainloss",
+ "dynamicY": true,
+ "yScale": "linear",
+ "hook": {
+  "kicker": "$10,000 IN AMD",
+  "lines": [
+   "AMD was {AMD.start_price:price}",
+   "in 2016"
+  ],
+  "highlight": "{AMD.start_price:price}"
+ },
+ "counterLabel": "Your $10,000",
+ "events": [
+  {
+   "date": "2022-10-14",
+   "title": "Chip crash",
+   "subtitle": "Down to {AMD@2022-10-14.value:money}",
+   "tone": "down",
+   "zoom": 1.1,
+   "holdSec": 0.9,
+   "slowdown": 3,
+   "windowDays": 50,
+   "place": "below"
+  },
+  {
+   "date": "2025-10-06",
+   "title": "OpenAI deal",
+   "subtitle": "Close {AMD@2025-10-06.close:price}",
+   "tone": "up",
+   "zoom": 1.12,
+   "holdSec": 0.9,
+   "slowdown": 3,
+   "windowDays": 30
+  }
+ ],
+ "result": {
+  "kicker": "TODAY",
+  "headline": "{AMD.multiple:x} your money",
+  "headlineTone": "up",
+  "subline": "$10,000 → {AMD.final_value:money}",
+  "stats": [
+   {
+    "label": "Total return",
+    "value": "{AMD.total_return_pct:pct}",
+    "tone": "up"
+   },
+   {
+    "label": "Per year",
+    "value": "{AMD.cagr_pct:pct}",
+    "tone": "up"
+   },
+   {
+    "label": "Worst drop",
+    "value": "{AMD.max_drawdown_pct:pct}",
+    "tone": "down"
+   },
+   {
+    "label": "Price now",
+    "value": "{AMD.end_price:price}",
+    "tone": "neutral"
+   }
+  ]
+ },
+ "question": "Would you have held through {AMD.max_drawdown_pct:pct}?",
+ "footnote": "auto"
+}

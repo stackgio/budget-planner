@@ -28,6 +28,7 @@ export const eventSchema = z.object({
 	holdSec: z.number().default(0.6), // freeze time on the event
 	zoom: z.number().default(1.18), // camera push-in (1 = none)
 	tone: z.enum(['up', 'down', 'neutral']).default('neutral'),
+	place: z.enum(['auto', 'above', 'below']).default('auto'), // callout above/below the point when it can't sit beside it
 });
 
 export const statSchema = z.object({
