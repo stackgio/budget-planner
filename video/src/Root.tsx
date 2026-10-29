@@ -8,6 +8,7 @@ import placeholder from './placeholder-spec.json';
 import {DebtPayoff3Things, dp3Schema} from './debt-payoff-3/DebtPayoff3Things';
 import {TOTAL_FRAMES as DP3_FRAMES} from './debt-payoff-3/timing';
 import {DebtPayoff3ThingsV2} from './debt-payoff-3-v2/DebtPayoff3ThingsV2';
+import {DebtPayoff3ThingsV3} from './debt-payoff-3-v3/DebtPayoff3ThingsV3';
 
 const calculateMetadata: CalculateMetadataFunction<Spec> = ({props}) => {
 	const spec = specSchema.parse(props);
@@ -46,6 +47,17 @@ export const RemotionRoot: React.FC = () => (
 	<Composition
 		id="DebtPayoff3ThingsV2"
 		component={DebtPayoff3ThingsV2}
+		schema={dp3Schema}
+		width={theme.width}
+		height={theme.height}
+		fps={theme.fps}
+		durationInFrames={DP3_FRAMES}
+		defaultProps={{voiceover: null, draft: true}}
+	/>
+	{/* V3: V2's documentary footage + V1's financial explanations as camera-tracked glass graphics */}
+	<Composition
+		id="DebtPayoff3ThingsV3"
+		component={DebtPayoff3ThingsV3}
 		schema={dp3Schema}
 		width={theme.width}
 		height={theme.height}
