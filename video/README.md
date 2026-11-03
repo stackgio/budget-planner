@@ -106,3 +106,19 @@ Motion presets live in `lib/motion.ts`: springs `snappy/bouncy/heavy/smooth/limb
 3. Keep content above y=1390 (captions band) and inside `story.safe`. Keep Marcus's scale between about 0.9 and 1.15.
 4. Register the composition in `src/StoryRoot.tsx`. Add QC beats in `scripts/story-report.ts`.
 5. Render, open the contact sheet and every scene frame, fix, then re-render.
+
+---
+
+# /motion — universal video command (Editorial Motion)
+
+`/motion <idea | script | voiceover path | screenshots>` (skill: `.claude/skills/motion/`) classifies the request into one of 7 modes, writes or keeps the script, storyboards it, builds a narrated video on the story system, renders it, and runs QC. Historical-graph data goes through the `/graph` pipeline.
+
+| Step | Command |
+|---|---|
+| Scaffold a video | `node scripts/motion/new-video.mjs <slug> <CompId> <mode> "<title>"` → `src/videos/<slug>/` (script, facts, scenes, qc) + registration in `StoryRoot.tsx` |
+| Ingest voiceover (byte-identical) | `python3 scripts/voice.py ingest <slug> voice.mp3` |
+| Word timestamps | `voice.py transcribe <slug>` (ElevenLabs Scribe or local Whisper) · `voice.py align <slug>` (forced alignment) · `voice.py diff <slug>` (script vs spoken) |
+| Render + QC | `bash scripts/motion/render.sh <slug> [public/voice/<slug>/props.json] [--stills-only]` → `renders/<slug>/<slug>_vNN_<final-voice\|voice-approx\|temp-timing>.mp4` + `qc_vNN/` |
+| Pipeline self-test | `bash scripts/motion/selftest.sh` (scaffold → ingest → stills → cleanup) |
+
+Shared pieces: `src/story/lib/NarratedVideo.tsx` (generic narrated shell: cues, transitions, captions, untouched voice, never shorter than the voice), `src/story/lib/meta.ts` (`META` for variety, `fact()` provenance), `src/story/components/Screenshot.tsx` (real evidence: zoom, highlight, blur redaction), `src/story/components/AllocationBar.tsx` (paycheck/budget split).

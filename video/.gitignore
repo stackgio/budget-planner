@@ -5,3 +5,5 @@ projects/*/qc/
 .remotion/
 projects/_selftest*/
 __pycache__/
+renders/*/qc_v*/
+renders/*/.rendering_*

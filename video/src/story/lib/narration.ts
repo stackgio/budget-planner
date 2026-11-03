@@ -128,6 +128,29 @@ export const narrationFromWords = (script: ScriptLine[], words: Word[], audioSec
 	return {source: 'aligned', durationSec: Math.max(audioSec ?? 0, last), lines};
 };
 
+/**
+ * How well aligned words match the script, using the same look-ahead as
+ * narrationFromWords. `missed` tokens fell back to the next spoken word, so
+ * their timing is approximate. Use it to flag script ≠ narration differences.
+ */
+export const alignmentReport = (script: ScriptLine[], words: Word[]) => {
+	const spoken = words.filter((w) => norm(w.text));
+	let k = 0;
+	const missed: {line: string; token: string; near: string}[] = [];
+	let total = 0;
+	for (const ln of script) {
+		for (const tok of tokenize(ln.text)) {
+			total++;
+			let m = -1;
+			for (let j = k; j < Math.min(spoken.length, k + 4); j++) if (norm(spoken[j].text) === norm(tok)) { m = j; break; }
+			if (m < 0) missed.push({line: ln.id, token: tok, near: spoken[Math.min(k, spoken.length - 1)]?.text ?? ''});
+			k = (m >= 0 ? m : k) + 1;
+		}
+	}
+	const unusedSpoken = Math.max(0, spoken.length - k);
+	return {total, matched: total - missed.length, missed, unusedSpoken};
+};
+
 /** Cue lookup: seconds of a line's start, or of a word inside it (matched by text or index). */
 export const cueSec = (n: Narration, lineId: string, word?: string | number, edge: 'start' | 'end' = 'start') => {
 	const ln = n.lines.find((l) => l.id === lineId);
