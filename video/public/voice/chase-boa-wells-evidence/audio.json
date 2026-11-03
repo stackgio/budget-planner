@@ -1,0 +1,11 @@
+{
+ "durationSec": 45.636,
+ "codec": "mp3",
+ "sampleRate": 44100,
+ "channels": 1,
+ "container": "mp3",
+ "bitRate": "130969",
+ "file": "public/voice/chase-boa-wells-evidence/voice.mp3",
+ "source": "/root/.claude/uploads/275553bf-4a10-587f-8805-f8904762ef1c/f0ac36ba-ElevenLabs_2026-11-03T21_45_35_Stack_voice__gen_sp100_s50_sb75_v4.mp3",
+ "sha256": "0c8e4c4de5bb1de9692ef263a69e51dcca5fb1b3b0b47475244c957fcf4f2063"
+}

@@ -31,7 +31,9 @@ export const Screenshot: React.FC<{
 	frame?: 'card' | 'phone' | 'none';
 	palette?: Palette;
 	style?: React.CSSProperties;
-}> = ({src, natural, w, redact = [], mark, highlight = 0, zoomTo, focus = 0, viewportH, frame = 'card', palette = editorial, style}) => {
+	/** extra soft highlights (marker fill + outline, no dimming); `t` 0..1 */
+	marks?: {r: Region; t: number; color?: string}[];
+}> = ({src, natural, w, redact = [], mark, highlight = 0, zoomTo, focus = 0, viewportH, frame = 'card', palette = editorial, style, marks = []}) => {
 	const s = w / natural.w; // natural → screen
 	const fullH = natural.h * s;
 	const vh = viewportH ?? fullH;
@@ -85,6 +87,24 @@ export const Screenshot: React.FC<{
 							}}
 						/>
 					))}
+					{marks.map(({r, t, color = palette.accent}, i) =>
+						t > 0 ? (
+							<div
+								key={`m${i}`}
+								style={{
+									position: 'absolute',
+									left: r.x * s - 6,
+									top: r.y * s - 4,
+									width: (r.w * s + 12) * Math.min(1, t * 1.15),
+									height: r.h * s + 8,
+									background: `${color}2E`,
+									borderRadius: 8,
+									boxShadow: `inset 0 0 0 ${3 / k}px ${color}`,
+									opacity: Math.min(1, t * 2),
+								}}
+							/>
+						) : null,
+					)}
 					{mark && highlight > 0 && (
 						<div
 							style={{
