@@ -25,13 +25,13 @@ export const EndScene: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const {cue} = useCues();
-	const t22 = cue('L12', '22');
-	const tStill = cue('L12', 'still');
-	const tBanks = cue('L13', 'banks');
-	const tEvery = cue('L13', 'everybody');
-	const tChoose = cue('L13', 'choosing');
-	const tWhat = cue('L14', 'What');
-	const tNever = cue('L14', 'never');
+	const t22 = cue('L8', '22');
+	const tStill = cue('L8', 'still');
+	const tBanks = cue('L9', 'banks');
+	const tEvery = cue('L9', 'everybody');
+	const tChoose = cue('L9', 'choosing');
+	const tWhat = cue('L10', 'What');
+	const tNever = cue('L10', 'never');
 
 	const row = ROW.map((_, i) => sp(frame, fps, tBanks - 4 + i * 4, 'bouncy'));
 	const q = sp(frame, fps, tWhat - 8, 'smooth');

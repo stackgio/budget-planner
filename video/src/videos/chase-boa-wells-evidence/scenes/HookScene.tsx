@@ -1,99 +1,125 @@
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
-import {CinematicBg} from '../../../story/components/Backgrounds';
-import {Camera} from '../../../story/components/Camera';
+import {EditorialBg} from '../../../story/components/Backgrounds';
 import {Sfx} from '../../../story/components/Chrome';
-import {KineticText} from '../../../story/components/KineticText';
 import {Marcus} from '../../../story/components/Marcus';
-import {Coin} from '../../../story/components/Money';
 import {useCues} from '../../../story/lib/cues';
-import {sp, wobble} from '../../../story/lib/motion';
-import {cinematic as P, story} from '../../../story/theme';
+import {arc, kf, E, mix, shake, sp} from '../../../story/lib/motion';
+import {editorial as P, story} from '../../../story/theme';
+import {CHASE_YEARLY, FACTS} from '../facts';
 
-export const SLOT = {y: 610, w: 268, h: 290, gap: 28};
+export const SLOT = {y: 850, w: 228, h: 270, gap: 24};
 export const slotX = (i: number) => story.safe.left + i * (SLOT.w + SLOT.gap);
+export const HOOK_CARD3 = {x: slotX(0) + SLOT.w / 2, y: SLOT.y + SLOT.h / 2};
 
 /**
- * HOOK — "These are three banks I'd personally think twice about trusting with my money."
- * Frame 0: headline + three face-down ranking cards (#3 #2 #1). Marcus weighs a coin.
- * Card #3 is where the next scene's iris opens from.
+ * COLD OPEN — spoken: "$180 a year if you can't avoid the fee."
+ * Frame 0: "ONE OF THESE BANKS COULD COST YOU $180/YEAR IN CHECKING FEES" fully readable.
+ * On "if you can't avoid": POTENTIAL tag + the 3 · 2 · 1 ranking cards rise;
+ * on "fee" the $180 shrinks and lands on card #3 (Chase), where the next scene opens.
  */
 export const HookScene: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const {cue} = useCues();
-	const tThink = cue('L1', 'think');
-	const tTrust = cue('L1', 'trusting');
-	const tMoney = cue('L1', 'money');
-	const tEnd = cue('L1', undefined, 0, 'end');
+	const tIf = cue('L1', 'if');
+	const tYear = cue('L1', 'year');
+	const per = sp(frame, fps, tYear - 2, 'snappy');
+	const tAvoid = cue('L1', 'avoid');
+	const tFee = cue('L1', 'fee');
 
-	const cards = [0, 1, 2].map((i) => sp(frame, fps, -12 + i * 3, 'bouncy'));
-	const focus3 = sp(frame, fps, tEnd - 8, 'smooth');
-	const coinUp = sp(frame, fps, tMoney - 4, 'bouncy');
+	const hit = kf(frame, [0, 10], [1.06, 1], E.out);
+	const imp = shake(frame, 2, 8, 12);
+	const tag = sp(frame, fps, tIf - 2, 'snappy');
+	const cards = [0, 1, 2].map((i) => sp(frame, fps, tYear + 4 + i * 3, 'bouncy'));
+	const fly = sp(frame, fps, tAvoid + 2, {damping: 20, stiffness: 110, mass: 0.9});
+	const [nx, ny] = arc(fly, [story.safe.left, 372], [slotX(0) + 30, SLOT.y + 168], -60);
+	const nfs = mix(250, 64, fly);
+	const land = sp(frame, fps, tFee + 4, 'heavy');
 
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
-			<CinematicBg lightX={540} lightY={700} light={0.9} />
-			<Camera keys={[{at: 0, zoom: 1}, {at: tThink, zoom: 1}, {at: tThink + 30, zoom: 1.05, x: 540, y: 900}, {at: tEnd, zoom: 1.05, x: 540, y: 900}]}>
-				<div style={{position: 'absolute', left: story.safe.left, top: story.safe.top + 10, fontSize: 30, fontWeight: 900, letterSpacing: 4, color: P.muted}}>RANKED · WITH RECEIPTS</div>
-				<div style={{position: 'absolute', left: story.safe.left, top: story.safe.top + 60, right: story.safe.right}}>
-					<KineticText text="3 BANKS I'D" at={-16} fontSize={112} color={P.ink} colors={{'3': P.accent}} />
-					<KineticText text="THINK TWICE" at={-14} fontSize={112} color={P.ink} colors={{TWICE: P.accent}} />
-					<KineticText text="ABOUT" at={-12} fontSize={112} color={P.ink} />
-				</div>
+			<EditorialBg />
+			<div style={{position: 'absolute', left: story.safe.left, top: story.safe.top + 10, right: story.safe.right, fontSize: 64, fontWeight: 900, lineHeight: 1.05, color: P.ink, letterSpacing: -1}}>
+				ONE OF THESE BANKS
+				<br />
+				COULD COST YOU
+			</div>
 
-				{[0, 1, 2].map((i) => {
-					const p = cards[i];
-					const n = 3 - i;
-					const lift = i === 0 ? -18 * focus3 : 10 * focus3;
-					return (
-						<div
-							key={i}
-							style={{
-								position: 'absolute',
-								left: slotX(i),
-								top: SLOT.y + (1 - p) * 120 + lift + wobble(frame, i + 2, 0.05, 3),
-								width: SLOT.w,
-								height: SLOT.h,
-								borderRadius: 30,
-								background: i === 0 ? '#FFFDF8' : P.paper,
-								border: `3px solid ${i === 0 ? P.accent : P.line}`,
-								boxShadow: `0 30px 60px ${P.shadow}`,
-								opacity: Math.min(1, p * 1.4) * (i === 0 ? 1 : 1 - 0.45 * focus3),
-								transform: `rotate(${(i - 1) * 3 * (1 - focus3)}deg)`,
-								display: 'flex',
-								flexDirection: 'column',
-								alignItems: 'center',
-								justifyContent: 'center',
-								gap: 6,
-							}}
-						>
-							<div style={{fontSize: 30, fontWeight: 900, letterSpacing: 4, color: i === 0 ? '#857D6E' : P.muted}}>NUMBER</div>
-							<div style={{fontSize: 150, fontWeight: 900, lineHeight: 1, color: i === 0 ? '#121316' : P.ink, letterSpacing: -6}}>{n}</div>
-							<div style={{fontSize: 60, fontWeight: 900, color: P.accent}}>?</div>
-						</div>
-					);
-				})}
+			{/* the $180 — on screen from frame 0, then carried into card #3 */}
+			<div style={{position: 'absolute', left: nx + imp.x, top: ny + imp.y, display: 'flex', alignItems: 'baseline', gap: 14 * (1 - fly), transform: `scale(${hit})`, transformOrigin: '0 50%', zIndex: 5}}>
+				<span style={{fontSize: nfs, fontWeight: 900, color: P.danger, letterSpacing: -nfs * 0.04, lineHeight: 1}}>${CHASE_YEARLY}</span>
+				<span style={{fontSize: mix(64, 26, fly), fontWeight: 900, color: P.danger}}>/yr</span>
+			</div>
+			<div style={{position: 'absolute', left: story.safe.left, top: 640, fontSize: 52, fontWeight: 900, color: P.ink, opacity: 1 - fly}}>IN CHECKING FEES</div>
+			<div style={{position: 'absolute', left: story.safe.left, top: 704, fontSize: 40, fontWeight: 900, color: P.muted, opacity: per * (1 - fly), transform: `translateX(${(1 - per) * -30}px)`}}>
+				= ${FACTS.chaseFee.value}/MONTH × {FACTS.months.value}
+			</div>
+			<div
+				style={{
+					position: 'absolute',
+					left: story.safe.left,
+					top: 770,
+					padding: '8px 16px',
+					borderRadius: 12,
+					border: `3px solid ${P.muted}`,
+					color: P.body,
+					fontSize: 24,
+					fontWeight: 900,
+					letterSpacing: 3,
+					opacity: tag * (1 - fly),
+					transform: `translateY(${(1 - tag) * 14}px)`,
+				}}
+			>
+				POTENTIAL · IF NOT WAIVED
+			</div>
 
-				<Coin size={86} spin={frame * 0.12} style={{left: 860, top: 1260 - 120 * coinUp, opacity: coinUp}} />
-				<Marcus
-					x={860}
-					y={story.ground}
-					scale={0.86}
-					facing={-1}
-					onDark
-					seed={4}
-					track={[
-						{at: 0, pose: 'think', face: 'curious'},
-						{at: tTrust, pose: 'shrug', face: 'worried', spring: 'bouncy'},
-						{at: tMoney, pose: ['present', {head: -6}], face: 'focused'},
-					]}
-				/>
-			</Camera>
-			<Sfx at={tThink} name="whoosh-soft" volume={0.3} />
-			<Sfx at={tMoney - 2} name="coin" volume={0.35} />
+			{[0, 1, 2].map((i) => {
+				const p = cards[i];
+				const first = i === 0;
+				return (
+					<div
+						key={i}
+						style={{
+							position: 'absolute',
+							left: slotX(i),
+							top: SLOT.y + (1 - p) * 140 - (first ? 14 * land : 0),
+							width: SLOT.w,
+							height: SLOT.h,
+							borderRadius: 28,
+							background: first ? '#FFFDF8' : '#1B1E23',
+							border: `4px solid ${first ? (land > 0.3 ? P.danger : P.line) : '#1B1E23'}`,
+							boxShadow: `0 26px 50px ${P.shadow}`,
+							opacity: Math.min(1, p * 1.4),
+							display: 'flex',
+							flexDirection: 'column',
+							alignItems: 'center',
+							paddingTop: 24,
+							boxSizing: 'border-box',
+						}}
+					>
+						<div style={{fontSize: 26, fontWeight: 900, letterSpacing: 4, color: first ? P.muted : '#7C828B'}}>NUMBER</div>
+						<div style={{fontSize: 130, fontWeight: 900, lineHeight: 1, color: first ? P.ink : '#F5F2EA', letterSpacing: -4}}>{3 - i}</div>
+					</div>
+				);
+			})}
+
+			<Marcus
+				x={918}
+				y={story.ground}
+				scale={0.82}
+				facing={-1}
+				seed={4}
+				track={[
+					{at: -10, pose: 'shock', face: 'shock'},
+					{at: tYear, pose: 'worried', face: 'worried'},
+					{at: tIf + 6, pose: 'think', face: 'focused'},
+					{at: tFee, pose: ['point', {head: -4}], face: 'determined', spring: 'bouncy'},
+				]}
+			/>
+			<Sfx at={1} name="thud" volume={0.35} />
+			<Sfx at={tIf + 2} name="card" volume={0.3} />
+			<Sfx at={tFee + 4} name="stamp" volume={0.3} />
 		</AbsoluteFill>
 	);
 };
-
-export const HOOK_CARD3 = {x: slotX(0) + SLOT.w / 2, y: SLOT.y + SLOT.h / 2};

@@ -48,3 +48,29 @@ export const CFPB_WF = {
 	date: {x: 24, y: 625, w: 106, h: 28} as Region, // "SEP 08, 2016"
 	top: {x: 0, y: 0, w: 730, h: 680} as Region,
 };
+
+/* v3: tight, phone-readable crops (same raw captures, ffmpeg crop only) */
+export const CFPB_LOGO = {src: `${A}/cfpb_logo.png`, natural: {w: 262, h: 66}};
+
+export const CHASE_HEAD = {
+	src: `${A}/chase_heading.png`,
+	natural: {w: 426, h: 182},
+	heading: {x: 24, y: 8, w: 324, h: 96} as Region, // "$15 or $0 Monthly Service Fee"
+	avoid: {x: 0, y: 128, w: 424, h: 50} as Region, // "You can avoid the fee by doing ONE of the following…"
+};
+
+export const BOA_HEAD = {
+	src: `${A}/boa_headline.png`,
+	natural: {w: 696, h: 330},
+	junkFees: {x: 62, y: 56, w: 432, h: 42} as Region, // "Illegally Charging Junk Fees"
+	fakeAccounts: {x: 8, y: 140, w: 368, h: 42} as Region, // "Opening Fake Accounts"
+	date: {x: 8, y: 292, w: 104, h: 26} as Region, // "JUL 11, 2023"
+};
+
+export const WF_HEAD = {
+	src: `${A}/wf_headline.png`,
+	natural: {w: 696, h: 305},
+	secretly: {x: 493, y: 98, w: 110, h: 42} as Region, // "Secretly"
+	unauthorized: {x: 8, y: 141, w: 506, h: 42} as Region, // "Opening Unauthorized Accounts"
+	date: {x: 8, y: 266, w: 104, h: 26} as Region, // "SEP 08, 2016"
+};

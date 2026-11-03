@@ -1,12 +1,10 @@
 import React from 'react';
-import {slide} from '@remotion/transitions/slide';
 import {iris, panelSweep} from '../../story/components/Transitions';
 import {makeCalculateMetadata, NarratedVideo, narratedSchema, type NarratedProps, type VideoDef} from '../../story/lib/NarratedVideo';
 import {cinematic, editorial} from '../../story/theme';
 import {SCENES, SCRIPT, TAIL_SEC, type SceneId} from './script';
 import {HOOK_CARD3, HookScene} from './scenes/HookScene';
 import {ChaseScene} from './scenes/ChaseScene';
-import {ChaseMathScene} from './scenes/ChaseMathScene';
 import {BoaScene} from './scenes/BoaScene';
 import {WellsScene} from './scenes/WellsScene';
 import {EndScene} from './scenes/EndScene';
@@ -15,13 +13,11 @@ const DEF: VideoDef<SceneId> = {
 	script: SCRIPT,
 	scenes: SCENES,
 	tailSec: TAIL_SEC,
-	components: {hook: HookScene, chase: ChaseScene, chaseMath: ChaseMathScene, boa: BoaScene, wells: WellsScene, end: EndScene},
-	looks: {hook: cinematic, chase: editorial, chaseMath: editorial, boa: editorial, wells: cinematic, end: editorial},
+	components: {hook: HookScene, chase: ChaseScene, boa: BoaScene, wells: WellsScene, end: EndScene},
+	looks: {hook: editorial, chase: editorial, boa: editorial, wells: cinematic, end: editorial},
 	transitions: {
 		// card #3 opens into Chase
 		chase: {presentation: iris({x: HOOK_CARD3.x, y: HOOK_CARD3.y})},
-		// the evidence slides up into the math
-		chaseMath: {presentation: slide({direction: 'from-bottom'}), timing: 'spring'},
 		// chapter change
 		boa: {presentation: panelSweep({color: editorial.ink, direction: 'left'}), timing: 'spring'},
 		// lights down for #1

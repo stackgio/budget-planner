@@ -29,3 +29,23 @@ Opinions stay framed as opinions ("I'd think twice", "a pretty big red flag for 
 - Raw captures: `video/public/motion/chase-boa-wells-evidence/raw/{chase_total_checking_full,cfpb_boa_2023_full,cfpb_wf_2016_full,boa_home,wf_home}.png`
 - Crops used: `video/public/motion/chase-boa-wells-evidence/assets/*.png`
 - Provenance in code: `video/src/videos/chase-boa-wells-evidence/{facts.ts,assets.ts}`
+
+---
+
+# v04 update (current cut) — `chase-boa-wells-evidence_v04_final-voice.mp4`, 36.35 s
+
+Narration is the **same ElevenLabs take**, tightened by `projects/chase-boa-wells-evidence/edit_voice.py` into `public/voice/chase-boa-wells-evidence/voice_v3.wav`. The script keeps whole spoken clauses only, cuts in silence, and never splices new sentences together. The original `voice.mp3` is untouched. Captions are aligned word by word (87/87 matched).
+
+**Removed lines:** "These are three banks I'd personally think twice about trusting with my money.", "I'd rather keep that money.", "When it comes to my money, trust matters.", "That's a pretty big red flag for me." and the word "Like,". The cold open reuses Gio's own Chase clause "$180 a year if you can't avoid the fee." (the word "That's" is cut). The requested line "One of these banks could cost you $180 a year in checking fees" is **on screen**, not spoken, because it isn't in the recording.
+
+| Claim | Evidence on screen | Source | On screen (v04) |
+|---|---|---|---|
+| $180/yr potential checking fee (hook) | "$180/yr", "= $15/MONTH × 12", tag "POTENTIAL · IF NOT WAIVED" | Chase footnote 1 ($15) × 12 | 0.0 s → 3.4 s |
+| Chase charges $15/month | Chase.com's own heading "$15 or $0 Monthly Service Fee" (highlighted) | https://www.chase.com/personal/checking/total-checking | 5.4 s (highlight 6.9 s) |
+| $15 × 12 = $180 | "$15 × 12 = $180", labelled "per year, only if charged every month" | arithmetic | 6.9 s → 8.0 s |
+| The fee can be avoided | "You can avoid the fee by doing ONE of the following…" (highlighted) + "$0 FEE IF YOU QUALIFY · e.g. $500+ in qualifying electronic deposits" | same page | 8.5 s → 11 s |
+| 2023 CFPB action against BofA | 2023 → CFPB ACTION timeline; CFPB logo + headline + JUL 11, 2023; HISTORICAL · 2023 | https://www.consumerfinance.gov/archive/newsroom/bank-of-america-for-illegally-charging-junk-fees-withholding-credit-card-rewards-opening-fake-accounts/ | 12.6 s / 14.3 s |
+| Improper fees | "Illegally Charging Junk Fees" highlighted; plain-language line "Repeat $35 fees on declined charges" | same: "charging customers $35 after the bank declined a transaction… repeatedly charged for the same transaction" | 16.1 s |
+| Unauthorized accounts | "Opening Fake Accounts" highlighted; plain-language line "Credit cards opened without consent" | same: "enrolled consumers in credit card accounts without consumers' knowledge or authorization" | 16.7 s |
+| Wells Fargo unauthorized-accounts scandal | "2016 — Unauthorized Accounts Scandal", HISTORICAL · 2016; CFPB logo + headline + SEP 08, 2016; "Secretly Opening Unauthorized Accounts" highlighted; "A 2016 case — not a claim about today." | https://www.consumerfinance.gov/archive/newsroom/consumer-financial-protection-bureau-fines-wells-fargo-100-million-widespread-illegal-practice-secretly-opening-unauthorized-accounts/ | 19.2 s → 23.8 s |
+| Final question | "What bank would you never use again?" | — | 32.1 s → 36.35 s (about 4.2 s on screen) |
