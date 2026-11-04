@@ -1,0 +1,11 @@
+{
+ "durationSec": 55.876,
+ "codec": "mp3",
+ "sampleRate": 44100,
+ "channels": 1,
+ "container": "mp3",
+ "bitRate": "130424",
+ "file": "public/voice/invest-first-100/voice.mp3",
+ "source": "/root/.claude/uploads/e524117c-2706-5f7c-a924-e0a92ec8e0b9/f8015ea2-ElevenLabs_2026-11-04T21_37_02_Stack_voice__gen_sp100_s50_sb75_v4.mp3",
+ "sha256": "aa53f6983866ac0ad373248254b0d2731f138e82892bcdd54b24a779696a5344"
+}
