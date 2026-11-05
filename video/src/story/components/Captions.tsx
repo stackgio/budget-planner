@@ -66,7 +66,7 @@ export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number
 			<div
 				style={
 					boxed
-						? {display: 'flex', flexWrap: 'wrap', justifyContent: 'center', columnGap: 22, padding: '12px 30px 16px', borderRadius: 24, background: pal.name === 'cinematic' ? 'rgba(11,12,14,0.78)' : 'rgba(255,255,255,0.9)', boxShadow: pal.name === 'cinematic' ? 'none' : '0 10px 30px rgba(15,20,30,0.12)', fontSize: 64}
+						? {display: 'flex', flexWrap: 'wrap', justifyContent: 'center', columnGap: 30, padding: '12px 30px 16px', borderRadius: 24, background: pal.name === 'cinematic' ? 'rgba(11,12,14,0.78)' : 'rgba(255,255,255,0.9)', boxShadow: pal.name === 'cinematic' ? 'none' : '0 10px 30px rgba(15,20,30,0.12)', fontSize: 64}
 						: {display: 'contents'}
 				}
 			>
@@ -78,7 +78,7 @@ export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number
 						key={i}
 						style={{
 							color: speaking ? pal.accent : active ? pal.ink : pal.name === 'cinematic' ? 'rgba(245,242,234,0.45)' : 'rgba(18,19,22,0.35)',
-							transform: `scale(${speaking ? 1.06 : 1})`,
+							transform: `scale(${speaking && !boxed ? 1.06 : 1})`,
 							display: 'inline-block',
 							transformOrigin: '50% 60%',
 						}}

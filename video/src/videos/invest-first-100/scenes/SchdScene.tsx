@@ -82,7 +82,7 @@ export const SchdScene: React.FC = () => {
 						</div>
 					</div>
 					<EvidenceChip text="VERIFIED DATA · SCHWAB" palette={P} style={{left: 28, top: -22}} />
-					<SourceTag text={`${SOURCES.schd} · Total holdings`} asOf={SCHD.holdingsAsOf} palette={P} style={{left: 0, top: 420}} />
+					<SourceTag size={28} text={`${SOURCES.schd} · Total holdings`} asOf={SCHD.holdingsAsOf} palette={P} style={{left: 0, top: 420}} />
 				</div>
 			)}
 
@@ -98,12 +98,12 @@ export const SchdScene: React.FC = () => {
 							return (
 								<div key={h.t} style={{width: 158, height: 110, borderRadius: 20, border: `3px solid ${GOLD}`, background: '#1F1B14', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', transform: `translateY(${(1 - p) * 30}px)`, opacity: Math.min(1, p * 1.5)}}>
 									<span style={{fontSize: 42, fontWeight: 900, color: P.ink}}>{h.t}</span>
-									<span style={{fontSize: 26, fontWeight: 800, color: GOLD}}>{h.w.toFixed(2)}%</span>
+									<span style={{fontSize: 30, fontWeight: 800, color: GOLD}}>{h.w.toFixed(2)}%</span>
 								</div>
 							);
 						})}
 					</div>
-					<SourceTag text={`${SOURCES.schd} · top 5 holdings`} asOf={SCHD.holdingsAsOf} palette={P} style={{left: story.safe.left, top: 830, opacity: kf(frame, [tEst + 10, tEst + 18], [0, 1])}} />
+					<SourceTag size={28} text={`${SOURCES.schd} · top 5 holdings`} asOf={SCHD.holdingsAsOf} palette={P} style={{left: story.safe.left, top: 830, opacity: kf(frame, [tEst + 10, tEst + 18], [0, 1])}} />
 					{SCHD.top.map((_, i) =>
 						[0, 1].map((k) => {
 							const start = tPaying - 6 + i * 3 + k * 12;
@@ -115,7 +115,7 @@ export const SchdScene: React.FC = () => {
 						}),
 					)}
 					<div style={{position: 'absolute', left: ACCOUNT.x - 230, top: ACCOUNT.y - 50, width: 460, height: 150, borderRadius: 28, background: P.paper, border: `3px solid ${GOLD}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-						<span style={{fontSize: 26, fontWeight: 900, letterSpacing: 3, color: P.muted}}>MY ACCOUNT</span>
+						<span style={{fontSize: 30, fontWeight: 900, letterSpacing: 3, color: P.muted}}>MY ACCOUNT</span>
 						<span style={{fontSize: 48, fontWeight: 900, color: GOLD}}>+ DIVIDENDS</span>
 					</div>
 					<div style={{position: 'absolute', left: 0, right: 0, top: ACCOUNT.y + 122, textAlign: 'center', fontSize: 28, fontWeight: 800, color: P.body, opacity: kf(frame, [tPaying, tPaying + 10], [0, 1])}}>

@@ -58,7 +58,7 @@ export const MarketScene: React.FC = () => {
 				{frame < tIm + 4 && <KineticText text="PICK ONE WINNER?" at={-12} fontSize={100} color={P.ink} colors={{one: FUND.schd.light}} exitAt={tIm - 6} />}
 				{frame >= tIm - 2 && <KineticText text="OR OWN ALMOST ALL OF IT" at={tIm} fontSize={100} color={P.ink} colors={{all: FUND.vti.light}} />}
 			</div>
-			<div style={{position: 'absolute', left: FIELD.x, top: FIELD.y - 52, fontSize: 26, fontWeight: 900, letterSpacing: 3, color: P.muted, opacity: reveal}}>
+			<div style={{position: 'absolute', left: FIELD.x, top: FIELD.y - 52, fontSize: 30, fontWeight: 900, letterSpacing: 3, color: P.muted, opacity: reveal}}>
 				VTI · 1 DOT = 1 STOCK
 			</div>
 			<Camera
@@ -95,7 +95,7 @@ export const MarketScene: React.FC = () => {
 						);
 					})}
 			</Camera>
-			<SourceTag text={`${SOURCES.vti} · ${VTI.stocks.value.toLocaleString('en-US')} stocks`} asOf={VTI.asOf} palette={P} style={{left: FIELD.x - 10, top: FIELD.y + ROWS * GAP + 40, opacity: reveal}} />
+			<SourceTag size={28} text={`${SOURCES.vti} · ${VTI.stocks.value.toLocaleString('en-US')} stocks`} asOf={VTI.asOf} palette={P} style={{left: FIELD.x - 10, top: FIELD.y + ROWS * GAP + 40, opacity: reveal}} />
 
 			{/* the takeaway for this $70 */}
 			<div

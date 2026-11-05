@@ -33,7 +33,7 @@ export const VxusScene: React.FC = () => {
 	const {cue} = useCues();
 	const t10 = cue('L8', '$10?');
 	const tVxus = cue('L8', 'VXUS.');
-	const tUS = cue('L9', 'United');
+	const tUS = cue('L9', 'want'); // the U.S. greys out as soon as the idea lands
 	const tVx2 = cue('L10', 'VXUS');
 	const tOther = cue('L10', 'other'); // map 'switch-on' SFX
 	const tLike = cue('L10', 'like');
@@ -43,9 +43,9 @@ export const VxusScene: React.FC = () => {
 	const tickIn = sp(frame, fps, tVxus - 3, 'bouncy');
 	const heroA = swapIn(frame, t10 - 4, tLike - 4, 40);
 	const heroC = swapIn(frame, tLike - 2, Infinity, 40);
-	const map = swapIn(frame, tVxus - 6);
+	const map = swapIn(frame, t10 + 2);
 	const usOff = kf(frame, [tUS, tUS + 10], [0, 1]);
-	const wave = kf(frame, [tUS + 2, tUS + 30], [0, 1.2], E.inOut);
+	const wave = kf(frame, [tUS + 2, tUS + 22], [0, 1.2], E.inOut);
 	const count = swapIn(frame, tVx2 - 2, Infinity, 40);
 	const stocks = kf(frame, [tVx2, tVx2 + 26], [0, VXUS.stocks.value], E.out);
 
@@ -126,6 +126,7 @@ export const VxusScene: React.FC = () => {
 			</Camera>
 			{count.on && (
 				<SourceTag
+					size={28}
 					text={frame >= tC[0] - 3 ? SOURCES.vxusFactSheet : `${SOURCES.vxus} · stocks`}
 					asOf={VXUS.asOf}
 					palette={{...P, accent: BLUE}}

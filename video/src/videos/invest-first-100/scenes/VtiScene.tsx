@@ -30,11 +30,12 @@ export const VtiScene: React.FC = () => {
 	const tIncl = cue('L3', 'including');
 	const names = [cue('L3', 'Apple,'), cue('L3', 'Microsoft,'), cue('L3', 'Amazon.')];
 
-	const hero = swapIn(frame, t70 - 4, Infinity, 40);
+	const hero = swapIn(frame, 4, Infinity, 40); // the chapter opens on the answer: $70 → VTI
 	const amt = kf(frame, [t70, t70 + 14], [PLAN.vti.value, PLAN.vti.value], E.out);
-	const vtiIn = sp(frame, fps, tVti - 3, 'bouncy');
+	const vtiIn = sp(frame, fps, 6, 'bouncy');
+	const say70 = 1 + 0.06 * Math.sin(Math.min(1, Math.max(0, (frame - t70) / 10)) * Math.PI);
 
-	const cA = swapIn(frame, tVti - 4, tThousands - 6);
+	const cA = swapIn(frame, 12, tThousands - 6);
 	const cB = swapIn(frame, tThousands + 3, tIncl - 4);
 	const cC = swapIn(frame, tIncl - 2);
 	const stocks = kf(frame, [tThousands + 3, tThousands + 28], [0, VTI.stocks.value], E.out);
@@ -49,11 +50,11 @@ export const VtiScene: React.FC = () => {
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<WhiteBg palette={P} />
 			<ChapterTag n="01" label="$70 · VTI" at={4} palette={P} style={{left: story.safe.left, top: story.safe.top}} />
-			<IntroStrip frame={frame} slice={SPLIT.cuts[0]} noteW={NOTE.w} x={stripX(0)} y={STRIP_TOP} scale={1} tOut={t70} band={GREEN} />
+			<IntroStrip frame={frame} slice={SPLIT.cuts[0]} noteW={NOTE.w} x={stripX(0)} y={STRIP_TOP} scale={1} tOut={6} band={GREEN} />
 
 			{hero.on && (
 				<div style={{position: 'absolute', left: story.safe.left, top: 300, display: 'flex', alignItems: 'center', gap: 28, opacity: hero.opacity, transform: `translateY(${hero.y}px)`}}>
-					<NumberCounter value={amt} fontSize={150} color={GREEN} style={{letterSpacing: -4}} />
+					<NumberCounter value={amt} fontSize={150} color={GREEN} style={{letterSpacing: -4, display: 'inline-flex', transform: `scale(${say70})`, transformOrigin: '0 60%'}} />
 					<span style={{fontSize: 90, fontWeight: 900, color: P.muted}}>→</span>
 					<span style={{fontSize: 150, fontWeight: 900, color: P.ink, letterSpacing: -4, display: 'inline-block', transform: `scale(${vtiIn})`, opacity: Math.min(1, vtiIn * 1.5)}}>VTI</span>
 				</div>
@@ -69,7 +70,7 @@ export const VtiScene: React.FC = () => {
 							<span style={{fontSize: 76, fontWeight: 900, color: GREEN}}>≈{VTI.indexCoverage.value}%</span>
 							<span style={{fontSize: 34, fontWeight: 800, color: P.body, lineHeight: 1.2}}>of the investable U.S. stock market (its index)</span>
 						</div>
-						<SourceTag text={`${SOURCES.vti} · fund management summary`} palette={P} style={{left: 0, top: 470}} />
+						<SourceTag size={28} text={`${SOURCES.vti} · fund management summary`} palette={P} style={{left: 0, top: 470}} />
 					</div>
 				)}
 
@@ -79,7 +80,7 @@ export const VtiScene: React.FC = () => {
 						<NumberCounter value={stocks} prefix="" fontSize={230} color={GREEN} style={{letterSpacing: -8}} />
 						<div style={{fontSize: 64, fontWeight: 900, color: P.ink, marginTop: 6, letterSpacing: -1}}>U.S. STOCKS</div>
 						<div style={{fontSize: 40, fontWeight: 800, color: P.muted, marginTop: 6}}>in one fund</div>
-						<SourceTag text={`${SOURCES.vti} · Number of stocks`} asOf={VTI.asOf} palette={P} style={{left: 0, top: 470}} />
+						<SourceTag size={28} text={`${SOURCES.vti} · Number of stocks`} asOf={VTI.asOf} palette={P} style={{left: 0, top: 470}} />
 					</div>
 				)}
 
@@ -100,7 +101,7 @@ export const VtiScene: React.FC = () => {
 								</div>
 							);
 						})}
-						<SourceTag text={`${SOURCES.vti} · Holding details`} asOf={VTI.asOf} palette={P} style={{left: BARS.x, top: 1190}} />
+						<SourceTag size={28} text={`${SOURCES.vti} · Holding details`} asOf={VTI.asOf} palette={P} style={{left: BARS.x, top: 1190}} />
 					</div>
 				)}
 			</Camera>

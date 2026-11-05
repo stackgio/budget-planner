@@ -6,6 +6,8 @@ export type SceneDef<Id extends string = string> = {
 	firstLine: string;
 	/** transition INTO this scene, in frames (ignored for the first scene) */
 	transitionFrames?: number;
+	/** start this scene earlier than the default lead (sec) — e.g. reveal a chapter on the previous line's last word */
+	leadSec?: number;
 };
 
 export type SceneWindow<Id extends string = string> = {
@@ -35,7 +37,7 @@ export const buildSceneWindows = <Id extends string>(
 	const lead = opts.leadSec ?? 0.12;
 	const lastEnd = Math.max(...narration.lines.map((l) => l.end));
 	const durationInFrames = Math.ceil((lastEnd + opts.tailSec) * fps);
-	const boundaries = scenes.map((s, i) => (i === 0 ? 0 : Math.round((cueSec(narration, s.firstLine) - lead) * fps)));
+	const boundaries = scenes.map((s, i) => (i === 0 ? 0 : Math.round((cueSec(narration, s.firstLine) - (s.leadSec ?? lead)) * fps)));
 	const tin = scenes.map((s, i) => (i === 0 ? 0 : (s.transitionFrames ?? 0)));
 	const starts = boundaries.map((b, i) => (i === 0 ? 0 : b - Math.floor(tin[i] / 2)));
 	const windows = scenes.map((s, i) => {

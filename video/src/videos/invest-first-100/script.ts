@@ -36,7 +36,7 @@ export const SCRIPT: ScriptLine[] = [
 /** Scenes start on these lines; `transitionFrames` is the transition INTO the scene. */
 export const SCENES: SceneDef<'hook' | 'vti' | 'market' | 'schd' | 'vxus' | 'final'>[] = [
 	{id: 'hook', firstLine: 'L1'},
-	{id: 'vti', firstLine: 'L2', transitionFrames: 14}, // iris out of the $70 strip
+	{id: 'vti', firstLine: 'L2', transitionFrames: 14, leadSec: 0.75}, // iris out of the $70 strip, on "buy" — $70 → VTI on screen at ~4.4s
 	{id: 'market', firstLine: 'L4', transitionFrames: 8}, // match cut: logo tiles continue into the dot field
 	{id: 'schd', firstLine: 'L5', transitionFrames: 18}, // green chapter sweep
 	{id: 'vxus', firstLine: 'L8', transitionFrames: 14}, // slide — travelling abroad
@@ -44,4 +44,4 @@ export const SCENES: SceneDef<'hook' | 'vti' | 'market' | 'schd' | 'vxus' | 'fin
 ];
 
 /** Seconds held after the last word (brand + final chart). */
-export const TAIL_SEC = 3.4; // closing question needs ~3 s to read
+export const TAIL_SEC = 2.6; // the question starts on "difference", so ~3 s on screen

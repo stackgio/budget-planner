@@ -39,7 +39,7 @@ export const FinalScene: React.FC = () => {
 	const tBut = cue('L12', 'But');
 	const tStart = cue('L12', 'starting');
 	const tTerm = cue('L12', 'term', 0, 'end');
-	const tEnd = cue('L12', 'difference.', 0, 'end');
+	const tEnd = cue('L12', 'difference.') + 4; // outro + question begin on the last word
 
 	const draw = ROWS.map((_, i) => kf(frame, [t100 - 6 + i * 9, t100 + 10 + i * 9], [0, 1], E.out));
 	const total = kf(frame, [t100 - 6, t100 + 28], [0, PLAN.total.value], E.out);
@@ -92,10 +92,10 @@ export const FinalScene: React.FC = () => {
 							<span style={{fontSize: 52, fontWeight: 900, color: P.ink, width: 200}}>{r.t}</span>
 							<span style={{fontSize: 52, fontWeight: 900, color: r.c, width: 150}}>${r.v}</span>
 							<span style={{fontSize: 40, fontWeight: 800, color: P.muted, width: 120}}>{pct(r.v)}%</span>
-							<span style={{fontSize: 26, fontWeight: 800, color: P.body, marginLeft: 'auto'}}>≈{r.sh.toFixed(2)} share</span>
+							<span style={{fontSize: 30, fontWeight: 800, color: P.body, marginLeft: 'auto'}}>≈{r.sh.toFixed(2)} share</span>
 						</div>
 					))}
-					<div style={{fontSize: 24, fontWeight: 700, color: P.muted, marginTop: 18, lineHeight: 1.35}}>
+					<div style={{fontSize: 29, fontWeight: 700, color: P.muted, marginTop: 18, lineHeight: 1.35}}>
 						Fractional shares needed for exact amounts · prices: 11/03/2026 closes
 					</div>
 				</div>
@@ -104,12 +104,12 @@ export const FinalScene: React.FC = () => {
 			{/* recurring: the same $100, month after month */}
 			{rec.on && (
 				<div style={{position: 'absolute', inset: 0, opacity: rec.opacity, transform: `translateY(${rec.y}px)`}}>
-					<div style={{position: 'absolute', left: SLOTS.x, top: SLOTS.y - 50, fontSize: 26, fontWeight: 900, letterSpacing: 3, color: P.muted}}>EXAMPLE · $100 EVERY MONTH</div>
+					<div style={{position: 'absolute', left: SLOTS.x, top: SLOTS.y - 50, fontSize: 30, fontWeight: 900, letterSpacing: 3, color: P.muted}}>EXAMPLE · $100 EVERY MONTH</div>
 					{Array.from({length: months}, (_, m) => {
 						const on = frame >= monthAt(m) + 12;
 						return (
 							<div key={m} style={{position: 'absolute', left: SLOTS.x + m * (SLOTS.w + SLOTS.gap), top: SLOTS.y, width: SLOTS.w, height: 92, borderRadius: 14, border: `2px solid ${on ? P.accent : P.line}`, background: on ? 'rgba(44,212,122,0.18)' : 'transparent', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 8, boxSizing: 'border-box'}}>
-								<span style={{fontSize: 24, fontWeight: 900, color: on ? P.ink : P.muted}}>{m + 1}</span>
+								<span style={{fontSize: 29, fontWeight: 900, color: on ? P.ink : P.muted}}>{m + 1}</span>
 							</div>
 						);
 					})}
@@ -125,7 +125,7 @@ export const FinalScene: React.FC = () => {
 						<span style={{fontSize: 92, fontWeight: 900, color: P.accent, letterSpacing: -2}}>{Math.max(1, done)}</span>
 						<span style={{fontSize: 44, fontWeight: 900, color: P.ink}}>{Math.max(1, done) === 1 ? 'MONTH' : 'MONTHS'} × ${RECURRING.monthly.value}</span>
 					</div>
-					<div style={{position: 'absolute', left: SLOTS.x, right: story.safe.right, top: 1240, fontSize: 24, fontWeight: 700, color: P.muted}}>
+					<div style={{position: 'absolute', left: SLOTS.x, right: story.safe.right, top: 1240, fontSize: 29, fontWeight: 700, color: P.muted}}>
 						Contributions only — no returns shown. Diversifying doesn't remove risk.
 					</div>
 				</div>
@@ -153,7 +153,7 @@ export const FinalScene: React.FC = () => {
 							);
 						})}
 					</div>
-					<div style={{fontSize: 26, fontWeight: 700, color: P.muted, marginTop: 40, opacity: ask(20)}}>Not financial advice. All investing involves risk.</div>
+					<div style={{fontSize: 30, fontWeight: 700, color: P.muted, marginTop: 40, opacity: ask(20)}}>Not financial advice. All investing involves risk.</div>
 				</div>
 			)}
 

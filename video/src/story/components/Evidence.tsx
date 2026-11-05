@@ -5,13 +5,14 @@ import {story, type Palette} from '../theme';
  * Source line for any time-sensitive number or screenshot:
  * "SOURCE · Vanguard · VTI fund page · as of 09/30/2026". Never under 24 px.
  */
-export const SourceTag: React.FC<{text: string; asOf?: string; palette: Palette; opacity?: number; style?: React.CSSProperties; align?: 'left' | 'center'}> = ({
+export const SourceTag: React.FC<{text: string; asOf?: string; palette: Palette; opacity?: number; style?: React.CSSProperties; align?: 'left' | 'center'; size?: number}> = ({
 	text,
 	asOf,
 	palette,
 	opacity = 1,
 	style,
 	align = 'left',
+	size = 24,
 }) => (
 	<div
 		style={{
@@ -21,15 +22,17 @@ export const SourceTag: React.FC<{text: string; asOf?: string; palette: Palette;
 			alignItems: 'center',
 			gap: 12,
 			fontFamily: story.font,
-			fontSize: 24,
+			fontSize: size,
 			fontWeight: 700,
 			color: palette.muted,
+			lineHeight: 1.3,
+			maxWidth: 860, // wrap inside the safe area instead of running off-screen
 			letterSpacing: 0.5,
 			opacity,
 			...style,
 		}}
 	>
-		<span style={{width: 12, height: 12, borderRadius: 3, background: palette.accent, flex: 'none'}} />
+		<span style={{width: size / 2, height: size / 2, borderRadius: 3, background: palette.accent, flex: 'none'}} />
 		<span>
 			<span style={{fontWeight: 900, letterSpacing: 3, color: palette.body}}>SOURCE</span>
 			{'  '}
