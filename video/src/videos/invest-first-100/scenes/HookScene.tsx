@@ -4,11 +4,10 @@ import {CinematicBg} from '../../../story/components/Backgrounds';
 import {Banknote} from '../../../story/components/Banknote';
 import {Sfx} from '../../../story/components/Chrome';
 import {KineticText} from '../../../story/components/KineticText';
-import {NumberCounter} from '../../../story/components/NumberCounter';
 import {useCues} from '../../../story/lib/cues';
 import {E, kf, mix, shake, sp} from '../../../story/lib/motion';
 import {story} from '../../../story/theme';
-import {PLAN, pct} from '../facts';
+import {PLAN} from '../facts';
 import {dark as P, FUND, NOTE, NOTE_H, SPLIT, stripX} from '../look';
 
 const ROWS = [
@@ -76,20 +75,19 @@ export const HookScene: React.FC = () => {
 				})}
 			</div>
 
-			{/* the plan: amounts land as the note splits */}
+			{/* the plan stays locked: amounts + tickers are revealed in their own chapters */}
 			<div style={{position: 'absolute', left: SPLIT.left, top: 1030, right: story.safe.right}}>
 				{ROWS.map((r, i) => {
 					const p = sp(frame, fps, tSplit + 8 + i * 6, 'snappy');
-					const count = kf(frame, [tSplit + 8 + i * 6, tSplit + 26 + i * 6], [0, r.amount], E.out);
+					const box: React.CSSProperties = {height: 92, borderRadius: 18, border: `3px dashed ${P.muted}`, background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 64, fontWeight: 900, color: P.muted};
 					return (
 						<div key={r.key} style={{display: 'flex', alignItems: 'center', height: 118, opacity: Math.min(1, p * 1.4), transform: `translateX(${(1 - p) * -60}px)`}}>
 							<div style={{width: 14, height: 84, borderRadius: 7, background: r.color, marginRight: 30}} />
-							<div style={{width: 230}}>
-								<NumberCounter value={count} fontSize={92} color={r.color} />
+							<div style={{...box, width: 200}}>
+								<span style={{color: r.color}}>$</span>??
 							</div>
 							<div style={{fontSize: 30, fontWeight: 900, color: P.muted, margin: '0 28px', letterSpacing: 2}}>→</div>
-							<div style={{fontSize: 76, fontWeight: 900, color: P.ink, letterSpacing: -1, width: 260}}>{r.ticker}</div>
-							<div style={{fontSize: 34, fontWeight: 800, color: P.muted}}>{pct(r.amount)}%</div>
+							<div style={{...box, width: 300, letterSpacing: 6}}>????</div>
 						</div>
 					);
 				})}
