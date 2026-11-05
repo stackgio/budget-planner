@@ -12,14 +12,45 @@ export function authEnabled(): boolean {
   return !!process.env.MONEYFLOW_PASSCODE;
 }
 
-function secret(): string {
-  const s = process.env.MONEYFLOW_SESSION_SECRET;
-  if (authEnabled() && (!s || s.length < 32)) {
-    throw new Error("MONEYFLOW_SESSION_SECRET must be set (32+ chars) when MONEYFLOW_PASSCODE is enabled.");
-  }
-  // Local-only fallback: cookies are still integrity-checked, but this is NOT a
-  // secure configuration for hosting. See README > Security.
-  return s ?? "moneyflow-local-development-only-secret";
+/** A usable explicit secret: long enough and not an unexpanded host template like "${{...}}". */
+export function hasValidSessionSecret(): boolean {
+  const s = process.env.MONEYFLOW_SESSION_SECRET ?? "";
+  return s.length >= 32 && !s.includes("${{");
+}
+
+let keyPromise: Promise<CryptoKey> | null = null;
+
+/**
+ * HMAC signing key.
+ * 1. MONEYFLOW_SESSION_SECRET when it is a real 32+ character value (preferred).
+ * 2. Otherwise, with a passcode set, a key derived from the passcode using
+ *    PBKDF2-SHA256 (210,000 iterations). The passcode already gates access, so
+ *    this keeps the app working when a host fails to fill in the secret, while
+ *    making offline guessing from a stolen cookie slow.
+ * 3. Local development without a passcode: a fixed dev-only key (localhost only;
+ *    the middleware refuses every other host).
+ */
+function signingKey(): Promise<CryptoKey> {
+  keyPromise ??= (async () => {
+    const hmacAlg = { name: "HMAC", hash: "SHA-256" } as const;
+    if (hasValidSessionSecret()) {
+      return crypto.subtle.importKey("raw", enc.encode(process.env.MONEYFLOW_SESSION_SECRET!), hmacAlg, false, ["sign"]);
+    }
+    const passcode = process.env.MONEYFLOW_PASSCODE;
+    if (passcode) {
+      console.warn("MONEYFLOW_SESSION_SECRET is missing, too short, or an unexpanded template — deriving the session key from the passcode instead.");
+      const base = await crypto.subtle.importKey("raw", enc.encode(passcode), "PBKDF2", false, ["deriveKey"]);
+      return crypto.subtle.deriveKey(
+        { name: "PBKDF2", hash: "SHA-256", salt: enc.encode("moneyflow-session-key-v1"), iterations: 210_000 },
+        base,
+        { ...hmacAlg, length: 256 },
+        false,
+        ["sign"],
+      );
+    }
+    return crypto.subtle.importKey("raw", enc.encode("moneyflow-local-development-only-secret"), hmacAlg, false, ["sign"]);
+  })();
+  return keyPromise;
 }
 
 function b64url(buf: ArrayBuffer): string {
@@ -30,8 +61,7 @@ function b64url(buf: ArrayBuffer): string {
 }
 
 async function hmac(data: string): Promise<string> {
-  const key = await crypto.subtle.importKey("raw", enc.encode(secret()), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  return b64url(await crypto.subtle.sign("HMAC", key, enc.encode(data)));
+  return b64url(await crypto.subtle.sign("HMAC", await signingKey(), enc.encode(data)));
 }
 
 function safeEqual(a: string, b: string): boolean {

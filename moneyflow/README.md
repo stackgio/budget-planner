@@ -36,7 +36,7 @@ The repo includes a `Dockerfile`, `railway.json` (health check at `/api/health`)
    | `MONEYFLOW_PASSCODE` | a long passphrase only you know |
    | `MONEYFLOW_SESSION_SECRET` | 64 random characters (Railway's generator: `${{secret(64)}}`) |
 
-   `DATABASE_URL` is already set to `file:/data/moneyflow.db` by the Dockerfile.
+   `DATABASE_URL` is already set to `file:/data/moneyflow.db` by the Dockerfile. If `MONEYFLOW_SESSION_SECRET` is missing, too short, or Railway leaves the `${{...}}` template unexpanded, MoneyFlow logs a note and derives the signing key from your passcode instead (PBKDF2-SHA256, 210,000 iterations). A real random secret is still preferred.
 5. **Settings → Networking → Generate Domain.** Railway gives you `https://<name>.up.railway.app`.
 6. On your iPhone, open that URL in **Safari** → enter your passcode → **Share → Add to Home Screen**. It opens full-screen like an app.
 
