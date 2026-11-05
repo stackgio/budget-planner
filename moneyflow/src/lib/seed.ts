@@ -1,4 +1,7 @@
-import type { PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "@prisma/client";
+
+/** Works with the client or inside an interactive transaction. */
+type Db = Prisma.TransactionClient;
 import { addDays, addMonths, clampedDate, monthOf, monthStart, todayISO, type ISODate } from "./dates";
 import { DEFAULT_RULES, paydaysBetween } from "./paycheck";
 import {
@@ -15,7 +18,7 @@ import {
  * PERSONAL workspace: only the user's stated profile, everything editable and
  * marked unverified. No transactions, no balances, no due dates, no APRs.
  */
-export async function seedPersonal(prisma: PrismaClient): Promise<string> {
+export async function seedPersonal(prisma: Db): Promise<string> {
   const user = await prisma.user.create({ data: { name: "My MoneyFlow", mode: "personal" } });
   const userId = user.id;
   await prisma.settings.create({
@@ -62,7 +65,7 @@ function rng(seed: number) {
  * DEMO workspace: a fictional person ("Alex Demo") with fictional accounts and
  * ~3 months of fictional transactions. Nothing here relates to the real user.
  */
-export async function seedDemo(prisma: PrismaClient, today: ISODate = todayISO()): Promise<string> {
+export async function seedDemo(prisma: Db, today: ISODate = todayISO()): Promise<string> {
   const rand = rng(42);
   const user = await prisma.user.create({ data: { name: "Alex Demo (fictional)", mode: "demo", onboardedAt: new Date() } });
   const userId = user.id;
@@ -187,7 +190,19 @@ export async function seedDemo(prisma: PrismaClient, today: ISODate = todayISO()
   return userId;
 }
 
+const TX = { maxWait: 30_000, timeout: 180_000 };
+
+/**
+ * Create a workspace atomically: either every row exists or none do, so a
+ * concurrent request can never observe a half-built workspace.
+ */
+export function createWorkspace(prisma: PrismaClient, mode: "demo" | "personal"): Promise<string> {
+  return prisma.$transaction((tx) => (mode === "demo" ? seedDemo(tx) : seedPersonal(tx)), TX);
+}
+
 export async function resetWorkspace(prisma: PrismaClient, mode: "demo" | "personal"): Promise<string> {
-  await prisma.user.deleteMany({ where: { mode } });
-  return mode === "demo" ? seedDemo(prisma) : seedPersonal(prisma);
+  return prisma.$transaction(async (tx) => {
+    await tx.user.deleteMany({ where: { mode } });
+    return mode === "demo" ? seedDemo(tx) : seedPersonal(tx);
+  }, TX);
 }

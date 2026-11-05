@@ -2,28 +2,43 @@ import "server-only";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { prisma } from "./db";
-import { seedDemo, seedPersonal } from "./seed";
+import { createWorkspace } from "./seed";
 import { unsign, WORKSPACE_COOKIE } from "./session";
 
 /**
  * Resolve the active workspace (user) for this request. Every query in the app
  * is scoped by the id returned here — this is the per-user isolation boundary.
  */
+// A workspace is usable only once its Settings row exists (created last by the seed).
+const COMPLETE = { settings: { isNot: null } } as const;
+
+// One first-run setup per server process, shared by concurrent requests.
+let firstRun: Promise<string> | null = null;
+
+async function ensureWorkspaces(): Promise<string> {
+  // Repair anything a crashed older version may have left half-created.
+  await prisma.user.deleteMany({ where: { settings: { is: null } } });
+  const personal = await prisma.user.findFirst({ where: { mode: "personal", ...COMPLETE }, select: { id: true } });
+  const pid = personal?.id ?? (await createWorkspace(prisma, "personal"));
+  if (!(await prisma.user.findFirst({ where: { mode: "demo", ...COMPLETE }, select: { id: true } }))) {
+    await createWorkspace(prisma, "demo");
+  }
+  return pid;
+}
+
 export const getUserId = cache(async (): Promise<string> => {
   const jar = await cookies();
   const id = await unsign(jar.get(WORKSPACE_COOKIE)?.value);
   if (id) {
-    const u = await prisma.user.findUnique({ where: { id }, select: { id: true } });
+    const u = await prisma.user.findFirst({ where: { id, ...COMPLETE }, select: { id: true } });
     if (u) return u.id;
   }
-  let personal = await prisma.user.findFirst({ where: { mode: "personal" }, select: { id: true } });
-  if (!personal) {
-    // First run: create both workspaces automatically.
-    const pid = await seedPersonal(prisma);
-    if (!(await prisma.user.findFirst({ where: { mode: "demo" } }))) await seedDemo(prisma);
-    personal = { id: pid };
-  }
-  return personal.id;
+  const personal = await prisma.user.findFirst({ where: { mode: "personal", ...COMPLETE }, select: { id: true } });
+  if (personal) return personal.id;
+  firstRun ??= ensureWorkspaces().finally(() => {
+    firstRun = null;
+  });
+  return firstRun;
 });
 
 export const loadWorkspace = cache(async () => {
