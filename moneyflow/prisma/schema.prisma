@@ -1,0 +1,370 @@
+// MoneyFlow data model
+//
+// Conventions
+// - All money is stored as INTEGER CENTS (Int). Never floats. See src/lib/money.ts.
+// - Calendar dates (paydays, due dates, transaction dates) are stored as
+//   "YYYY-MM-DD" strings so they never shift across timezones.
+// - Every row belongs to a User (workspace). All queries are scoped by userId.
+// - Transaction.amountCents is signed from the ACCOUNT's point of view:
+//     asset account:     +deposit / -withdrawal
+//     liability account: -charge (owe more) / +payment (owe less)
+//   So an account's net-worth contribution = latest snapshot + sum(amounts after it).
+//
+// PostgreSQL migration: change `provider` to "postgresql" and DATABASE_URL.
+// No SQLite-specific types are used. See README.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String    @id @default(cuid())
+  name        String
+  mode        String // "demo" | "personal"
+  onboardedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  settings        Settings?
+  allocationRules AllocationRule[]
+  accounts        Account[]
+  snapshots       AccountSnapshot[]
+  categories      Category[]
+  transactions    Transaction[]
+  budgets         Budget[]
+  bills           Bill[]
+  billReserves    BillReserve[]
+  paychecks       PaycheckEvent[]
+  assignments     PaycheckAssignment[]
+  goals           SavingsGoal[]
+  goalContribs    GoalContribution[]
+  holdings        Holding[]
+  invContribs     InvestmentContribution[]
+  planLines       PlanLine[]
+  importBatches   ImportBatch[]
+  auditEvents     AuditEvent[]
+}
+
+model Settings {
+  id                   String  @id @default(cuid())
+  userId               String  @unique
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payIntervalDays      Int     @default(14)
+  // Known payday used to generate every other payday. NULL until the user sets it.
+  anchorPayday         String?
+  netPayCents          Int     @default(148200)
+  // "half_month" = monthly bill / 2 per check; "annualized" = monthly bill * 12 / 26
+  reserveMode          String  @default("half_month")
+  investingPaused      Boolean @default(false)
+  emergencyTargetCents Int?
+  primaryAccountId     String?
+  investingGoalMonthly Int? // monthly contribution goal for investments, cents
+  profileConfirmedAt   DateTime?
+}
+
+// Percent-of-paycheck framework (Needs / Investing / Goals / Guilt-free)
+model AllocationRule {
+  id         String @id @default(cuid())
+  userId     String
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  key        String // needs | investing | goals | guiltfree
+  label      String
+  percentBps Int // basis points: 5500 = 55.00%
+  sortOrder  Int    @default(0)
+
+  @@unique([userId, key])
+}
+
+model Account {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  // checking | savings | cash | credit_card | loan | personal_debt | investment
+  type            String
+  subtype         String? // roth_ira | taxable | dividend | ...
+  institution     String?
+  creditLimitCents Int?
+  aprBps          Int? // 2499 = 24.99% APR; NULL = unknown
+  minPaymentCents Int? // NULL = unknown
+  dueDay          Int? // day of month; NULL = unknown
+  verified        Boolean  @default(false) // user confirmed the details
+  archived        Boolean  @default(false)
+  notes           String?
+  createdAt       DateTime @default(now())
+
+  snapshots     AccountSnapshot[]
+  transactions  Transaction[]
+  holdings      Holding[]
+  invContribs   InvestmentContribution[]
+  bills         Bill[]          @relation("BillAccount")
+  debtBills     Bill[]          @relation("BillDebt")
+  goals         SavingsGoal[]
+}
+
+// A user-entered balance at a point in time. The authoritative starting point
+// for balance calculation. Accounts with no snapshot have an UNKNOWN balance.
+model AccountSnapshot {
+  id           String  @id @default(cuid())
+  userId       String
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId    String
+  account      Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  date         String
+  balanceCents Int // signed net value (liabilities negative)
+  note         String?
+  createdAt    DateTime @default(now())
+}
+
+model Category {
+  id                 String  @id @default(cuid())
+  userId             String
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name               String
+  // needs | investing | goals | guiltfree | income | transfer
+  bucket             String
+  monthlyBudgetCents Int?
+  color              String  @default("#10b981")
+  archived           Boolean @default(false)
+
+  transactions Transaction[]
+  splits       TransactionSplit[]
+  budgets      Budget[]
+  bills        Bill[]
+
+  @@unique([userId, name])
+}
+
+model Transaction {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId     String
+  account       Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  date          String
+  merchant      String
+  amountCents   Int
+  // expense | income | refund | transfer
+  type          String
+  // for transfers: internal | debt_payment | savings | investment
+  transferKind  String?
+  transferGroup String? // both legs of a transfer share this id
+  categoryId    String?
+  category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  notes         String?
+  tags          String? // comma-separated
+  billId        String?
+  bill          Bill?    @relation(fields: [billId], references: [id], onDelete: SetNull)
+  importHash    String?
+  importBatchId String?
+  importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
+  createdAt     DateTime @default(now())
+
+  splits TransactionSplit[]
+
+  @@index([userId, date])
+  @@index([userId, importHash])
+}
+
+model TransactionSplit {
+  id            String      @id @default(cuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  categoryId    String?
+  category      Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  amountCents   Int // same sign convention as parent
+  note          String?
+}
+
+// Monthly category budget override (falls back to Category.monthlyBudgetCents)
+model Budget {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  month       String // YYYY-MM
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  amountCents Int
+
+  @@unique([userId, month, categoryId])
+}
+
+// Recurring bill schedule
+model Bill {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name          String
+  amountCents   Int
+  // monthly | biweekly | weekly | annual
+  frequency     String   @default("monthly")
+  dueDay        Int? // monthly/annual: day of month. NULL = due date not set yet
+  dueMonth      Int? // annual: 1-12
+  anchorDate    String? // weekly/biweekly anchor
+  categoryId    String?
+  category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  accountId     String? // pays from
+  account       Account? @relation("BillAccount", fields: [accountId], references: [id], onDelete: SetNull)
+  debtAccountId String? // if this bill is a debt payment
+  debtAccount   Account? @relation("BillDebt", fields: [debtAccountId], references: [id], onDelete: SetNull)
+  autopay       Boolean  @default(false)
+  verified      Boolean  @default(false) // user-reported estimates start unverified
+  active        Boolean  @default(true)
+  notes         String?
+
+  reserves     BillReserve[]
+  transactions Transaction[]
+}
+
+// Money actually set aside for a bill from a specific paycheck. A reserve is
+// only "funded" once the user confirms it — budgeting alone never funds a bill.
+model BillReserve {
+  id          String  @id @default(cuid())
+  userId      String
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  billId      String
+  bill        Bill    @relation(fields: [billId], references: [id], onDelete: Cascade)
+  payDate     String
+  plannedCents Int
+  fundedCents Int     @default(0)
+  fundedAt    DateTime?
+
+  @@unique([billId, payDate])
+}
+
+// Persisted paycheck. Paydays are generated from the anchor; a row exists once
+// the user records an actual amount, overrides the expected amount, or logs
+// extra income (overtime / bonus / irregular).
+model PaycheckEvent {
+  id            String  @id @default(cuid())
+  userId        String
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payDate       String
+  kind          String  @default("regular") // regular | overtime | bonus | irregular
+  expectedCents Int
+  actualCents   Int? // NULL = not received / not recorded yet
+  transactionId String?
+  notes         String?
+
+  @@unique([userId, payDate, kind])
+}
+
+// "Give every dollar a job": assignment of a paycheck to an envelope.
+model PaycheckAssignment {
+  id          String  @id @default(cuid())
+  userId      String
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payDate     String
+  // bucket | category | goal | debt | bill | other
+  targetType  String
+  targetId    String? // bucket key, category id, goal id, account id, bill id
+  label       String
+  amountCents Int
+  confirmed   Boolean @default(true) // explicit user action
+  createdAt   DateTime @default(now())
+}
+
+model SavingsGoal {
+  id                      String  @id @default(cuid())
+  userId                  String
+  user                    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                    String
+  kind                    String // emergency | moving | travel | birthday | general | custom
+  targetCents             Int?
+  targetDate              String?
+  monthlyContributionCents Int?
+  priority                Int     @default(5)
+  accountId               String?
+  account                 Account? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  verified                Boolean @default(false)
+  archived                Boolean @default(false)
+  notes                   String?
+
+  contributions GoalContribution[]
+}
+
+model GoalContribution {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goalId        String
+  goal          SavingsGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  date          String
+  amountCents   Int // negative = withdrawal from goal
+  transactionId String?
+  note          String?
+}
+
+model Holding {
+  id               String  @id @default(cuid())
+  userId           String
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId        String
+  account          Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  symbol           String
+  name             String?
+  // shares stored as a decimal string (e.g. "12.345678"); math uses integer micro-shares
+  shares           String  @default("0")
+  costBasisCents   Int?
+  // Manually entered price — MoneyFlow never fetches or invents prices.
+  manualPriceCents Int?
+  priceAsOf        String?
+  verified         Boolean @default(false)
+}
+
+model InvestmentContribution {
+  id            String  @id @default(cuid())
+  userId        String
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId     String
+  account       Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  date          String
+  amountCents   Int
+  taxYear       Int?
+  transactionId String?
+  note          String?
+}
+
+// Optional planning lines imported from older reported amounts. Drafts are
+// never counted as spending or confirmed allocations until accepted.
+model PlanLine {
+  id           String @id @default(cuid())
+  userId       String
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  monthlyCents Int
+  bucket       String // needs | investing | goals | guiltfree
+  // savings | investment | spending
+  nature       String
+  status       String @default("draft") // draft | accepted | dismissed
+  goalId       String?
+}
+
+model ImportBatch {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fileName       String
+  accountId      String
+  rowCount       Int
+  importedCount  Int
+  duplicateCount Int
+  createdAt      DateTime @default(now())
+
+  transactions Transaction[]
+}
+
+// Every change to allocation rules / confirmations is logged — rules are never
+// changed silently.
+model AuditEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  at        DateTime @default(now())
+  kind      String
+  message   String
+}
