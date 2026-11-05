@@ -16,10 +16,37 @@ npm run setup                 # creates the database + seeds Personal and Demo w
 npm run dev                   # http://localhost:3000
 ```
 
-On iPhone (same Wi-Fi): run `npm run dev -- -H 0.0.0.0`, open `http://<your-computer-ip>:3000` in Safari, then Share → **Add to Home Screen**. **Set a passcode first** (see Security below); without one, anyone on your network can see your data.
+To use it on your iPhone from anywhere, see **Deploy to Railway** below. To use it only on home Wi-Fi, set `MONEYFLOW_PASSCODE` and `MONEYFLOW_SESSION_SECRET` in `.env`, run `npm run dev -- -H 0.0.0.0`, and open `http://<your-computer-ip>:3000` in Safari. Without a passcode, MoneyFlow only answers `localhost`.
 
 Production build: `npm run build && npm start`. Tests: `npm test`. Type check: `npm run typecheck`.
 Reset everything (both workspaces): `npm run db:reset`.
+
+## Deploy to Railway (use it on your iPhone anywhere)
+
+The repo includes a `Dockerfile`, `railway.json` (health check at `/api/health`), and `scripts/start.sh`, which syncs the database schema on every boot. SQLite lives on a persistent Railway **volume**, so your data survives redeploys.
+
+1. Sign in at railway.com with GitHub → **New Project → Deploy from GitHub repo** → `stackgio/budget-planner`.
+2. Open the new service → **Settings**:
+   - **Source → Root Directory:** `/moneyflow`
+   - **Source → Branch:** the branch that contains MoneyFlow (or merge it into `main` first)
+3. **Add a volume** to the service (right-click the service on the canvas, or ⌘K → "Volume"). Set the **mount path** to `/data`.
+4. **Variables** tab → add:
+   | Name | Value |
+   |---|---|
+   | `MONEYFLOW_PASSCODE` | a long passphrase only you know |
+   | `MONEYFLOW_SESSION_SECRET` | 64 random characters (Railway's generator: `${{secret(64)}}`) |
+
+   `DATABASE_URL` is already set to `file:/data/moneyflow.db` by the Dockerfile.
+5. **Settings → Networking → Generate Domain.** Railway gives you `https://<name>.up.railway.app`.
+6. On your iPhone, open that URL in **Safari** → enter your passcode → **Share → Add to Home Screen**. It opens full-screen like an app.
+
+The first visit creates your Personal and Demo workspaces automatically and opens the confirmation screen.
+
+**Safety net:** if the passcode or secret is missing, MoneyFlow refuses every non-localhost request (HTTP 503) instead of exposing your data. Cookies are marked `Secure` automatically when the request arrives over HTTPS.
+
+**Back up your data:** Transactions → Export downloads a CSV of every transaction. Railway also offers volume backups on paid plans.
+
+**Cost:** Railway bills for usage. A single small app like this typically fits within the Hobby plan; check railway.com/pricing for current terms.
 
 ## First run
 
@@ -111,7 +138,7 @@ Business logic lives in pure, tested modules: `src/lib/{money,dates,paycheck,bil
 
 ## Security
 
-- **Local development:** no login is required, and the app is meant for `localhost` only. Settings shows a "Local mode — not safe to host" banner.
+- **Local development:** no login is required, and the app only answers requests to `localhost`. Any other hostname gets a 503 until a passcode is configured (fail closed). Settings shows a "Local mode" banner.
 - **Before exposing it anywhere** (LAN, tunnel, server), set both of these:
   ```bash
   MONEYFLOW_PASSCODE="a long passphrase"

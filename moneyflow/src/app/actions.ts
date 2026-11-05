@@ -2,7 +2,7 @@
 
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getUserId, loadWorkspace } from "@/lib/workspace";
@@ -92,13 +92,20 @@ async function ownCategory(userId: string, id: string | null) {
 }
 
 // ---------- auth & workspaces ----------
+/** Mark cookies Secure whenever the request really arrived over HTTPS (e.g. behind Railway's proxy). */
+async function cookieSecure(): Promise<boolean> {
+  const h = await headers();
+  const proto = (h.get("x-forwarded-proto") ?? "").split(",")[0].trim();
+  return proto === "https" || process.env.MONEYFLOW_FORCE_SECURE_COOKIES === "1";
+}
+
 export async function login(_: unknown, fd: FormData): Promise<Result> {
   if (!authEnabled()) redirect("/");
   if (!(await checkPasscode(String(fd.get("passcode") ?? "")))) {
     await new Promise((r) => setTimeout(r, 800)); // slow brute force
     return { ok: false, error: "Incorrect passcode" };
   }
-  (await cookies()).set(SESSION_COOKIE, await makeSessionToken(), { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", maxAge: SESSION_TTL_SECONDS, path: "/" });
+  (await cookies()).set(SESSION_COOKIE, await makeSessionToken(), { httpOnly: true, sameSite: "lax", secure: await cookieSecure(), maxAge: SESSION_TTL_SECONDS, path: "/" });
   redirect("/");
 }
 
@@ -112,7 +119,7 @@ export async function switchWorkspace(fd: FormData) {
   await getUserId(); // ensures workspaces exist
   const u = await prisma.user.findFirst({ where: { mode } });
   if (!u) return;
-  (await cookies()).set(WORKSPACE_COOKIE, await sign(u.id), { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", maxAge: 60 * 60 * 24 * 365, path: "/" });
+  (await cookies()).set(WORKSPACE_COOKIE, await sign(u.id), { httpOnly: true, sameSite: "lax", secure: await cookieSecure(), maxAge: 60 * 60 * 24 * 365, path: "/" });
   revalidatePath("/", "layout");
   redirect("/");
 }
@@ -121,7 +128,7 @@ export async function resetWorkspaceAction(_: unknown, fd: FormData): Promise<Re
   const mode = str(fd, "mode") === "personal" ? "personal" : "demo";
   if (mode === "personal" && str(fd, "confirm") !== "RESET") return { ok: false, error: 'Type RESET to confirm erasing your personal data.' };
   const id = await resetWorkspace(prisma, mode);
-  (await cookies()).set(WORKSPACE_COOKIE, await sign(id), { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", maxAge: 60 * 60 * 24 * 365, path: "/" });
+  (await cookies()).set(WORKSPACE_COOKIE, await sign(id), { httpOnly: true, sameSite: "lax", secure: await cookieSecure(), maxAge: 60 * 60 * 24 * 365, path: "/" });
   revalidatePath("/", "layout");
   redirect(mode === "personal" ? "/welcome" : "/");
 }
