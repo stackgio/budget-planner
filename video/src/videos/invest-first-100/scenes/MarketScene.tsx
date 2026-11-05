@@ -9,7 +9,7 @@ import {useCues} from '../../../story/lib/cues';
 import {arc, E, kf, sp} from '../../../story/lib/motion';
 import {story} from '../../../story/theme';
 import {PLAN, SOURCES, VTI} from '../facts';
-import {FUND, TILES, white as P} from '../look';
+import {BARS, FUND, white as P} from '../look';
 import {asset} from '../ui';
 
 // 69 × 51 = 3,519 dots — one per stock VTI holds (as of 09/30/2026)
@@ -85,11 +85,11 @@ export const MarketScene: React.FC = () => {
 				{fly < 1 &&
 					['AAPL.svg', 'MSFT.png', 'AMZN.png'].map((src, i) => {
 						const [dx, dy] = dotCenter(LOGO_DOTS[i], COLS, GAP);
-						const from: [number, number] = [TILES.xs[i] + TILES.w / 2, TILES.y + TILES.h / 2];
+						const from: [number, number] = [BARS.x + BARS.logoW / 2, BARS.ys[i] + BARS.h / 2];
 						const [x, y] = arc(fly, from, [FIELD.x + dx, FIELD.y + dy], 160);
 						const s = 1 - 0.92 * fly;
 						return (
-							<div key={src} style={{position: 'absolute', left: x - (TILES.w * s) / 2, top: y - (TILES.h * s) / 2, width: TILES.w * s, height: TILES.h * s, background: '#fff', borderRadius: 26 * s + 4, border: `2px solid ${P.line}`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 18px 40px ${P.shadow}`}}>
+							<div key={src} style={{position: 'absolute', left: x - (BARS.logoW * s) / 2, top: y - (BARS.h * s) / 2, width: BARS.logoW * s, height: BARS.h * s, background: '#fff', borderRadius: 26 * s + 4, border: `2px solid ${P.line}`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 18px 40px ${P.shadow}`}}>
 								<Img src={staticFile(asset(src))} style={{height: 60 * s, width: 'auto', maxWidth: '80%', objectFit: 'contain'}} />
 							</div>
 						);

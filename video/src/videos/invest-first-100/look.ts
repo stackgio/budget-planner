@@ -43,7 +43,12 @@ export const stripX = (i: number) => {
 	for (let k = 0; k < i; k++) x += (SPLIT.cuts[k][1] - SPLIT.cuts[k][0]) * NOTE.w + SPLIT.gap;
 	return x;
 };
-export const VTI_STRIP_CENTER = {x: stripX(0) + 0.35 * NOTE.w, y: NOTE.cy};
+/** where the strips rest at the end of the hook */
+export const STRIP_TOP = 560;
+export const VTI_STRIP_CENTER = {x: stripX(0) + 0.35 * NOTE.w, y: STRIP_TOP + NOTE_H / 2};
 
 /** Logo tiles at the end of the VTI scene = start of the market scene (match cut). */
 export const TILES = {y: 1180, w: 240, h: 170, xs: [100, 390, 680]};
+
+/** VTI top-holding bars (logo boxes) — the market scene's logos fly out of these. */
+export const BARS = {x: 100, ys: [700, 860, 1020], logoW: 150, h: 120};

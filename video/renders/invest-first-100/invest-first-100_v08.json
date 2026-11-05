@@ -1,10 +1,10 @@
 {
- "file": "renders/invest-first-100/invest-first-100_v06_final-voice.mp4",
+ "file": "renders/invest-first-100/invest-first-100_v08_final-voice.mp4",
  "composition": "InvestFirst100",
  "mode": "education",
  "title": "How I'd Invest My First $100",
  "narration": "aligned",
- "durationSec": 57.9,
+ "durationSec": 59.3,
  "props": "public/voice/invest-first-100/props.json",
- "renderedAt": "2026-11-05T00:12:17.510Z"
+ "renderedAt": "2026-11-05T00:22:27.034Z"
 }

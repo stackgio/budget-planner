@@ -30,11 +30,11 @@ const paginate = (n: Narration, maxChars = 20, maxWords = 4): Page[] => {
  * The spoken word is highlighted in brand green. `paletteAt(frame)` lets the
  * caption colour follow editorial / cinematic scenes.
  */
-export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number) => Palette}> = ({narration, paletteAt}) => {
+export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number) => Palette; boxed?: boolean}> = ({narration, paletteAt, boxed = false}) => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const t = frame / fps;
-	const pages = React.useMemo(() => paginate(narration), [narration]);
+	const pages = React.useMemo(() => (boxed ? paginate(narration, 18, 3) : paginate(narration)), [narration, boxed]);
 	const idx = pages.findIndex((p, i) => t >= p.start - 0.05 && t < (pages[i + 1]?.start ?? p.end + 0.6) - 0.05);
 	if (idx < 0) return null;
 	const page = pages[idx];
@@ -63,6 +63,13 @@ export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number
 				opacity: pIn * fade,
 			}}
 		>
+			<div
+				style={
+					boxed
+						? {display: 'flex', flexWrap: 'wrap', justifyContent: 'center', columnGap: 22, padding: '12px 30px 16px', borderRadius: 24, background: pal.name === 'cinematic' ? 'rgba(11,12,14,0.78)' : 'rgba(255,255,255,0.9)', boxShadow: pal.name === 'cinematic' ? 'none' : '0 10px 30px rgba(15,20,30,0.12)', fontSize: 64}
+						: {display: 'contents'}
+				}
+			>
 			{page.words.map((w, i) => {
 				const active = t >= w.start - 0.03;
 				const speaking = t >= w.start - 0.03 && t < w.end + 0.08;
@@ -80,6 +87,7 @@ export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number
 					</span>
 				);
 			})}
+			</div>
 		</div>
 	);
 };

@@ -5,6 +5,7 @@ import {BrandBug, Sfx} from '../../../story/components/Chrome';
 import {Donut} from '../../../story/components/Donut';
 import {Bill} from '../../../story/components/Money';
 import {NumberCounter} from '../../../story/components/NumberCounter';
+import {KineticText} from '../../../story/components/KineticText';
 import {useCues} from '../../../story/lib/cues';
 import {arc, E, kf, sp} from '../../../story/lib/motion';
 import {story} from '../../../story/theme';
@@ -54,11 +55,14 @@ export const FinalScene: React.FC = () => {
 	const rec = swapIn(frame, tBut, Infinity, 40);
 	const lastBump = Math.max(0, ...Array.from({length: months}, (_, m) => (frame >= monthAt(m) + 12 ? monthAt(m) + 12 : 0)));
 	const pulse = frame >= tStart ? 1 + 0.035 * Math.max(0, 1 - (frame - lastBump) / 8) : 1;
-	const brand = kf(frame, [tEnd - 4, tEnd + 14], [0, 1], E.out);
+	const outro = kf(frame, [tEnd + 2, tEnd + 14], [0, 1], E.inOut);
+	const brand = kf(frame, [tEnd + 10, tEnd + 24], [0, 1], E.out);
+	const ask = (d: number) => sp(frame, fps, tEnd + 8 + d, 'snappy');
 
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<CinematicBg lightX={C.x} lightY={C.y} light={1.15} warm={false} />
+			<div style={{position: 'absolute', inset: 0, opacity: 1 - outro, transform: `translateY(${-60 * outro}px) scale(${1 - 0.04 * outro})`}}>
 			<div style={{position: 'absolute', left: story.safe.left, top: story.safe.top + 6, fontSize: 30, fontWeight: 900, letterSpacing: 4, color: P.muted}}>MY FIRST $100 PORTFOLIO</div>
 
 			<Donut
@@ -122,8 +126,34 @@ export const FinalScene: React.FC = () => {
 						<span style={{fontSize: 44, fontWeight: 900, color: P.ink}}>{Math.max(1, done) === 1 ? 'MONTH' : 'MONTHS'} × ${RECURRING.monthly.value}</span>
 					</div>
 					<div style={{position: 'absolute', left: SLOTS.x, right: story.safe.right, top: 1240, fontSize: 24, fontWeight: 700, color: P.muted}}>
-						Contributions only — no returns shown or promised.
+						Contributions only — no returns shown. Diversifying doesn't remove risk.
 					</div>
+				</div>
+			)}
+
+			</div>
+
+			{/* the closing question (on screen only — not spoken) */}
+			{outro > 0 && (
+				<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right - 40, top: 420}}>
+					<KineticText text="WOULD YOU BUY" at={tEnd + 6} fontSize={100} color={P.ink} />
+					<KineticText text="3 ETFs OR PUT" at={tEnd + 9} fontSize={100} color={P.ink} colors={{'3': P.accent, etfs: P.accent}} />
+					<KineticText text="EVERYTHING" at={tEnd + 12} fontSize={100} color={P.ink} />
+					<KineticText text="INTO ONE?" at={tEnd + 15} fontSize={100} color={P.ink} colors={{one: P.gold}} />
+					<div style={{display: 'flex', gap: 24, marginTop: 56}}>
+						{[
+							{t: 'VTI + SCHD + VXUS', c: P.accent},
+							{t: 'JUST ONE FUND', c: P.gold},
+						].map((o, i) => {
+							const p = ask(10 + i * 5);
+							return (
+								<div key={o.t} style={{border: `3px solid ${o.c}`, borderRadius: 22, padding: '20px 26px', fontSize: 36, fontWeight: 900, color: o.c, transform: `translateY(${(1 - p) * 30}px)`, opacity: Math.min(1, p * 1.5)}}>
+									{o.t}
+								</div>
+							);
+						})}
+					</div>
+					<div style={{fontSize: 26, fontWeight: 700, color: P.muted, marginTop: 40, opacity: ask(20)}}>Not financial advice. All investing involves risk.</div>
 				</div>
 			)}
 

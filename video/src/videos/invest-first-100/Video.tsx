@@ -17,6 +17,7 @@ const DEF: VideoDef<Id> = {
 	script: SCRIPT,
 	scenes: SCENES,
 	tailSec: TAIL_SEC,
+	captionsBoxed: true,
 	components: {hook: HookScene, vti: VtiScene, market: MarketScene, schd: SchdScene, vxus: VxusScene, final: FinalScene},
 	looks: {hook: dark, vti: white, market: white, schd: dark, vxus: white, final: dark},
 	transitions: {

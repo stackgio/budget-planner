@@ -44,4 +44,4 @@ export const SCENES: SceneDef<'hook' | 'vti' | 'market' | 'schd' | 'vxus' | 'fin
 ];
 
 /** Seconds held after the last word (brand + final chart). */
-export const TAIL_SEC = 2.0;
+export const TAIL_SEC = 3.4; // closing question needs ~3 s to read

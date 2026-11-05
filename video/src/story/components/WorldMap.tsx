@@ -16,13 +16,15 @@ export const WorldMap: React.FC<{
 	stroke: string;
 	fills?: Record<string, string>;
 	opacity?: Record<string, number>;
+	/** per-country colour by index (wins over `fills`) — e.g. a sweeping reveal */
+	colorAt?: (index: number) => string | undefined;
 	style?: React.CSSProperties;
 	children?: React.ReactNode;
-}> = ({countries, vw, vh, w, base, stroke, fills = {}, opacity = {}, style, children}) => (
+}> = ({countries, vw, vh, w, base, stroke, fills = {}, opacity = {}, colorAt, style, children}) => (
 	<div style={{position: 'absolute', width: w, height: (w * vh) / vw, ...style}}>
 		<svg width={w} height={(w * vh) / vw} viewBox={`0 0 ${vw} ${vh}`} style={{position: 'absolute', inset: 0}}>
 			{countries.map((c, i) => (
-				<path key={i} d={c.d} fill={fills[c.id] ?? base} fillOpacity={opacity[c.id] ?? 1} stroke={stroke} strokeWidth={0.6} strokeLinejoin="round" />
+				<path key={i} d={c.d} fill={colorAt?.(i) ?? fills[c.id] ?? base} fillOpacity={opacity[c.id] ?? 1} stroke={stroke} strokeWidth={0.6} strokeLinejoin="round" />
 			))}
 		</svg>
 		{children}

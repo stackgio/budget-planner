@@ -53,6 +53,8 @@ export type VideoDef<Id extends string> = {
 	looks: Record<Id, Palette>;
 	/** transition INTO each scene (default: slide from bottom). Duration comes from SceneDef.transitionFrames. */
 	transitions?: Partial<Record<Id, SceneTransition>>;
+	/** boxed, larger, 3-word captions (better on busy/white scenes); default false */
+	captionsBoxed?: boolean;
 	/** lead before a scene's first line (sec), default 0.12 */
 	leadSec?: number;
 };
@@ -121,7 +123,7 @@ export function NarratedVideo<Id extends string>({def, props}: {def: VideoDef<Id
 					})}
 				</TransitionSeries>
 			</SfxContext.Provider>
-			{props.captions && <Captions narration={narration} paletteAt={paletteAt} />}
+			{props.captions && <Captions narration={narration} paletteAt={paletteAt} boxed={def.captionsBoxed} />}
 			{props.voiceAudio && <Html5Audio src={staticFile(props.voiceAudio)} volume={props.voiceVolume} />}
 		</AbsoluteFill>
 	);

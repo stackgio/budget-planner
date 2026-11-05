@@ -30,6 +30,7 @@ export const pct = (v: number) => Math.round((v / PLAN.total.value) * 100);
 
 export const VTI = {
 	name: 'Vanguard Morningstar Total Stock Market ETF',
+	indexCoverage: fact(100, 'historical', `${VG_VTI} · Fund management: index ≈ 100% of the investable U.S. stock market`),
 	stocks: fact(3519, 'historical', `${VG_VTI} · Characteristics, Number of stocks, as of 09/30/2026`),
 	asOf: '09/30/2026',
 	// Holding details (% of fund), as of 09/30/2026
