@@ -14,7 +14,7 @@ export const STOPS = [0.32, 0.62, 0.9];
 const D = `M${P0[0]},${P0[1]} Q${PC[0]},${PC[1]} ${P1[0]},${P1[1]}`;
 
 /** `drawn` 0..1 shows the dashed path, `done` 0..1 paints it green, `icons`/`lit` per stop 0..1. */
-export const ProgressPath: React.FC<{drawn: number; done: number; icons: number[]; lit: number[]}> = ({drawn, done, icons, lit}) => {
+export const ProgressPath: React.FC<{drawn: number; done: number; icons: number[]; lit: number[]; pulse?: number[]}> = ({drawn, done, icons, lit, pulse = [0, 0, 0]}) => {
 	const Icons = [IconInvest, IconNoDebt, IconJar];
 	return (
 		<>
@@ -38,13 +38,13 @@ export const ProgressPath: React.FC<{drawn: number; done: number; icons: number[
 							height: 104,
 							borderRadius: 52,
 							background: lit[i] > 0.5 ? P.accent : P.bg2,
-							border: `5px solid ${lit[i] > 0.5 ? P.accent : P.line}`,
+							border: `5px solid ${lit[i] > 0.5 || pulse[i] > 0.3 ? P.accent : P.line}`,
 							boxSizing: 'border-box',
 							display: 'flex',
 							alignItems: 'center',
 							justifyContent: 'center',
 							opacity: show > 0 ? 1 : 0,
-							transform: `scale(${(0.4 + 0.6 * Math.min(1, show * 3)) * (1 + 0.15 * Math.sin(Math.PI * Math.min(1, lit[i])))})`,
+							transform: `scale(${(0.4 + 0.6 * Math.min(1, show * 3)) * (1 + 0.15 * Math.sin(Math.PI * Math.min(1, lit[i])) + 0.18 * pulse[i])})`,
 						}}
 					>
 						<div style={{opacity: icons[i], transform: `scale(${0.5 + 0.5 * icons[i]})`}}>

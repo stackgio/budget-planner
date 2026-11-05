@@ -46,4 +46,4 @@ export const SCENES: SceneDef<Id>[] = [
 	{id: 'end', firstLine: 'L12', transitionFrames: 10}, // match cut on the path
 ];
 
-export const TAIL_SEC = 1.8;
+export const TAIL_SEC = 2.8;

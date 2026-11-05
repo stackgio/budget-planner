@@ -54,6 +54,10 @@ export const FundScene: React.FC = () => {
 	const stamp = sp(frame, fps, tDebt - 2, 'heavy');
 	const safe = sp(frame, fps, tDebt + 8, 'bouncy');
 	const jarIn = sp(frame, fps, tBuilding - 4, 'bouncy');
+	// without savings: the bill would land on a card
+	const threat = sp(frame, fps, tBill, 'bouncy');
+	const strike = prog(frame, tFrom + 6, 10, E.out);
+	const threatFade = kf(frame, [tDebt + 6, tDebt + 16], [1, 0.25]);
 
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
@@ -138,6 +142,31 @@ export const FundScene: React.FC = () => {
 						>
 							PAID
 						</div>
+					</div>
+				)}
+				{/* the alternative: on a card, it becomes debt */}
+				{threat > 0.001 && (
+					<div
+						style={{
+							position: 'absolute',
+							left: 712,
+							top: 840,
+							border: `4px dashed ${P.danger}`,
+							color: P.danger,
+							background: P.dangerSoft,
+							borderRadius: 16,
+							padding: '8px 16px',
+							fontSize: 56,
+							fontWeight: 900,
+							lineHeight: 1.05,
+							opacity: Math.min(1, threat * 1.5) * threatFade,
+							transform: `scale(${0.6 + 0.4 * threat})`,
+							transformOrigin: '0 50%',
+						}}
+					>
+						+${FACTS.repair.value}
+						<div style={{fontSize: 30, letterSpacing: 2}}>DEBT?</div>
+						<div style={{position: 'absolute', left: -8, right: -8, top: '50%', height: 6, borderRadius: 3, background: P.ink, transform: `scaleX(${strike}) rotate(-10deg)`, transformOrigin: '0 50%'}} />
 					</div>
 				)}
 				{/* outcome chip */}

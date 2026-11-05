@@ -26,7 +26,7 @@ export const HookScene: React.FC = () => {
 
 	const thinkP = 0.2;
 	const realP = 0.64;
-	const fill = mix(thinkP * prog(frame, -30, 30, E.out) + 0.0, realP, prog(frame, tBetter - 2, 22, E.inOut));
+	const fill = mix(mix(0.07, thinkP, prog(frame, 0, 36, E.out)), realP, prog(frame, tBetter - 2, 22, E.inOut));
 	const youThink = kf(frame, [0, 1, tBetter + 4, tBetter + 14], [1, 1, 1, 0.45]);
 	const actually = sp(frame, fps, tBetter + 10, 'bouncy');
 	const qPulse = 1 + 0.06 * Math.sin(frame / 5) * (1 - prog(frame, tDoing - 8, 8));

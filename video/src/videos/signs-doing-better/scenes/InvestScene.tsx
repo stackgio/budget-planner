@@ -45,7 +45,10 @@ export const InvestScene: React.FC = () => {
 			<CinematicBg lightX={700} lightY={850} floorY={story.ground} />
 			<ChapterTag n="01" label="INVESTING" at={t0 - 4} palette={P} style={{left: story.safe.left, top: story.safe.top + 10}} />
 			<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right, top: 330}}>
-				<KineticText text="START SMALL" at={t0 + 6} fontSize={140} color={P.ink} colors={{small: P.accent}} />
+				<KineticText text="START SMALL" at={t0 + 6} exitAt={tHabit - 10} fontSize={140} color={P.ink} colors={{small: P.accent}} />
+			</div>
+			<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right, top: 330}}>
+				<KineticText text="STAY CONSISTENT" at={tHabit - 2} fontSize={118} color={P.ink} colors={{consistent: P.accent}} lineHeight={1.0} />
 			</div>
 			<Camera keys={[{at: 0, zoom: 1}, {at: tFive, zoom: 1}, {at: tFive + 24, zoom: 1.04, x: 620, y: 960, ease: E.out}, {at: tFuture, zoom: 1.04, x: 620, y: 960}]}>
 				{/* account panel */}
@@ -81,6 +84,7 @@ export const InvestScene: React.FC = () => {
 									height: 34,
 									borderRadius: 10,
 									background: i < landed ? P.accent : 'transparent',
+								transform: i === landed - 1 ? `scale(${1 + (bump - 1) * 3})` : undefined,
 									border: `3px solid ${i < landed ? P.accent : P.line}`,
 									boxSizing: 'border-box',
 									fontSize: 24,
@@ -129,9 +133,17 @@ export const InvestScene: React.FC = () => {
 					facing={1}
 					seed={4}
 					onDark
+					frontProp={
+						frame >= tInvesting - 4 && frame < launches[0] + 2 ? (
+							<g transform="rotate(-20)">
+								<rect x={-44} y={-20} width={88} height={40} rx={6} fill="#2FA463" stroke="#17673C" strokeWidth={3} />
+								<text x={0} y={10} textAnchor="middle" fontSize={26} fontWeight={900} fill="#fff" fontFamily="Inter">$5</text>
+							</g>
+						) : undefined
+					}
 					track={[
 						{at: -10, pose: 'idle', face: 'focused'},
-						{at: tInvesting - 2, pose: 'present', face: 'happy', spring: 'snappy'},
+						{at: tInvesting - 2, pose: 'hold', face: 'happy', spring: 'snappy'},
 						{at: tFive - 10, pose: 'feed', face: 'determined', spring: 'snappy'},
 						{at: tHabit, pose: 'feed', face: 'happy'},
 						{at: tFuture, pose: 'fist', face: 'joy', spring: 'bouncy'},

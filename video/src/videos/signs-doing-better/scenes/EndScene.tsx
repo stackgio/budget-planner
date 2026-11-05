@@ -30,6 +30,12 @@ export const EndScene: React.FC = () => {
 	const [wx, wy] = s <= 0 ? [220, story.ground] : at(s);
 	const mx = s <= 0 ? 220 : mix(220, wx, Math.min(1, walk * 3));
 	const lit0 = sp(frame, fps, tToday, 'bouncy');
+	const tAsk = cue('L13', undefined, 0.35, 'end');
+	// after the question: each stop pulses once in turn (invest → debt → fund)
+	const ask = [0, 1, 2].map((i) => {
+		const p = prog(frame, tAsk + 12 + i * 8, 14);
+		return Math.sin(Math.PI * p);
+	});
 
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
@@ -40,8 +46,12 @@ export const EndScene: React.FC = () => {
 			<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right, top: 320}}>
 				<KineticText text="YOU CAN START TODAY" at={tYou + 4} fontSize={124} color={P.ink} colors={{today: P.accent}} lineHeight={1.0} />
 			</div>
+			{/* closing question (on screen only — no narration for it yet) */}
+			<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right, top: 620}}>
+				<KineticText text="Which one are you working on?" at={tAsk} fontSize={58} weight={800} color={P.body} colors={{working: P.accent}} letterSpacing={-1} />
+			</div>
 			<Camera keys={[{at: 0, zoom: 1.04, x: 420, y: 1000}, {at: tThings, zoom: 1.04, x: 420, y: 1000}, {at: tThings + 30, zoom: 1, ease: E.inOut}]}>
-				<ProgressPath drawn={1} done={s} icons={icons} lit={[lit0, 0, 0]} />
+				<ProgressPath drawn={1} done={s} icons={icons} lit={[lit0, 0, 0]} pulse={ask} />
 				<Marcus
 					x={mx}
 					y={s <= 0 ? story.ground : wy + 4}

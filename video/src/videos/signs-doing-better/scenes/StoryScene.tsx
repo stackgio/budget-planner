@@ -26,6 +26,7 @@ export const StoryScene: React.FC = () => {
 
 	const age = sp(frame, fps, t21 - 3, 'heavy');
 	const drawn = prog(frame, t0, 50, E.inOut);
+	const me = sp(frame, fps, t0 + 2, 'snappy');
 
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
@@ -62,10 +63,32 @@ export const StoryScene: React.FC = () => {
 					onDark
 					track={[
 						{at: -10, pose: 'idle', face: 'neutral'},
-						{at: tSeriously - 4, pose: ['think', {head: -10}], face: 'focused'},
+						{at: t0 + 4, pose: ['shrug', {head: 8}], face: {mouthCurve: 0.15, lookX: 0}, spring: 'limb'},
+						{at: tSeriously - 4, pose: ['think', {head: 10}], face: 'focused'},
 						{at: t21, pose: ['relaxed', {head: -12}], face: 'determined', spring: 'smooth'},
 					]}
 				/>
+				{/* personal: this one is me */}
+				<div
+					style={{
+						position: 'absolute',
+						left: 330,
+						top: 900,
+						fontSize: 44,
+						fontWeight: 900,
+						letterSpacing: 2,
+						color: P.ink,
+						opacity: Math.min(1, me * 1.5),
+						transform: `rotate(-6deg) scale(${0.7 + 0.3 * me})`,
+						transformOrigin: '0 50%',
+					}}
+				>
+					ME
+					<svg width={120} height={70} style={{position: 'absolute', left: -110, top: 30}} viewBox="0 0 120 70">
+						<path d="M110,10 Q60,6 22,52" fill="none" stroke={P.ink} strokeWidth={5} strokeLinecap="round" pathLength={1} strokeDasharray={`${me} 1`} />
+						<path d="M14,40 L22,54 L36,48" fill="none" stroke={P.ink} strokeWidth={5} strokeLinecap="round" strokeLinejoin="round" opacity={me > 0.9 ? 1 : 0} />
+					</svg>
+				</div>
 			</Camera>
 			<Sfx at={t21 - 2} name="thud" volume={0.35} />
 		</AbsoluteFill>
