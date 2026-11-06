@@ -23,6 +23,7 @@ export type TxInitial = {
   billId: string | null;
   notes: string | null;
   tags: string | null;
+  necessity?: string | null;
   splits: Array<{ categoryId: string; amount: string; note?: string }>;
 };
 
@@ -38,6 +39,7 @@ export function TransactionForm({ initial, categories, accounts, bills }: { init
   const [type, setType] = useState(initial.type);
   const [amount, setAmount] = useState(initial.amount);
   const [splitOn, setSplitOn] = useState(initial.splits.length > 0);
+  const [necessity, setNecessity] = useState(initial.necessity ?? "");
   const [splits, setSplits] = useState(initial.splits.length ? initial.splits : [{ categoryId: "", amount: "" }, { categoryId: "", amount: "" }]);
   const editingTransfer = !!initial.id && initial.type === "transfer";
   const total = parseDollars(amount) ?? 0;
@@ -74,6 +76,19 @@ export function TransactionForm({ initial, categories, accounts, bills }: { init
           <Field label="Category"><Select name="categoryId" defaultValue={initial.categoryId ?? ""}><option value="">Uncategorized</option>{catOpts.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</Select></Field>
         ) : <div />}
       </div>
+
+      {type === "expense" && (
+        <div>
+          <input type="hidden" name="necessity" value={necessity} />
+          <p className="mb-1 text-[13px] font-medium text-muted">Need or want? <span className="font-normal">(optional — powers Spend Smarter)</span></p>
+          <div className="grid grid-cols-3 gap-1 rounded-xl bg-surface-2 p-1" role="radiogroup" aria-label="Need or want">
+            {[{ v: "need", l: "Need" }, { v: "want", l: "Want" }, { v: "", l: "Not sure" }].map((o) => (
+              <button key={o.v} type="button" role="radio" aria-checked={necessity === o.v} onClick={() => setNecessity(o.v)}
+                className={cn("rounded-lg py-2 text-[13px] font-semibold transition", necessity === o.v ? "bg-surface shadow-sm text-fg" : "text-muted")}>{o.l}</button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {type !== "transfer" && type !== "income" && (
         <div className="rounded-xl border border-border p-3">

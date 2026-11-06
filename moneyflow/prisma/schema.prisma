@@ -157,6 +157,9 @@ model Transaction {
   category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   notes         String?
   tags          String? // comma-separated
+  // Optional user label for expenses: "need" | "want". NULL = not tagged
+  // (insights then fall back to the category's bucket and say so).
+  necessity     String?
   billId        String?
   bill          Bill?    @relation(fields: [billId], references: [id], onDelete: SetNull)
   importHash    String?
