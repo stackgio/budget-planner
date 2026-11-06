@@ -28,18 +28,18 @@ export const LearnScene: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const {cue} = useCues();
-	const t22 = cue('L12', '22,');
-	const tLearn = cue('L12', 'learning');
-	const tInv = cue('L12', 'investing.');
+	const t22 = cue('L9', '22,');
+	const tLearn = cue('L9', 'learning');
+	const tInv = cue('L9', 'investing.');
 	const glow = 0.6 + 0.4 * Math.sin(frame / 9);
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<EditorialBg floorY={1340} />
 			<Camera
 				keys={[
-					{at: 0, zoom: 1.06, x: 520, y: 1060},
-					{at: tInv - 4, zoom: 1.0, x: 540, y: 960, ease: E.soft},
-					{at: tInv + 22, zoom: 2.4, x: SCREEN.x + SCREEN.w / 2, y: SCREEN.y + SCREEN.h / 2, ease: E.in},
+					// framed tight on the desk (no empty paper), slow push toward the laptop
+					{at: 0, zoom: 1.22, x: 600, y: 1030},
+					{at: tInv + 14, zoom: 1.32, x: 640, y: 1010, ease: E.soft},
 				]}
 			>
 				<svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
@@ -74,7 +74,7 @@ export const LearnScene: React.FC = () => {
 					]}
 				/>
 			</Camera>
-			<div style={{position: 'absolute', left: story.safe.left, top: story.safe.top + 20, right: story.safe.right, opacity: kf(frame, [tInv + 4, tInv + 14], [1, 0])}}>
+			<div style={{position: 'absolute', left: story.safe.left, top: story.safe.top + 20, right: story.safe.right, opacity: 1}}>
 				<KineticText text="22." at={t22 - 2} mode="slam" slamScale={0.35} fontSize={story.type.mega} color={P.accent} />
 				<KineticText text="STILL LEARNING." at={tLearn - 6} mode="rise" fontSize={story.type.h1 + 10} color={P.ink} style={{marginTop: 4}} />
 			</div>
@@ -91,11 +91,11 @@ export const RiskScene: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const {cue} = useCues();
-	const tDrops = cue('L13', 'drops');
-	const tGood = cue('L13', 'good');
-	const tIt = cue('L14', 'It');
-	const tFall = cue('L14', 'fall');
-	const tFurther = cue('L14', 'further.', 0, 'end');
+	const tDrops = cue('L10', 'drops');
+	const tGood = cue('L10', 'good');
+	const tIt = cue('L11', 'It');
+	const tFall = cue('L11', 'fall');
+	const tFurther = cue('L11', 'further.', 0, 'end');
 	const G = {x: 60, y: 560, w: 830, h: 700, pad: {l: 40, r: 50, t: 30, b: 60}};
 	const progress = frame < tFall ? kf(frame, [0, tDrops + 8], [0.05, BUY_I / (EX.length - 1)], E.soft) : kf(frame, [tFall, tFurther], [BUY_I / (EX.length - 1), 1], E.inOut);
 	const yMax = 110;
@@ -103,7 +103,10 @@ export const RiskScene: React.FC = () => {
 	const PH = G.h - G.pad.t - G.pad.b;
 	const bx = G.x + G.pad.l + (BUY_I / (EX.length - 1)) * PW;
 	const by = G.y + G.pad.t + PH - (EX[BUY_I] / yMax) * PH;
+	const ex = G.x + G.pad.l + PW;
+	const ey = G.y + G.pad.t + PH - (EX[EX.length - 1] / yMax) * PH;
 	const buy = sp(frame, fps, tGood - 4, 'bouncy');
+	const wait = sp(frame, fps, tFall + 4, 'bouncy');
 	const dash = prog(frame, tFall, 20, E.out);
 	const tag = sp(frame, fps, 0, 'snappy');
 	const worry = sp(frame, fps, tFurther - 10, 'snappy');
@@ -145,9 +148,30 @@ export const RiskScene: React.FC = () => {
 						fontSize: 36,
 						fontWeight: 900,
 						letterSpacing: 2,
+						whiteSpace: 'nowrap',
 					}}
 				>
-					BUY
+					BUY THE DIP?
+				</div>
+				{/* the other path: waiting — introduces the final question early */}
+				<div
+					style={{
+						position: 'absolute',
+						left: ex,
+						top: ey + 34,
+						transform: `translateX(-104%) scale(${wait})`,
+						transformOrigin: '100% 0%',
+						padding: '10px 22px',
+						borderRadius: 14,
+						background: P.danger,
+						color: '#fff',
+						fontSize: 36,
+						fontWeight: 900,
+						letterSpacing: 2,
+						whiteSpace: 'nowrap',
+					}}
+				>
+					WAIT FOR LOWER?
 				</div>
 			</Camera>
 			<div style={{position: 'absolute', left: story.safe.left, top: story.safe.top + 20, right: story.safe.right}}>
@@ -194,11 +218,11 @@ export const AskScene: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const {cue} = useCues();
-	const tBuy = cue('L17', 'buy');
-	const tOr = cue('L18', 'or');
-	const tWait = cue('L18', 'wait');
-	const tAdvice = cue('L19', 'This');
-	const tResearch = cue('L20', 'Always');
+	const tBuy = cue('L13', 'buy');
+	const tOr = cue('L14', 'or');
+	const tWait = cue('L14', 'wait');
+	const tAdvice = cue('L15', 'This');
+	const tResearch = cue('L16', 'Always');
 	const L = sp(frame, fps, tBuy - 6, 'heavy');
 	const R = sp(frame, fps, tWait - 6, 'heavy');
 	const or = sp(frame, fps, tOr - 2, 'bouncy');
