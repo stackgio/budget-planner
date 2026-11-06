@@ -8,7 +8,7 @@ import {useCues} from '../../../story/lib/cues';
 import {E, kf, mix, prog, shake, sp} from '../../../story/lib/motion';
 import {cinematic as P, story} from '../../../story/theme';
 import {FACTS, NASDAQ, SPX} from '../facts';
-import {LAST, Label, NasdaqLine, OrderShot, ROWS, lerpRegion} from '../parts';
+import {CHART, LAST, Label, NasdaqLine, OrderShot, ROWS, lerpRegion} from '../parts';
 
 const RED = P.danger;
 const GREY = '#5B6068';
@@ -42,17 +42,20 @@ export const HookScene: React.FC = () => {
 	const tDid = cue('L2', 'did');
 	const tComplete = cue('L2', 'complete');
 	const tBought = cue('L3', 'bought');
-	const tSofi = cue('L3', 'SoFi');
+	const tStock = cue('L3', 'stock.');
+	const tEnd = cue('L3', 'stock.', 0, 'end');
 	const progress = kf(frame, [0, tDid - 4], [0.4, 1], E.soft);
 	const hit = shake(frame, tDid - 4, 14, 14);
 	const freeze = kf(frame, [tDid - 2, tDid + 10], [0, 1]);
 	const buy = sp(frame, fps, tDid + 2, 'bouncy');
 	const ring = prog(frame, tDid + 2, 24);
 	const shot = sp(frame, fps, tComplete - 6, 'smooth');
-	const look = prog(frame, tSofi - 4, 14, E.inOut);
-	const toShares = prog(frame, tSofi + 18, 14, E.inOut);
+	const look = prog(frame, tComplete + 6, 14, E.inOut);
+	const toShares = prog(frame, tBought, 12, E.inOut);
+	const toTotal = prog(frame, tStock, 12, E.inOut);
 	const color = freeze < 1 ? blend(RED, GREY, freeze) : GREY;
 	const W = 780;
+	void tEnd;
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<CinematicBg light={0.5 + 0.6 * buy} lightX={LAST.x} lightY={LAST.y} warm={buy < 0.5} />
@@ -77,7 +80,7 @@ export const HookScene: React.FC = () => {
 			{/* the real order confirmation */}
 			<OrderShot
 				w={W}
-				mark={toShares > 0 ? lerpRegion(ROWS.title, ROWS.shares, toShares) : ROWS.title}
+				mark={toTotal > 0 ? lerpRegion(ROWS.shares, ROWS.total, toTotal) : toShares > 0 ? lerpRegion(ROWS.title, ROWS.shares, toShares) : ROWS.title}
 				highlight={look}
 				style={{left: (1080 - W) / 2 - 10, top: mix(1700, 470, shot), opacity: Math.min(1, shot * 2), transform: `rotate(${(1 - shot) * 3}deg)`}}
 			/>
@@ -88,7 +91,7 @@ export const HookScene: React.FC = () => {
 				<KineticText text="I DID THE OPPOSITE." at={tDid} mode="rise" exitAt={tBought - 4} fontSize={story.type.h1 + 10} color={P.ink} colors={{opposite: P.accent}} />
 			</div>
 			<div style={{position: 'absolute', left: story.safe.left, top: story.safe.top + 10, right: story.safe.right}}>
-				<KineticText text="I BOUGHT MORE SOFI." at={tBought - 2} mode="slam" slamScale={0.25} fontSize={story.type.h1 + 10} color={P.ink} colors={{more: P.accent, sofi: P.accent}} />
+				<KineticText text="I BOUGHT MORE." at={tBought - 2} mode="slam" slamScale={0.25} fontSize={story.type.h1 + 10} color={P.ink} colors={{more: P.accent}} />
 			</div>
 			<Sfx at={0} name="whoosh" volume={0.3} />
 			<Sfx at={tDid - 4} name="thud" volume={0.35} />
@@ -168,22 +171,36 @@ export const NumbersScene: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const {cue} = useCues();
-	const tNq = cue('L4', 'Nasdaq');
-	const tNqPct = cue('L4', '5.5%,');
-	const tNqEnd = cue('L4', '5.5%,', 0, 'end');
-	const tSp = cue('L5', 'S&P');
-	const tSpPct = cue('L5', '4%.');
-	const tSpEnd = cue('L5', '4%.', 0, 'end');
+	const tHit = cue('L4', 'hit');
+	const tNq = cue('L5', 'Nasdaq');
+	const tNqPct = cue('L5', '5.5%,');
+	const tNqEnd = cue('L5', '5.5%,', 0, 'end');
+	const tSp = cue('L6', 'S&P');
+	const tSpPct = cue('L6', '4%.');
+	const tSpEnd = cue('L6', '4%.', 0, 'end');
 	const chip = sp(frame, fps, 0, 'snappy');
+	const hitIn = sp(frame, fps, tHit - 2, 'heavy');
+	const dock = kf(frame, [tNq - 10, tNq + 6], [0, 1], E.inOut);
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<CinematicBg light={0.6} lightX={540} lightY={700} />
 			<Camera keys={[{at: 0, zoom: 1.0}, {at: tSpEnd, zoom: 1.0}, {at: tSpEnd + 30, zoom: 1.04, x: 540, y: 900}]}>
-				<div style={{position: 'absolute', left: story.safe.left, top: story.safe.top + 30, opacity: chip, transform: `translateY(${(1 - chip) * 20}px)`}}>
+				{/* "yesterday": the date leads big, then docks at the top when the numbers arrive */}
+				<div
+					style={{
+						position: 'absolute',
+						left: story.safe.left,
+						top: mix(560, story.safe.top + 30, dock),
+						opacity: chip,
+						transform: `scale(${mix(1.45, 1, dock)})`,
+						transformOrigin: '0% 0%',
+					}}
+				>
 					<Label color={P.muted} size={30}>
-						Thursday
+						Yesterday · Thursday
 					</Label>
 					<div style={{fontSize: story.type.h1, fontWeight: 900, color: P.ink, letterSpacing: -2, marginTop: 6}}>NOV 5, 2026</div>
+					<div style={{marginTop: 18, fontSize: 52, fontWeight: 900, letterSpacing: -1, color: P.danger, opacity: hitIn * (1 - dock)}}>A MASSIVE HIT</div>
 				</div>
 				<IndexPanel name="Nasdaq Composite" pct={FACTS.nasdaqPct.value} close={FACTS.nasdaqClose.value.toLocaleString('en-US', {minimumFractionDigits: 2})} values={NASDAQ} inAt={tNq - 4} countAt={tNqPct} countEnd={tNqEnd} top={420} />
 				<IndexPanel name="S&P 500" pct={FACTS.spxPct.value} close={FACTS.spxClose.value.toLocaleString('en-US', {minimumFractionDigits: 2})} values={SPX} inAt={tSp - 6} countAt={tSpPct} countEnd={tSpEnd} top={860} />
@@ -191,9 +208,57 @@ export const NumbersScene: React.FC = () => {
 					Daily close vs. Nov 4 · Source: Reuters, Yahoo Finance
 				</div>
 			</Camera>
+			<Sfx at={tHit - 2} name="thud" volume={0.3} />
 			<Sfx at={tNq - 4} name="whoosh-soft" volume={0.3} />
 			<Sfx at={tSp - 6} name="whoosh-soft" volume={0.3} />
 		</AbsoluteFill>
 	);
 };
 
+/** SCENE 3b — "…I saw an opportunity." The panic line dims; a green scan lands on Nov 5. */
+export const OppScene: React.FC = () => {
+	const frame = useCurrentFrame();
+	const {fps} = useVideoConfig();
+	const {cue} = useCues();
+	const tInstead = cue('L7', 'instead');
+	const tSaw = cue('L7', 'saw');
+	const tOpp = cue('L7', 'opportunity.');
+	const scan = kf(frame, [tInstead, tSaw + 6], [0, 1], E.inOut);
+	const scanX = mix(CHART.x, LAST.x, scan);
+	const found = sp(frame, fps, tSaw + 6, 'bouncy');
+	const pulse = (frame - tSaw) % 30 / 30;
+	return (
+		<AbsoluteFill style={{fontFamily: story.font}}>
+			<CinematicBg light={0.4 + 0.8 * found} lightX={LAST.x} lightY={LAST.y} warm={false} />
+			<Camera keys={[{at: 0, zoom: 1.0}, {at: tSaw, zoom: 1.0}, {at: tOpp + 20, zoom: 1.1, x: LAST.x - 160, y: LAST.y - 120}]}>
+				<NasdaqLine progress={1} color={RED} opacity={0.35} fill={0.4} tipGlow={0} labels={0.6} />
+				<svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
+					<defs>
+						<linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+							<stop offset="0%" stopColor={P.accent} stopOpacity={0} />
+							<stop offset="100%" stopColor={P.accent} stopOpacity={0.35} />
+						</linearGradient>
+					</defs>
+					{scan > 0 && scan < 1 && <rect x={scanX - 220} y={CHART.y} width={220} height={CHART.h - 70} fill="url(#beam)" />}
+					{scan > 0 && <line x1={scanX} x2={scanX} y1={CHART.y} y2={CHART.y + CHART.h - 70} stroke={P.accent} strokeWidth={4} opacity={scan < 1 ? 1 : 1 - found} />}
+					{found > 0.01 && frame > tSaw && <circle cx={LAST.x} cy={LAST.y} r={26 + 80 * pulse} fill="none" stroke={P.accent} strokeWidth={4} opacity={(1 - pulse) * 0.8} />}
+					<circle cx={LAST.x} cy={LAST.y} r={22 * found} fill="none" stroke={P.accent} strokeWidth={8} />
+					<circle cx={LAST.x} cy={LAST.y} r={10 * found} fill={P.accent} />
+				</svg>
+			</Camera>
+			<div style={{position: 'absolute', left: story.safe.left, top: story.safe.top + 20, right: story.safe.right}}>
+				<KineticText
+					text="AN OPPORTUNITY?"
+					at={tOpp - 4}
+					mode="rise"
+					fontSize={story.type.display - 12}
+					color={P.ink}
+					colors={{opportunity: P.accent}}
+					marker={{words: ['OPPORTUNITY?'], color: P.accentSoft, at: tOpp + 8}}
+				/>
+			</div>
+			<Sfx at={tInstead} name="whoosh-soft" volume={0.25} />
+			<Sfx at={tSaw + 6} name="chime" volume={0.3} />
+		</AbsoluteFill>
+	);
+};

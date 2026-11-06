@@ -1,0 +1,32 @@
+{
+ "source": "public/voice/sofi-dip/voice.mp3",
+ "sourceSha256": "5545086c1088feee084711b6f006d4e21893f5a122cf9c68b8380023db65fded",
+ "note": "cut edit at natural pauses; no speed change, no new speech; 8 ms fades at cut points",
+ "segments": [
+  {
+   "seg": "A",
+   "srcStart": 2.895,
+   "srcEnd": 7.55,
+   "outStart": 0.0
+  },
+  {
+   "seg": "B",
+   "srcStart": 0.0,
+   "srcEnd": 2.55,
+   "outStart": 4.835
+  },
+  {
+   "seg": "C",
+   "srcStart": 7.65,
+   "srcEnd": 15.7,
+   "outStart": 7.565
+  },
+  {
+   "seg": "D",
+   "srcStart": 15.8,
+   "srcEnd": 45.28,
+   "outStart": 15.735
+  }
+ ],
+ "durationSec": 45.215
+}

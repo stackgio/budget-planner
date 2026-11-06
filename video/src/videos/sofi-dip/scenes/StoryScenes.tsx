@@ -28,9 +28,9 @@ export const LearnScene: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const {cue} = useCues();
-	const t22 = cue('L9', '22,');
-	const tLearn = cue('L9', 'learning');
-	const tInv = cue('L9', 'investing.');
+	const t22 = cue('L12', '22,');
+	const tLearn = cue('L12', 'learning');
+	const tInv = cue('L12', 'investing.');
 	const glow = 0.6 + 0.4 * Math.sin(frame / 9);
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
@@ -91,11 +91,11 @@ export const RiskScene: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const {cue} = useCues();
-	const tDrops = cue('L10', 'drops');
-	const tGood = cue('L10', 'good');
-	const tIt = cue('L11', 'It');
-	const tFall = cue('L11', 'fall');
-	const tFurther = cue('L11', 'further.', 0, 'end');
+	const tDrops = cue('L13', 'drops');
+	const tGood = cue('L13', 'good');
+	const tIt = cue('L14', 'It');
+	const tFall = cue('L14', 'fall');
+	const tFurther = cue('L14', 'further.', 0, 'end');
 	const G = {x: 60, y: 560, w: 830, h: 700, pad: {l: 40, r: 50, t: 30, b: 60}};
 	const progress = frame < tFall ? kf(frame, [0, tDrops + 8], [0.05, BUY_I / (EX.length - 1)], E.soft) : kf(frame, [tFall, tFurther], [BUY_I / (EX.length - 1), 1], E.inOut);
 	const yMax = 110;
@@ -218,11 +218,11 @@ export const AskScene: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const {cue} = useCues();
-	const tBuy = cue('L13', 'buy');
-	const tOr = cue('L14', 'or');
-	const tWait = cue('L14', 'wait');
-	const tAdvice = cue('L15', 'This');
-	const tResearch = cue('L16', 'Always');
+	const tBuy = cue('L17', 'buy');
+	const tOr = cue('L18', 'or');
+	const tWait = cue('L18', 'wait');
+	const tAdvice = cue('L19', 'This');
+	const tResearch = cue('L20', 'Always');
 	const L = sp(frame, fps, tBuy - 6, 'heavy');
 	const R = sp(frame, fps, tWait - 6, 'heavy');
 	const or = sp(frame, fps, tOr - 2, 'bouncy');
@@ -300,14 +300,17 @@ export const AskScene: React.FC = () => {
 			>
 				OR
 			</div>
-			<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right - 48, top: 1150, textAlign: 'center', opacity: disc, transform: `translateY(${(1 - disc) * 16}px)`}}>
-				<div style={{display: 'inline-block', padding: '14px 26px', borderRadius: 14, border: `2px solid ${P.line}`, background: 'rgba(11,12,14,0.7)'}}>
-					<Label color={P.body} size={26}>
-						Not financial advice · do your own research
+			<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right - 48, top: 1100, textAlign: 'center', opacity: disc, transform: `translateY(${(1 - disc) * 16}px)`}}>
+				<div style={{display: 'inline-block', padding: '18px 30px', borderRadius: 16, border: `2px solid ${P.line}`, background: 'rgba(11,12,14,0.85)'}}>
+					<Label color={P.ink} size={32}>
+						Not financial advice
+					</Label>
+					<Label color={P.body} size={28} style={{marginTop: 8, opacity: kf(frame, [tResearch - 4, tResearch + 6], [0, 1])}}>
+						Do your own research
 					</Label>
 				</div>
 			</div>
-			<BrandBug palette={P} opacity={0.75 * brand} text="@STACKWITHGIO" style={{left: 0, right: 48, justifyContent: 'center', top: 1290}} />
+			<BrandBug palette={P} opacity={0.75 * brand} text="@STACKWITHGIO" style={{left: 0, right: 48, justifyContent: 'center', top: 1310}} />
 			<Sfx at={tBuy - 6} name="whoosh-soft" volume={0.3} />
 			<Sfx at={tWait - 6} name="whoosh-soft" volume={0.3} />
 			<Sfx at={tOr - 2} name="pop" volume={0.3} />
