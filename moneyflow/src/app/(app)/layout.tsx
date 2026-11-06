@@ -40,7 +40,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const usage = new Map<string, number>();
   for (const t of ws.transactions) if (t.type === "expense" && t.categoryId && t.date >= since) usage.set(t.categoryId, (usage.get(t.categoryId) ?? 0) + 1);
   const quick = {
-    categories: ws.categories.filter((c) => !c.archived).map((c) => ({ id: c.id, name: c.name, bucket: c.bucket, color: c.color })),
+    categories: ws.categories.filter((c) => !c.archived).map((c) => ({ id: c.id, name: c.name, bucket: c.bucket, color: c.color, emoji: c.emoji })),
     // Then everyday categories, then the rest; categories tied to recurring bills go last.
     topCategoryIds: (() => {
       const billCats = new Set(ws.bills.filter((b) => b.active && b.categoryId).map((b) => b.categoryId!));

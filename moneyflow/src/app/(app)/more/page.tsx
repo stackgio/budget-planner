@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/ui";
 
 export const metadata = { title: "More" };
 const DESC: Record<string, string> = {
-  "/": "Overview of this month", "/paycheck": "Plan each biweekly paycheck", "/budget": "Allocations & category budgets", "/transactions": "Search, add, import, export", "/insights": "Ideas to cut spending, needs vs wants",
+  "/": "Overview of this month", "/paycheck": "Plan each biweekly paycheck", "/budget": "Allocations & category budgets", "/transactions": "Search, add, import, export", "/insights": "💡 Ideas to cut spending, needs vs wants", "/recap": "📅 Your month in review + next month's game plan",
   "/accounts": "Balances & net worth", "/bills": "Recurring bills & reserves", "/cashflow": "Forecasts & trends", "/debt": "Payoff plans & utilization",
   "/goals": "Savings goals", "/investments": "Holdings & contributions", "/settings": "Workspace, security, preferences",
 };

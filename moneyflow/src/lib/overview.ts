@@ -320,3 +320,40 @@ export function topIdea(ws: Workspace, today: ISODate) {
   const ideas = spendSmarterInsights({ today, txs, categories, guiltFreeMonthlyCents: gf });
   return { tip: weeklyTip(ideas), count: ideas.length };
 }
+
+/** Transactions for the monthly recap, with the account type of each transfer leg. */
+export function recapTxs(ws: Workspace): import("./recap").RecapTx[] {
+  const acctType = new Map(ws.accounts.map((a) => [a.id, a.type]));
+  return ws.transactions.map((t) => ({
+    id: t.id, date: t.date, merchant: t.merchant, amountCents: t.amountCents, type: t.type, categoryId: t.categoryId,
+    necessity: t.necessity, splits: t.splits, transferKind: t.transferKind, accountType: acctType.get(t.accountId),
+  }));
+}
+
+/** Data-quality fixes for a month: things that would make the numbers sharper. */
+export function recapFixes(ws: Workspace, month: YearMonth, today: ISODate): Array<{ emoji: string; title: string; detail: string; href: string }> {
+  const from = monthStart(month);
+  const to = monthEnd(month) < today ? monthEnd(month) : today;
+  const inMonth = ws.transactions.filter((t) => t.date >= from && t.date <= to);
+  const fixes: Array<{ emoji: string; title: string; detail: string; href: string }> = [];
+  const uncategorized = inMonth.filter((t) => t.type === "expense" && !t.categoryId && t.splits.length === 0).length;
+  if (uncategorized) fixes.push({ emoji: "🏷️", title: `Categorize ${uncategorized} purchase${uncategorized === 1 ? "" : "s"}`, detail: "Uncategorized spending can't be compared or budgeted.", href: `/transactions?month=${month}&type=expense` });
+  const untagged = inMonth.filter((t) => t.type === "expense" && !t.necessity).length;
+  if (untagged >= 3) fixes.push({ emoji: "🤔", title: `Tag ${untagged} purchases as need or want`, detail: "Makes your needs-vs-wants split and Spend Smarter ideas more accurate.", href: `/transactions?month=${month}&type=expense` });
+  const s = ws.settings;
+  if (s.anchorPayday) {
+    const paydays = paydaysBetween(s.anchorPayday, from, to, s.payIntervalDays);
+    const missing = paydays.filter((d) => !ws.paychecks.some((p) => p.payDate === d && p.kind === "regular" && p.actualCents !== null));
+    if (missing.length) fixes.push({ emoji: "💵", title: `Record ${missing.length} paycheck${missing.length === 1 ? "" : "s"}`, detail: `No actual amount saved for ${missing.map((d) => d.slice(5).replace("-", "/")).join(", ")}.`, href: `/paycheck/${missing[0]}` });
+  } else {
+    fixes.push({ emoji: "📅", title: "Set your payday", detail: "Unlocks paycheck tracking and three-paycheck months.", href: "/paycheck#anchor" });
+  }
+  const unverified = ws.bills.filter((b) => b.active && !b.verified).length;
+  if (unverified) fixes.push({ emoji: "✅", title: `Confirm ${unverified} bill amount${unverified === 1 ? "" : "s"}`, detail: "They're still your early estimates.", href: "/bills" });
+  const noDue = ws.bills.filter((b) => b.active && b.frequency === "monthly" && b.dueDay === null).length;
+  if (noDue) fixes.push({ emoji: "🗓️", title: `Add due days to ${noDue} bill${noDue === 1 ? "" : "s"}`, detail: "Needed for 'due before payday' alerts — skip ones like gas that have no due date.", href: "/bills" });
+  const bal = balancesAsOf(ws, today);
+  const noBal = ws.accounts.filter((a) => !a.archived && ["checking", "savings", "credit_card"].includes(a.type) && bal.get(a.id) == null);
+  if (noBal.length) fixes.push({ emoji: "🏦", title: `Add balance${noBal.length === 1 ? "" : "s"} for ${noBal.slice(0, 2).map((a) => a.name).join(", ")}${noBal.length > 2 ? ` +${noBal.length - 2}` : ""}`, detail: "Unknown balances are left out of cash and net worth.", href: "/accounts" });
+  return fixes;
+}

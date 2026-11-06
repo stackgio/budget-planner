@@ -11,6 +11,7 @@ import { MonthSwitcher } from "@/components/MonthSwitcher";
 import { Warnings } from "@/components/Warnings";
 import { prisma } from "@/lib/db";
 import { cn } from "@/lib/utils";
+import { categoryEmoji } from "@/lib/emoji";
 
 export const metadata = { title: "Budget" };
 
@@ -113,7 +114,7 @@ export default async function BudgetPage({ searchParams }: { searchParams: Promi
               return (
                 <li key={c.id} className="py-3">
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <span className="h-2.5 w-2.5 rounded-full" style={{ background: c.color }} />
+                    <span className="text-lg leading-none" aria-hidden>{categoryEmoji(c)}</span>
                     <span className="min-w-0 flex-1 truncate text-sm font-medium">{c.name}</span>
                     <Badge tone="neutral">{BUCKET_NAMES[c.bucket]}</Badge>
                     <span className="text-sm tabular"><Money cents={spent} className={budget !== null && spent > budget ? "text-danger" : ""} /><span className="text-muted"> / {budget === null ? "no budget" : formatCents(budget)}</span></span>
@@ -130,7 +131,8 @@ export default async function BudgetPage({ searchParams }: { searchParams: Promi
                       <ActionForm action={saveCategory} className="space-y-2">
                         <input type="hidden" name="id" value={c.id} />
                         <input type="hidden" name="monthlyBudget" value={c.monthlyBudgetCents !== null ? centsToDecimalString(c.monthlyBudgetCents) : ""} />
-                        <div className="grid grid-cols-[1fr_120px_48px] gap-2">
+                        <div className="grid grid-cols-[56px_1fr_110px_44px] gap-2">
+                          <Field label="Emoji"><Input name="emoji" defaultValue={c.emoji ?? ""} placeholder={categoryEmoji({ name: c.name, bucket: c.bucket })} className="px-2 text-center text-lg" maxLength={8} /></Field>
                           <Field label="Name"><Input name="name" defaultValue={c.name} /></Field>
                           <Field label="Bucket"><Select name="bucket" defaultValue={c.bucket}>{Object.entries(BUCKET_NAMES).filter(([k]) => k !== "transfer").map(([k, v]) => <option key={k} value={k}>{v}</option>)}</Select></Field>
                           <Field label="Color"><Input type="color" name="color" defaultValue={c.color} className="p-1" /></Field>
@@ -145,7 +147,8 @@ export default async function BudgetPage({ searchParams }: { searchParams: Promi
             })}
           </ul>
           <Details summary="Add a category" className="mt-3">
-            <ActionForm action={saveCategory} resetOnSuccess className="grid gap-2 sm:grid-cols-[1fr_150px_140px_56px_auto] sm:items-end">
+            <ActionForm action={saveCategory} resetOnSuccess className="grid gap-2 sm:grid-cols-[64px_1fr_150px_140px_56px_auto] sm:items-end">
+              <Field label="Emoji"><Input name="emoji" placeholder="🙂" className="px-2 text-center text-lg" maxLength={8} /></Field>
               <Field label="Name"><Input name="name" required /></Field>
               <Field label="Bucket"><Select name="bucket" defaultValue="needs">{Object.entries(BUCKET_NAMES).filter(([k]) => k !== "transfer").map(([k, v]) => <option key={k} value={k}>{v}</option>)}</Select></Field>
               <Field label="Monthly budget"><MoneyInput name="monthlyBudget" /></Field>

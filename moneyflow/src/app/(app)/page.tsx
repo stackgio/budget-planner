@@ -3,13 +3,15 @@ import { redirect } from "next/navigation";
 import { CalendarClock, CreditCard, Lightbulb, PiggyBank, Wallet, Banknote, ShoppingBag, Scale, Hourglass, Target, Landmark } from "lucide-react";
 import { loadWorkspace } from "@/lib/workspace";
 import { computeOverview, topIdea } from "@/lib/overview";
-import { diffDays, formatDate, formatMonth, isYearMonth, monthOf, todayISO } from "@/lib/dates";
+import { addMonths, diffDays, formatDate, formatMonth, isYearMonth, monthOf, todayISO } from "@/lib/dates";
+import { monthEmoji } from "@/lib/recap";
 import { Badge, Card, CardBody, CardHeader, LinkButton, Money, PageHeader, Progress, Stat } from "@/components/ui";
 import { MonthSwitcher } from "@/components/MonthSwitcher";
 import { Warnings } from "@/components/Warnings";
 import { TxList } from "@/components/TxList";
 import { SpendingDonut } from "@/components/charts";
 import { formatCents } from "@/lib/money";
+import { categoryEmoji } from "@/lib/emoji";
 
 export default async function Dashboard({ searchParams }: { searchParams: Promise<{ month?: string }> }) {
   const ws = await loadWorkspace();
@@ -66,6 +68,16 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         </Stat>
       </div>
 
+      {isCurrent && Number(today.slice(8, 10)) <= 10 && ws.transactions.some((t) => monthOf(t.date) === addMonths(current, -1)) && (
+        <Link href="/recap" className="mt-4 flex items-center gap-3 rounded-2xl border border-border bg-surface p-4 animate-fade-up hover:border-brand/40">
+          <span className="text-3xl" aria-hidden>{monthEmoji(addMonths(current, -1))}</span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-semibold">Your {formatMonth(addMonths(current, -1)).split(" ")[0]} recap is ready</span>
+            <span className="block text-[13px] text-muted">What went up, what went down, and your game plan for {formatMonth(current).split(" ")[0]} 🚀</span>
+          </span>
+        </Link>
+      )}
+
       {idea?.tip && (
         <Link href="/insights" className="mt-4 flex items-start gap-3 rounded-2xl border border-brand/40 bg-gradient-to-br from-brand/10 to-transparent p-4 animate-fade-up">
           <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-brand/15 text-brand"><Lightbulb className="h-[18px] w-[18px]" /></span>
@@ -116,7 +128,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
               {donut.slice(0, 5).map((d) => (
                 <li key={d.name} className="flex items-center gap-2 text-sm">
                   <span className="h-2.5 w-2.5 rounded-full" style={{ background: d.color }} />
-                  <span className="flex-1 truncate">{d.name}</span>
+                  <span className="flex-1 truncate"><span aria-hidden className="mr-1">{categoryEmoji(ws.categories.find((c) => c.name === d.name) ?? { name: d.name })}</span>{d.name}</span>
                   <Money cents={d.value} className="text-muted" />
                 </li>
               ))}

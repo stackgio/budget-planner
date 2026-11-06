@@ -6,8 +6,9 @@ import { saveTransaction } from "@/app/actions";
 import { ActionForm } from "@/components/shell/ActionForm";
 import { SubmitButton } from "@/components/shell/SubmitButton";
 import { cn } from "@/lib/utils";
+import { categoryEmoji } from "@/lib/emoji";
 
-type Cat = { id: string; name: string; bucket: string; color: string };
+type Cat = { id: string; name: string; bucket: string; color: string; emoji?: string | null };
 type Acct = { id: string; name: string; type: string };
 
 function localToday(): string {
@@ -128,7 +129,7 @@ export function QuickAdd({ categories, topCategoryIds, accounts, defaultAccountI
                   {chips.map((c) => (
                     <button key={c.id} type="button" onClick={() => setCategoryId(categoryId === c.id ? "" : c.id)}
                       className={cn("flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-medium transition", categoryId === c.id ? "border-brand bg-brand/10 text-brand" : "border-border text-fg")}>
-                      <span className="h-2 w-2 rounded-full" style={{ background: c.color }} />{c.name}
+                      <span aria-hidden>{categoryEmoji(c)}</span>{c.name}
                     </button>
                   ))}
                   <select value={chips.some((c) => c.id === categoryId) ? "" : categoryId} onChange={(e) => setCategoryId(e.target.value)} aria-label="More categories"
