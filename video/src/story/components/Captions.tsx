@@ -7,13 +7,14 @@ import {story, type Palette} from '../theme';
 
 type Page = {words: {text: string; start: number; end: number}[]; start: number; end: number};
 
-const paginate = (n: Narration, maxChars = 20, maxWords = 4): Page[] => {
+const paginate = (n: Narration, maxChars = 20, maxWords = 4, keep: Set<string> = new Set()): Page[] => {
 	const pages: Page[] = [];
 	for (const line of n.lines) {
 		let cur: Page | null = null;
 		for (const w of line.words) {
 			const len = cur ? cur.words.map((x) => x.text).join(' ').length + 1 + w.text.length : w.text.length;
-			const breakHere = cur && (len > maxChars || cur.words.length >= maxWords || /[.,:?!]$/.test(cur.words[cur.words.length - 1].text));
+			const endsClause = cur ? /[.,:?!]$/.test(cur.words[cur.words.length - 1].text) : false;
+			const breakHere = cur && (endsClause || ((len > maxChars || cur.words.length >= maxWords) && !keep.has(norm(w.text))));
 			if (!cur || breakHere) {
 				if (cur) pages.push(cur);
 				cur = {words: [], start: w.start, end: w.end};
@@ -36,12 +37,14 @@ export const Captions: React.FC<{
 	paletteAt: (frame: number) => Palette;
 	/** optional selective emphasis: only these words (normalised) turn green; others stay ink while spoken */
 	emphasis?: string[];
-}> = ({narration, paletteAt, emphasis}) => {
+	/** optional: words never split from the word before them (keeps a short phrase on one page) */
+	keepWithPrevious?: string[];
+}> = ({narration, paletteAt, emphasis, keepWithPrevious}) => {
 	const emph = React.useMemo(() => (emphasis ? new Set(emphasis.map(norm)) : null), [emphasis]);
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const t = frame / fps;
-	const pages = React.useMemo(() => paginate(narration), [narration]);
+	const pages = React.useMemo(() => paginate(narration, 20, 4, new Set((keepWithPrevious ?? []).map(norm))), [narration, keepWithPrevious]);
 	const idx = pages.findIndex((p, i) => t >= p.start - 0.05 && t < (pages[i + 1]?.start ?? p.end + 0.6) - 0.05);
 	if (idx < 0) return null;
 	const page = pages[idx];

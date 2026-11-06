@@ -9,7 +9,7 @@ import {useCues} from '../../../story/lib/cues';
 import {E, kf, mix, sp} from '../../../story/lib/motion';
 import {cinematic, story} from '../../../story/theme';
 import {FACTS, MEMBERS_M, QUARTERS, REVENUE_M} from '../facts';
-import {Label, TickerBadge} from '../parts';
+import {Label} from '../parts';
 
 const fmt1 = (v: number) => v.toFixed(1);
 
@@ -38,7 +38,7 @@ const Bars: React.FC<{values: number[]; max: number; w: number; h: number; grow:
 };
 
 /** One stat row: big number + label on the left, real 9-quarter bars on the right. */
-const StatRow: React.FC<{top: number; inAt: number; countAt: number; growAt: [number, number]; recordAt?: number; big: string; label: string; values: number[]; max: number}> = ({
+const StatRow: React.FC<{top: number; inAt: number; countAt: number; growAt: [number, number]; recordAt?: number; big: string; label: string; period: string; values: number[]; max: number}> = ({
 	top,
 	inAt,
 	countAt,
@@ -46,6 +46,7 @@ const StatRow: React.FC<{top: number; inAt: number; countAt: number; growAt: [nu
 	recordAt,
 	big,
 	label,
+	period,
 	values,
 	max,
 }) => {
@@ -82,7 +83,7 @@ const StatRow: React.FC<{top: number; inAt: number; countAt: number; growAt: [nu
 				{label}
 			</Label>
 			<Label color={rec > 0.5 ? P.accent : P.muted} size={24} style={{marginTop: 10, transform: `scale(${1 + 0.12 * Math.sin(Math.min(1, rec) * Math.PI)})`, transformOrigin: '0% 50%'}}>
-				Record high
+				{period}
 			</Label>
 			<div style={{position: 'absolute', right: 40, top: 70}}>
 				<Bars values={values} max={max} w={330} h={180} grow={kf(frame, growAt, [0, 1], E.inOut)} />
@@ -101,8 +102,6 @@ export const WhyScene: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const {cue} = useCues();
-	const tSofi = cue('L8', 'SoFi');
-	const tWhy = cue('L9', 'Why?');
 	const tBecause = cue('L10', 'Because');
 	const tNum = cue('L10', '$1.4');
 	const tBillion = cue('L10', 'billion', 0, 'end');
@@ -111,30 +110,12 @@ export const WhyScene: React.FC = () => {
 	const tMembers = cue('L11', 'members.', 0, 'end');
 	const tRecord = cue('L10', 'record');
 	void tBillion;
-	const badgeIn = sp(frame, fps, 0, 'heavy');
-	const reveal = sp(frame, fps, tSofi - 2, 'heavy');
-	const dock = kf(frame, [tWhy - 4, tWhy + 10], [0, 1], E.inOut);
-	const head = sp(frame, fps, tWhy - 2, 'heavy');
+	const head = sp(frame, fps, 0, 'heavy');
 	const src = kf(frame, [tMembers - 6, tMembers + 6], [0, 1]);
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<CinematicBg light={0.8} lightX={900} lightY={800} warm={false} />
 			<Camera keys={[{at: 0, zoom: 1.0}, {at: tBecause, zoom: 1.03, x: 540, y: 760}, {at: tMembers, zoom: 1.0, x: 540, y: 960, ease: E.soft}]}>
-				{/* ticker: centred reveal, then it hands over to the header */}
-				<div
-					style={{
-						position: 'absolute',
-						left: 0,
-						right: 0,
-						top: mix(760, 120, dock),
-						display: 'flex',
-						justifyContent: 'center',
-						transform: `scale(${(0.6 + 0.4 * badgeIn + 0.12 * Math.sin(Math.min(1, reveal) * Math.PI)) * mix(1.25, 0.6, dock)})`,
-						opacity: Math.min(1, badgeIn * 2) * (1 - dock),
-					}}
-				>
-					<TickerBadge palette={P} reveal={reveal} />
-				</div>
 				<div style={{position: 'absolute', left: story.safe.left, top: story.safe.top + 10, opacity: head, transform: `translateY(${(1 - head) * 20}px)`}}>
 					<div style={{fontSize: story.type.h1 + 10, fontWeight: 900, color: P.ink, letterSpacing: -2, lineHeight: 1}}>
 						WHY <span style={{color: P.accent}}>SOFI?</span>
@@ -143,13 +124,12 @@ export const WhyScene: React.FC = () => {
 						Q3 2026 · quarter ended Sep 30
 					</Label>
 				</div>
-				<StatRow top={400} inAt={tBecause - 2} countAt={tNum} growAt={[tRecord, tNum]} recordAt={tRecord} big={`$${fmt1(FACTS.revenueQ3.value / 1000)}B`} label="Quarterly revenue" values={REVENUE_M} max={1400} />
-				<StatRow top={785} inAt={tReached - 4} countAt={t17} growAt={[tReached, t17]} big={`${fmt1(FACTS.membersQ3.value)}M`} label="Members" values={MEMBERS_M} max={17.5} />
+				<StatRow top={400} inAt={tBecause - 2} countAt={tNum} growAt={[tRecord, tNum]} recordAt={tRecord} big={`$${fmt1(FACTS.revenueQ3.value / 1000)}B`} label="Quarterly revenue" period="Q3 2026 · record" values={REVENUE_M} max={1400} />
+				<StatRow top={785} inAt={tReached - 4} countAt={t17} growAt={[tReached, t17]} big={`${fmt1(FACTS.membersQ3.value)}M`} label="Members" period="As of Sep 30, 2026 · record" values={MEMBERS_M} max={17.5} />
 				<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right - 40, top: 1170, fontSize: 24, fontWeight: 700, color: P.muted, lineHeight: 1.3, opacity: src}}>
 					Both figures: Q3 2026. Source: SoFi earnings release, Oct 27, 2026. Revenue = GAAP net revenue $1.385B; members 17,074,272 at Sep 30.
 				</div>
 			</Camera>
-			<Sfx at={tSofi - 2} name="stamp" volume={0.35} />
 			<Sfx at={tBecause - 2} name="whoosh-soft" volume={0.3} />
 			<Sfx at={tRecord} name="pop" volume={0.25} />
 			<Sfx at={tNum} name="tick" volume={0.3} />

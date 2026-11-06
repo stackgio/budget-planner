@@ -27,6 +27,7 @@ const DEF: VideoDef<Id> = {
 		decide: {presentation: panelSweep({color: cinematic.accent, direction: 'up'}), timing: 'spring'},
 		ask: {presentation: wipe({direction: 'from-top'})},
 	},
+	captionKeepWithPrevious: ['opposite.', 'stock.', 'million', 'members.'],
 	captionEmphasis: ['panic-selling,', 'opposite.', 'more', 'hit', 'yesterday,', 'Nasdaq', '5.5%,', 'S&P', '500', '4%.', 'opportunity.', 'SoFi', 'record', '$1.4', 'billion', '17', 'million', '22,', 'learning', 'deal.', 'further.', "SoFi's", 'long-term', 'buy', 'dip,', 'wait', 'drop?', 'advice.', 'research.'],
 };
 
