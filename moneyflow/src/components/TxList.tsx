@@ -2,7 +2,7 @@ import Link from "next/link";
 import { formatDate } from "@/lib/dates";
 import { Badge, Money } from "@/components/ui";
 
-type Tx = { id: string; date: string; merchant: string; amountCents: number; type: string; transferKind: string | null; categoryId: string | null; accountId: string; splits: unknown[] };
+type Tx = { id: string; date: string; merchant: string; amountCents: number; type: string; transferKind: string | null; categoryId: string | null; accountId: string; splits: unknown[]; necessity?: string | null };
 
 export function TxList({ txs, categories, accounts }: { txs: Tx[]; categories: Array<{ id: string; name: string; color: string }>; accounts: Array<{ id: string; name: string }> }) {
   if (!txs.length) return <p className="py-4 text-sm text-muted">No transactions yet.</p>;
@@ -26,6 +26,7 @@ export function TxList({ txs, categories, accounts }: { txs: Tx[]; categories: A
               <div className="text-right">
                 <Money cents={t.amountCents} sign className={t.amountCents > 0 ? "text-brand font-medium" : "font-medium"} />
                 {t.type === "refund" && <div><Badge tone="info">Refund</Badge></div>}
+                {t.type === "expense" && t.necessity && <div><Badge tone={t.necessity === "want" ? "info" : "brand"}>{t.necessity}</Badge></div>}
               </div>
             </Link>
           </li>

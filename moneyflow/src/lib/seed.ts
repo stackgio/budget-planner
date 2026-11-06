@@ -135,6 +135,7 @@ export async function seedDemo(prisma: Db, today: ISODate = todayISO()): Promise
     for (const day of [5, 19]) push(day, "QuickFuel", 3_800 + Math.round(rand() * 1_500), "Gas");
     for (const day of [7, 13, 22, 27]) push(day, ["Taco Corner", "Noodle House", "Bean & Leaf Cafe", "Pizza Planet Demo"][Math.floor(rand() * 4)], 1_200 + Math.round(rand() * 3_000), "Dining Out", visa.id);
     push(11, "Cineplex Demo", 2_400, "Entertainment", visa.id);
+    for (const day of [2, 6, 9, 13, 16, 20, 23, 27]) push(day, "Daily Grind Coffee", 500 + Math.round(rand() * 250), "Dining Out", visa.id);
     push(16, "Online Marketplace", 2_000 + Math.round(rand() * 6_000), "Shopping", visa.id);
     push(23, "Corner Pharmacy", 1_500 + Math.round(rand() * 1_500), "Health");
     if (on(18) <= today && on(18) >= start) transfer(checking.id, visa.id, on(18), 30_000, "debt_payment", "Visa payment");
@@ -146,6 +147,9 @@ export async function seedDemo(prisma: Db, today: ISODate = todayISO()): Promise
   if (refundDate >= start) txs.push({ accountId: visa.id, date: refundDate, merchant: "Online Marketplace", amountCents: 1_850, type: "refund", categoryId: cat("Shopping") });
 
   await prisma.transaction.createMany({ data: txs.map((t) => ({ userId, ...t })) });
+  // Show need/want tagging in the demo (most purchases stay untagged and fall back to their category).
+  await prisma.transaction.updateMany({ where: { userId, merchant: { in: ["Daily Grind Coffee", "Online Marketplace", "Cineplex Demo"] }, type: "expense" }, data: { necessity: "want" } });
+  await prisma.transaction.updateMany({ where: { userId, merchant: { in: ["FreshMart", "Green Basket Grocery", "Corner Pharmacy"] } }, data: { necessity: "need" } });
   const invTxs = await prisma.transaction.findMany({ where: { userId, accountId: roth.id, transferKind: "investment" } });
   for (const t of invTxs) await prisma.investmentContribution.create({ data: { userId, accountId: roth.id, date: t.date, amountCents: t.amountCents, taxYear: +t.date.slice(0, 4), transactionId: t.id, note: "Demo contribution" } });
   await prisma.accountSnapshot.create({ data: { userId, accountId: roth.id, date: addDays(today, -1), balanceCents: 420_000 + invTxs.reduce((a, t) => a + t.amountCents, 0) + 18_430, note: "Demo statement value (fictional)" } });

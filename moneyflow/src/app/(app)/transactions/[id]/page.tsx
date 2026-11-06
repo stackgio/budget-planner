@@ -30,7 +30,7 @@ export default async function EditTx({ params }: { params: Promise<{ id: string 
           </div>
         ) : (
           <TransactionForm
-            initial={{ id: t.id, type: t.type, amount: centsToDecimalString(Math.abs(t.amountCents)), date: t.date, merchant: t.merchant, accountId: t.accountId, categoryId: t.categoryId, billId: t.billId, notes: t.notes, tags: t.tags, splits: t.splits.map((s) => ({ categoryId: s.categoryId ?? "", amount: centsToDecimalString(Math.abs(s.amountCents)), note: s.note ?? "" })) }}
+            initial={{ id: t.id, type: t.type, amount: centsToDecimalString(Math.abs(t.amountCents)), date: t.date, merchant: t.merchant, accountId: t.accountId, categoryId: t.categoryId, billId: t.billId, notes: t.notes, tags: t.tags, necessity: t.necessity, splits: t.splits.map((s) => ({ categoryId: s.categoryId ?? "", amount: centsToDecimalString(Math.abs(s.amountCents)), note: s.note ?? "" })) }}
             categories={ws.categories.filter((c) => !c.archived || c.id === t.categoryId)} accounts={ws.accounts.map((a) => ({ id: a.id, name: a.name, type: a.type }))} bills={ws.bills} />
         )}
         <ActionForm action={deleteTransaction} className="mt-6 border-t border-border pt-4">

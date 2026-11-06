@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarClock, CreditCard, PiggyBank, Wallet, Banknote, ShoppingBag, Scale, Hourglass, Target, Landmark } from "lucide-react";
+import { CalendarClock, CreditCard, Lightbulb, PiggyBank, Wallet, Banknote, ShoppingBag, Scale, Hourglass, Target, Landmark } from "lucide-react";
 import { loadWorkspace } from "@/lib/workspace";
-import { computeOverview } from "@/lib/overview";
+import { computeOverview, topIdea } from "@/lib/overview";
 import { diffDays, formatDate, formatMonth, isYearMonth, monthOf, todayISO } from "@/lib/dates";
 import { Badge, Card, CardBody, CardHeader, LinkButton, Money, PageHeader, Progress, Stat } from "@/components/ui";
 import { MonthSwitcher } from "@/components/MonthSwitcher";
@@ -24,6 +24,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   if (o.uncategorized > 0) donut.push({ name: "Uncategorized", value: o.uncategorized, color: "#94a3b8" });
   const unknownCash = o.cash.unknown.length > 0 && o.cash.cents === 0;
   const debtPaid = o.debtStart - o.debtOwed;
+  const idea = isCurrent ? topIdea(ws, today) : null;
 
   return (
     <>
@@ -64,6 +65,17 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           <Money cents={o.billsBeforeNextCents} />
         </Stat>
       </div>
+
+      {idea?.tip && (
+        <Link href="/insights" className="mt-4 flex items-start gap-3 rounded-2xl border border-brand/40 bg-gradient-to-br from-brand/10 to-transparent p-4 animate-fade-up">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-brand/15 text-brand"><Lightbulb className="h-[18px] w-[18px]" /></span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[11px] font-semibold uppercase tracking-wide text-brand">This week&apos;s idea{idea.count > 1 ? ` · ${idea.count - 1} more` : ""}</span>
+            <span className="mt-0.5 block text-sm font-semibold">{idea.tip.title}</span>
+            {idea.tip.monthlySavingsCents !== null && <span className="block text-[13px] text-muted">Could save ~{formatCents(idea.tip.monthlySavingsCents, { noCents: idea.tip.monthlySavingsCents >= 10_000 })} a month</span>}
+          </span>
+        </Link>
+      )}
 
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">

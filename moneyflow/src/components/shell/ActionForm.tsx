@@ -15,7 +15,7 @@ export const useActionPending = () => useContext(PendingCtx);
  * reset) so typed values survive a rejected submission. Without JS, the native
  * `action` fallback still submits the form.
  */
-export function ActionForm({ action, children, className, resetOnSuccess, onSuccess, id }: { action: Action; children: React.ReactNode; className?: string; resetOnSuccess?: boolean; onSuccess?: () => void; id?: string }) {
+export function ActionForm({ action, children, className, resetOnSuccess, onSuccess, id }: { action: Action; children: React.ReactNode; className?: string; resetOnSuccess?: boolean; onSuccess?: (r: Result) => void; id?: string }) {
   const [state, formAction, pending] = useActionState(action, null as Result | null);
   const ref = useRef<HTMLFormElement>(null);
   const [visible, setVisible] = useState(false);
@@ -24,7 +24,7 @@ export function ActionForm({ action, children, className, resetOnSuccess, onSucc
     setVisible(true);
     if (state.ok) {
       if (resetOnSuccess) ref.current?.reset();
-      onSuccess?.();
+      onSuccess?.(state);
       const t = setTimeout(() => setVisible(false), 3500);
       return () => clearTimeout(t);
     }

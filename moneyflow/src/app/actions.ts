@@ -437,7 +437,9 @@ export async function saveTransaction(_: unknown, fd: FormData): Promise<Result>
       const err = validateSplits({ date: dateV, amountCents, type, accountId: acct.id, categoryId, splits });
       if (err) fail(`Splits must add up to the transaction amount (${formatCents(amountAbs)}).`);
     }
-    const data = { accountId: acct.id, date: dateV, merchant, amountCents, type, categoryId: splits.length ? null : categoryId, notes, tags, billId };
+    const necessityRaw = str(fd, "necessity", 10);
+    const necessity = type === "expense" && (necessityRaw === "need" || necessityRaw === "want") ? necessityRaw : null;
+    const data = { accountId: acct.id, date: dateV, merchant, amountCents, type, categoryId: splits.length ? null : categoryId, notes, tags, billId, necessity };
     if (id) {
       const existing = await prisma.transaction.findFirst({ where: { id, userId } });
       if (!existing) fail("Transaction not found");

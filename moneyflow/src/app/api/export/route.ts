@@ -14,9 +14,9 @@ export async function GET(req: Request) {
   const rows: Array<Array<string | null>> = [];
   for (const t of [...txs].reverse()) {
     if (t.splits.length) {
-      for (const s of t.splits) rows.push([t.date, t.merchant, centsToDecimalString(s.amountCents), acct.get(t.accountId) ?? "", s.categoryId ? (cat.get(s.categoryId) ?? "") : "", t.type, t.transferKind, t.notes, t.tags, t.id, "split"]);
-    } else rows.push([t.date, t.merchant, centsToDecimalString(t.amountCents), acct.get(t.accountId) ?? "", t.categoryId ? (cat.get(t.categoryId) ?? "") : "", t.type, t.transferKind, t.notes, t.tags, t.id, ""]);
+      for (const s of t.splits) rows.push([t.date, t.merchant, centsToDecimalString(s.amountCents), acct.get(t.accountId) ?? "", s.categoryId ? (cat.get(s.categoryId) ?? "") : "", t.type, t.transferKind, t.necessity, t.notes, t.tags, t.id, "split"]);
+    } else rows.push([t.date, t.merchant, centsToDecimalString(t.amountCents), acct.get(t.accountId) ?? "", t.categoryId ? (cat.get(t.categoryId) ?? "") : "", t.type, t.transferKind, t.necessity, t.notes, t.tags, t.id, ""]);
   }
-  const csv = toCsv(["Date", "Merchant", "Amount", "Account", "Category", "Type", "Transfer kind", "Notes", "Tags", "Id", "Split"], rows);
+  const csv = toCsv(["Date", "Merchant", "Amount", "Account", "Category", "Type", "Transfer kind", "Need/Want", "Notes", "Tags", "Id", "Split"], rows);
   return new Response(csv, { headers: { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="moneyflow-transactions-${new Date().toISOString().slice(0, 10)}.csv"`, "Cache-Control": "no-store" } });
 }

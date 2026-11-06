@@ -16,6 +16,7 @@ import { accountBalance, availableCash, creditUtilization, LIABILITY_TYPES, netW
 import { allocate, buildPaydayIncome, incomeFigures, nextPayday, paydaysBetween, previousPayday, type PaydayIncome } from "./paycheck";
 import { budgetHealth } from "./health";
 import type { Cents } from "./money";
+import { spendSmarterInsights, weeklyTip, type InsightCategory, type InsightTx } from "./insights";
 
 export function txLike(ws: Workspace): TxLike[] {
   return ws.transactions.map((t) => ({ id: t.id, date: t.date, amountCents: t.amountCents, type: t.type, accountId: t.accountId, categoryId: t.categoryId, merchant: t.merchant, createdAt: t.createdAt, splits: t.splits }));
@@ -300,4 +301,22 @@ export function computeOverview(ws: Workspace, month: YearMonth, today: ISODate)
     funding, warnings, unassigned, fig, needsBudget, listedNeeds, needsMargin, trend,
     recent: ws.transactions.slice(0, 8),
   };
+}
+
+/** Inputs for the Spend Smarter insights (categories tied to bills count as fixed). */
+export function insightInputs(ws: Workspace, month: YearMonth) {
+  const billCats = new Set(ws.bills.filter((b) => b.active && b.categoryId).map((b) => b.categoryId!));
+  const categories: InsightCategory[] = ws.categories
+    .filter((c) => !c.archived)
+    .map((c) => ({ id: c.id, name: c.name, bucket: c.bucket, budgetCents: categoryBudget(ws, month, c.id), fixed: billCats.has(c.id) }));
+  const txs: InsightTx[] = ws.transactions.map((t) => ({ id: t.id, date: t.date, merchant: t.merchant, amountCents: t.amountCents, type: t.type, categoryId: t.categoryId, necessity: t.necessity, splits: t.splits }));
+  return { categories, txs };
+}
+
+export function topIdea(ws: Workspace, today: ISODate) {
+  const { categories, txs } = insightInputs(ws, monthOf(today));
+  const fig = incomeFigures(ws.settings.netPayCents, ws.settings.payIntervalDays);
+  const gf = allocate(fig.normalMonth, ws.rules).parts.find((p) => p.key === "guiltfree")?.amountCents ?? null;
+  const ideas = spendSmarterInsights({ today, txs, categories, guiltFreeMonthlyCents: gf });
+  return { tip: weeklyTip(ideas), count: ideas.length };
 }
