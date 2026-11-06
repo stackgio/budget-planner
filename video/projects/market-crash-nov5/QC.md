@@ -18,3 +18,19 @@ Frames inspected: contact sheets v04–v06, full-size beat frames (`qc_v06/`), m
 Known minor items (not blocking):
 - Pivot scene: caption highlight is green during the ~1.3 s "panic selling" phrase (caption colour follows the scene's palette, which is green for the decision beat).
 - Hook lower half is empty until "WHAT CAUSED THIS?" at 3.6 s (by design, keeps the frame-0 number dominant).
+
+---
+
+# Polish pass — v08 (final) · `market-crash-nov5_v08_final-voice.mp4`
+
+63.21 s · 1,896 frames · 1080×1920 · 30 fps · H.264 · original ElevenLabs voice untouched (183/183 words aligned). v06 is kept.
+
+| Fix | Change | Verified |
+|---|---|---|
+| Election headline vs pill overlap (13–15 s) | "MIDTERM RESULTS" and the "DEMOCRATIC VICTORIES" pill now share one flex column (pill laid out below the headline's real height, 26 px gap); the pill enters from below its slot. Capitol drawing unchanged. | All 120 frames 360–479 (12.0–16.0 s) tiled and inspected: no overlap in entry, hold or exit; source credit and captions stay in their own space. |
+| Opening progression (0–4 s) | Slow continuous push 1.035 → 1.055 (same peak as before) and "−1,421.5 POINTS IN ONE DAY" rolls in on "crushed", fading out before the question rises. | Frames 0–155 inspected; no stacking with "WHAT CAUSED THIS?". |
+| Nvidia | Re-verified: −9.26% (−$18.53 to $181.60) per Investing.com, Yahoo Finance, MT Newswires → shown as −9.3%, the same one-decimal rounding as −5.5% / −4.4%. Graphic unchanged. | 35.9 s frame. |
+| SoFi readability | Camera zoom into the real order card 1.32 → 2.1 (rows text ≈ 30 px on screen); everything above the card fades out while zoomed so the title stays legible. No pixels of the screenshot altered; all rows ("6 of 6", "$16.20", "$97.18", "Individual investing") remain visible. | 42.6–47.5 s frames. |
+| Captions | No changes needed. | Every 0.5 s across the whole video: captions never collide with headlines, source labels, diagrams, charts or the screenshot. |
+
+Unchanged: all other scenes, transitions, the scenario graphic and the final split-screen question.

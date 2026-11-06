@@ -34,26 +34,27 @@ export const ElectionScene: React.FC = () => {
 				<div style={{position: 'absolute', left: 40, right: 40, top: 950, height: 3, background: C.line}} />
 			</Camera>
 			<Kicker style={{left: story.safe.left, top: 250, opacity: kf(frame, [tOne - 4, tOne + 6], [0, 1])}}>ONE MAJOR CONCERN</Kicker>
-			<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right, top: 1000}}>
-				<KineticText text="MIDTERM RESULTS" at={tDem - 2} fontSize={100} color={C.ink} />
-			</div>
+			{/* headline + pill share one flow column: the pill is always laid out BELOW the
+			    headline's actual (two-line) height, so they can never overlap at any frame.
+			    Column spans y 986 → ~1282, clear of the source credit (1318) and captions (1430). */}
+			<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right, top: 986, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 26}}>
+				<KineticText text="MIDTERM RESULTS" at={tDem - 2} fontSize={94} color={C.ink} />
 			<div
 				style={{
-					position: 'absolute',
-					left: story.safe.left,
-					top: 1132,
-					padding: '14px 28px',
+					padding: '12px 26px',
 					borderRadius: 999,
 					border: `3px solid ${C.ink}`,
-					fontSize: 40,
+					fontSize: 38,
 					fontWeight: 900,
 					letterSpacing: 3,
 					color: C.ink,
 					opacity: chip,
-					transform: `translateY(${(1 - chip) * 24}px)`,
+					// enters from slightly BELOW its slot (away from the headline)
+					transform: `translateY(${(1 - chip) * 14}px)`,
 				}}
 			>
 				DEMOCRATIC VICTORIES
+			</div>
 			</div>
 			<SourceTag text={SRC.election} extra="ALSO CITED: AI SPENDING DOUBTS · PROFIT-TAKING" at={tWon} />
 			<Sfx at={tDem - 2} name="paper" volume={0.22} />

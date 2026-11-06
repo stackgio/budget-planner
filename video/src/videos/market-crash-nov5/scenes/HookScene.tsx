@@ -30,6 +30,9 @@ export const HookScene: React.FC = () => {
 	const flash = kf(frame, [0, 18], [1.9, 1], E.out);
 	const qIn = sp(frame, fps, tWhat - 2, 'snappy');
 	const crushed = kf(frame, [tCrushed - 2, tCrushed + 6, tCrushed + 22], [0, 1, 0], E.out);
+	const ptsIn = kf(frame, [tCrushed - 4, tCrushed + 6], [0, 1], E.out);
+	const pts = kf(frame, [tCrushed - 4, tCrushed + 20], [0, Math.abs(FACTS.nasdaqPts.value)], E.out);
+	const ptsOut = kf(frame, [tWhat - 12, tWhat - 3], [1, 0]); // gone before the question starts rising (tWhat - 2)
 
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
@@ -37,8 +40,10 @@ export const HookScene: React.FC = () => {
 			<Camera
 				keys={[
 					{at: 0, zoom: 1.0, y: 760},
-					{at: 22, zoom: 1.055, y: 760, ease: E.out},
-					{at: tWhat - 4, zoom: 1.055, y: 760},
+					{at: 22, zoom: 1.035, y: 760, ease: E.out},
+					// slow, continuous push while the narration builds (subtle progression, no cuts);
+					// peaks at the same 1.055 as the approved cut, so margins don't change
+					{at: tWhat - 4, zoom: 1.055, y: 800, ease: (t) => t},
 					{at: tWhat + 16, zoom: 1.0, y: 960},
 				]}
 				shakeX={hit.x}
@@ -50,6 +55,11 @@ export const HookScene: React.FC = () => {
 					<Pct v={nas} size={HOOK.numSize} color={C.red} />
 				</div>
 				<ScaleBar value={bar} w={story.width - story.safe.left * 2} style={{left: story.safe.left, top: HOOK.barTop}} />
+				{/* second data beat: the point loss rolls in on "crushed" */}
+				<div style={{position: 'absolute', left: story.safe.left, top: 966, opacity: ptsIn * ptsOut, transform: `translateY(${(1 - ptsIn) * 16}px)`, display: 'flex', alignItems: 'baseline', gap: 16, fontVariantNumeric: 'tabular-nums'}}>
+					<span style={{fontSize: 52, fontWeight: 900, color: C.red, letterSpacing: -1}}>−{pts.toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1})}</span>
+					<span style={{fontSize: 30, fontWeight: 800, letterSpacing: 4, color: C.muted}}>POINTS IN ONE DAY</span>
+				</div>
 			</Camera>
 
 			<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right, top: 1060, opacity: qIn}}>

@@ -4,6 +4,7 @@ All market figures are Thursday **Nov 5, 2026** closing moves, read on Nov 6, 20
 
 | Video time | On-screen claim | Verified value | Sources (date) |
 |---|---|---|---|
+| 2.0–3.4 s | −1,421.5 points in one day | Schwab −1,421.51; AP −1,421.52 | Schwab; AP |
 | 0.0–11.0 s | NASDAQ −5.5% | −5.52% (−1,421.5 pts) | Schwab "Stocks Plunge on AI Fears, Volatility Erupts" (Nov 5) https://www.schwab.com/learn/story/market-volatility · AP "How major US stock indexes fared Thursday 11/5/2026" https://apnews.com/article/afe254c608c3d1fe2ea792812ba9765a · Reuters/Investing.com https://www.investing.com/news/economy-news/trading-day-a-november-5-market-bonfire-5005919 |
 | 7.9–11.0 s | S&P 500 −4.4% | −4.36% to 7,353.73 | Schwab, AP, MT Newswires via Fidelity https://www.fidelity.com/news/article/us-markets/202611051638MIDNIGHTUSEQUITY_A3747283 |
 | 11.0–15.1 s | Midterm results: Democratic victories; one major concern | Reuters: "investors reassessed implications for the AI data center buildout from the Democrats' sweeping wins in this week's midterm elections"; Schwab: drop "fueled by fears a Democratic Congress could more strictly regulate data centers, with some profit-taking likely contributing" | Reuters/Investing.com; Schwab; Reuters via Euronext https://live.euronext.com/en/financial-news/investors-wipe-25-trillion-nasdaq-blue-tsunami-prompts-ai-fears |

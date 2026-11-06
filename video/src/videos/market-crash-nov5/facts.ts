@@ -15,7 +15,8 @@ import {fact} from '../../story/lib/meta';
 export const FACTS = {
 	nasdaqPct: fact(-5.5, 'historical', 'Nasdaq Composite −5.52% Nov 5 2026 close (Schwab; AP & Reuters −5.5%)'),
 	spxPct: fact(-4.4, 'historical', 'S&P 500 −4.36% to 7,353.73 Nov 5 2026 close (Schwab, AP, MT Newswires)'),
-	nvdaPct: fact(-9.3, 'historical', 'Nvidia −9.26% to $181.60 Nov 5 2026 (Investing.com quote; MT Newswires −9.3%)'),
+	nvdaPct: fact(-9.3, 'historical', 'Nvidia −9.26% (−$18.53) to $181.60 Nov 5 2026 close — Investing.com, Yahoo Finance, MT Newswires (9.3%); shown at one decimal like the indexes'),
+	nasdaqPts: fact(-1421.5, 'historical', 'Nasdaq Composite −1,421.5 pts Nov 5 2026 (Schwab −1,421.51; AP −1,421.52)'),
 	// The creator's genuine SoFi order confirmation (screenshot sofi-order.png). Never edit.
 	sofiShares: fact(6, 'personal', 'screenshot: "Shares purchased 6 of 6"'),
 	sofiAvg: fact(16.2, 'personal', 'screenshot: "Average price per share $16.20"'),

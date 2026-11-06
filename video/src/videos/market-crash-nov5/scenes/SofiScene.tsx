@@ -21,6 +21,10 @@ const PHONE_TOP = 372;
 const PAD = 18;
 const s = PHONE_W / SOFI_IMG.natural.w;
 const rowsCenterY = PHONE_TOP + PAD + (ROWS.y + ROWS.h / 2) * s;
+/** Readability zoom: the real order card fills ~900 px of width (rows text ≈ 30 px on screen). */
+const ZOOM = 2.1;
+// Put the rows slightly above frame centre so the card header and "Account" row stay in view.
+const FOCUS_Y = rowsCenterY + 60 / ZOOM;
 
 /**
  * SOFI — "I actually bought more SoFi stock because I believe in its long-term potential. /
@@ -45,18 +49,23 @@ export const SofiScene: React.FC = () => {
 	const phoneScale = mix(1, 0.88, aside);
 	const ageIn = sp(frame, fps, t22 - 4, 'bouncy');
 	const learnIn = sp(frame, fps, tLearn - 4, 'snappy');
-	const camX = mix(story.width / 2, story.width / 2, aside);
+	const camX = story.width / 2;
+	// controlled crop: while zoomed, fade out everything above the card (green app background)
+	// so the title stays legible; nothing inside the order card is hidden or altered.
+	const zoomed = kf(frame, [tSofi - 2, tSofi + 26], [0, 1], E.inOut) * (1 - kf(frame, [tNow - 6, tNow + 18], [0, 1], E.inOut));
+	const topCut = Math.round(344 * zoomed);
+	const mask = `linear-gradient(180deg, transparent 0px, transparent ${topCut}px, #000 ${topCut + (zoomed > 0 ? 44 : 0)}px, #000 1340px, transparent 1396px)`;
 
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<NewsBg tint="green" lightY={820} light={0.9} />
-			<div style={{position: 'absolute', inset: 0, WebkitMaskImage: 'linear-gradient(180deg, #000 0%, #000 1340px, transparent 1396px)', maskImage: 'linear-gradient(180deg, #000 0%, #000 1340px, transparent 1396px)'}}>
+			<div style={{position: 'absolute', inset: 0, WebkitMaskImage: mask, maskImage: mask}}>
 				<Camera
 					keys={[
 						{at: 0, zoom: 1, y: 960},
 						{at: tSofi - 2, zoom: 1, y: 960},
-						{at: tSofi + 26, zoom: 1.32, x: camX, y: rowsCenterY, ease: E.inOut},
-						{at: tNow - 6, zoom: 1.32, x: camX, y: rowsCenterY},
+						{at: tSofi + 26, zoom: ZOOM, x: camX, y: FOCUS_Y, ease: E.inOut},
+						{at: tNow - 6, zoom: ZOOM, x: camX, y: FOCUS_Y},
 						{at: tNow + 18, zoom: 1, x: story.width / 2, y: 960, ease: E.inOut},
 					]}
 				>
