@@ -7,3 +7,8 @@ projects/_selftest*/
 __pycache__/
 renders/*/qc_v*/
 renders/*/.rendering_*
+
+# /motion: rendered outputs and creator-supplied personal assets stay local
+renders/
+public/motion/*/assets/
+public/voice/*/voice.*
