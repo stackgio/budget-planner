@@ -41,12 +41,12 @@ export const DamageScene: React.FC = () => {
 	const pulse = kf(frame, [tFive, tFive + 6, tFive + 20], [0, 1, 0], E.out);
 
 	const c2 = sp(frame, fps, tSP - 6, 'heavy');
-	const v2 = kf(frame, [tSP + 4, tFourEnd], [0, spx], E.out);
+	const v2 = kf(frame, [tSP - 6, tFourEnd], [0, spx], E.out); // rolls from the moment the card appears
 
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<NewsBg tint="red" lightY={760} />
-			<Camera keys={[{at: 0, zoom: 1}, {at: tSP, zoom: 1, y: 960}, {at: tFour + 20, zoom: 1.03, y: 1000}]}>
+			<Camera keys={[{at: 0, zoom: 1}, {at: tSP, zoom: 1, y: 960}, {at: tFour + 20, zoom: 1.03, y: 940}]}>
 				<Kicker style={{left: X, top: 250, opacity: cardIn}}>NOV 5, 2026 · CLOSING MOVES</Kicker>
 
 				{/* card 1 — Nasdaq, left-weighted */}

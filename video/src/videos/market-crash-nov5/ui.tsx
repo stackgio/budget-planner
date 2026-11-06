@@ -91,7 +91,7 @@ export const SourceTag: React.FC<{text: string; at?: number; extra?: string}> = 
 /** Signed percentage, one decimal, tabular. `v` is the live (animated) magnitude. */
 export const Pct: React.FC<{v: number; size: number; color: string; style?: React.CSSProperties}> = ({v, size, color, style}) => (
 	<span style={{fontFamily: story.font, fontSize: size, fontWeight: 900, color, letterSpacing: -size * 0.03, fontVariantNumeric: 'tabular-nums', lineHeight: 1, whiteSpace: 'nowrap', ...style}}>
-		−{Math.abs(v).toFixed(1)}%
+		{Math.abs(v) < 0.05 ? '' : '−'}{Math.abs(v).toFixed(1)}%
 	</span>
 );
 

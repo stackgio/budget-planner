@@ -16,6 +16,6 @@ All market figures are Thursday **Nov 5, 2026** closing moves, read on Nov 6, 20
 | 49.7–57.2 s | Two paths "FALLS FURTHER / RECOVERS LATER" | Hypothetical illustration, no data, labelled SCENARIOS — NOT PREDICTIONS and ILLUSTRATION · NOT REAL DATA | — |
 
 ## Conflicts / notes
-- **Nasdaq closing level disagrees between sources**: AP and MT Newswires say 24,315; Schwab says 24,414.99 (both list −1,421.5 points). The video shows only the percentage (−5.5%), which all sources agree on.
+- **Nasdaq closing level** — resolved with FRED/Yahoo daily data: 24,315.00 (AP and MT Newswires were right; Schwab's 24,414.99 was the outlier). Change −1,421.51 = −5.52%. The video shows only the percentage and points.
 - Reuters headline says $2.5 trillion was wiped off the **Nasdaq 100**; Reuters Trading Day says "some $2 trillion" off the Nasdaq. Not used on screen.
 - No real intraday chart data was used: honest bar-on-shared-scale data cards instead of candles or a drawn line.

@@ -53,7 +53,7 @@ export const SofiScene: React.FC = () => {
 	// controlled crop: while zoomed, fade out everything above the card (green app background)
 	// so the title stays legible; nothing inside the order card is hidden or altered.
 	const zoomed = kf(frame, [tSofi - 2, tSofi + 26], [0, 1], E.inOut) * (1 - kf(frame, [tNow - 6, tNow + 18], [0, 1], E.inOut));
-	const topCut = Math.round(344 * zoomed);
+	const topCut = Math.round(344 * Math.min(1, zoomed / 0.15));
 	const mask = `linear-gradient(180deg, transparent 0px, transparent ${topCut}px, #000 ${topCut + (zoomed > 0 ? 44 : 0)}px, #000 1340px, transparent 1396px)`;
 
 	return (

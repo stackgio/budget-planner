@@ -26,7 +26,7 @@ export const NvidiaScene: React.FC = () => {
 	const nv = Math.abs(FACTS.nvdaPct.value);
 	const glow = kf(frame, [tTech - 4, tTech + 10], [0, 1], E.out);
 	const name = sp(frame, fps, tNv - 3, 'snappy');
-	const v = kf(frame, [tNv + 6, tEnd], [0, nv], E.out);
+	const v = kf(frame, [tNv - 3, tEnd], [0, nv], E.out); // rolls from the moment the number appears
 	const ghosts = kf(frame, [tNine, tNine + 10], [0, 1]);
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>

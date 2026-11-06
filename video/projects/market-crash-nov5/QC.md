@@ -34,3 +34,29 @@ Known minor items (not blocking):
 | Captions | No changes needed. | Every 0.5 s across the whole video: captions never collide with headlines, source labels, diagrams, charts or the screenshot. |
 
 Unchanged: all other scenes, transitions, the scenario graphic and the final split-screen question.
+
+---
+
+# Final QC pass — v09 (final) · `market-crash-nov5_v09_final-voice.mp4`
+
+63.21 s · 1,896 frames · 1080×1920 · 30 fps · H.264 · AAC · original ElevenLabs voice untouched. v08 is kept.
+
+**Data (independent of the news articles):** FRED (St. Louis Fed) NASDAQCOM / SP500 daily closes and Yahoo Finance daily history.
+
+| On screen | Close-to-close | Result |
+|---|---|---|
+| NASDAQ −5.5% | 25,736.51 → 24,315.00 = −5.523% | correct |
+| −1,421.5 points | −1,421.51 | correct |
+| S&P 500 −4.4% | 7,688.62 → 7,353.73 = −4.356% | correct |
+| NVIDIA −9.3% | $200.13 → $181.60 = −9.259% | correct |
+
+Resolves the earlier closing-level conflict: the Nasdaq closed at 24,315.00 (AP/MT Newswires); Schwab's 24,414.99 was the outlier. The level is still not shown on screen.
+
+**Every frame (0–1895) tiled and inspected.** Fixed:
+1. Frames ≈ 280–328: Damage-scene camera push lifted "NOV 5, 2026 · CLOSING MOVES" into the STACK WITH GIO watermark → push re-centred (y 1000 → 940) so the kicker stays at y ≈ 250. Verified frames 276–331.
+2. Frames 240–249 and 1019–1027: S&P and Nvidia counters showed "−0.0%" before rolling → counters start on their reveal frame, and zero never carries a minus sign. Verified.
+3. Frames ≈ 1302–1310 / 1388–1396: green screenshot background passed behind "I BOUGHT MORE SOFI" during the zoom → top crop engages at the start of the zoom. Verified.
+
+**Sync:** 183/183 words aligned; all speech pauses in the rendered audio match the source file within 9 ms (the 12.36 s pause reads −55 ms only because the soft "paper" SFX plays in it). Captions are generated from the same word timings.
+**SoFi screenshot:** byte-identical source (sha256 b0e8bcb11ba1…), no pixels altered; contains no account number, name or email, so nothing needs blurring; rows legible at the 2.1× zoom.
+**Ending:** "WHAT DO YOU THINK?" visible frames 1717–1895; BUY THE DIP? / WAIT FOR LOWER? both on screen 1809–1895; last frame is the full split screen (0.9 s hold after "worse?", no blank frames).
