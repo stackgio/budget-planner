@@ -2,14 +2,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  ArrowLeftRight, CalendarClock, Lightbulb, CreditCard, Gauge, LayoutGrid, Landmark, LineChart, PieChart, Settings, Target, TrendingUp, Wallet,
+  ArrowLeftRight, CalendarCheck, CalendarClock, Lightbulb, CreditCard, Gauge, LayoutGrid, Landmark, LineChart, PieChart, Settings, Target, TrendingUp, Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MOBILE_NAV, NAV } from "./nav-items";
 
 const ICONS = {
   home: Gauge, wallet: Wallet, pie: PieChart, swap: ArrowLeftRight, bank: Landmark, calendar: CalendarClock,
-  trend: TrendingUp, card: CreditCard, target: Target, chart: LineChart, settings: Settings, grid: LayoutGrid, bulb: Lightbulb,
+  trend: TrendingUp, card: CreditCard, target: Target, chart: LineChart, settings: Settings, grid: LayoutGrid, bulb: Lightbulb, recap: CalendarCheck,
 } as const;
 
 function isActive(path: string, href: string) {

@@ -45,7 +45,7 @@ export default async function InsightsPage() {
 
   return (
     <>
-      <PageHeader title="Spend Smarter" subtitle="Ideas built only from your own transactions — no generic advice." />
+      <PageHeader title="Spend Smarter 💡" subtitle="Ideas built only from your own transactions — no generic advice." />
 
       {!hasSpending ? (
         <EmptyState title="Add a few purchases to get ideas" action={<LinkButton href="/transactions/new">Add a purchase</LinkButton>}>

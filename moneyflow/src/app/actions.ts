@@ -15,6 +15,7 @@ import { dedupe, guessMapping, mapRows, parseCsv, type CsvMapping } from "@/lib/
 import { resetWorkspace } from "@/lib/seed";
 import { authEnabled, checkPasscode, makeSessionToken, SESSION_COOKIE, SESSION_TTL_SECONDS, sign, WORKSPACE_COOKIE } from "@/lib/session";
 import { parseShares } from "@/lib/money";
+import { cleanEmoji } from "@/lib/emoji";
 
 export type Result = { ok: boolean; error?: string; message?: string };
 
@@ -340,15 +341,18 @@ export async function saveCategory(_: unknown, fd: FormData): Promise<Result> {
     const bucket = oneOf(str(fd, "bucket"), ["needs", "investing", "goals", "guiltfree", "income", "transfer"] as const, "bucket");
     const color = /^#[0-9a-f]{6}$/i.test(str(fd, "color")) ? str(fd, "color") : "#10b981";
     const monthlyBudgetCents = money(fd, "monthlyBudget", "Monthly budget");
+    const emojiRaw = cleanEmoji(str(fd, "emoji", 16));
+    if (emojiRaw === false) fail("Emoji should be one emoji (like 🍔), not text");
+    const emoji = emojiRaw === false ? null : emojiRaw;
     const dup = await prisma.category.findFirst({ where: { userId, name, NOT: id ? { id } : undefined } });
     if (dup) fail(`A category named "${name}" already exists`);
     if (id) {
       const before = await prisma.category.findFirst({ where: { id, userId } });
       if (!before) fail("Category not found");
-      await prisma.category.update({ where: { id }, data: { name, bucket, color, monthlyBudgetCents } });
+      await prisma.category.update({ where: { id }, data: { name, bucket, color, monthlyBudgetCents, ...(fd.has("emoji") ? { emoji } : {}) } });
       if (before!.bucket !== bucket) await audit(userId, "category", `Category "${name}" moved from ${before!.bucket} to ${bucket}`);
     } else {
-      await prisma.category.create({ data: { userId, name, bucket, color, monthlyBudgetCents } });
+      await prisma.category.create({ data: { userId, name, bucket, color, monthlyBudgetCents, emoji } });
     }
     return "Category saved";
   });

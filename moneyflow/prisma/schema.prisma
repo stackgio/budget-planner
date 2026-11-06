@@ -129,6 +129,7 @@ model Category {
   bucket             String
   monthlyBudgetCents Int?
   color              String  @default("#10b981")
+  emoji              String? // user's own pick; NULL = automatic (see src/lib/emoji.ts)
   archived           Boolean @default(false)
 
   transactions Transaction[]

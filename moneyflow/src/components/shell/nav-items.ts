@@ -4,6 +4,7 @@ export const NAV = [
   { href: "/budget", label: "Budget", icon: "pie" },
   { href: "/transactions", label: "Transactions", icon: "swap" },
   { href: "/insights", label: "Spend Smarter", icon: "bulb" },
+  { href: "/recap", label: "Monthly Recap", icon: "recap" },
   { href: "/accounts", label: "Accounts", icon: "bank" },
   { href: "/bills", label: "Bills", icon: "calendar" },
   { href: "/cashflow", label: "Cash Flow", icon: "trend" },
