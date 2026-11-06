@@ -38,10 +38,22 @@ const Bars: React.FC<{values: number[]; max: number; w: number; h: number; grow:
 };
 
 /** One stat row: big number + label on the left, real 9-quarter bars on the right. */
-const StatRow: React.FC<{top: number; inAt: number; countAt: number; big: string; label: string; values: number[]; max: number}> = ({top, inAt, countAt, big, label, values, max}) => {
+const StatRow: React.FC<{top: number; inAt: number; countAt: number; growAt: [number, number]; recordAt?: number; big: string; label: string; values: number[]; max: number}> = ({
+	top,
+	inAt,
+	countAt,
+	growAt,
+	recordAt,
+	big,
+	label,
+	values,
+	max,
+}) => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const p = sp(frame, fps, inAt, 'heavy');
+	const land = sp(frame, fps, countAt - 2, 'heavy');
+	const rec = recordAt === undefined ? 0 : sp(frame, fps, recordAt, 'bouncy');
 	const P = cinematic;
 	return (
 		<div
@@ -63,15 +75,17 @@ const StatRow: React.FC<{top: number; inAt: number; countAt: number; big: string
 			}}
 		>
 			<div style={{position: 'absolute', left: 0, top: 0, bottom: 0, width: 10, background: P.accent}} />
-			<div style={{fontSize: 140, fontWeight: 900, letterSpacing: -6, color: P.accent, lineHeight: 1, fontVariantNumeric: 'tabular-nums', opacity: kf(frame, [countAt - 4, countAt + 2], [0, 1])}}>{big}</div>
+			<div style={{fontSize: 140, fontWeight: 900, letterSpacing: -6, color: P.accent, lineHeight: 1, fontVariantNumeric: 'tabular-nums', opacity: Math.min(1, land * 2), transform: `scale(${1.15 - 0.15 * land})`, transformOrigin: '0% 50%'}}>
+				{big}
+			</div>
 			<Label color={P.ink} size={32} style={{marginTop: 22}}>
 				{label}
 			</Label>
-			<Label color={P.muted} size={24} style={{marginTop: 10}}>
+			<Label color={rec > 0.5 ? P.accent : P.muted} size={24} style={{marginTop: 10, transform: `scale(${1 + 0.12 * Math.sin(Math.min(1, rec) * Math.PI)})`, transformOrigin: '0% 50%'}}>
 				Record high
 			</Label>
 			<div style={{position: 'absolute', right: 40, top: 70}}>
-				<Bars values={values} max={max} w={330} h={180} grow={kf(frame, [inAt, inAt + 30], [0, 1])} />
+				<Bars values={values} max={max} w={330} h={180} grow={kf(frame, growAt, [0, 1], E.inOut)} />
 			</div>
 		</div>
 	);
@@ -95,8 +109,8 @@ export const WhyScene: React.FC = () => {
 	const tReached = cue('L11', 'reached');
 	const t17 = cue('L11', '17');
 	const tMembers = cue('L11', 'members.', 0, 'end');
-	const rev = kf(frame, [tNum, tBillion - 8], [0, FACTS.revenueQ3.value / 1000], E.out);
-	const mem = kf(frame, [t17, tMembers - 6], [0, FACTS.membersQ3.value], E.out);
+	const tRecord = cue('L10', 'record');
+	void tBillion;
 	const badgeIn = sp(frame, fps, 0, 'heavy');
 	const reveal = sp(frame, fps, tSofi - 2, 'heavy');
 	const dock = kf(frame, [tWhy - 4, tWhy + 10], [0, 1], E.inOut);
@@ -129,14 +143,15 @@ export const WhyScene: React.FC = () => {
 						Q3 2026 · quarter ended Sep 30
 					</Label>
 				</div>
-				<StatRow top={400} inAt={tBecause - 2} countAt={tNum} big={`$${fmt1(rev)}B`} label="Quarterly revenue" values={REVENUE_M} max={1400} />
-				<StatRow top={785} inAt={tReached - 4} countAt={t17} big={`${fmt1(mem)}M`} label="Members" values={MEMBERS_M} max={17.5} />
+				<StatRow top={400} inAt={tBecause - 2} countAt={tNum} growAt={[tRecord, tNum]} recordAt={tRecord} big={`$${fmt1(FACTS.revenueQ3.value / 1000)}B`} label="Quarterly revenue" values={REVENUE_M} max={1400} />
+				<StatRow top={785} inAt={tReached - 4} countAt={t17} growAt={[tReached, t17]} big={`${fmt1(FACTS.membersQ3.value)}M`} label="Members" values={MEMBERS_M} max={17.5} />
 				<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right - 40, top: 1170, fontSize: 24, fontWeight: 700, color: P.muted, lineHeight: 1.3, opacity: src}}>
 					Both figures: Q3 2026. Source: SoFi earnings release, Oct 27, 2026. Revenue = GAAP net revenue $1.385B; members 17,074,272 at Sep 30.
 				</div>
 			</Camera>
 			<Sfx at={tSofi - 2} name="stamp" volume={0.35} />
 			<Sfx at={tBecause - 2} name="whoosh-soft" volume={0.3} />
+			<Sfx at={tRecord} name="pop" volume={0.25} />
 			<Sfx at={tNum} name="tick" volume={0.3} />
 			<Sfx at={tReached - 4} name="whoosh-soft" volume={0.3} />
 			<Sfx at={t17} name="tick" volume={0.3} />

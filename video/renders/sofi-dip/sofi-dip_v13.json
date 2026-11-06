@@ -1,0 +1,10 @@
+{
+ "file": "renders/sofi-dip/sofi-dip_v13_final-voice.mp4",
+ "composition": "SofiDip",
+ "mode": "personal-journey",
+ "title": "Everyone Was Panicking. I Bought More.",
+ "narration": "aligned",
+ "durationSec": 46.033,
+ "props": "public/voice/sofi-dip-story/props.json",
+ "renderedAt": "2026-11-06T17:34:36.291Z"
+}

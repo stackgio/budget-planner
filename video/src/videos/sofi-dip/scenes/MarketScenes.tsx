@@ -131,7 +131,9 @@ const IndexPanel: React.FC<{name: string; pct: number; close: string; values: nu
 	const {fps} = useVideoConfig();
 	const p = sp(frame, fps, inAt, 'heavy');
 	const c = kf(frame, [countAt, countEnd], [0, 1], E.out);
-	const v = pct * c;
+	// exact figure lands on the spoken word (no count-up: no misleading in-between values)
+	const v = pct;
+	const land = sp(frame, fps, countAt - 2, 'heavy');
 	return (
 		<div
 			style={{
@@ -155,7 +157,7 @@ const IndexPanel: React.FC<{name: string; pct: number; close: string; values: nu
 			<Label color={P.body} size={32}>
 				{name}
 			</Label>
-			<div style={{marginTop: 18, fontSize: 168, fontWeight: 900, letterSpacing: -6, color: RED, lineHeight: 1, fontVariantNumeric: 'tabular-nums', opacity: kf(frame, [countAt - 3, countAt + 3], [0, 1])}}>
+			<div style={{marginTop: 18, fontSize: 168, fontWeight: 900, letterSpacing: -6, color: RED, lineHeight: 1, fontVariantNumeric: 'tabular-nums', opacity: Math.min(1, land * 2), transform: `scale(${1.18 - 0.18 * land})`, transformOrigin: '0% 50%'}}>
 				−{Math.abs(v).toFixed(2)}%
 			</div>
 			<div style={{marginTop: 22, fontSize: 28, fontWeight: 700, letterSpacing: 2, color: P.muted, opacity: c}}>CLOSE {close}</div>

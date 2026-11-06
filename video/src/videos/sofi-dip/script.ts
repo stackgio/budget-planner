@@ -60,4 +60,4 @@ export const SCENES: SceneDef<Id>[] = [
 ];
 
 /** Seconds held after the last word, so the question + disclaimer can be read. */
-export const TAIL_SEC = 1.2;
+export const TAIL_SEC = 0.8;
