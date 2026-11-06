@@ -2,6 +2,7 @@ import React from 'react';
 import {useCurrentFrame, useVideoConfig} from 'remotion';
 import type {Narration} from '../lib/narration';
 import {E, kf} from '../lib/motion';
+import {norm} from '../lib/narration';
 import {story, type Palette} from '../theme';
 
 type Page = {words: {text: string; start: number; end: number}[]; start: number; end: number};
@@ -30,7 +31,13 @@ const paginate = (n: Narration, maxChars = 20, maxWords = 4): Page[] => {
  * The spoken word is highlighted in brand green. `paletteAt(frame)` lets the
  * caption colour follow editorial / cinematic scenes.
  */
-export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number) => Palette}> = ({narration, paletteAt}) => {
+export const Captions: React.FC<{
+	narration: Narration;
+	paletteAt: (frame: number) => Palette;
+	/** optional selective emphasis: only these words (normalised) turn green; others stay ink while spoken */
+	emphasis?: string[];
+}> = ({narration, paletteAt, emphasis}) => {
+	const emph = React.useMemo(() => (emphasis ? new Set(emphasis.map(norm)) : null), [emphasis]);
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const t = frame / fps;
@@ -70,7 +77,7 @@ export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number
 					<span
 						key={i}
 						style={{
-							color: speaking ? pal.accent : active ? pal.ink : pal.name === 'cinematic' ? 'rgba(245,242,234,0.45)' : 'rgba(18,19,22,0.35)',
+							color: emph ? (active ? (emph.has(norm(w.text)) ? pal.accent : pal.ink) : pal.name === 'cinematic' ? 'rgba(245,242,234,0.45)' : 'rgba(18,19,22,0.35)') : speaking ? pal.accent : active ? pal.ink : pal.name === 'cinematic' ? 'rgba(245,242,234,0.45)' : 'rgba(18,19,22,0.35)',
 							transform: `scale(${speaking ? 1.06 : 1})`,
 							display: 'inline-block',
 							transformOrigin: '50% 60%',

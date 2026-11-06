@@ -1,0 +1,11 @@
+{
+ "durationSec": 45.322,
+ "codec": "mp3",
+ "sampleRate": 44100,
+ "channels": 1,
+ "container": "mp3",
+ "bitRate": "131063",
+ "file": "public/voice/sofi-dip/voice.mp3",
+ "source": "/root/.claude/uploads/c381e739-8954-505b-be82-8feed7fb8551/7c56a387-ElevenLabs_2026-11-06T16_15_13__s50_sim75_v4.mp3",
+ "sha256": "5545086c1088feee084711b6f006d4e21893f5a122cf9c68b8380023db65fded"
+}
