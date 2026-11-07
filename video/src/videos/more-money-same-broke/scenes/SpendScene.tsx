@@ -31,7 +31,7 @@ const CAM = {
 /**
  * THE SPENDING TRAP — "But what's the first thing you do? … gone too."
  * Three different shots for three different upgrades (street → front door →
- * phone close-up). The extra $2,000 is a HUD meter: each purchase becomes a
+ * phone close-up). The $2,000 raise is a HUD meter (green = unspent): each purchase becomes a
  * labelled segment eating the green, and a chunk flies from the meter to it.
  * On "Before you know it" the meter drops to centre stage and runs out on "gone".
  */
@@ -220,15 +220,18 @@ export const SpendScene: React.FC = () => {
 			</Camera>
 
 			{/* ---- HUD: the extra $2,000 meter (stays connected to every purchase) ---- */}
-			<div style={{position: 'absolute', left: M.x, top: my - mix(96, 130, hero), width: M.w, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end'}}>
-				<Kicker size={mix(30, 38, hero)} color={P.muted}>The extra</Kicker>
-				<div style={{position: 'relative', fontSize: mix(64, 96, hero), fontWeight: 900, color: P.accent, letterSpacing: -2, lineHeight: 1}}>
-					<span style={{opacity: 1 - zero * 0.7}}>{usd(FACTS.raise.value)}</span>
-					<div style={{position: 'absolute', left: -6, right: -6, top: '52%', height: 8, borderRadius: 4, background: P.danger, transformOrigin: '0 50%', transform: `scaleX(${zero})`}} />
+			{/* header: the bar IS the raise; green = the part not spent yet */}
+			<div style={{position: 'absolute', left: M.x, top: my - mix(84, 112, hero), width: M.w, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline'}}>
+				<div style={{display: 'flex', alignItems: 'baseline', gap: 14, fontWeight: 900, whiteSpace: 'nowrap'}}>
+					<Kicker size={mix(32, 40, hero)} color={P.ink}>Your</Kicker>
+					<span style={{fontSize: mix(60, 84, hero), color: P.accent, letterSpacing: -2, lineHeight: 1}}>{usd(FACTS.raise.value)}</span>
+					<Kicker size={mix(32, 40, hero)} color={P.ink}>raise</Kicker>
 				</div>
 			</div>
 			<div style={{position: 'absolute', left: M.x, top: my, width: M.w, height: mh, borderRadius: mh / 2, background: P.line, overflow: 'hidden', boxShadow: `0 ${10 * hero}px ${30 * hero}px ${P.shadow}, 0 0 ${30 * pulse}px rgba(30,158,87,${0.5 * pulse})`}}>
-				<div style={{position: 'absolute', left: 0, top: 0, width: M.w * green, height: '100%', background: '#3FCB7E'}} />
+				<div style={{position: 'absolute', left: 0, top: 0, width: M.w * green, height: '100%', background: '#3FCB7E', display: 'flex', alignItems: 'center', paddingLeft: 24, boxSizing: 'border-box', overflow: 'hidden'}}>
+					<span style={{fontSize: mix(26, 34, hero), fontWeight: 900, letterSpacing: 2, color: '#0E4D2A', opacity: M.w * green > 220 ? 1 : 0, whiteSpace: 'nowrap'}}>UNSPENT</span>
+				</div>
 				{seg(0, pc, P.ink, 'CAR', 'CAR')}
 				{seg(SHARE.car, pf, '#B0844E', 'FOOD', 'FOOD')}
 				{seg(SHARE.car + SHARE.food, ps, P.danger, 'SHOPPING', 'SHOP')}

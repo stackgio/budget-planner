@@ -33,30 +33,31 @@ export const RealizeScene: React.FC = () => {
 
 	const row1 = sp(frame, fps, tPay - 8, 'snappy');
 	const roll = prog(frame, tUp - 4, 16, E.inOut);
-	const row2 = sp(frame, fps, tBank - 6, 'snappy');
-	const slam = sp(frame, fps, tDidnt - 4, 'heavy');
-	const hit = shake(frame, tDidnt + 2, 12, 14);
-	const line = prog(frame, tDidnt + 6, 14, E.out);
+	const row2 = sp(frame, fps, tBank - 10, 'snappy');
+	const slam = sp(frame, fps, tBank + 2, 'heavy');
+	const hit = shake(frame, tBank + 8, 12, 14);
+	const line = prog(frame, tBank + 10, 14, E.out);
 	const tLife = cue('L9', 'lifestyle');
 	const tInfl = cue('L9', 'inflation');
-	const exit = prog(frame, tLife - 10, 14, E.in);
+	// the finished comparison stays on screen: it docks below the title instead of leaving
+	const dock = prog(frame, tLife - 10, 18, E.inOut);
 
 	const old = (v: string, p: number, top: number) => (
-		<div style={{position: 'absolute', left: L, top, fontSize: 84, fontWeight: 900, color: P.muted, letterSpacing: -3, opacity: p, transform: `translateX(${(1 - p) * -40}px)`}}>{v}</div>
+		<div style={{position: 'absolute', left: L, top, fontSize: 84, fontWeight: 900, color: P.body, letterSpacing: -3, opacity: p, transform: `translateX(${(1 - p) * -40}px)`}}>{v}</div>
 	);
 	const arrow = (p: number, top: number) => (
 		<svg width={70} height={50} viewBox="0 0 70 50" style={{position: 'absolute', left: ARROW_X, top, opacity: p}}>
-			<path d="M4,25H58M40,8L60,25L40,42" fill="none" stroke={P.muted} strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" />
+			<path d="M4,25H58M40,8L60,25L40,42" fill="none" stroke={P.body} strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" />
 		</svg>
 	);
 
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<CinematicBg lightX={540} lightY={760} floorY={1300} />
-			<Camera keys={[{at: 0, zoom: 1.03, x: 540, y: 900}, {at: tDidnt, zoom: 1.0, x: 540, y: 900, ease: E.soft}]} handheld={0.6} shakeX={hit.x} shakeY={hit.y}>
-				<div style={{position: 'absolute', inset: 0, opacity: 1 - exit, transform: `translateY(${exit * 60}px)`}}>
+			<Camera keys={[{at: 0, zoom: 1.03, x: 540, y: 900}, {at: tBank + 8, zoom: 1.0, x: 540, y: 900, ease: E.soft}]} handheld={0.6} shakeX={hit.x} shakeY={hit.y}>
+				<div style={{position: 'absolute', inset: 0, transformOrigin: `${L}px 270px`, transform: `translateY(${dock * 210}px) scale(${1 - 0.22 * dock})`}}>
 				{/* INCOME row */}
-				<Kicker color={P.muted} style={{position: 'absolute', left: L, top: 270, opacity: row1}}>Income</Kicker>
+				<Kicker color={P.body} size={34} style={{position: 'absolute', left: L, top: 266, opacity: row1}}>Income</Kicker>
 				{old(usd(FACTS.oldIncome.value), row1, 330)}
 				{arrow(row1, 370)}
 				<div style={{position: 'absolute', left: NEW_X, top: 316, opacity: row1, transform: `translateX(${(1 - row1) * 40}px)`}}>
@@ -66,7 +67,7 @@ export const RealizeScene: React.FC = () => {
 				<div style={{position: 'absolute', left: L, right: story.safe.right, top: 540, height: 2, background: P.line, opacity: row2}} />
 
 				{/* MONEY LEFT row — the hero */}
-				<Kicker color={P.muted} style={{position: 'absolute', left: L, top: 600, opacity: row2}}>Money left</Kicker>
+				<Kicker color={P.body} size={34} style={{position: 'absolute', left: L, top: 596, opacity: row2}}>Money left</Kicker>
 				{old(usd(FACTS.leftOver.value), row2, 700)}
 				{arrow(row2, 740)}
 				<div
@@ -91,17 +92,17 @@ export const RealizeScene: React.FC = () => {
 
 				</div>
 				<Marcus
-					x={800}
+					x={250}
 					y={1300}
 					scale={0.95}
-					facing={-1}
+					facing={1}
 					seed={6}
 					onDark
 					opacity={1 - prog(frame, tInfl, 14, E.in)}
 					track={[
 						{at: 0, pose: ['idle', {head: -10}], face: 'curious'},
 						{at: tUp, pose: ['present', {head: -12}], face: 'happy'},
-						{at: tDidnt - 2, pose: 'sit', face: 'worried', spring: 'heavy'},
+						{at: tBank + 6, pose: 'sit', face: 'worried', spring: 'heavy'},
 					]}
 				/>
 			</Camera>
@@ -111,7 +112,7 @@ export const RealizeScene: React.FC = () => {
 			</div>
 			<Sfx at={tInfl} name="whoosh-soft" volume={0.35} />
 			<Sfx at={tUp - 2} name="tick" volume={0.35} />
-			<Sfx at={tDidnt - 2} name="thud" volume={0.55} />
+			<Sfx at={tBank + 6} name="thud" volume={0.55} />
 		</AbsoluteFill>
 	);
 };

@@ -1,0 +1,10 @@
+{
+ "file": "renders/more-money-same-broke/more-money-same-broke_v10_final-voice.mp4",
+ "composition": "MoreMoneySameBroke",
+ "mode": "education",
+ "title": "More Money, Same Broke Life",
+ "narration": "aligned",
+ "durationSec": 51.667,
+ "props": "public/voice/more-money-same-broke/props.json",
+ "renderedAt": "2026-11-07T20:35:56.131Z"
+}
