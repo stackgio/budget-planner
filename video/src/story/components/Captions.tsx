@@ -1,6 +1,6 @@
 import React from 'react';
 import {useCurrentFrame, useVideoConfig} from 'remotion';
-import type {Narration} from '../lib/narration';
+import {norm, type Narration} from '../lib/narration';
 import {E, kf} from '../lib/motion';
 import {story, type Palette} from '../theme';
 
@@ -30,11 +30,17 @@ const paginate = (n: Narration, maxChars = 20, maxWords = 4): Page[] => {
  * The spoken word is highlighted in brand green. `paletteAt(frame)` lets the
  * caption colour follow editorial / cinematic scenes.
  */
-export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number) => Palette}> = ({narration, paletteAt}) => {
+export const Captions: React.FC<{
+	narration: Narration;
+	paletteAt: (frame: number) => Palette;
+	/** optional: only these words (normalised, e.g. '3000', 'raise') turn green; others stay ink. Omit = every spoken word flashes green. */
+	keywords?: string[];
+}> = ({narration, paletteAt, keywords}) => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const t = frame / fps;
 	const pages = React.useMemo(() => paginate(narration), [narration]);
+	const keys = React.useMemo(() => (keywords ? new Set(keywords.map(norm)) : null), [keywords]);
 	const idx = pages.findIndex((p, i) => t >= p.start - 0.05 && t < (pages[i + 1]?.start ?? p.end + 0.6) - 0.05);
 	if (idx < 0) return null;
 	const page = pages[idx];
@@ -66,12 +72,13 @@ export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number
 			{page.words.map((w, i) => {
 				const active = t >= w.start - 0.03;
 				const speaking = t >= w.start - 0.03 && t < w.end + 0.08;
+				const isKey = keys ? keys.has(norm(w.text)) : true;
 				return (
 					<span
 						key={i}
 						style={{
-							color: speaking ? pal.accent : active ? pal.ink : pal.name === 'cinematic' ? 'rgba(245,242,234,0.45)' : 'rgba(18,19,22,0.35)',
-							transform: `scale(${speaking ? 1.06 : 1})`,
+							color: keys ? (active ? (isKey ? pal.accent : pal.ink) : pal.name === 'cinematic' ? 'rgba(245,242,234,0.45)' : 'rgba(18,19,22,0.35)') : speaking ? pal.accent : active ? pal.ink : pal.name === 'cinematic' ? 'rgba(245,242,234,0.45)' : 'rgba(18,19,22,0.35)',
+							transform: `scale(${speaking && isKey ? 1.06 : 1})`,
 							display: 'inline-block',
 							transformOrigin: '50% 60%',
 						}}
