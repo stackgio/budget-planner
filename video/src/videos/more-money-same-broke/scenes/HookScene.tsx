@@ -5,7 +5,7 @@ import {Camera} from '../../../story/components/Camera';
 import {Sfx} from '../../../story/components/Chrome';
 import {NumberCounter} from '../../../story/components/NumberCounter';
 import {useCues} from '../../../story/lib/cues';
-import {E, kf, mix, prog, shake, sp} from '../../../story/lib/motion';
+import {E, kf, shake, sp} from '../../../story/lib/motion';
 import {editorial as P, story} from '../../../story/theme';
 import {FACTS, usd} from '../facts';
 import {ExampleTag, Kicker} from '../props';
@@ -25,13 +25,15 @@ export const HookScene: React.FC = () => {
 	const tSame = cue('L1', 'same');
 	const tBroke = cue('L1', 'broke');
 
-	const roll = prog(frame, tMoney - 2, 18, E.inOut);
-	const income = mix(FACTS.oldIncome.value, FACTS.newIncome.value, roll);
-	const chip = sp(frame, fps, tMoney + 8, 'bouncy');
-	const bank = sp(frame, fps, tSame - 4, 'heavy');
+	// frame 0 already shows the whole contradiction: $5,000 income, $0 left.
+	// The green counter holds $5,000 and pulses on "money".
+	const income = FACTS.newIncome.value;
+	const chip = 1;
+	const settle = sp(frame, fps, -8, 'smooth');
+	const jolt = kf(frame, [tSame - 2, tSame + 3, tSame + 14], [0, 1, 0]);
 	const stamp = sp(frame, fps, tBroke + 2, 'heavy');
-	const hit = shake(frame, tSame + 6, 12, 14);
-	const pulse = 1 + 0.04 * kf(frame, [tMoney + 14, tMoney + 20, tMoney + 30], [0, 1, 0]);
+	const hit = shake(frame, tSame + 2, 10, 14);
+	const pulse = 1 + 0.05 * kf(frame, [tMoney, tMoney + 6, tMoney + 18], [0, 1, 0]);
 
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
@@ -96,8 +98,7 @@ export const HookScene: React.FC = () => {
 						boxShadow: `0 30px 60px ${P.shadow}`,
 						padding: '40px 48px',
 						boxSizing: 'border-box',
-						opacity: Math.min(1, bank * 2),
-						transform: `translateY(${(1 - bank) * 420}px) rotate(${(1 - bank) * 4}deg)`,
+						transform: `translateY(${(1 - settle) * 30}px) scale(${1 + 0.025 * jolt}) rotate(${-0.8 * jolt}deg)`,
 					}}
 				>
 					<Kicker color="#9AA0A8">Left in the bank</Kicker>

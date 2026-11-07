@@ -45,7 +45,7 @@ const DEF: VideoDef<SceneId> = {
 		old: {presentation: slide({direction: 'from-left'}), timing: 'spring'},
 		raise: {presentation: panelSweep({color: editorial.accent, direction: 'up'})},
 		spend: {presentation: slide({direction: 'from-right'}), timing: 'spring'},
-		realize: {presentation: iris({x: ZERO_AT.x, y: ZERO_AT.y + 120})},
+		realize: {presentation: iris({x: ZERO_AT.x - 120, y: ZERO_AT.y})},
 		inflation: {presentation: matchCut()},
 		solution: {presentation: panelSweep({color: editorial.bg, direction: 'up'})},
 		takeaway: {presentation: slide({direction: 'from-bottom'}), timing: 'spring'},

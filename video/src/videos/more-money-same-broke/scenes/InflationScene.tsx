@@ -32,12 +32,14 @@ export const InflationScene: React.FC = () => {
 	const tMoney = cue('L10', 'more');
 	const tFind2 = cue('L10', 'find');
 	const tWays = cue('L10', 'ways');
+	const tNew = cue('L10', 'new');
 
 	const rise = sp(frame, fps, tStart - 6, 'smooth');
 	const step = (t: number) => sp(frame, fps, t - 2, 'heavy');
 	const hInc = H[0] * rise + (H[1] - H[0]) * step(tTime) + (H[2] - H[1]) * step(tMoney);
-	const hSp = H[0] * rise + (H[1] - H[0]) * step(tFind2) + (H[2] - H[1]) * step(tWays);
-	const zeroPill = sp(frame, fps, tFind2 - 4, 'bouncy');
+	const hSp = H[0] * rise + (H[1] - H[0]) * step(tFind2 - 4) + (H[2] - H[1]) * step(tNew);
+	const zeroPill = sp(frame, fps, tWays - 2, 'bouncy');
+	const gap = Math.max(0, hInc - hSp);
 	const flash = (t: number) => kf(frame, [t, t + 4, t + 18], [0, 1, 0]);
 
 	const bar = (x: number, h: number, color: string, label: string, flashes: number[]) => {
@@ -48,7 +50,7 @@ export const InflationScene: React.FC = () => {
 				<svg width={60} height={50} viewBox="0 0 60 50" style={{position: 'absolute', left: x + BW / 2 - 30, top: BASE - h - 70, opacity: f}}>
 					<path d="M30,46V8M12,24L30,6L48,24" fill="none" stroke={color} strokeWidth={8} strokeLinecap="round" strokeLinejoin="round" />
 				</svg>
-				<Kicker color={color} style={{position: 'absolute', left: x + BW / 2, top: BASE + 22, transform: 'translateX(-50%)', opacity: rise}}>
+				<Kicker color={color} size={34} style={{position: 'absolute', left: x + BW / 2, top: BASE + 22, transform: 'translateX(-50%)', opacity: rise}}>
 					{label}
 				</Kicker>
 			</>
@@ -64,7 +66,13 @@ export const InflationScene: React.FC = () => {
 			</div>
 			<div style={{position: 'absolute', left: 120, right: 120, top: BASE, height: 3, background: P.line}} />
 			{bar(BARS.income, hInc, P.accent, 'Income', [tTime, tMoney])}
-			{bar(BARS.spend, hSp, P.danger, 'Spending', [tFind2, tWays])}
+			{bar(BARS.spend, hSp, P.danger, 'Spending', [tFind2 - 4, tNew])}
+			{/* the extra money: appears above spending… and gets eaten */}
+			{gap > 2 && (
+				<div style={{position: 'absolute', left: BARS.spend, top: BASE - hInc, width: BW, height: gap, borderRadius: '24px 24px 0 0', border: `4px dashed ${P.accent}`, background: 'rgba(44,212,122,0.14)', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden'}}>
+					<Kicker color={P.accent} size={32} style={{opacity: gap > 60 ? 1 : 0}}>Extra</Kicker>
+				</div>
+			)}
 			{/* the gap that never opens */}
 			<div
 				style={{
@@ -81,14 +89,14 @@ export const InflationScene: React.FC = () => {
 					transform: `scale(${zeroPill})`,
 				}}
 			>
-				<Kicker color={P.muted} size={26}>Left over</Kicker>
+				<Kicker color={P.muted} size={32}>Left over</Kicker>
 				<div style={{fontSize: 72, fontWeight: 900, color: P.ink, lineHeight: 1.05}}>{usd(0)}</div>
 			</div>
 			<Sfx at={tTime} name="tick" volume={0.35} />
 			<Sfx at={tMoney} name="tick" volume={0.35} />
-			<Sfx at={tFind2} name="tick" volume={0.3} />
-			<Sfx at={tWays} name="tick" volume={0.3} />
-			<Sfx at={tFind2 - 4} name="pop" volume={0.3} />
+			<Sfx at={tFind2 - 4} name="tick" volume={0.3} />
+			<Sfx at={tNew} name="tick" volume={0.3} />
+			<Sfx at={tWays} name="pop" volume={0.3} />
 		</AbsoluteFill>
 	);
 };

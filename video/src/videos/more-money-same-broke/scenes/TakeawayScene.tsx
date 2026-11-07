@@ -94,7 +94,7 @@ export const TakeawayScene: React.FC = () => {
 
 			{/* wallet (spending is fine) */}
 			<Wallet w={250} open={walletOpen} bills={2} style={{left: WALLET.x, top: WALLET.y, transform: `translate(-50%,-50%) scale(${walletIn})`}} />
-			<Kicker size={26} style={{position: 'absolute', left: WALLET.x, top: WALLET.y + 110, transform: 'translateX(-50%)', opacity: walletIn}}>
+			<Kicker size={30} style={{position: 'absolute', left: WALLET.x, top: WALLET.y + 110, transform: 'translateX(-50%)', opacity: walletIn}}>
 				Spend
 			</Kicker>
 

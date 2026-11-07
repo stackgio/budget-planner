@@ -97,7 +97,7 @@ export const RaiseScene: React.FC = () => {
 					}}
 				>
 					<div style={{fontSize: 92, fontWeight: 900, color: P.accent, letterSpacing: -3, lineHeight: 1}}>+{usd(FACTS.raise.value)}</div>
-					<Kicker color={P.accentDeep} size={26}>Every month</Kicker>
+					<Kicker color={P.accentDeep} size={30}>Every month</Kicker>
 				</div>
 
 				{/* RAISE! badge */}
