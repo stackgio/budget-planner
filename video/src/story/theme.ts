@@ -59,6 +59,29 @@ export const cinematic: Palette = {
 	shadow: 'rgba(0,0,0,0.55)',
 };
 
+/**
+ * Stack With Gio brand-dark: matte black + bright green (#39FF14), as used in
+ * the "Complete Beginner Investing Guide". Named 'cinematic' so captions use
+ * the dark-scene treatment.
+ */
+export const brandDark: Palette = {
+	name: 'cinematic',
+	bg: '#080B09',
+	bg2: '#0E1310',
+	paper: '#111713',
+	ink: '#FFFFFF',
+	body: '#C9D0CB',
+	muted: '#8B948E',
+	line: '#222B25',
+	accent: '#39FF14',
+	accentDeep: '#24B80B',
+	accentSoft: 'rgba(57,255,20,0.13)',
+	danger: '#FF5B48',
+	dangerSoft: 'rgba(255,91,72,0.14)',
+	gold: '#F0B64A',
+	shadow: 'rgba(0,0,0,0.6)',
+};
+
 export const story = {
 	width: base.width,
 	height: base.height,

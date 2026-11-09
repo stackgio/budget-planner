@@ -1,0 +1,10 @@
+{
+ "file": "renders/beginner-investing-guide/beginner-investing-guide_v06_final-voice.mp4",
+ "composition": "BeginnerInvestingGuide",
+ "mode": "education",
+ "title": "The Complete Beginner Investing Guide",
+ "narration": "aligned",
+ "durationSec": 113.267,
+ "props": "public/voice/beginner-investing-guide/props.final.json",
+ "renderedAt": "2026-11-08T23:54:03.887Z"
+}

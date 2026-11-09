@@ -7,3 +7,6 @@ projects/_selftest*/
 __pycache__/
 renders/*/qc_v*/
 renders/*/.rendering_*
+
+# raw screen-recording frames contain unmasked balances; regenerate locally (see projects/beginner-investing-guide/STORYBOARD.md)
+public/motion/*/assets/rec/

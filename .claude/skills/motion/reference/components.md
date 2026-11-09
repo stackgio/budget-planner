@@ -45,6 +45,7 @@ Scene `firstLine`s and `transitionFrames` live in `script.ts`. `buildSceneWindow
 | `NumberCounter` | `value, prefix, suffix, fontSize, color, roll, fixedDigits` | every animated amount (`roll={false}` for a cash-register snap) |
 | `StoryGraph` | `w, h, series:[{id, values, color, dash, fill, endLabel}], progress, yMax, xLabels, yLabels, markers, palette` | payoff curves, growth, narrated historical charts |
 | `Comparison` | `left/right: {title, value, caption, tone, visual}, at, palette, vs` | A vs B |
+| `ScreenRecording` | `dir, count, index, natural, w, h, view, masks:[{x,y,w,h,from,to}], marks, src?` + helpers `recIndex(frame, [[f, idx]…])`, `recView(frame, keys)` | real screen recording as an image sequence, re-timed to narration (holds/fast-forward), with time-ranged privacy masks; `src` shows a single still with the same camera |
 | `Screenshot` | `src, natural:{w,h}, w, redact: Region[], mark, highlight, zoomTo, focus, viewportH, frame: card\|phone\|none` | real evidence; regions in the image's natural pixels |
 
 ## Type, framing, chrome
