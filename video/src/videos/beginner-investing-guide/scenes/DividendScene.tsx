@@ -3,9 +3,9 @@ import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Sfx} from '../../../story/components/Chrome';
 import {recView, ScreenRecording, type RecRect} from '../../../story/components/ScreenRecording';
 import {useCues} from '../../../story/lib/cues';
-import {E, kf, mix, sp} from '../../../story/lib/motion';
+import {E, kf, sp} from '../../../story/lib/motion';
 import {DIV_DATES, FACTS} from '../facts';
-import {BrandBg, FONT, L, Label, Num, P, Pill, useIn} from '../ui';
+import {BrandBg, FONT, L, Num, P, Pill, useIn} from '../ui';
 
 const DIV = {src: 'motion/beginner-investing-guide/assets/voo-dividend.png', natural: {w: 1206, h: 2622}};
 const DRIP = {src: 'motion/beginner-investing-guide/assets/drip-enabled.jpg', natural: {w: 1206, h: 744}};
@@ -17,152 +17,152 @@ const ROI = {
 	enabled: {x: 55, y: 128, w: 290, h: 104},
 };
 
-const PW = 470; // proof viewport
-const PH = 1050;
-const PT = 300;
-const pv = (y: number, w: number, x = 0): RecRect => ({x, y, w, h: (w * PH) / PW});
+// proof viewport — wide and readable, above the explanation stack and the captions
+const PW = 900;
+const PH = 600;
+const PT = 268;
+const pv = (y: number, w = 1206, x = 0): RecRect => ({x, y, w, h: (w * PH) / PW});
 
 /**
- * REAL DIVIDEND PROOF + DRIP SETTING — both screenshots untouched; numbers
- * beside them come from facts.ts and match the screenshots exactly.
+ * REAL DIVIDEND PROOF + DRIP SETTING — three beats, each with the original
+ * screenshot enlarged on the exact line being explained:
+ *   1. $5.35 DIVIDEND  2. AUTOMATICALLY REINVESTED (DRIP enabled)  3. +0.007628 VOO SHARES
+ * Both screenshots are untouched; every figure comes from facts.ts.
  */
 export const DividendScene: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const {cue} = useCues();
 	const inn = useIn();
-	const tBegin = cue('L22', 'beginning');
-	const tTurn = cue('L23', 'turn', -0.1);
-	const tReinv = cue('L23', 'reinvestment');
+	const tTurn = cue('L23', 'turn', -0.15);
+	const tReinv = cue('L23', 'reinvestment', -0.1);
 	const tElig = cue('L23', 'eligible', -0.1);
-	const tAuto = cue('L23', 'automatically');
-	const tMore = cue('L23', 'more');
-	// proof camera: full → header ($5.35) → reinvestment block
+	const tBuy = cue('L23', 'buy', -0.15);
+	// which screenshot is on screen: dividend → DRIP setting → dividend
+	const dripOn = kf(frame, [tTurn - 4, tTurn + 6, tElig - 2, tElig + 8], [0, 1, 1, 0], E.inOut);
 	const view = recView(frame, [
-		{at: 0, v: pv(30, 1206)},
-		{at: 10, v: pv(30, 1206)},
-		{at: 30, v: pv(220, 720)},
-		{at: tElig - 2, v: pv(220, 720)},
-		{at: tElig + 14, v: pv(1330, 780, 0)},
+		{at: 0, v: pv(200)},
+		{at: 8, v: pv(200)},
+		{at: 26, v: pv(285, 900, 20)}, // 1 · "Dividend $5.35"
+		{at: tElig - 2, v: pv(285, 900, 20)},
+		{at: tElig + 10, v: pv(1060)}, // 2 · "Dividend reinvestment · Filled Oct 1"
+		{at: tBuy - 2, v: pv(1060)},
+		{at: tBuy + 10, v: pv(1800)}, // 3 · "0.007628 shares at $701.34"
 	]);
-	const markHeader = kf(frame, [24, 34, tTurn - 4, tTurn + 4], [0, 1, 1, 0]);
-	const markReinv = kf(frame, [tElig + 10, tElig + 20], [0, 1]);
-	// DRIP card: big overlay → docked top-right
-	const dripIn = sp(frame, fps, tTurn, 'bouncy');
-	const dock = kf(frame, [tElig, tElig + 16], [0, 1], E.inOut);
-	const dripW = mix(900, 380, dock);
-	const dripX = mix(90, 580, dock);
-	const dripY = mix(720, PT, dock);
-	const dripH = (dripW * DRIP.natural.h) / DRIP.natural.w;
+	const markHeader = kf(frame, [20, 30, tTurn - 6, tTurn], [0, 1, 1, 0]);
+	const markStep = kf(frame, [tElig + 8, tElig + 16, tBuy, tBuy + 6], [0, 1, 1, 0]);
+	const markAmount = kf(frame, [tBuy + 10, tBuy + 18], [0, 1]);
 	const markEnabled = kf(frame, [tReinv - 2, tReinv + 8], [0, 1]);
-	const backdrop = kf(frame, [tTurn, tTurn + 8, tElig, tElig + 12], [0, 0.93, 0.93, 0]);
-	// right column: $5.35 first, then the flow chain
-	const amountOut = kf(frame, [tTurn - 6, tTurn + 4], [1, 0]);
-	const amtP = kf(frame, [12, 34], [0, 1], E.out);
-	const chain = [
-		{t: tElig + 8, text: <>VOO pays a dividend</>},
-		{t: tElig + 16, text: <><G>${FACTS.dividendTotal.value.toFixed(2)}</G> received</>},
-		{t: tAuto, text: <>Automatically reinvested</>},
-		{t: tMore - 4, text: <><G>+{FACTS.reinvestShares.value}</G> VOO shares</>, hero: true},
+	// explanation stack
+	const beats = [
+		{
+			at: 6,
+			title: (
+				<>
+					<Num value={FACTS.dividendTotal.value} p={kf(frame, [10, 30], [0, 1], E.out)} decimals={2} prefix="$" size={60} color={P.accent} /> DIVIDEND
+				</>
+			),
+			sub: <>Paid {DIV_DATES.paid} · from VOO shares I already owned</>,
+		},
+		{at: tReinv, title: <>AUTOMATICALLY REINVESTED</>, sub: <>My DRIP setting is enabled · {DIV_DATES.reinvested}</>},
+		{
+			at: tBuy,
+			title: (
+				<>
+					<span style={{color: P.accent}}>+{FACTS.reinvestShares.value}</span> VOO SHARES
+				</>
+			),
+			sub: <>Bought at ${FACTS.reinvestPrice.value.toFixed(2)} per share</>,
+		},
 	];
-	const RX = 580;
+	let active = 0;
+	beats.forEach((b, i) => {
+		if (frame >= b.at) active = i;
+	});
 	return (
 		<AbsoluteFill style={{fontFamily: FONT}}>
-			<BrandBg glowX={300} glowY={700} />
-			<div style={{position: 'absolute', left: L, top: 186, display: 'flex', gap: 14, alignItems: 'center', ...inn(0)}}>
+			<BrandBg glowX={540} glowY={560} />
+			<div style={{position: 'absolute', left: L, top: 186, ...inn(0)}}>
 				<Pill tone="accent" size={26}>
 					05 · My real dividend
 				</Pill>
 			</div>
-			{/* proof */}
-			<div style={{position: 'absolute', left: L, top: PT, width: PW, height: PH, borderRadius: 36, boxShadow: `0 0 0 2px ${P.line}, 0 40px 80px rgba(0,0,0,0.7)`}}>
-				<ScreenRecording
-					dir=""
-					count={1}
-					index={0}
-					src={DIV.src}
-					natural={DIV.natural}
-					w={PW}
-					h={PH}
-					view={view}
-					radius={36}
-					marks={[
-						{rect: ROI.header, p: markHeader, color: P.accent},
-						{rect: ROI.reinvestStep, p: markReinv * 0.9, color: P.accent},
-						{rect: ROI.reinvestAmount, p: markReinv, color: P.accent},
-					]}
-				/>
+			<div style={{position: 'absolute', right: 120, top: 196, fontSize: 24, fontWeight: 800, letterSpacing: 3, color: P.muted, ...inn(4)}}>
+				<span style={{color: P.danger}}>●</span> REAL SCREENSHOTS
 			</div>
-			{/* right column A: the amount */}
-			<div style={{position: 'absolute', left: RX, top: 360, width: 380, opacity: amountOut * Math.min(1, amtP * 2)}}>
-				<Label size={26} color={P.muted}>Dividend</Label>
-				<Num value={FACTS.dividendTotal.value} p={amtP} decimals={2} prefix="$" size={120} color={P.accent} style={{display: 'block', marginTop: 4}} />
-				<div style={{fontSize: 30, fontWeight: 800, color: P.ink, marginTop: 10}}>Paid {DIV_DATES.paid}</div>
-				<div style={{fontSize: 26, fontWeight: 700, color: P.muted, marginTop: 26, lineHeight: 1.3, ...inn(tBegin - 10, 'smooth', 10)}}>
-					From VOO shares I already own — not the $10 order
+			{/* proof — the original screenshots */}
+			<div style={{position: 'absolute', left: (1080 - PW) / 2, top: PT, width: PW, height: PH, borderRadius: 36, boxShadow: `0 0 0 2px ${P.line}, 0 40px 80px rgba(0,0,0,0.7)`, background: '#000', overflow: 'hidden'}}>
+				<div style={{position: 'absolute', inset: 0, opacity: 1 - dripOn}}>
+					<ScreenRecording
+						dir=""
+						count={1}
+						index={0}
+						src={DIV.src}
+						natural={DIV.natural}
+						w={PW}
+						h={PH}
+						view={view}
+						radius={36}
+						marks={[
+							{rect: ROI.header, p: markHeader, color: P.accent, arrow: 'right'},
+							{rect: ROI.reinvestStep, p: markStep, color: P.accent, arrow: 'right'},
+							{rect: ROI.reinvestAmount, p: markAmount, color: P.accent, arrow: 'right'},
+						]}
+					/>
+				</div>
+				<div style={{position: 'absolute', inset: 0, opacity: dripOn, transform: `scale(${0.97 + 0.03 * dripOn})`}}>
+					<ScreenRecording
+						dir=""
+						count={1}
+						index={0}
+						src={DRIP.src}
+						natural={DRIP.natural}
+						w={PW}
+						h={PH}
+						view={{x: 0, y: (744 - 804) / 2, w: 1206, h: 804}}
+						radius={36}
+						marks={[{rect: ROI.enabled, p: markEnabled, color: P.accent, arrow: 'right'}]}
+					/>
 				</div>
 			</div>
-			{/* right column C: the flow */}
-			<div style={{position: 'absolute', left: RX, top: PT + 280, width: 380, display: 'flex', flexDirection: 'column', alignItems: 'stretch'}}>
-				{chain.map((s, i) => {
-					const p = sp(frame, fps, s.t, 'snappy');
+			{/* explanation stack: 1 → 2 → 3 */}
+			<div style={{position: 'absolute', left: L, right: 120, top: PT + PH + 32, display: 'flex', flexDirection: 'column', gap: 14}}>
+				{beats.map((b, i) => {
+					const p = sp(frame, fps, b.at, 'snappy');
+					const isActive = i === active;
+					const shown = frame >= b.at - 1;
 					return (
-						<React.Fragment key={i}>
-							{i > 0 && (
-								<div style={{height: 40, display: 'flex', justifyContent: 'center', opacity: p}}>
-									<svg width={30} height={40} viewBox="0 0 30 40">
-										<path d="M15 2v30M6 24l9 10 9-10" fill="none" stroke={P.accent} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
-									</svg>
-								</div>
-							)}
-							<div
-								style={{
-									padding: '20px 22px',
-									borderRadius: 22,
-									background: s.hero ? 'rgba(57,255,20,0.12)' : P.paper,
-									border: `3px solid ${s.hero ? P.accent : P.line}`,
-									fontSize: s.hero ? 34 : 30,
-									fontWeight: 900,
-									color: P.ink,
-									textAlign: 'center',
-									opacity: Math.min(1, p * 1.5),
-									transform: `translateY(${(1 - p) * 24}px) scale(${0.92 + 0.08 * p})`,
-									boxShadow: s.hero ? `0 0 ${36 * p}px rgba(57,255,20,0.3)` : 'none',
-								}}
-							>
-								{s.text}
+						<div
+							key={i}
+							style={{
+								display: 'flex',
+								alignItems: 'center',
+								gap: 22,
+								padding: '16px 24px',
+								borderRadius: 24,
+								background: isActive ? 'rgba(57,255,20,0.08)' : P.paper,
+								border: `3px solid ${isActive ? P.accent : P.line}`,
+								opacity: shown ? Math.min(1, p * 1.5) * (isActive ? 1 : 0.5) : 0,
+								transform: `translateY(${(1 - p) * 24}px)`,
+							}}
+						>
+							<div style={{width: 54, height: 54, flex: 'none', borderRadius: 16, background: isActive ? P.accent : 'rgba(255,255,255,0.08)', color: isActive ? P.bg : P.body, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 900}}>
+								{i + 1}
 							</div>
-						</React.Fragment>
+							<div>
+								<div style={{fontSize: 42, fontWeight: 900, color: P.ink, letterSpacing: -0.5, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: 14, whiteSpace: 'nowrap'}}>{b.title}</div>
+								<div style={{fontSize: 25, fontWeight: 700, color: P.body, marginTop: 4}}>{b.sub}</div>
+							</div>
+						</div>
 					);
 				})}
 			</div>
-			{/* DRIP setting screenshot */}
-			<div style={{position: 'absolute', inset: 0, background: `rgba(0,0,0,${backdrop})`}} />
-			<div
-				style={{
-					position: 'absolute',
-					left: dripX,
-					top: dripY,
-					width: dripW,
-					height: dripH,
-					borderRadius: 30,
-					opacity: Math.min(1, dripIn * 1.5),
-					transform: `translateY(${(1 - dripIn) * 120}px)`,
-					boxShadow: `0 0 0 2px ${markEnabled > 0.5 ? P.accentDeep : P.line}, 0 40px 80px rgba(0,0,0,0.8)`,
-				}}
-			>
-				<ScreenRecording dir="" count={1} index={0} src={DRIP.src} natural={DRIP.natural} w={dripW} h={dripH} view={{x: 0, y: 0, w: 1206, h: 744}} radius={30} marks={[{rect: ROI.enabled, p: markEnabled, color: P.accent}]} />
-				<div style={{position: 'absolute', left: 0, top: -64, opacity: 1 - dock}}>
-					<Label color={P.ink} size={28}>
-						My setting · <span style={{color: P.accent}}>DRIP enabled</span>
-					</Label>
-				</div>
+			<div style={{position: 'absolute', left: L, right: 120, top: 1352, textAlign: 'center', fontSize: 24, fontWeight: 700, color: P.muted, opacity: kf(frame, [tBuy + 6, tBuy + 16], [0, 1])}}>
+				Dividends can change — they’re not guaranteed
 			</div>
 			<Sfx at={20} name="coin" volume={0.3} />
 			<Sfx at={tReinv} name="chime" volume={0.25} />
-			<Sfx at={tMore - 4} name="coin" volume={0.28} />
+			<Sfx at={tBuy + 2} name="coin" volume={0.28} />
 		</AbsoluteFill>
 	);
 };
-
-const G: React.FC<{children: React.ReactNode}> = ({children}) => <span style={{color: P.accent}}>{children}</span>;

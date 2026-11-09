@@ -81,7 +81,7 @@ export const FractionScene: React.FC = () => {
 				<span style={{fontSize: 44, fontWeight: 900, color: P.ink}}>≈ {tenDollarFractionPct.toFixed(1)}% of a share</span>
 			</div>
 			<div style={{position: 'absolute', left: bx, right: 120, top: by + S + 178, fontSize: 25, fontWeight: 700, color: P.muted, ...inn(tDollars + 6, 'smooth', 10)}}>
-				At the price in my recording — varies as price moves
+				Eligible investments · at my recording’s price
 			</div>
 			<Sfx at={tNeed} name="tick" volume={0.2} />
 			<Sfx at={tHundreds + 4} name="pop" volume={0.28} />

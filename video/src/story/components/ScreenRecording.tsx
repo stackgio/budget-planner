@@ -28,7 +28,7 @@ export const ScreenRecording: React.FC<{
 	h: number;
 	view: RecRect;
 	masks?: RecMask[];
-	marks?: {rect: RecRect; p: number; color: string}[];
+	marks?: {rect: RecRect; p: number; color: string; arrow?: 'left' | 'right' | 'up' | 'down'}[];
 	maskColor?: string;
 	radius?: number;
 	/** show a single still image (inside public/) instead of the sequence — same camera/marks */
@@ -81,6 +81,28 @@ export const ScreenRecording: React.FC<{
 							}}
 						/>
 					))}
+				{marks
+					.filter((m) => m.arrow && m.p > 0.001)
+					.map((m, n) => {
+						// directional pointer OUTSIDE the outlined region, ~48 px on screen
+						const s = 48 / k;
+						const gap = 22 / k + (1 - m.p) * 30 / k;
+						const r = m.rect;
+						const pos =
+							m.arrow === 'left'
+								? {left: r.x - 14 - gap - s, top: r.y + r.h / 2 - s / 2, rot: 0}
+								: m.arrow === 'right'
+									? {left: r.x + r.w + 14 + gap, top: r.y + r.h / 2 - s / 2, rot: 180}
+									: m.arrow === 'up'
+										? {left: r.x + r.w / 2 - s / 2, top: r.y - 14 - gap - s, rot: 90}
+										: {left: r.x + r.w / 2 - s / 2, top: r.y + r.h + 14 + gap, rot: -90};
+						return (
+							<svg key={`a${n}`} width={s} height={s} viewBox="0 0 40 40" style={{position: 'absolute', left: pos.left, top: pos.top, opacity: m.p, transform: `rotate(${pos.rot}deg)`, overflow: 'visible', filter: `drop-shadow(0 0 ${6 / k}px rgba(0,0,0,0.9))`}}>
+								{/* points right → at the region (rotated per side) */}
+								<path d="M4 20h26M20 9l11 11-11 11" fill="none" stroke={m.color} strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" />
+							</svg>
+						);
+					})}
 			</div>
 		</div>
 	);

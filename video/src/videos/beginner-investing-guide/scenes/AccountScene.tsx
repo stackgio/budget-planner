@@ -127,7 +127,7 @@ export const AccountScene: React.FC = () => {
 				<div style={{height: 2, background: P.line}} />
 				<Row icon="clock" at={tRet} text={<>Designed for <span style={{color: P.accent}}>retirement</span></>} />
 				<Row icon="shield" at={tQual} text={<><span style={{color: P.accent}}>Qualified</span> withdrawals tax-free</>} />
-				<Row icon="rules" at={tRules} tone={P.gold} text={<>Eligibility &amp; withdrawal <span style={{color: P.gold}}>rules apply</span></>} />
+				<Row icon="rules" at={tRules} tone={P.gold} text={<>Contribution &amp; withdrawal <span style={{color: P.gold}}>rules apply</span></>} />
 			</div>
 			<div style={{position: 'absolute', left: L, right: 120, top: 1342, textAlign: 'center', fontSize: 26, fontWeight: 700, color: P.muted, opacity: settle}}>
 				Different goals — neither is “better”

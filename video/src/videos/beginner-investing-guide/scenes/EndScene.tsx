@@ -17,7 +17,8 @@ export const EndScene: React.FC = () => {
 	const tOnly = cue('L28', 'only');
 	const tLearn = cue('L28', 'learning');
 	const tFollow = cue('L29', 'Follow', -0.1);
-	const tTogether = cue('L29', 'together');
+	const tStack = cue('L29', 'Stack', -0.1);
+	const tLearnCta = cue('L29', 'learn', -0.1);
 	const swap = kf(frame, [tFollow - 6, tFollow + 4], [0, 1]);
 	const logo = sp(frame, fps, tFollow, 'bouncy');
 	const words = ['LEARN.', 'INVEST.', 'BUILD.'];
@@ -61,8 +62,15 @@ export const EndScene: React.FC = () => {
 						);
 					})}
 				</div>
-				<div style={{marginTop: 90, ...inn(tTogether - 10, 'bouncy')}}>
+				<div style={{marginTop: 80, ...inn(tStack, 'bouncy')}}>
 					<div style={{padding: '26px 46px', borderRadius: 999, background: P.accent, color: P.bg, fontSize: 46, fontWeight: 900, letterSpacing: 2}}>FOLLOW STACK WITH GIO</div>
+				</div>
+				<div style={{marginTop: 44, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12}}>
+					{['Real investing journey', 'Beginner-friendly money lessons'].map((t, i) => (
+						<div key={t} style={{fontSize: 34, fontWeight: 800, letterSpacing: 3, textTransform: 'uppercase', color: P.body, ...inn(tLearnCta + i * 6, 'snappy', 18)}}>
+							<span style={{color: P.accent}}>●</span> {t}
+						</div>
+					))}
 				</div>
 			</div>
 			<Sfx at={tFollow} name="pop" volume={0.28} />

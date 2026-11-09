@@ -163,6 +163,7 @@ export const REC_MASKS: RecMask[] = [
 export const REC_ROI = {
 	searchField: {x: 60, y: 205, w: 910, h: 145},
 	vooRow: {x: 40, y: 670, w: 1126, h: 150},
+	vooName: {x: 40, y: 682, w: 560, h: 136},
 	title: {x: 60, y: 370, w: 1100, h: 360},
 	tradeBtn: {x: 598, y: 2188, w: 548, h: 146},
 	buyBtn: {x: 588, y: 2030, w: 556, h: 146},

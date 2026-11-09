@@ -44,3 +44,10 @@ ffmpeg -ss 1.5 -i <ScreenRecording_11-08-2026_18-22-01_1.MP4> -vf fps=30 -q:v 2 
   public/motion/beginner-investing-guide/assets/rec/r%03d.jpg   # → r000.jpg … r446.jpg
 bash scripts/motion/render.sh beginner-investing-guide public/voice/beginner-investing-guide/props.final.json
 ```
+
+## V09 polish (vs v08) — design, narration, scene order unchanged
+- Walkthrough: per-step push-ins on the real recording (search field → VOO row → Trade/Buy buttons → shares/est. cost → review rows → swipe → queued screen); green arrows point at each tap target; recording holds on the VOO results until "tap" so the highlight never lands on the wrong screen.
+- Dividend: proof enlarged to a 900 px-wide viewport; three beats — 1 $5.35 DIVIDEND (header) · 2 AUTOMATICALLY REINVESTED (DRIP "Enabled" screenshot, then the "Dividend reinvestment · Filled Oct 1" line) · 3 +0.007628 VOO SHARES (reinvestment row, $701.34). Footnote "Dividends can change — they're not guaranteed".
+- Pacing: habit scene cut moved 0.75 s later (onto "from there") so the final dividend beat holds ~2 s; tail after the last word 1.8 → 1.2 s (112.7 s total).
+- Ending: CTA appears on "Stack" (not at the last word) + "Real investing journey · Beginner-friendly money lessons".
+- Accuracy wording: Roth card "Contribution & withdrawal rules apply"; fraction footnote "Eligible investments · at my recording's price".

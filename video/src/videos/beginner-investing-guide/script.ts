@@ -69,10 +69,10 @@ export const SCENES: SceneDef<SceneId>[] = [
 	{id: 'fraction', firstLine: 'L19', transitionFrames: 14},
 	{id: 'buy', firstLine: 'L20', transitionFrames: 10},
 	{id: 'dividend', firstLine: 'L22', transitionFrames: 18},
-	{id: 'habit', firstLine: 'L24', transitionFrames: 14},
+	{id: 'habit', firstLine: 'L24', transitionFrames: 14, offsetSec: 0.75}, // let the dividend proof land; cut on "from there"
 	{id: 'risk', firstLine: 'L26', transitionFrames: 12},
 	{id: 'end', firstLine: 'L28', transitionFrames: 18},
 ];
 
 /** Seconds held after the last word. */
-export const TAIL_SEC = 1.8;
+export const TAIL_SEC = 1.2;

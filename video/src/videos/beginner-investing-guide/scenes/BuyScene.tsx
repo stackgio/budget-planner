@@ -45,11 +45,13 @@ export const BuyScene: React.FC = () => {
 		[c.search - 4, 30],
 		[c.voo + 6, 68],
 		[c.voo + 12, 80],
-		[c.tap, 112],
-		[c.trade, 124],
-		[c.trade + 8, 140],
+		[c.tap - 2, 94], // hold the results (VOO row) until "tap"
+		[c.tap + 10, 114],
+		[c.trade + 6, 124], // Trade button visible before the menu opens
+		[c.trade + 16, 140],
 		[c.buy - 2, 172],
-		[c.buy + 10, 208],
+		[c.buy + 6, 178],
+		[c.buy + 14, 208],
 		[c.enter, 214],
 		[c.dollars, 262],
 		[c.review - 2, 272],
@@ -60,32 +62,37 @@ export const BuyScene: React.FC = () => {
 		[c.now + 8, 400],
 		[Math.max(c.now + 9, durationInFrames - 1), REC.at.last],
 	]);
+	// per-step framing: each step pushes in on the part of the real screen the narration names
 	const view = recView(frame, [
-		{at: 0, v: v(170)},
-		{at: c.voo + 4, v: v(170)},
-		{at: c.tap - 2, v: v(260)},
-		{at: c.trade - 6, v: v(260)},
-		{at: c.trade + 4, v: v(1389)},
-		{at: c.buy + 4, v: v(1389)},
-		{at: c.buy + 12, v: v(330)},
-		{at: c.ten - 6, v: v(330)},
-		{at: c.ten + 6, v: v(520, 60, 1086)},
-		{at: c.review - 2, v: v(520, 60, 1086)},
-		{at: c.review + 8, v: v(330)},
+		{at: 0, v: v(150)}, // search screen
+		{at: c.search - 8, v: v(150)},
+		{at: c.search + 4, v: v(150, 20, 960)}, // 1 · search field + results
+		{at: c.voo + 4, v: v(150, 20, 960)},
+		{at: c.voo + 14, v: v(480, 20, 800)}, // 2 · the VOO row, enlarged
+		{at: c.tap, v: v(480, 20, 800)},
+		{at: c.tap + 12, v: v(300)}, // VOO page: name + price
+		{at: c.trade - 10, v: v(300)},
+		{at: c.trade, v: v(1520, 400, 806)}, // 3 · Trade → Buy buttons, enlarged
+		{at: c.buy + 6, v: v(1520, 400, 806)},
+		{at: c.buy + 16, v: v(380)}, // 4 · order screen
+		{at: c.ten - 8, v: v(380)},
+		{at: c.ten + 4, v: v(540, 40, 1126)}, //   shares → estimated cost
+		{at: c.review - 2, v: v(540, 40, 1126)},
+		{at: c.review + 8, v: v(330)}, // 5 · review: amount + account
 		{at: c.submit - 4, v: v(330)},
-		{at: c.submit + 4, v: v(1389)},
+		{at: c.submit + 4, v: v(1389)}, // 6 · swipe up to submit
 		{at: c.submit + 16, v: v(1389)},
-		{at: c.now - 4, v: v(610)},
+		{at: c.now - 4, v: v(680, 20, 1166)}, //   genuine "order queued" screen
 	]);
 	const pulse = (a: number, b: number) => {
 		const e = Math.max(b, a + 16);
 		return kf(frame, [a - 4, a + 6, e - 4, e + 4], [0, 1, 1, 0]);
 	};
-	const marks: {rect: RecRect; p: number; color: string}[] = [
+	const marks: {rect: RecRect; p: number; color: string; arrow?: 'left' | 'right' | 'up' | 'down'}[] = [
 		{rect: REC_ROI.searchField, p: pulse(c.search - 6, c.voo + 2), color: P.accent},
-		{rect: REC_ROI.vooRow, p: pulse(c.voo + 4, c.tap - 6), color: P.accent},
-		{rect: REC_ROI.tradeBtn, p: pulse(c.trade + 4, c.trade + 10), color: P.accent},
-		{rect: REC_ROI.buyBtn, p: pulse(c.select + 2, c.buy + 4), color: P.accent},
+		{rect: REC_ROI.vooName, p: pulse(c.voo + 10, c.tap - 4), color: P.accent, arrow: 'right'},
+		{rect: REC_ROI.tradeBtn, p: pulse(c.trade - 4, c.trade + 8), color: P.accent, arrow: 'left'},
+		{rect: REC_ROI.buyBtn, p: pulse(c.select + 2, c.buy + 2), color: P.accent, arrow: 'left'},
 		{rect: REC_ROI.sharesRow, p: pulse(c.enter + 4, c.ten - 2), color: P.accent},
 		{rect: REC_ROI.estCost, p: pulse(c.ten, c.review - 4), color: P.accent},
 		{rect: REC_ROI.reviewEst, p: pulse(c.review + 8, c.submit - 6), color: P.accent},
