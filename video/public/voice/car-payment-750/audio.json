@@ -1,0 +1,11 @@
+{
+ "durationSec": 57.548,
+ "codec": "mp3",
+ "sampleRate": 44100,
+ "channels": 1,
+ "container": "mp3",
+ "bitRate": "130412",
+ "file": "public/voice/car-payment-750/voice.mp3",
+ "source": "/root/.claude/uploads/e1564054-d9b4-52d1-9c78-82d58a0e9e71/f2519e68-ElevenLabs_2026-11-09T22_37_40_Stack_voice__gen_s50_sim75_v4.mp3",
+ "sha256": "88094664e9f17ba1a64e4a6422b13b658d5aabd082dced9a1b05d363ad71966c"
+}

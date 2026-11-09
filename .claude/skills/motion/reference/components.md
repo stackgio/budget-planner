@@ -45,6 +45,7 @@ Scene `firstLine`s and `transitionFrames` live in `script.ts`. `buildSceneWindow
 | `NumberCounter` | `value, prefix, suffix, fontSize, color, roll, fixedDigits` | every animated amount (`roll={false}` for a cash-register snap) |
 | `StoryGraph` | `w, h, series:[{id, values, color, dash, fill, endLabel}], progress, yMax, xLabels, yLabels, markers, palette` | payoff curves, growth, narrated historical charts |
 | `Comparison` | `left/right: {title, value, caption, tone, visual}, at, palette, vs` | A vs B |
+| `Car` (`Car.tsx`) | `variant: luxury|sedan, paint (PAINTS.*), w, x, y (ground), lights, beam, spin, sheen, rim, reflection` | studio-lit side-profile vehicle when no licensed footage is available |
 | `Screenshot` | `src, natural:{w,h}, w, redact: Region[], mark, highlight, zoomTo, focus, viewportH, frame: card\|phone\|none` | real evidence; regions in the image's natural pixels |
 
 ## Type, framing, chrome
