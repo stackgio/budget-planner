@@ -1,0 +1,10 @@
+{
+ "file": "renders/car-payment-750-v2/car-payment-750-v2_v02_final-voice.mp4",
+ "composition": "CarPayment750V2",
+ "mode": "education",
+ "title": "The $750 Car Payment (v2)",
+ "narration": "aligned",
+ "durationSec": 57.933,
+ "props": "public/voice/car-payment-750/props.json",
+ "renderedAt": "2026-11-09T23:22:35.089Z"
+}
