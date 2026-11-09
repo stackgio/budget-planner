@@ -1,0 +1,10 @@
+{
+ "file": "renders/car-payment-750-recut/car-payment-750-recut_v01_temp-timing.mp4",
+ "composition": "CarPayment750Recut",
+ "mode": "education",
+ "title": "The $750 Car Payment (Recut)",
+ "narration": "temp",
+ "durationSec": 26.567,
+ "props": "public/voice/car-payment-750-recut/temp-props.json",
+ "renderedAt": "2026-11-09T23:15:28.916Z"
+}
