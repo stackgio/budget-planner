@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Html5Audio, staticFile, useVideoConfig, type CalculateMetadataFunction} from 'remotion';
+import {AbsoluteFill, Html5Audio, Sequence, staticFile, useVideoConfig, type CalculateMetadataFunction} from 'remotion';
 import {linearTiming, springTiming, TransitionSeries, type TransitionPresentation} from '@remotion/transitions';
 import {slide} from '@remotion/transitions/slide';
 import {getAudioDurationInSeconds} from '@remotion/media-utils';
@@ -55,6 +55,14 @@ export type VideoDef<Id extends string> = {
 	transitions?: Partial<Record<Id, SceneTransition>>;
 	/** lead before a scene's first line (sec), default 0.12 */
 	leadSec?: number;
+	/**
+	 * Optional pre-roll before the narration (e.g. a cold open of creator clips).
+	 * The voiceover, captions and every scene start `durationInFrames` later;
+	 * cues stay relative to the narration, so nothing else needs to change.
+	 */
+	intro?: {durationInFrames: number; component: React.FC};
+	/** Optional layer drawn over the narrated part only (e.g. a watermark); `paletteAt` follows the scene looks. */
+	overlay?: React.FC<{paletteAt: (frame: number) => Palette}>;
 };
 
 export const resolveNarration = async (script: ScriptLine[], props: NarratedProps): Promise<Narration> => {
@@ -74,11 +82,13 @@ export const makeCalculateMetadata =
 		const {durationInFrames} = buildSceneWindows(def.scenes, narration, story.fps, {tailSec: def.tailSec, leadSec: def.leadSec});
 		// never cut the voiceover short: the video is at least as long as the audio
 		const minFrames = Math.ceil(narration.durationSec * story.fps);
-		return {durationInFrames: Math.max(durationInFrames, minFrames), props: {...props, narration}};
+		return {durationInFrames: Math.max(durationInFrames, minFrames) + (def.intro?.durationInFrames ?? 0), props: {...props, narration}};
 	};
 
 export function NarratedVideo<Id extends string>({def, props}: {def: VideoDef<Id>; props: NarratedProps}) {
-	const {fps, durationInFrames} = useVideoConfig();
+	const {fps, durationInFrames: totalFrames} = useVideoConfig();
+	const intro = def.intro?.durationInFrames ?? 0;
+	const durationInFrames = totalFrames - intro;
 	const narration = props.narration ?? estimateNarration(def.script, {rate: props.tempRate});
 	const {windows} = React.useMemo(
 		() => buildSceneWindows(def.scenes, narration, fps, {tailSec: def.tailSec, leadSec: def.leadSec}),
@@ -94,6 +104,14 @@ export function NarratedVideo<Id extends string>({def, props}: {def: VideoDef<Id
 	};
 	return (
 		<AbsoluteFill style={{background: def.looks[windows[0].id]?.bg ?? editorial.bg}}>
+			{def.intro && (
+				<Sequence durationInFrames={intro} name="intro">
+					<SfxContext.Provider value={{enabled: props.sfx, master: props.sfxVolume}}>
+						<def.intro.component />
+					</SfxContext.Provider>
+				</Sequence>
+			)}
+			<Sequence from={intro} name="narration">
 			<SfxContext.Provider value={{enabled: props.sfx, master: props.sfxVolume}}>
 				<TransitionSeries>
 					{windows.map((w) => {
@@ -122,7 +140,9 @@ export function NarratedVideo<Id extends string>({def, props}: {def: VideoDef<Id
 				</TransitionSeries>
 			</SfxContext.Provider>
 			{props.captions && <Captions narration={narration} paletteAt={paletteAt} />}
+			{def.overlay && <def.overlay paletteAt={paletteAt} />}
 			{props.voiceAudio && <Html5Audio src={staticFile(props.voiceAudio)} volume={props.voiceVolume} />}
+			</Sequence>
 		</AbsoluteFill>
 	);
 }

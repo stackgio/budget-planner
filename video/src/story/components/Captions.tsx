@@ -30,7 +30,15 @@ const paginate = (n: Narration, maxChars = 20, maxWords = 4): Page[] => {
  * The spoken word is highlighted in brand green. `paletteAt(frame)` lets the
  * caption colour follow editorial / cinematic scenes.
  */
-export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number) => Palette}> = ({narration, paletteAt}) => {
+export const Captions: React.FC<{
+	narration: Narration;
+	paletteAt: (frame: number) => Palette;
+	/** override the band position (e.g. to clear burned-in text in creator footage) */
+	top?: number;
+	fontSize?: number;
+	/** dark backing for captions over live footage */
+	backdrop?: boolean;
+}> = ({narration, paletteAt, top = story.captionTop, fontSize = 58, backdrop = false}) => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const t = frame / fps;
@@ -48,13 +56,13 @@ export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number
 				position: 'absolute',
 				left: story.safe.left,
 				right: story.safe.right - 48,
-				top: story.captionTop,
+				top,
 				display: 'flex',
 				justifyContent: 'center',
 				flexWrap: 'wrap',
 				columnGap: 24,
 				fontFamily: story.font,
-				fontSize: 58,
+				fontSize,
 				fontWeight: 900,
 				letterSpacing: -1,
 				textTransform: 'uppercase',
@@ -63,23 +71,31 @@ export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number
 				opacity: pIn * fade,
 			}}
 		>
-			{page.words.map((w, i) => {
-				const active = t >= w.start - 0.03;
-				const speaking = t >= w.start - 0.03 && t < w.end + 0.08;
-				return (
-					<span
-						key={i}
-						style={{
-							color: speaking ? pal.accent : active ? pal.ink : pal.name === 'cinematic' ? 'rgba(245,242,234,0.45)' : 'rgba(18,19,22,0.35)',
-							transform: `scale(${speaking ? 1.06 : 1})`,
-							display: 'inline-block',
-							transformOrigin: '50% 60%',
-						}}
-					>
-						{w.text.replace(/[.,]$/, '')}
-					</span>
-				);
-			})}
+			{backdrop && (
+				<div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', columnGap: fontSize * 0.4, background: 'rgba(11,12,14,0.78)', borderRadius: 18, padding: `${fontSize * 0.14}px ${fontSize * 0.36}px`}}>
+					{renderWords()}
+				</div>
+			)}
+			{!backdrop && renderWords()}
 		</div>
 	);
+	function renderWords() {
+		return page.words.map((w, i) => {
+			const active = t >= w.start - 0.03;
+			const speaking = t >= w.start - 0.03 && t < w.end + 0.08;
+			return (
+				<span
+					key={i}
+					style={{
+						color: speaking ? pal.accent : active ? pal.ink : pal.name === 'cinematic' ? 'rgba(245,242,234,0.45)' : 'rgba(18,19,22,0.35)',
+						transform: `scale(${speaking ? 1.06 : 1})`,
+						display: 'inline-block',
+						transformOrigin: '50% 60%',
+					}}
+				>
+					{w.text.replace(/[.,]$/, '')}
+				</span>
+			);
+		});
+	}
 };

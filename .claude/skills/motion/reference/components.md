@@ -45,6 +45,8 @@ Scene `firstLine`s and `transitionFrames` live in `script.ts`. `buildSceneWindow
 | `NumberCounter` | `value, prefix, suffix, fontSize, color, roll, fixedDigits` | every animated amount (`roll={false}` for a cash-register snap) |
 | `StoryGraph` | `w, h, series:[{id, values, color, dash, fill, endLabel}], progress, yMax, xLabels, yLabels, markers, palette` | payoff curves, growth, narrated historical charts |
 | `Comparison` | `left/right: {title, value, caption, tone, visual}, at, palette, vs` | A vs B |
+| `Thermostat` / `HouseKey` / `SpeechBubble` / `Stamp` / `DotGrid` / `Paycheck` / `GradCap` (`HomeProps.tsx`) | `Thermostat {w, temp, mode, power 0..1, dial, glow}` · `HouseKey {w}` (rotate via style, origin `22% 50%` = bow) · `SpeechBubble {w, tail, dashed}` · `Stamp {text, at, color, rot}` · `DotGrid {dot, gap}` | home-ownership stories, AC/repair hooks, ending card layouts |
+| `CreatorClip` | `src, trimBefore, trimAfter, words (clip-local s), captionTop, captionSize, handle` | third-party creator clips in a cold open: untouched pixels, captions placed clear of burned-in text, handle credit chip |
 | `Screenshot` | `src, natural:{w,h}, w, redact: Region[], mark, highlight, zoomTo, focus, viewportH, frame: card\|phone\|none` | real evidence; regions in the image's natural pixels |
 
 ## Type, framing, chrome
@@ -56,7 +58,7 @@ Scene `firstLine`s and `transitionFrames` live in `script.ts`. `buildSceneWindow
 - `Transitions`: `iris({x, y})`, `panelSweep({color, direction: 'up'|'left'})`, `matchCut()`, plus `slide({direction})`, `wipe()`, `fade()` from `@remotion/transitions/*`. Set them per scene in `Video.tsx` → `transitions: {sceneId: {presentation, timing: 'linear'|'spring'}}`.
 
 ## Video shell (`lib/NarratedVideo.tsx`)
-`VideoDef = {script, scenes, tailSec, components, looks, transitions?, leadSec?}`. Props schema `narratedSchema`: `voiceAudio, alignment, voiceVolume, captions, sfx, sfxVolume, tempRate`. Narration resolution: alignment → aligned; voice only → audio-scaled; nothing → temp.
+`VideoDef = {script, scenes, tailSec, components, looks, transitions?, leadSec?, intro?, overlay?}`. `intro: {durationInFrames, component}` plays before the narration (e.g. a creator-clip cold open); export `INTRO_FRAMES` from `script.ts` so `report.ts` offsets QC beats. `overlay` draws over the narrated part (watermark) and gets `paletteAt`. `Captions` also takes `top`, `fontSize`, `backdrop`; `SavingsJar` takes `showLabel={false}` to avoid implying a balance. Props schema `narratedSchema`: `voiceAudio, alignment, voiceVolume, captions, sfx, sfxVolume, tempRate`. Narration resolution: alignment → aligned; voice only → audio-scaled; nothing → temp.
 
 ## Facts (`lib/meta.ts`)
 `fact(value, 'personal'|'historical'|'hypothetical'|'computed', source)`. Scenes read `FACTS.x.value`. Anything `hypothetical` on screen needs a visible "EXAMPLE" label.

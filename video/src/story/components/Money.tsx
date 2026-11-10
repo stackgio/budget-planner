@@ -141,13 +141,14 @@ export const Receipt: React.FC<{
  * Savings jar — the emergency fund. `level` 0..1 is how full it is,
  * `label`/`amount` sit on the jar's tag.
  */
-export const SavingsJar: React.FC<{w?: number; level?: number; label?: string; amount?: string; palette?: Palette; style?: React.CSSProperties}> = ({
+export const SavingsJar: React.FC<{w?: number; level?: number; label?: string; amount?: string; palette?: Palette; style?: React.CSSProperties; /** false = no label panel (no implied balance) */ showLabel?: boolean}> = ({
 	w = 260,
 	level = 1,
 	label = 'EMERGENCY FUND',
 	amount = '$500',
 	palette = editorial,
 	style,
+	showLabel = true,
 }) => {
 	const h = w * 1.25;
 	const top = 70;
@@ -172,7 +173,7 @@ export const SavingsJar: React.FC<{w?: number; level?: number; label?: string; a
 				<rect x={30} y={30} width={200} height={44} rx={10} fill="#121316" />
 				<rect x={46} y={86} width={14} height={120} rx={7} fill="#fff" opacity={0.6} />
 			</svg>
-			<div
+			{showLabel && <div
 				style={{
 					position: 'absolute',
 					left: w * 0.08,
@@ -188,7 +189,7 @@ export const SavingsJar: React.FC<{w?: number; level?: number; label?: string; a
 			>
 				<div style={{fontSize: w * 0.056, fontWeight: 900, letterSpacing: 0.5, whiteSpace: 'nowrap', color: palette.muted}}>{label}</div>
 				<div style={{fontSize: w * 0.17, fontWeight: 900, color: palette.ink, letterSpacing: -1, lineHeight: 1.05, fontVariantNumeric: 'tabular-nums'}}>{amount}</div>
-			</div>
+			</div>}
 		</div>
 	);
 };
