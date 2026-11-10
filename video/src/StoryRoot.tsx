@@ -6,6 +6,7 @@ import {calculateDebtMetadata, DebtThreeThings, debtThreeThingsSchema} from './v
 import {CarPayment750, CarPayment750Schema, calculateCarPayment750Metadata} from './videos/car-payment-750/Video';
 import {CarPayment750Recut, CarPayment750RecutSchema, calculateCarPayment750RecutMetadata} from './videos/car-payment-750-recut/Video';
 import {CarPayment750V2, CarPayment750V2Schema, calculateCarPayment750V2Metadata} from './videos/car-payment-750-v2/Video';
+import {CarPayment750V3, CarPayment750V3Schema, calculateCarPayment750V3Metadata} from './videos/car-payment-750-v3/Video';
 // @motion-imports (scripts/motion/new-video.mjs adds imports above this line)
 
 /** Story-video compositions (Marcus / editorial / cinematic system). */
@@ -26,6 +27,7 @@ export const StoryCompositions: React.FC = () => (
 		<Composition id="CarPayment750" component={CarPayment750} schema={CarPayment750Schema} width={story.width} height={story.height} fps={story.fps} durationInFrames={900} defaultProps={CarPayment750Schema.parse({})} calculateMetadata={calculateCarPayment750Metadata} />
 		<Composition id="CarPayment750Recut" component={CarPayment750Recut} schema={CarPayment750RecutSchema} width={story.width} height={story.height} fps={story.fps} durationInFrames={900} defaultProps={CarPayment750RecutSchema.parse({})} calculateMetadata={calculateCarPayment750RecutMetadata} />
 		<Composition id="CarPayment750V2" component={CarPayment750V2} schema={CarPayment750V2Schema} width={story.width} height={story.height} fps={story.fps} durationInFrames={1800} defaultProps={CarPayment750V2Schema.parse({})} calculateMetadata={calculateCarPayment750V2Metadata} />
+		<Composition id="CarPayment750V3" component={CarPayment750V3} schema={CarPayment750V3Schema} width={story.width} height={story.height} fps={story.fps} durationInFrames={1800} defaultProps={CarPayment750V3Schema.parse({})} calculateMetadata={calculateCarPayment750V3Metadata} />
 		{/* @motion-compositions (scripts/motion/new-video.mjs adds compositions above this line) */}
 	</>
 );
