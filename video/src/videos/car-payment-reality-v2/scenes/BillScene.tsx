@@ -74,7 +74,10 @@ export const BillScene: React.FC = () => {
 
 	/* ── hook → receipt ── */
 	const unroll = prog(f, tAnd, 20, E.out);
-	const p = prog(f, tAnd + 3, 18, E.inOut); // $750 → row one
+	// $750 starts travelling to row one on "that's (actually crazy)" so the opener progresses,
+	// and settles as the receipt unrolls under it on "And the worst part?"
+	const tMove = cue('L2', "that's");
+	const p = kf(f, [tMove, tAnd + 6], [0, 1], E.inOut); // $750 → row one
 
 	/* ── key: drops beside $750, rests above the receipt next to JUST THE PAYMENT, leaves on the fold ── */
 	const land = kf(f, [0, 12], [0.55, 1], E.in);
@@ -205,8 +208,8 @@ export const BillScene: React.FC = () => {
 		</div>
 	);
 
-	const amountColor = interpolateColors(p, [0, 0.6], [M.green, M.paperInk]);
-	const labelColor = interpolateColors(p, [0, 0.6], [M.ink, SOFT_INK]);
+	const amountColor = interpolateColors(unroll, [0.2, 0.45], [M.green, M.paperInk]);
+	const labelColor = interpolateColors(unroll, [0.2, 0.45], [M.ink, SOFT_INK]);
 	const MorphRow: React.FC<{clip?: string}> = ({clip}) => (
 		<div style={{position: 'absolute', inset: 0, clipPath: clip}}>
 			<div
@@ -225,7 +228,7 @@ export const BillScene: React.FC = () => {
 			>
 				{usd(FACTS.carPayment.value)}
 			</div>
-			<div style={{position: 'absolute', left: 650, top: 678, fontFamily: M.font, fontSize: 84, lineHeight: '84px', fontWeight: 900, color: M.ink, opacity: 1 - prog(f, tAnd + 3, 6)}}>/MO</div>
+			<div style={{position: 'absolute', left: 650, top: 678, fontFamily: M.font, fontSize: 84, lineHeight: '84px', fontWeight: 900, color: M.ink, opacity: 1 - prog(f, tMove, 8)}}>/MO</div>
 			<div
 				style={{
 					...label,

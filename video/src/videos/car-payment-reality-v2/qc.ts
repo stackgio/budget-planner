@@ -5,6 +5,8 @@ type F = (line: string, word?: string, offsetSec?: number) => number;
 export const qcBeats = (f: F): [string, number][] => [
 	['key_landed', 18],
 	['car_beneath_1s', 30],
+	['move_start', f('L2', "that's", 0.3)],
+	['move_mid', f('L2', 'crazy', 0.2)],
 	['receipt_opening', f('L3', 'worst', 0.2)],
 	['just_pullback', f('L4', 'just', 0.7)],
 	['insurance_200', f('L6', 'insurance', 0.2)],
