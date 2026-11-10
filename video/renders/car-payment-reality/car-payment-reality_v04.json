@@ -1,0 +1,10 @@
+{
+ "file": "renders/car-payment-reality/car-payment-reality_v04_final-voice.mp4",
+ "composition": "CarPaymentReality",
+ "mode": "budget",
+ "title": "The Real Cost of a $750 Car Payment",
+ "narration": "aligned",
+ "durationSec": 59.2,
+ "props": "public/voice/car-payment-reality/props.json",
+ "renderedAt": "2026-11-10T00:26:18.301Z"
+}
