@@ -1,25 +1,24 @@
 import type {VideoMeta} from '../../story/lib/meta';
 import type {ScriptLine} from '../../story/lib/narration';
 import type {SceneDef} from '../../story/lib/sceneTimeline';
-import {MONTAGE_FRAMES} from './montage';
 
 export const META: VideoMeta = {
 	compositionId: 'RentVsBuy',
 	slug: 'rent-vs-buy',
 	title: "Why I'd Rather Rent Right Now",
 	mode: 'education',
-	looks: ['creator-clips', 'cinematic', 'editorial', 'cinematic-amber', 'white', 'editorial', 'dot-grid'],
-	hookStyle: 'creator-clip cold open → relatable-situation + surprising number ($5,000 NEW AC)',
+	looks: ['cinematic', 'editorial', 'cinematic-amber', 'white', 'editorial', 'dot-grid'],
+	hookStyle: 'surprising number on frame 0 ($5,000 AC BILL) → relatable situation',
 	signatureMoves: [
-		'3-clip buyer-regret cold open, hard cut to a live thermostat that dies on "boom"',
+		'$5,000 AC BILL readable on frame 0; thermostat dies on "boom"; punch-in on the amount',
 		'key turn match-cuts to the thermostat dial; cool → amber July grade',
 		'$5,000 estimate card travels hook → owner line → closing question → center ending card',
 		'three tilted cards fan out on a dotted grid for the final choice',
 	],
 };
 
-/** Creator-clip cold open before the voiceover (frames @30fps). Read by scripts/motion/report.ts. */
-export const INTRO_FRAMES = MONTAGE_FRAMES;
+/** No pre-roll: the video opens on the narration's first word ("Imagine", 0.08 s). */
+export const INTRO_FRAMES = 0;
 
 /** Exactly as spoken in public/voice/rent-vs-buy (ElevenLabs Scribe word timestamps). */
 export const SCRIPT: ScriptLine[] = [

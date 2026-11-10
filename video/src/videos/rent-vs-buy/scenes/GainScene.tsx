@@ -53,13 +53,13 @@ export const GainScene: React.FC = () => {
 			{frame >= tSellEnd - 4 && (
 				<div style={{position: 'absolute', left: 0, right: story.safe.right - story.safe.left, top: 470, textAlign: 'center', transform: `scale(${1 + (1 - hero) * 0.4})`, opacity: Math.min(1, hero * 2)}}>
 					<NumberCounter value={kInc * count} prefix="$" suffix="K" fontSize={230} color={P.accent} style={{letterSpacing: -6}} />
-					<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 22, marginTop: 6}}>
-						<div style={{fontSize: 64, fontWeight: 900, letterSpacing: 1, color: P.ink}}>PRICE INCREASE</div>
+					<div style={{fontSize: 80, fontWeight: 900, letterSpacing: 1, color: P.ink, marginTop: 4}}>PRICE INCREASE</div>
+					<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 22, marginTop: 14, height: 76}}>
 						<div style={{opacity: notProfit, transform: `scale(${0.5 + 0.5 * notProfit})`, background: P.danger, color: '#fff', borderRadius: 16, padding: '6px 18px', fontSize: 52, fontWeight: 900, letterSpacing: 1}}>≠ PROFIT</div>
 					</div>
 				</div>
 			)}
-			<div style={{position: 'absolute', left: 140, top: 920}}>
+			<div style={{position: 'absolute', left: 140, top: 990}}>
 				{chips.map(([label, t], i) => {
 					const p = sp(frame, fps, t - 3, 'snappy');
 					return (

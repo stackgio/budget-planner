@@ -41,18 +41,18 @@ const CardFrame: React.FC<{x: number; y: number; w: number; h: number; rot: numb
 	</div>
 );
 
-const Choice: React.FC<{text: string; p: number; x: number; y: number}> = ({text, p, x, y}) => (
+const Choice: React.FC<{text: string; p: number; x: number; y: number; hit?: number}> = ({text, p, x, y, hit = 0}) => (
 	<div
 		style={{
 			position: 'absolute',
 			left: x,
 			top: y,
-			transform: `translate(-50%,-50%) scale(${0.6 + 0.4 * p})`,
+			transform: `translate(-50%,-50%) scale(${(0.6 + 0.4 * p) * (1 + 0.14 * hit)})`,
 			opacity: p,
 			display: 'flex',
 			alignItems: 'center',
 			gap: 14,
-			background: '#F5F2EA',
+			background: hit > 0.5 ? '#2CD47A' : '#F5F2EA',
 			color: '#0B0C0E',
 			borderRadius: 18,
 			padding: '14px 24px',
@@ -86,8 +86,11 @@ export const EndScene: React.FC = () => {
 	const pull = sp(frame, fps, tIf - 2, 'smooth');
 	const fanL = sp(frame, fps, tIf + 6, {damping: 18, stiffness: 110, mass: 1});
 	const fanR = sp(frame, fps, tIf + 10, {damping: 18, stiffness: 110, mass: 1});
-	const buy = sp(frame, fps, tBuying - 3, 'bouncy');
-	const stack = sp(frame, fps, tStacking - 3, 'bouncy');
+	// both choices are on screen for the whole question; each pops on its word, then they hold to the end
+	const buy = sp(frame, fps, tIf + 14, 'bouncy');
+	const stack = sp(frame, fps, tIf + 18, 'bouncy');
+	const buyHit = kf(frame, [tBuying - 3, tBuying + 2, tBuying + 14], [0, 1, 0]);
+	const stackHit = kf(frame, [tStacking - 3, tStacking + 2, tStacking + 14], [0, 1, 0]);
 	const c = SLOTS.center;
 	const cw = mix(1080, CARD.w, pull);
 	const ch = mix(1920, CARD.h, pull);
@@ -120,8 +123,8 @@ export const EndScene: React.FC = () => {
 			<CardFrame x={cx} y={cy} w={cw} h={ch} rot={mix(0, c.rot, pull)} radius={mix(0, 28, pull)} outline={pull} z={2}>
 				<EstimateCard w={ew} owner={1} style={{left: cw / 2, top: ch / 2 + mix(ESTIMATE_HANDOFF.y - 960, 0, pull) + float * pull}} />
 			</CardFrame>
-			<Choice text="BUY NOW" p={buy} x={262} y={1150} />
-			<Choice text="STACK LONGER" p={stack} x={740} y={1150} />
+			<Choice text="BUY NOW" p={buy} hit={buyHit} x={262} y={1150} />
+			<Choice text="STACK LONGER" p={stack} hit={stackHit} x={736} y={1150} />
 			<Sfx at={tIf - 2} name="whoosh-soft" volume={0.35} />
 			<Sfx at={tBuying - 3} name="pop" volume={0.25} />
 			<Sfx at={tStacking - 3} name="coin" volume={0.25} />

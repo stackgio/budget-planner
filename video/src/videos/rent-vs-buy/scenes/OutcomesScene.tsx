@@ -25,14 +25,19 @@ export const OutcomesScene: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const {cue} = useCues();
-	const tRent = cue('L11', 'renting');
+	const tRent = cue('L11');
+	const tRepair = cue('L11', 'repair');
+	const tBill = cue('L12', 'bill');
 	const tCall = cue('L11', 'call');
-	const tOwn = cue('L12', 'own');
-	const tCo = cue('L12', 'AC company,');
+	const tOwn = cue('L12');
+	const tCo = cue('L12', 'call');
 	const tYour = cue('L12', 'your');
-	const rent = sp(frame, fps, tRent - 6, 'bouncy');
+	const rent = sp(frame, fps, tRent - 2, 'bouncy');
+	const repair = kf(frame, [tRepair - 3, tRepair + 3], [0, 1]);
+	const billLine = kf(frame, [tBill - 3, tBill + 3], [0, 1]);
+	const rentDim = kf(frame, [tOwn - 4, tOwn + 6], [1, 0.45]);
 	const landlord = sp(frame, fps, tCall - 4, 'snappy');
-	const own = sp(frame, fps, tOwn - 6, 'bouncy');
+	const own = sp(frame, fps, tOwn - 2, 'bouncy');
 	const company = sp(frame, fps, tCo - 4, 'snappy');
 	const est = sp(frame, fps, tYour - 7, 'heavy');
 	const dimPanels = kf(frame, [tYour - 8, tYour], [1, 0.22]);
@@ -43,21 +48,21 @@ export const OutcomesScene: React.FC = () => {
 			<CinematicBg warm lightX={540} lightY={760} light={1.2} />
 			<AbsoluteFill style={{background: 'radial-gradient(1000px 1200px at 540px 800px, rgba(255,160,60,0.22) 0%, rgba(0,0,0,0) 75%)'}} />
 			<div style={{opacity: dimPanels}}>
-				<div style={{...panel, top: 230, opacity: rent, transform: `translateY(${(1 - rent) * 40}px)`}}>
+				<div style={{...panel, top: 230, opacity: Math.min(1, rent * 1.5) * rentDim, transform: `translateX(${(1 - rent) * -500}px)`}}>
 					<div style={{fontSize: 30, fontWeight: 800, letterSpacing: 5, color: C.muted}}>IF YOU RENT</div>
 					<div style={{display: 'flex', alignItems: 'center', gap: 22, marginTop: 14, opacity: landlord, transform: `translateX(${(1 - landlord) * -30}px)`}}>
 						<Phone color={C.accent} />
 						<div style={{fontSize: 76, fontWeight: 900, letterSpacing: -1, color: C.ink}}>CALL LANDLORD</div>
 					</div>
-					<div style={{fontSize: 36, fontWeight: 700, color: C.body, marginTop: 14, opacity: landlord}}>When the repair is their responsibility.</div>
+					<div style={{fontSize: 36, fontWeight: 700, color: C.body, marginTop: 14, opacity: repair}}>When the repair is their responsibility.</div>
 				</div>
-				<div style={{...panel, top: 690, opacity: own, transform: `translateY(${(1 - own) * 40}px)`, borderColor: 'rgba(255,181,71,0.45)'}}>
+				<div style={{...panel, top: 690, opacity: Math.min(1, own * 1.5), transform: `translateX(${(1 - own) * 500}px)`, borderColor: 'rgba(255,181,71,0.45)'}}>
 					<div style={{fontSize: 30, fontWeight: 800, letterSpacing: 5, color: AMBER}}>IF YOU OWN</div>
 					<div style={{display: 'flex', alignItems: 'center', gap: 22, marginTop: 14, opacity: company, transform: `translateX(${(1 - company) * -30}px)`}}>
 						<Phone color={AMBER} />
 						<div style={{fontSize: 64, fontWeight: 900, letterSpacing: -1, color: C.ink}}>CALL AC COMPANY</div>
 					</div>
-					<div style={{fontSize: 36, fontWeight: 700, color: C.body, marginTop: 14, opacity: company}}>The bill comes to you.</div>
+					<div style={{fontSize: 36, fontWeight: 700, color: C.body, marginTop: 14, opacity: billLine}}>The bill comes to you.</div>
 				</div>
 			</div>
 			{frame >= tYour - 8 && (

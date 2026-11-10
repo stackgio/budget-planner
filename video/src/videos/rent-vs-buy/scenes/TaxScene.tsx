@@ -7,11 +7,8 @@ import {useCues} from '../../../story/lib/cues';
 import {E, kf, prog, sp} from '../../../story/lib/motion';
 import {editorial as P, story} from '../../../story/theme';
 
-const STEPS = [
-	{x: 220, l1: 'UNPAID', l2: 'TAXES'},
-	{x: 540, l1: 'TAX', l2: 'CERTIFICATE'},
-	{x: 850, l1: 'TAX DEED', l2: 'SALE'},
-];
+/** Simplified Florida delinquency path: §197.432 certificate sale, §197.502 deed application (2+ yrs), §197.522 notice. */
+const STEPS = [{text: 'UNPAID TAXES'}, {text: 'TAX CERTIFICATE SOLD'}, {text: 'DEED APPLICATION (2+ YRS)'}, {text: 'NOTICE TO OWNER'}, {text: 'TAX DEED SALE (AUCTION)'}];
 
 /**
  * L20–L21 — MORTGAGE PAID OFF stamp, then the PROPERTY TAX bill still slides
@@ -33,8 +30,10 @@ export const TaxScene: React.FC = () => {
 	const bill = sp(frame, fps, tTax - 4, 'heavy');
 	const up = prog(frame, tFl - 4, 16, E.inOut);
 	const note = sp(frame, fps, tFl + 2, 'snappy');
-	const steps = [tUnpaid - 2, tLong - 2, tAuction - 4].map((t) => sp(frame, fps, t, 'snappy'));
-	const line = kf(frame, [tUnpaid, tAuction], [0, 1]);
+	const tEnough = cue('L21', 'enough,');
+	const tActually = cue('L21', 'actually');
+	const steps = [tUnpaid - 3, tLong - 2, tEnough - 2, tActually - 3, tAuction - 3].map((t) => sp(frame, fps, t, 'snappy'));
+	const line = kf(frame, [tUnpaid, tAuction - 2], [0, 1]);
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<EditorialBg />
@@ -50,7 +49,7 @@ export const TaxScene: React.FC = () => {
 			</div>
 			{/* property tax bill */}
 			{frame >= tTax - 6 && (
-				<div style={{position: 'absolute', left: 540, top: 0, transform: `translate(${(1 - bill) * 700}px, ${700 - up * 300}px) scale(${1 - up * 0.22}) rotate(${3 - up * 3}deg)`, transformOrigin: '0 0'}}>
+				<div style={{position: 'absolute', left: 540, top: 0, transform: `translate(${(1 - bill) * 700}px, ${700 - up * 330}px) scale(${1 - up * 0.28}) rotate(${3 - up * 3}deg)`, transformOrigin: '0 0'}}>
 					<div style={{position: 'absolute', left: -310, top: -240, width: 620, background: '#fff', borderRadius: 24, boxShadow: `0 28px 50px ${P.shadow}`, overflow: 'hidden'}}>
 						<div style={{background: P.danger, color: '#fff', padding: '22px 36px', fontSize: 46, fontWeight: 900, letterSpacing: 4}}>PROPERTY TAX</div>
 						<div style={{padding: '28px 36px 34px'}}>
@@ -63,25 +62,21 @@ export const TaxScene: React.FC = () => {
 					</div>
 				</div>
 			)}
-			{/* Florida: the process */}
+			{/* Florida: not overnight — steps and notice first (Fla. Stat. ch. 197) */}
 			{frame >= tFl && (
 				<>
-					<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right, top: 760, opacity: note, transform: `translateY(${(1 - note) * 24}px)`}}>
-						<div style={{fontSize: 30, fontWeight: 800, letterSpacing: 5, color: P.muted}}>FLORIDA</div>
-						<div style={{fontSize: 52, fontWeight: 900, letterSpacing: -1, lineHeight: 1.12, color: P.ink, marginTop: 8}}>Unpaid property taxes can lead to a tax deed sale.</div>
+					<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right, top: 640, opacity: note, transform: `translateY(${(1 - note) * 24}px)`}}>
+						<div style={{fontSize: 36, fontWeight: 900, letterSpacing: 5, color: P.accentDeep}}>FLORIDA</div>
+						<div style={{fontSize: 56, fontWeight: 900, letterSpacing: -1, lineHeight: 1.1, color: P.ink, marginTop: 6}}>Unpaid property taxes can lead to a tax deed sale</div>
+						<div style={{fontSize: 38, fontWeight: 800, color: '#4A4F57', marginTop: 10}}>after additional steps and notice.</div>
 					</div>
-					<div style={{position: 'absolute', left: STEPS[0].x, top: 1076, width: (STEPS[2].x - STEPS[0].x) * line, height: 6, background: P.ink, borderRadius: 3}} />
-					{STEPS.map((s, i) => (
-						<div key={s.l2} style={{position: 'absolute', left: s.x, top: 1079, transform: 'translate(-50%,-50%)', opacity: steps[i]}}>
-							<div style={{width: 40, height: 40, borderRadius: 20, background: i === 2 ? P.danger : P.ink, margin: '0 auto', transform: `scale(${steps[i]})`}} />
-							<div style={{position: 'absolute', top: 56, left: '50%', transform: 'translateX(-50%)', textAlign: 'center', whiteSpace: 'nowrap', fontSize: 30, fontWeight: 900, letterSpacing: 2, lineHeight: 1.15, color: i === 2 ? P.danger : P.ink}}>
-								{s.l1}
-								<br />
-								{s.l2}
-							</div>
+					<div style={{position: 'absolute', left: story.safe.left + 27, top: 940, width: 6, height: 74 * 4 * line, background: P.ink, borderRadius: 3}} />
+					{STEPS.map((st, i) => (
+						<div key={st.text} style={{position: 'absolute', left: story.safe.left, top: 912 + i * 74, display: 'flex', alignItems: 'center', gap: 22, opacity: steps[i], transform: `translateX(${(1 - steps[i]) * -40}px)`}}>
+							<div style={{width: 60, height: 60, borderRadius: 30, background: i === STEPS.length - 1 ? P.danger : P.ink, color: '#fff', fontSize: 32, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{i + 1}</div>
+							<div style={{fontSize: 42, fontWeight: 900, letterSpacing: 0.5, color: i === STEPS.length - 1 ? P.danger : P.ink, whiteSpace: 'nowrap'}}>{st.text}</div>
 						</div>
 					))}
-					<div style={{position: 'absolute', left: 0, right: 0, top: 1250, textAlign: 'center', fontSize: 28, fontWeight: 700, color: P.muted, opacity: steps[1]}}>A delinquency process that takes time, usually years</div>
 				</>
 			)}
 			<Sfx at={tMort - 2} name="stamp" volume={0.4} />

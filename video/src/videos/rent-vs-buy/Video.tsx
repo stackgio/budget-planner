@@ -8,8 +8,6 @@ import {iris, matchCut, panelSweep} from '../../story/components/Transitions';
 import {makeCalculateMetadata, NarratedVideo, narratedSchema, type VideoDef} from '../../story/lib/NarratedVideo';
 import {cinematic, editorial, type Palette} from '../../story/theme';
 import {SCENES, SCRIPT, TAIL_SEC, type SceneId} from './script';
-import {MONTAGE_FRAMES} from './montage';
-import {makeMontage} from './scenes/Montage';
 import {HookScene} from './scenes/HookScene';
 import {ParentsScene} from './scenes/ParentsScene';
 import {PaycheckScene} from './scenes/PaycheckScene';
@@ -45,7 +43,7 @@ const LOOKS: Record<SceneId, Palette> = {
 	end: cinematic,
 };
 
-const base = (reviewCut: boolean): VideoDef<SceneId> => ({
+const DEF: VideoDef<SceneId> = {
 	script: SCRIPT,
 	scenes: SCENES,
 	tailSec: TAIL_SEC,
@@ -76,20 +74,16 @@ const base = (reviewCut: boolean): VideoDef<SceneId> => ({
 		decision: {presentation: iris({x: 540, y: 960})}, // back to me
 		end: {presentation: matchCut()}, // the $5,000 estimate continues full-frame
 	},
-	intro: {durationInFrames: MONTAGE_FRAMES, component: makeMontage(reviewCut)},
 	overlay: Watermark,
-});
+	captionBackdrop: true,
+};
 
-export const RentVsBuySchema = narratedSchema.extend({
-	/** stamp "REVIEW CUT" on the cold open while clip usage clearance is pending */
-	reviewCut: z.boolean().default(true),
-});
+export const RentVsBuySchema = narratedSchema;
 type Props = z.infer<typeof RentVsBuySchema>;
 
-export const calculateRentVsBuyMetadata = makeCalculateMetadata(base(true));
+export const calculateRentVsBuyMetadata = makeCalculateMetadata(DEF);
 
 /** Why I'd Rather Rent Right Now */
 export const RentVsBuy: React.FC<Props> = (props) => {
-	const def = React.useMemo(() => base(props.reviewCut), [props.reviewCut]);
-	return <NarratedVideo def={def} props={props} />;
+	return <NarratedVideo def={DEF} props={props} />;
 };

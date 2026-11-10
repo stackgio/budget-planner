@@ -13,6 +13,7 @@ export const white: Palette = {
 	accentDeep: '#15803D',
 	accentSoft: 'rgba(22,163,74,0.12)',
 	line: '#E5E5E0',
+	muted: '#555A62',
 };
 
 /** Warm amber accent for the July AC scenes. */

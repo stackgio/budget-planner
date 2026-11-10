@@ -72,7 +72,7 @@ export const Captions: React.FC<{
 			}}
 		>
 			{backdrop && (
-				<div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', columnGap: fontSize * 0.4, background: 'rgba(11,12,14,0.78)', borderRadius: 18, padding: `${fontSize * 0.14}px ${fontSize * 0.36}px`}}>
+				<div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', columnGap: fontSize * 0.4, background: 'rgba(11,12,14,0.9)', borderRadius: 18, boxShadow: '0 10px 30px rgba(0,0,0,0.25)', padding: `${fontSize * 0.14}px ${fontSize * 0.36}px`}}>
 					{renderWords()}
 				</div>
 			)}
@@ -87,7 +87,19 @@ export const Captions: React.FC<{
 				<span
 					key={i}
 					style={{
-						color: speaking ? pal.accent : active ? pal.ink : pal.name === 'cinematic' ? 'rgba(245,242,234,0.45)' : 'rgba(18,19,22,0.35)',
+						color: backdrop
+							? speaking
+								? '#2CD47A'
+								: active
+									? '#F5F2EA'
+									: 'rgba(245,242,234,0.55)'
+							: speaking
+								? pal.accent
+								: active
+									? pal.ink
+									: pal.name === 'cinematic'
+										? 'rgba(245,242,234,0.45)'
+										: 'rgba(18,19,22,0.35)',
 						transform: `scale(${speaking ? 1.06 : 1})`,
 						display: 'inline-block',
 						transformOrigin: '50% 60%',

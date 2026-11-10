@@ -17,12 +17,13 @@ export const PaycheckScene: React.FC = () => {
 	const {cue} = useCues();
 	const tPay = cue('L8', 'first paycheck');
 	const t30 = cue('L8', 'thirty-year');
-	const card = sp(frame, fps, 4, 'bouncy');
+	const tPlan = cue('L8', 'payment plan?');
+	const card = sp(frame, fps, tPay - 4, 'bouncy');
 	const label = sp(frame, fps, tPay - 2, 'snappy');
 	const wipe = prog(frame, t30 - 8, 10, E.inOut);
 	const slam = sp(frame, fps, t30 - 1, 'heavy');
 	const yrs = sp(frame, fps, t30 + 6, 'snappy');
-	const plan = kf(frame, [t30 + 14, t30 + 22], [0, 1]);
+	const plan = sp(frame, fps, tPlan - 3, 'snappy');
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<EditorialBg />
@@ -39,10 +40,10 @@ export const PaycheckScene: React.FC = () => {
 				<div style={{position: 'absolute', left: 0, width: 420, top: 520, textAlign: 'center'}}>
 					<div style={{fontSize: 280, fontWeight: 900, color: C.ink, letterSpacing: -10, lineHeight: 1, transform: `scale(${1 + (1 - slam) * 0.5})`, opacity: Math.min(1, slam * 2)}}>30</div>
 					<div style={{fontSize: 104, fontWeight: 900, color: C.danger, letterSpacing: 2, opacity: yrs, transform: `translateY(${(1 - yrs) * 24}px)`}}>YEARS</div>
-					<div style={{fontSize: 30, fontWeight: 800, color: C.muted, letterSpacing: 4, marginTop: 18, opacity: plan}}>OF PAYMENTS</div>
+					<div style={{fontSize: 44, fontWeight: 900, color: C.ink, letterSpacing: 2, marginTop: 18, opacity: plan, transform: `translateY(${(1 - plan) * 20}px)`}}>PAYMENT PLAN</div>
 				</div>
 			</div>
-			<Sfx at={4} name="paper" volume={0.3} />
+			<Sfx at={tPay - 4} name="paper" volume={0.3} />
 			<Sfx at={t30 + 2} name="thud" volume={0.4} />
 		</AbsoluteFill>
 	);

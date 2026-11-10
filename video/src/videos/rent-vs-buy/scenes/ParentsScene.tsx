@@ -33,6 +33,7 @@ export const ParentsScene: React.FC = () => {
 	const tFirst = cue('L4', 'first');
 	const tHey = cue('L5', 'Hey,');
 	const tRoth = cue('L5', 'Roth IRA');
+	const tInvesting = cue('L5', 'investing."');
 	const tL6 = cue('L6');
 	const tCredit = cue('L6', 'credit');
 	const tManage = cue('L6', 'manage');
@@ -114,10 +115,11 @@ export const ParentsScene: React.FC = () => {
 				<div style={{position: 'absolute', left: 110, top: 900, opacity: roth, transform: `scale(${0.85 + 0.15 * roth})`, transformOrigin: '0 50%'}}>
 					<SpeechBubble w={620} dashed palette={P} fill="rgba(255,253,248,0.6)">
 						<div style={{fontSize: 34, fontWeight: 800, letterSpacing: 3, color: P.muted}}>NEVER HEARD:</div>
-						<div style={{fontSize: 72, fontWeight: 900, letterSpacing: -1, color: P.ink, position: 'relative', display: 'inline-block'}}>
+						<div style={{fontSize: 72, fontWeight: 900, letterSpacing: -1, color: P.ink, position: 'relative', display: 'inline-block', opacity: kf(frame, [tRoth - 3, tRoth + 1], [0, 1]), transform: `scale(${0.7 + 0.3 * sp(frame, fps, tRoth - 3, 'bouncy')})`, transformOrigin: '0 50%'}}>
 							<span style={{position: 'absolute', left: -8, right: -8, top: '16%', bottom: '6%', background: 'rgba(226,167,46,0.45)', transformOrigin: '0 50%', transform: `scaleX(${rothMark})`, borderRadius: 8}} />
 							<span style={{position: 'relative'}}>ROTH IRA</span>
 						</div>
+						<div style={{fontSize: 44, fontWeight: 900, color: P.accent, marginTop: 6, opacity: kf(frame, [tInvesting - 3, tInvesting + 2], [0, 1])}}>+ START INVESTING</div>
 					</SpeechBubble>
 				</div>
 			)}

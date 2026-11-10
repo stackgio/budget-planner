@@ -6,9 +6,9 @@ import {arc, E, kf, prog, sp} from '../../../story/lib/motion';
 import {story} from '../../../story/theme';
 import {white as P} from './shared';
 
-const BAR = {x: 100, w: 840, y: 640, h: 150};
+const BAR = {x: 100, w: 840, y: 650, h: 170};
 /** Qualitative early-payment split (no loan inputs in the script → no percentages shown). */
-const INTEREST_SHARE = 0.7;
+const INTEREST_SHARE = 0.64;
 
 /**
  * L14–L17 — equity, defined. Clean bright reset. The quote, a check on
@@ -44,16 +44,16 @@ export const EquityScene: React.FC = () => {
 	const flow = prog(frame, tInt + 2, 14, E.inOut);
 	const intW = BAR.w * INTEREST_SHARE;
 	const prW = BAR.w - intW;
-	const [px, py] = arc(drop, [BAR.x + intW + prW / 2, BAR.y + BAR.h / 2], [880, 1010], 60);
+	const [px, py] = arc(drop, [BAR.x + intW + prW / 2, BAR.y + BAR.h / 2], [880, 1040], 60);
 	const balance = 1 - 0.06 * drop;
-	const [ix, iy] = arc(flow, [BAR.x + intW / 2, BAR.y + BAR.h / 2], [BAR.x + 32, 1162], 40);
+	const [ix, iy] = arc(flow, [BAR.x + intW / 2, BAR.y + BAR.h / 2], [BAR.x + 32, 1210], 40);
 
 	return (
 		<AbsoluteFill style={{fontFamily: story.font, background: P.bg}}>
 			{/* quote */}
 			{quote > 0.01 && (
 				<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right, top: 520, opacity: quote, transform: `translateY(${(1 - quote) * 30}px)`}}>
-					<div style={{fontSize: 30, fontWeight: 800, letterSpacing: 5, color: P.muted}}>SOMEBODY:</div>
+					<div style={{fontSize: 38, fontWeight: 800, letterSpacing: 5, color: P.muted}}>SOMEBODY SAYS:</div>
 					<div style={{fontSize: 92, fontWeight: 900, letterSpacing: -2, lineHeight: 1.05, color: P.ink, marginTop: 10}}>
 						“BUT YOU'RE BUILDING{' '}
 						<span style={{position: 'relative', display: 'inline-block'}}>
@@ -80,29 +80,29 @@ export const EquityScene: React.FC = () => {
 			{frame >= tL17 && (
 				<>
 					<div style={{position: 'absolute', left: BAR.x, top: BAR.y - 150, opacity: bar}}>
-						<div style={{fontSize: 30, fontWeight: 800, letterSpacing: 5, color: P.muted}}>EARLY MORTGAGE PAYMENT</div>
-						<div style={{fontSize: 64, fontWeight: 900, letterSpacing: -1, color: P.ink}}>PRINCIPAL + INTEREST</div>
+						<div style={{fontSize: 38, fontWeight: 800, letterSpacing: 4, color: P.muted}}>EARLY MORTGAGE PAYMENT</div>
+						<div style={{fontSize: 68, fontWeight: 900, letterSpacing: -1, color: P.ink}}>PRINCIPAL + INTEREST</div>
 					</div>
 					<div style={{position: 'absolute', left: BAR.x, top: BAR.y, width: BAR.w * bar, height: BAR.h, borderRadius: 22, background: P.line, overflow: 'hidden'}}>
 						<div style={{position: 'absolute', left: 0, top: 0, bottom: 0, width: intW * split, background: P.danger}} />
-						<div style={{position: 'absolute', left: 24, top: 0, bottom: 0, display: 'flex', alignItems: 'center', fontSize: 50, fontWeight: 900, color: '#fff', letterSpacing: 2, opacity: split, transform: `scale(${1 + intHi * 0.08})`, transformOrigin: '0 50%'}}>INTEREST</div>
+						<div style={{position: 'absolute', left: 24, top: 0, bottom: 0, display: 'flex', alignItems: 'center', fontSize: 58, fontWeight: 900, color: '#fff', letterSpacing: 2, opacity: split, transform: `scale(${1 + intHi * 0.08})`, transformOrigin: '0 50%'}}>INTEREST</div>
 						<div style={{position: 'absolute', left: intW, top: 0, bottom: 0, width: prW, background: P.accent, opacity: split}} />
-						<div style={{position: 'absolute', left: intW, width: prW, top: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 34, fontWeight: 900, color: '#fff', letterSpacing: 2, opacity: split}}>PRINCIPAL</div>
+						<div style={{position: 'absolute', left: intW, width: prW, top: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 42, fontWeight: 900, color: '#fff', letterSpacing: 1, opacity: split}}>PRINCIPAL</div>
 					</div>
-					<div style={{position: 'absolute', left: BAR.x, top: BAR.y + BAR.h + 14, fontSize: 26, fontWeight: 700, color: P.muted, opacity: bar}}>Illustrative split · fixed-rate loan, early years</div>
+					<div style={{position: 'absolute', left: BAR.x, top: BAR.y + BAR.h + 16, fontSize: 32, fontWeight: 700, color: P.muted, opacity: bar}}>Illustrative · fixed-rate loan, early years</div>
 					{/* loan balance, chipped by principal */}
 					<div style={{position: 'absolute', left: BAR.x, top: 930, opacity: kf(frame, [tPay + 4, tPay + 12], [0, 1])}}>
-						<div style={{fontSize: 30, fontWeight: 800, letterSpacing: 5, color: P.muted, marginBottom: 12}}>LOAN BALANCE</div>
-						<div style={{width: BAR.w, height: 70, borderRadius: 16, background: P.line}}>
+						<div style={{fontSize: 38, fontWeight: 800, letterSpacing: 4, color: P.muted, marginBottom: 14}}>LOAN BALANCE</div>
+						<div style={{width: BAR.w, height: 90, borderRadius: 18, background: P.line}}>
 							<div style={{width: BAR.w * balance, height: '100%', borderRadius: 16, background: '#9AA0A6'}} />
 						</div>
 					</div>
 					{drop > 0 && drop < 1 && <div style={{position: 'absolute', left: px - 40, top: py - 30, width: 80, height: 60, borderRadius: 12, background: P.accent, boxShadow: '0 8px 16px rgba(0,0,0,0.2)'}} />}
-					{flow > 0 && flow < 1 && <div style={{position: 'absolute', left: ix - 50, top: iy - 30, width: 100, height: 60, borderRadius: 12, background: P.danger, boxShadow: '0 8px 16px rgba(0,0,0,0.2)'}} />}
+					{flow > 0 && flow < 1 && <div style={{position: 'absolute', left: ix - 32, top: iy - 32, width: 64, height: 64, borderRadius: 14, background: P.danger, boxShadow: '0 8px 16px rgba(0,0,0,0.2)'}} />}
 					{/* interest → borrowing cost */}
-					<div style={{position: 'absolute', left: BAR.x, top: 1130, display: 'flex', alignItems: 'center', gap: 20, opacity: kf(frame, [tInt - 4, tInt + 6], [0, 1])}}>
+					<div style={{position: 'absolute', left: BAR.x, top: 1170, display: 'flex', alignItems: 'center', gap: 20, opacity: kf(frame, [tInt - 4, tInt + 6], [0, 1])}}>
 						<div style={{width: 64, height: 64, borderRadius: 14, background: P.danger, transform: `scale(${0.6 + 0.4 * flow})`}} />
-						<div style={{fontSize: 56, fontWeight: 900, letterSpacing: 1, color: P.danger}}>BORROWING COST</div>
+						<div style={{fontSize: 66, fontWeight: 900, letterSpacing: 1, color: P.danger}}>BORROWING COST</div>
 					</div>
 				</>
 			)}

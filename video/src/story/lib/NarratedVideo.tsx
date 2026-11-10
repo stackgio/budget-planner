@@ -63,6 +63,8 @@ export type VideoDef<Id extends string> = {
 	intro?: {durationInFrames: number; component: React.FC};
 	/** Optional layer drawn over the narrated part only (e.g. a watermark); `paletteAt` follows the scene looks. */
 	overlay?: React.FC<{paletteAt: (frame: number) => Palette}>;
+	/** high-contrast captions: dark pill behind the words on every look */
+	captionBackdrop?: boolean;
 };
 
 export const resolveNarration = async (script: ScriptLine[], props: NarratedProps): Promise<Narration> => {
@@ -139,7 +141,7 @@ export function NarratedVideo<Id extends string>({def, props}: {def: VideoDef<Id
 					})}
 				</TransitionSeries>
 			</SfxContext.Provider>
-			{props.captions && <Captions narration={narration} paletteAt={paletteAt} />}
+			{props.captions && <Captions narration={narration} paletteAt={paletteAt} backdrop={def.captionBackdrop} />}
 			{def.overlay && <def.overlay paletteAt={paletteAt} />}
 			{props.voiceAudio && <Html5Audio src={staticFile(props.voiceAudio)} volume={props.voiceVolume} />}
 			</Sequence>
