@@ -1,0 +1,209 @@
+{
+ "source": "voice/car-payment-reality/voice.mp3",
+ "fps": 30,
+ "sourceFrames": 1726,
+ "editedFrames": 1661,
+ "segments": [
+  [
+   0,
+   146
+  ],
+  [
+   153,
+   219
+  ],
+  [
+   224,
+   254
+  ],
+  [
+   258,
+   415
+  ],
+  [
+   420,
+   552
+  ],
+  [
+   557,
+   703
+  ],
+  [
+   707,
+   874
+  ],
+  [
+   879,
+   975
+  ],
+  [
+   980,
+   1121
+  ],
+  [
+   1126,
+   1206
+  ],
+  [
+   1210,
+   1329
+  ],
+  [
+   1334,
+   1466
+  ],
+  [
+   1470,
+   1607
+  ],
+  [
+   1614,
+   1726
+  ]
+ ],
+ "cuts": [
+  {
+   "afterWord": "car?",
+   "beforeWord": "Like,",
+   "srcFrames": [
+    146,
+    153
+   ],
+   "gapSec": 0.5,
+   "removedSec": 0.233,
+   "maxDb": -76.3
+  },
+  {
+   "afterWord": "me.",
+   "beforeWord": "And",
+   "srcFrames": [
+    219,
+    224
+   ],
+   "gapSec": 0.44,
+   "removedSec": 0.167,
+   "maxDb": -78.3
+  },
+  {
+   "afterWord": "part?",
+   "beforeWord": "That's",
+   "srcFrames": [
+    254,
+    258
+   ],
+   "gapSec": 0.44,
+   "removedSec": 0.133,
+   "maxDb": -80.8
+  },
+  {
+   "afterWord": "that.",
+   "beforeWord": "Let's",
+   "srcFrames": [
+    415,
+    420
+   ],
+   "gapSec": 0.52,
+   "removedSec": 0.167,
+   "maxDb": -80.8
+  },
+  {
+   "afterWord": "gas.",
+   "beforeWord": "Bro,",
+   "srcFrames": [
+    552,
+    557
+   ],
+   "gapSec": 0.5,
+   "removedSec": 0.167,
+   "maxDb": -80.8
+  },
+  {
+   "afterWord": "car.",
+   "beforeWord": "That's",
+   "srcFrames": [
+    703,
+    707
+   ],
+   "gapSec": 0.46,
+   "removedSec": 0.133,
+   "maxDb": -80.8
+  },
+  {
+   "afterWord": "yet.",
+   "beforeWord": "Now,",
+   "srcFrames": [
+    874,
+    879
+   ],
+   "gapSec": 0.5,
+   "removedSec": 0.167,
+   "maxDb": -80.8
+  },
+  {
+   "afterWord": "money.",
+   "beforeWord": "You",
+   "srcFrames": [
+    975,
+    980
+   ],
+   "gapSec": 0.5,
+   "removedSec": 0.167,
+   "maxDb": -80.8
+  },
+  {
+   "afterWord": "life.",
+   "beforeWord": "And",
+   "srcFrames": [
+    1121,
+    1126
+   ],
+   "gapSec": 0.5,
+   "removedSec": 0.167,
+   "maxDb": -80.8
+  },
+  {
+   "afterWord": "car.",
+   "beforeWord": "If",
+   "srcFrames": [
+    1206,
+    1210
+   ],
+   "gapSec": 0.48,
+   "removedSec": 0.133,
+   "maxDb": -74.7
+  },
+  {
+   "afterWord": "personally,",
+   "beforeWord": "I'd",
+   "srcFrames": [
+    1329,
+    1334
+   ],
+   "gapSec": 0.58,
+   "removedSec": 0.167,
+   "maxDb": -80.8
+  },
+  {
+   "afterWord": "pocket.",
+   "beforeWord": "Because",
+   "srcFrames": [
+    1466,
+    1470
+   ],
+   "gapSec": 0.46,
+   "removedSec": 0.133,
+   "maxDb": -80.8
+  },
+  {
+   "afterWord": "month?",
+   "beforeWord": "But",
+   "srcFrames": [
+    1607,
+    1614
+   ],
+   "gapSec": 0.5,
+   "removedSec": 0.233,
+   "maxDb": -80.8
+  }
+ ]
+}

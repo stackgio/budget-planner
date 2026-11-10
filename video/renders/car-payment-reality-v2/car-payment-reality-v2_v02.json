@@ -1,0 +1,10 @@
+{
+ "file": "renders/car-payment-reality-v2/car-payment-reality-v2_v02_final-voice.mp4",
+ "composition": "CarPaymentRealityV2",
+ "mode": "budget",
+ "title": "The Real Cost of a $750 Car Payment (hybrid)",
+ "narration": "aligned",
+ "durationSec": 55.733,
+ "props": "public/voice/car-payment-reality-v2/props.json",
+ "renderedAt": "2026-11-10T00:40:11.438Z"
+}

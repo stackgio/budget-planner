@@ -1,0 +1,6 @@
+{
+ "voiceAudio": null,
+ "voiceSource": "voice/car-payment-reality/voice.mp3",
+ "voiceEdit": "voice/car-payment-reality-v2/edit.json",
+ "alignment": "voice/car-payment-reality-v2/alignment.json"
+}
