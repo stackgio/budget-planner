@@ -1,0 +1,10 @@
+{
+ "file": "renders/rent-vs-buy/rent-vs-buy_v02_final-voice_review-cut.mp4",
+ "composition": "RentVsBuy",
+ "mode": "education",
+ "title": "Why I'd Rather Rent Right Now",
+ "narration": "aligned",
+ "durationSec": 114.9,
+ "props": "public/voice/rent-vs-buy/props.json",
+ "renderedAt": "2026-11-10T02:11:02.067Z"
+}
