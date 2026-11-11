@@ -43,7 +43,7 @@ const LOOKS: Record<SceneId, Palette> = {
 	end: cinematic,
 };
 
-const DEF: VideoDef<SceneId> = {
+export const DEF: VideoDef<SceneId> = {
 	script: SCRIPT,
 	scenes: SCENES,
 	tailSec: TAIL_SEC,

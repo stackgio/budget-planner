@@ -66,7 +66,7 @@ export const OutcomesScene: React.FC = () => {
 				</div>
 			</div>
 			{frame >= tYour - 8 && (
-				<EstimateCard w={640} owner={kf(frame, [tYour + 2, tYour + 14], [0, 1])} style={{left: 540 + sh.x, top: 840 + sh.y + (1 - est) * 700, transform: `translate(-50%,-50%) rotate(${-3 + (1 - est) * 8}deg)`}} />
+				<EstimateCard w={640} owner={kf(frame, [tYour + 2, tYour + 14], [0, 1])} style={{left: 540 + sh.x + (1 - est) * 900, top: 840 + sh.y, transform: `translate(-50%,-50%) rotate(${-3 + (1 - est) * 10}deg)`}} />
 			)}
 			<Sfx at={tCall - 4} name="click" volume={0.3} />
 			<Sfx at={tCo - 4} name="click" volume={0.3} />

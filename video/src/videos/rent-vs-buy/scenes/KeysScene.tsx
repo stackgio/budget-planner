@@ -4,6 +4,7 @@ import {CinematicBg} from '../../../story/components/Backgrounds';
 import {Sfx} from '../../../story/components/Chrome';
 import {HouseKey, Stamp} from '../../../story/components/HomeProps';
 import {useCues} from '../../../story/lib/cues';
+import {useClip} from '../clipContext';
 import {E, kf, prog, sp} from '../../../story/lib/motion';
 import {editorial as P, story} from '../../../story/theme';
 
@@ -21,6 +22,7 @@ export const KeysScene: React.FC = () => {
 	const tCredit = cue('L9', 'credit');
 	const tApprove = cue('L9', 'approves');
 	const tKeys = cue('L9', 'keys.');
+	const clip = useClip();
 	const tFinally = cue('L9', 'finally');
 	const c = sp(frame, fps, tCredit - 4, 'bouncy') * (1 - kf(frame, [tApprove - 6, tApprove - 1], [0, 1]));
 	const check = kf(frame, [tCredit + 4, tCredit + 12], [0, 1]);
@@ -31,6 +33,13 @@ export const KeysScene: React.FC = () => {
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<CinematicBg warm lightX={ANCHOR.x} lightY={ANCHOR.y} light={0.8 + 0.6 * dark} />
+			{/* standalone excerpt: small opening headline, out before the APPROVED stamp */}
+			{clip === 'repair' && (
+				<div style={{position: 'absolute', left: 0, right: 0, top: 300, textAlign: 'center', fontWeight: 900, fontSize: 84, lineHeight: 1.05, letterSpacing: -1, opacity: kf(frame, [tApprove - 14, tApprove - 6], [1, 0])}}>
+					<div style={{color: '#F5F2EA'}}>APPROVED…</div>
+					<div style={{color: '#FFB547'}}>BUT PREPARED?</div>
+				</div>
+			)}
 			{c > 0.01 && (
 				<div style={{position: 'absolute', left: 0, right: 0, top: 640, display: 'flex', justifyContent: 'center', opacity: Math.min(1, c * 1.5), transform: `scale(${0.6 + 0.4 * c})`}}>
 					<div style={{display: 'flex', alignItems: 'center', gap: 28, background: P.paper, borderRadius: 28, padding: '28px 48px', boxShadow: `0 20px 40px ${P.shadow}`}}>

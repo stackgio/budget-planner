@@ -5,6 +5,8 @@ import {Sfx} from '../../../story/components/Chrome';
 import {GradCap, Paycheck, SpeechBubble, Stamp} from '../../../story/components/HomeProps';
 import {Marcus} from '../../../story/components/Marcus';
 import {useCues} from '../../../story/lib/cues';
+import {KineticText} from '../../../story/components/KineticText';
+import {useClip} from '../clipContext';
 import {kf, shake, sp} from '../../../story/lib/motion';
 import {editorial as P, story} from '../../../story/theme';
 import {Chip, Kicker} from './shared';
@@ -29,6 +31,7 @@ export const ParentsScene: React.FC = () => {
 	const tGrad = cue('L2', 'graduate');
 	const tWork = cue('L2', 'working');
 	const tL3 = cue('L3', 'stop');
+	const clip = useClip();
 	const tBuy = cue('L3', 'buy a house');
 	const tFirst = cue('L4', 'first');
 	const tHey = cue('L5', 'Hey,');
@@ -67,6 +70,12 @@ export const ParentsScene: React.FC = () => {
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<EditorialBg floorY={story.ground} />
+			{/* standalone excerpt: readable on its first frame, gone before the bubble lands */}
+			{clip === 'parents' && frame < tL3 - 6 && (
+				<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right, top: 600}}>
+					<KineticText text="WHAT PARENTS TELL US FIRST" at={-14} mode="none" exitAt={tL3 - 16} fontSize={96} color={P.ink} colors={{FIRST: P.accent}} />
+				</div>
+			)}
 			{/* life strip */}
 			<div style={{position: 'absolute', left: 230, top: 330, width: 290, height: 6, background: P.line}}>
 				<div style={{width: `${line12 * 100}%`, height: '100%', background: P.ink}} />

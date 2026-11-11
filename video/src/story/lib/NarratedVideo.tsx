@@ -34,6 +34,9 @@ export const narratedSchema = z.object({
 	sfxVolume: z.number().min(0).max(2).default(1),
 	/** pacing of the TEMPORARY timing used when no narration is supplied */
 	tempRate: z.number().min(0.6).max(1.6).default(1.1),
+	/** excerpt renders: only show caption pages that START inside [from, to) seconds of the narration */
+	captionFromSec: z.number().nullable().default(null),
+	captionToSec: z.number().nullable().default(null),
 	/** resolved by calculateMetadata — do not set by hand */
 	narration: narrationSchema.optional(),
 });
@@ -141,7 +144,7 @@ export function NarratedVideo<Id extends string>({def, props}: {def: VideoDef<Id
 					})}
 				</TransitionSeries>
 			</SfxContext.Provider>
-			{props.captions && <Captions narration={narration} paletteAt={paletteAt} backdrop={def.captionBackdrop} />}
+			{props.captions && <Captions narration={narration} paletteAt={paletteAt} backdrop={def.captionBackdrop} fromSec={props.captionFromSec} toSec={props.captionToSec} />}
 			{def.overlay && <def.overlay paletteAt={paletteAt} />}
 			{props.voiceAudio && <Html5Audio src={staticFile(props.voiceAudio)} volume={props.voiceVolume} />}
 			</Sequence>

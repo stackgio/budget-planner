@@ -66,7 +66,7 @@ export const DecisionScene: React.FC = () => {
 			<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right, top: 250}}>
 				{frame < tL23 - 4 && (
 					<>
-						<div style={{fontSize: 32, fontWeight: 800, letterSpacing: 5, color: P.muted, opacity: sp(frame, fps, 0, 'snappy')}}>ME PERSONALLY?</div>
+						<div style={{fontSize: 32, fontWeight: 800, letterSpacing: 5, color: P.muted}}>ME PERSONALLY?</div>
 						<KineticText text="I'D RATHER RENT RIGHT NOW" at={tRent - 8} fontSize={84} color={P.ink} colors={{RENT: P.accent}} style={{marginTop: 12}} exitAt={tL23 - 10} />
 					</>
 				)}
@@ -77,7 +77,7 @@ export const DecisionScene: React.FC = () => {
 					</>
 				)}
 				{frame >= tL24 - 2 && frame < tL25 - 2 && <KineticText text="WOULD I STAY HERE?" at={tL24 - 2} fontSize={112} color={P.ink} colors={{STAY: P.accent}} exitAt={tL25 - 10} />}
-				{frame >= tL25 - 2 && <KineticText text="CAN I AFFORD WHAT BREAKS?" at={tL25 - 2} fontSize={100} color={P.ink} colors={{BREAKS: P.danger}} />}
+				{frame >= tL25 - 2 && <KineticText text="CAN I AFFORD WHAT BREAKS?" at={tL25 - 2} fontSize={104} color={P.ink} colors={{BREAKS: P.danger}} marker={{words: ['WHAT', 'BREAKS?'], color: 'rgba(217,71,47,0.16)', at: tBreaks - 6}} />}
 			</div>
 
 			{/* reasons */}
@@ -141,7 +141,7 @@ export const DecisionScene: React.FC = () => {
 				<EstimateCard
 					w={ESTIMATE_HANDOFF.w}
 					owner={1}
-					style={{left: ESTIMATE_HANDOFF.x, top: ESTIMATE_HANDOFF.y + (1 - est) * 600, transform: `translate(-50%,-50%) rotate(${(1 - est) * 10}deg)`}}
+					style={{left: ESTIMATE_HANDOFF.x + (1 - est) * 900, top: ESTIMATE_HANDOFF.y, transform: `translate(-50%,-50%) rotate(${(1 - est) * 10}deg)`}}
 				/>
 			)}
 

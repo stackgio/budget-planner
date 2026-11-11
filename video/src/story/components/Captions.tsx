@@ -38,11 +38,17 @@ export const Captions: React.FC<{
 	fontSize?: number;
 	/** dark backing for captions over live footage */
 	backdrop?: boolean;
-}> = ({narration, paletteAt, top = story.captionTop, fontSize = 58, backdrop = false}) => {
+	/** excerpt window (narration seconds): pages starting outside it are never shown */
+	fromSec?: number | null;
+	toSec?: number | null;
+}> = ({narration, paletteAt, top = story.captionTop, fontSize = 58, backdrop = false, fromSec = null, toSec = null}) => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const t = frame / fps;
-	const pages = React.useMemo(() => paginate(narration), [narration]);
+	const pages = React.useMemo(
+		() => paginate(narration).filter((p) => (fromSec === null || p.start >= fromSec - 0.01) && (toSec === null || p.start < toSec)),
+		[narration, fromSec, toSec],
+	);
 	const idx = pages.findIndex((p, i) => t >= p.start - 0.05 && t < (pages[i + 1]?.start ?? p.end + 0.6) - 0.05);
 	if (idx < 0) return null;
 	const page = pages[idx];
