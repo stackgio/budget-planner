@@ -34,13 +34,14 @@ export const phoneStyle = (p = PHONE): React.CSSProperties => ({left: p.x - 14, 
  * Buttons and field labels stay readable; only balances / holdings are blurred.
  */
 export const REDACT: TimedRegion[] = [
-	{x: 30, y: 300, w: 620, h: 240, from: 0, to: 1.2}, // portfolio value + today's change
-	{x: 730, y: 320, w: 430, h: 120, from: 0, to: 1.2}, // account badge
-	{x: 800, y: 1655, w: 300, h: 95, from: 0, to: 1.2}, // buying power amount
-	{x: 920, y: 1900, w: 220, h: 90, from: 0, to: 1.2}, // portfolio digest gain
-	{x: 190, y: 742, w: 290, h: 80, from: 3.3, to: 5.0}, // "· 2.95 shares" (existing holding)
+	{x: 30, y: 300, w: 620, h: 240, from: 0, to: 1.3}, // portfolio value + today's change
+	{x: 730, y: 320, w: 430, h: 120, from: 0, to: 1.3}, // account badge
+	{x: 800, y: 1655, w: 300, h: 95, from: 0, to: 1.3}, // buying power amount
+	{x: 920, y: 1900, w: 220, h: 90, from: 0, to: 1.3}, // portfolio digest gain
+	{x: 190, y: 742, w: 290, h: 80, from: 3.3, to: 5.1}, // "· 2.95 shares" (existing holding)
 	{x: 0, y: 2335, w: 1206, h: 287, from: 4.9, to: 7.95}, // "Your position" values
 	{x: 520, y: 1440, w: 510, h: 95, from: 7.9, to: 11.45}, // "$…available" on the buy screen
+	{x: 480, y: 1430, w: 600, h: 310, from: 8.2, to: 8.55}, // same line while the keypad slides up (y 1668 → 1488)
 ];
 
 /** Tap targets and fields in the recording's natural pixels. */
