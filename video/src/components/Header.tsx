@@ -34,7 +34,9 @@ export const Header: React.FC<{spec: Spec; frame: number; questionFrame: number}
 	});
 	// Header must end above the counter (HEADER_H px) — size from line count and length.
 	const longest = Math.max(...spec.hook.lines.map((l) => l.length));
-	const avail = HEADER_H - (spec.hook.kicker ? 46 : 0);
+	// kicker: as large as fits on one line (max 40px)
+	const kfs = spec.hook.kicker ? Math.min(40, Math.floor(880 / (spec.hook.kicker.length * 0.78))) : 0;
+	const avail = HEADER_H - (spec.hook.kicker ? kfs * 1.2 + 12 : 0);
 	const byHeight = avail / (spec.hook.lines.length * 1.06);
 	const byWidth = 880 / (longest * 0.56);
 	const fs = Math.floor(Math.min(96, byHeight, byWidth));
@@ -46,7 +48,7 @@ export const Header: React.FC<{spec: Spec; frame: number; questionFrame: number}
 			{hookOut > 0 && (
 				<div style={{opacity: hookOut, transform: `scale(${settle})`, transformOrigin: 'left top'}}>
 					{spec.hook.kicker && (
-						<div style={{fontSize: 30, fontWeight: 800, letterSpacing: 4, color: theme.up, marginBottom: 12}}>
+						<div style={{fontSize: kfs, fontWeight: 800, letterSpacing: 4, color: theme.up, marginBottom: 12, lineHeight: 1.2, whiteSpace: 'nowrap'}}>
 							{spec.hook.kicker}
 						</div>
 					)}
