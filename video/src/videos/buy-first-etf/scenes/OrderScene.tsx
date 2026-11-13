@@ -71,9 +71,10 @@ export const OrderScene: React.FC = () => {
 		[tapReview, 10.92],
 		[tapReview + 18, 11.62],
 		[tapSwipe - 8, 12.15],
-		[tapSwipe, 12.35],
-		[tSubEnd, 12.9],
-		[tQOrder - 10, 13.5],
+		[tapSwipe + 6, 12.5],
+		[tapSwipe + 12, 12.85],
+		[tSubEnd, 13.25],
+		[tQOrder - 10, 13.45],
 		[tQ - 4, 14.5],
 		[tQ + 10, 15.0],
 		[t24end, 15.6],
@@ -96,8 +97,10 @@ export const OrderScene: React.FC = () => {
 		{at: tapReview + 18, cx: 603, cy: 1080, zoom: 1.42},
 		{at: tAcct + 10, cx: 603, cy: 1130, zoom: 1.45},
 		{at: tapSwipe - 12, cx: 603, cy: 2350, zoom: 1.25},
-		{at: tSubEnd, cx: 603, cy: 2000, zoom: 1.1},
-		{at: tQ - 6, cx: 603, cy: 900, zoom: 1.38},
+		{at: tapSwipe + 8, cx: 603, cy: 2350, zoom: 1.25},
+		{at: tapSwipe + 22, cx: 603, cy: 1290, zoom: 1.0},
+		{at: tQ - 10, cx: 603, cy: 1290, zoom: 1.0},
+		{at: tQ + 4, cx: 603, cy: 900, zoom: 1.38},
 		{at: tWait, cx: 603, cy: 900, zoom: 1.4},
 		{at: tFills, cx: 603, cy: 920, zoom: 1.42},
 		{at: t24end, cx: 603, cy: 920, zoom: 1.45},
@@ -133,7 +136,7 @@ export const OrderScene: React.FC = () => {
 					{...centre(R.trade), p: tapP(frame, tapTrade)},
 					{...centre(R.buy), p: tapP(frame, tapBuy)},
 					{...centre(R.review), p: tapP(frame, tapReview)},
-					{x: 603, y: 2490, p: tapP(frame, tapSwipe)},
+					{x: 603, y: 2490 - 300 * Math.min(1, Math.max(0, (frame - (tapSwipe - 4)) / 14)), p: tapP(frame, tapSwipe)},
 				]}
 				palette={P}
 			/>
@@ -150,6 +153,7 @@ export const OrderScene: React.FC = () => {
 					{at: t19, n: '07', label: 'CHECK THE ESTIMATED COST'},
 					{at: t21, n: '08', label: 'REVIEW AMOUNT + ACCOUNT'},
 					{at: tapSwipe - 8, n: '08', label: 'SWIPE UP TO CONFIRM'},
+					{at: tapSwipe + 14, n: '08', label: 'SENDING ORDER'},
 					{at: tQOrder - 4, n: '09', label: 'ORDER QUEUED'},
 				]}
 			/>
@@ -157,7 +161,7 @@ export const OrderScene: React.FC = () => {
 			<Chip text={`${FACTS.shares.value} SHARES`} at={tFrac} out={t19} x={540} y={1250} palette={P} size={46} tone="dark" />
 			<Chip text={`${usd(FACTS.estCost.value)} ESTIMATED`} at={tEst} out={tapReview - 10} x={540} y={1236} palette={P} size={56} />
 			<Chip text={`${usd(FACTS.estCost.value)} ESTIMATED`} at={tAmt - 2} out={tAcct - 2} x={540} y={1250} palette={P} size={46} />
-			<Chip text="ACCOUNT: INDIVIDUAL INVESTING" at={tAcct - 2} out={tapSwipe - 10} x={540} y={1250} palette={P} size={42} tone="dark" />
+			<Chip text="ACCOUNT: INDIVIDUAL INVESTING" at={tAcct - 2} out={tapSwipe - 18} x={540} y={1250} palette={P} size={42} tone="dark" />
 			<Chip text="QUEUED · WAITING TO FILL" at={tQ} x={540} y={372} palette={P} size={50} tone="dark" />
 			<Chip text={`${FACTS.sharesPurchased.value} SHARES PURCHASED (YET)`} at={tFills - 2} x={540} y={470} palette={P} size={42} />
 			<Sfx at={tapBar} name="click" volume={0.3} />
