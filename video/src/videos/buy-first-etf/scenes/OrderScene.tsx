@@ -2,11 +2,12 @@ import React from 'react';
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
 import {CinematicBg} from '../../../story/components/Backgrounds';
 import {Sfx} from '../../../story/components/Chrome';
-import {camAt, retime, ScreenRecording} from '../../../story/components/ScreenRecording';
+import {DemoScrims, PhoneDemo} from '../../../story/components/PhoneDemo';
+import {camAt, retime} from '../../../story/components/ScreenRecording';
 import {useCues} from '../../../story/lib/cues';
 import {cinematic as P, story} from '../../../story/theme';
 import {FACTS, usd} from '../facts';
-import {centre, Chip, on, PHONE, phoneStyle, R, REC, REDACT, StepHeader, tapP} from '../ui';
+import {centre, Chip, on, R, REC, REDACT, StepHeader, tapP} from '../ui';
 
 /**
  * One continuous take of Gio's real order: Search → VOO → Trade → Buy →
@@ -79,45 +80,34 @@ export const OrderScene: React.FC = () => {
 	]);
 
 	const top = {cx: 603, cy: 930, zoom: 1};
-	const bottom = {cx: 603, cy: 1692, zoom: 1};
+	const bottom = {cx: 603, cy: 1800, zoom: 1};
 	const cam = camAt(frame, [
 		{at: 0, ...top},
 		{at: tapRow + 12, ...top},
 		{at: tapTrade - 14, ...bottom},
 		{at: tapBuy + 12, ...bottom},
-		{at: tapBuy + 26, cx: 603, cy: 820, zoom: 1.12},
-		{at: tEst - 6, cx: 603, cy: 820, zoom: 1.12},
-		{at: tEst + 10, cx: 603, cy: 880, zoom: 1.1},
-		{at: t20end, cx: 603, cy: 880, zoom: 1.1},
+		{at: tapBuy + 26, cx: 900, cy: 600, zoom: 1.25},
+		{at: tFrac - 4, cx: 900, cy: 600, zoom: 1.25},
+		{at: tFrac + 10, cx: 603, cy: 760, zoom: 1.2},
+		{at: tEst - 6, cx: 603, cy: 800, zoom: 1.2},
+		{at: tEst + 10, cx: 603, cy: 940, zoom: 1.3},
+		{at: t20end, cx: 603, cy: 960, zoom: 1.4},
 		{at: tapReview - 12, cx: 603, cy: 1300, zoom: 1},
-		{at: tapReview + 18, cx: 603, cy: 1100, zoom: 1.12},
-		{at: tAcct + 10, cx: 603, cy: 1100, zoom: 1.12},
+		{at: tapReview + 18, cx: 603, cy: 1080, zoom: 1.22},
+		{at: tAcct + 10, cx: 603, cy: 1120, zoom: 1.26},
 		{at: tapSwipe - 12, ...bottom},
 		{at: tSubEnd, ...bottom},
-		{at: tQ - 6, cx: 603, cy: 930, zoom: 1.12},
+		{at: tQ - 6, cx: 603, cy: 930, zoom: 1.15},
+		{at: tWait, cx: 603, cy: 930, zoom: 1.2},
+		{at: tFills, cx: 603, cy: 1000, zoom: 1.24},
+		{at: t24end, cx: 603, cy: 1000, zoom: 1.28},
 	]);
 
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<CinematicBg lightX={540} lightY={600} />
-			<StepHeader
-				palette={P}
-				steps={[
-					{at: -30, n: '06', label: 'SEARCH VOO'},
-					{at: tO - 2, n: '06', label: 'OPEN VANGUARD S&P 500 ETF'},
-					{at: tapTrade - 6, n: '06', label: 'TAP TRADE'},
-					{at: tapBuy - 6, n: '06', label: 'TAP BUY'},
-					{at: t18, n: '07', label: 'ENTER A FRACTION OF A SHARE'},
-					{at: t19, n: '07', label: 'CHECK THE ESTIMATED COST'},
-					{at: t21, n: '08', label: 'REVIEW AMOUNT + ACCOUNT'},
-					{at: tapSwipe - 8, n: '08', label: 'SWIPE UP TO SUBMIT'},
-					{at: tQOrder - 4, n: '09', label: 'ORDER QUEUED'},
-				]}
-			/>
-			<ScreenRecording
+			<PhoneDemo
 				{...REC}
-				w={PHONE.w}
-				h={PHONE.h}
 				srcSec={src}
 				camera={cam}
 				redact={REDACT}
@@ -126,7 +116,8 @@ export const OrderScene: React.FC = () => {
 					{...R.vooRow, p: on(frame, tO - 2, tapRow + 6)},
 					{...R.trade, p: on(frame, tapTrade - 10, tapTrade + 8)},
 					{...R.buy, p: on(frame, tapBuy - 8, tapBuy + 8)},
-					{...R.sharesRow, p: on(frame, tFrac, t19)},
+					{...R.sharesToggle, p: on(frame, t18 - 2, tFrac - 4)},
+					{...R.sharesRow, p: on(frame, tFrac - 2, t19)},
 					{...R.estRow, p: on(frame, tEst - 2, t20end + 4)},
 					{...R.review, p: on(frame, tapReview - 10, tapReview + 6)},
 					{...R.reviewEst, p: on(frame, tAmt - 2, tAcct - 2)},
@@ -144,8 +135,25 @@ export const OrderScene: React.FC = () => {
 					{...centre(R.review), p: tapP(frame, tapReview)},
 					{x: 603, y: 2490, p: tapP(frame, tapSwipe)},
 				]}
-				style={phoneStyle()}
+				palette={P}
 			/>
+			<DemoScrims />
+			<StepHeader
+				palette={P}
+				steps={[
+					{at: -30, n: '06', label: 'SEARCH VOO'},
+					{at: tO - 2, n: '06', label: 'OPEN VANGUARD S&P 500 ETF'},
+					{at: tapTrade - 6, n: '06', label: 'TAP TRADE'},
+					{at: tapBuy - 6, n: '06', label: 'TAP BUY'},
+					{at: t18, n: '07', label: 'ORDER IN SHARES'},
+					{at: tFrac - 4, n: '07', label: 'ENTER A FRACTION OF A SHARE'},
+					{at: t19, n: '07', label: 'CHECK THE ESTIMATED COST'},
+					{at: t21, n: '08', label: 'REVIEW AMOUNT + ACCOUNT'},
+					{at: tapSwipe - 8, n: '08', label: 'SWIPE UP TO CONFIRM'},
+					{at: tQOrder - 4, n: '09', label: 'ORDER QUEUED'},
+				]}
+			/>
+			<Chip text="BUY IN: SHARES" at={t18} out={tFrac - 4} x={540} y={1250} palette={P} size={46} tone="dark" />
 			<Chip text={`${FACTS.shares.value} SHARES`} at={tFrac} out={t19} x={540} y={1250} palette={P} size={46} tone="dark" />
 			<Chip text={`${usd(FACTS.estCost.value)} ESTIMATED`} at={tEst} out={tapReview - 10} x={540} y={1236} palette={P} size={56} />
 			<Chip text={`${usd(FACTS.estCost.value)} ESTIMATED`} at={tAmt - 2} out={tAcct - 2} x={540} y={1250} palette={P} size={46} />

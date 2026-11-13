@@ -8,10 +8,12 @@ export const META: VideoMeta = {
 	title: 'How to Buy Your First ETF — Step by Step',
 	mode: 'education',
 	looks: ['cinematic', 'cinematic', 'white', 'cinematic', 'cinematic', 'cinematic'],
-	hookStyle: 'screenshot-first (real $10.01 order preview)',
+	hookStyle: 'bold number headline over the real $10.01 order (YOUR FIRST INVESTMENT: $10)',
 	signatureMoves: [
 		'real Robinhood recording retimed to the voice — every tap lands on its word',
+		'large Pro-style iPhone (PhoneDemo) cropped by the frame, camera pushes per tap',
 		'persistent STEP header so viewers can follow with their app open',
+		'S&P 500 in five beats: cards → index grid → one purchase → expense-ratio table → VOO',
 		'500-square S&P 500 grid with Apple + Microsoft called out',
 		'one continuous phone take from Search to Order queued',
 	],

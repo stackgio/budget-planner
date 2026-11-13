@@ -52,6 +52,7 @@ export const R = {
 	vooRow: {x: 60, y: 668, w: 1120, h: 155},
 	trade: {x: 597, y: 2190, w: 538, h: 136},
 	buy: {x: 597, y: 2040, w: 538, h: 128},
+	sharesToggle: {x: 930, y: 212, w: 250, h: 84},
 	sharesRow: {x: 60, y: 572, w: 1090, h: 100},
 	estRow: {x: 60, y: 912, w: 1090, h: 100},
 	review: {x: 72, y: 1575, w: 1062, h: 130},
