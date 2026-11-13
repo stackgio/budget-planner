@@ -2,3 +2,4 @@
 # raw creator screen recordings contain unmasked balances; keep them local
 video/public/motion/*/assets/*.mp4
 video/renders/
+video/deliverables/*.zip
