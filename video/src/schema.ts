@@ -48,6 +48,7 @@ export const specSchema = z.object({
 		lines: z.array(z.string()).min(1).max(3), // big opening text, line by line
 		highlight: z.string().optional(), // substring rendered in accent colour
 		kicker: z.string().optional(), // small label above, e.g. "WHAT IF..."
+		kickerSize: z.number().min(20).max(80).optional(), // px override; default auto-fits one line
 	}),
 	counterLabel: z.string().default('Your investment'),
 	/** Optional age clock, e.g. "invested the day you were born": age on the start date. */

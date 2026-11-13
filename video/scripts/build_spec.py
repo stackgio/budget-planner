@@ -123,6 +123,7 @@ def main():
         "lines": [render(l, "hook") for l in story["hook"]["lines"]],
         **({"highlight": render(story["hook"]["highlight"], "hook")} if story["hook"].get("highlight") else {}),
         **({"kicker": render(story["hook"]["kicker"], "hook")} if story["hook"].get("kicker") else {}),
+        **({"kickerSize": story["hook"]["kickerSize"]} if story["hook"].get("kickerSize") else {}),
     }
     if story.get("age") is not None:
         spec["age"] = story["age"]

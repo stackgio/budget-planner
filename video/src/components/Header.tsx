@@ -34,8 +34,10 @@ export const Header: React.FC<{spec: Spec; frame: number; questionFrame: number}
 	});
 	// Header must end above the counter (HEADER_H px) — size from line count and length.
 	const longest = Math.max(...spec.hook.lines.map((l) => l.length));
-	// kicker: as large as fits on one line (max 48px)
-	const kfs = spec.hook.kicker ? Math.min(48, Math.floor(880 / (spec.hook.kicker.length * 0.68))) : 0;
+	// kicker: as large as fits on one line (max 48px), or story.hook.kickerSize
+	const kfs = spec.hook.kicker
+		? spec.hook.kickerSize ?? Math.min(48, Math.floor(880 / (spec.hook.kicker.length * 0.68)))
+		: 0;
 	const avail = HEADER_H - (spec.hook.kicker ? kfs * 1.2 + 12 : 0);
 	const byHeight = avail / (spec.hook.lines.length * 1.06);
 	const byWidth = 880 / (longest * 0.56);
