@@ -24,7 +24,7 @@ const TextSteps: React.FC<{items: {at: number; label: string; sub: string}[]; sh
 	return (
 		<div style={{position: 'absolute', left: 150, width: 780, top: 380, opacity: show, transform: `translateY(${(1 - show) * 40}px)`, fontFamily: story.font}}>
 			<div style={{display: 'inline-block', padding: '10px 20px', borderRadius: 999, border: `2px solid ${P.muted}`, fontSize: 26, fontWeight: 800, letterSpacing: 3, color: P.body, marginBottom: 40}}>
-				STEPS ONLY · NOT IN MY RECORDING
+				HOW TO ADD MONEY
 			</div>
 			{items.map((it, i) => {
 				const p = sp(frame, fps, it.at, 'snappy');

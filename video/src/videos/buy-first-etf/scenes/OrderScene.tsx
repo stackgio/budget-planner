@@ -99,8 +99,8 @@ export const OrderScene: React.FC = () => {
 		{at: tSubEnd, cx: 603, cy: 2000, zoom: 1.1},
 		{at: tQ - 6, cx: 603, cy: 900, zoom: 1.38},
 		{at: tWait, cx: 603, cy: 900, zoom: 1.4},
-		{at: tFills, cx: 603, cy: 1020, zoom: 1.42},
-		{at: t24end, cx: 603, cy: 1020, zoom: 1.45},
+		{at: tFills, cx: 603, cy: 920, zoom: 1.42},
+		{at: t24end, cx: 603, cy: 920, zoom: 1.45},
 	]);
 
 	return (
@@ -158,8 +158,8 @@ export const OrderScene: React.FC = () => {
 			<Chip text={`${usd(FACTS.estCost.value)} ESTIMATED`} at={tEst} out={tapReview - 10} x={540} y={1236} palette={P} size={56} />
 			<Chip text={`${usd(FACTS.estCost.value)} ESTIMATED`} at={tAmt - 2} out={tAcct - 2} x={540} y={1250} palette={P} size={46} />
 			<Chip text="ACCOUNT: INDIVIDUAL INVESTING" at={tAcct - 2} out={tapSwipe - 10} x={540} y={1250} palette={P} size={42} tone="dark" />
-			<Chip text="QUEUED · WAITING TO FILL" at={tQ} x={540} y={1150} palette={P} size={50} tone="dark" />
-			<Chip text={`${FACTS.sharesPurchased.value} SHARES PURCHASED (YET)`} at={tFills - 2} x={540} y={1262} palette={P} size={42} />
+			<Chip text="QUEUED · WAITING TO FILL" at={tQ} x={540} y={372} palette={P} size={50} tone="dark" />
+			<Chip text={`${FACTS.sharesPurchased.value} SHARES PURCHASED (YET)`} at={tFills - 2} x={540} y={470} palette={P} size={42} />
 			<Sfx at={tapBar} name="click" volume={0.3} />
 			<Sfx at={tapRow} name="click" volume={0.3} />
 			<Sfx at={tapTrade} name="click" volume={0.3} />

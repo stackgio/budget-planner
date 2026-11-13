@@ -25,7 +25,6 @@ export const RecurringScene: React.FC = () => {
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<CinematicBg lightX={420} lightY={700} />
 			<StepHeader palette={P} steps={[{at: -30, n: '+', label: 'OPTIONAL: RECURRING BUY'}]} />
-			<div style={{position: 'absolute', left: story.safe.left, top: 360, fontSize: 26, fontWeight: 800, letterSpacing: 3, color: P.muted, opacity: kf(frame, [0, 10], [0, 1])}}>TEXT STEP · NOT IN MY RECORDING</div>
 			<div style={{position: 'absolute', left: story.safe.left, top: 440, fontSize: 96, fontWeight: 900, lineHeight: 1, color: P.ink, letterSpacing: -2, opacity: Math.min(1, pIn * 1.4), transform: `translateY(${(1 - pIn) * 40}px)`}}>
 				WEEKLY <span style={{color: P.muted}}>OR</span>
 				<br />

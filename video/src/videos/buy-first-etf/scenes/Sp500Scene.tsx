@@ -179,7 +179,7 @@ export const Sp500Scene: React.FC = () => {
 						);
 					})}
 					<div style={{position: 'absolute', left: 0, right: 0, top: GRID_Y + ROWS * (CELL + GAP) + 18, textAlign: 'center', fontSize: 26, fontWeight: 700, letterSpacing: 2, color: P.muted, opacity: gridIn * (1 - collapse)}}>
-						ILLUSTRATION · 1 SQUARE = 1 COMPANY
+						1 SQUARE = 1 COMPANY
 					</div>
 					{/* C — one ETF, one purchase */}
 					{cIn > 0.01 && (
@@ -240,7 +240,7 @@ export const Sp500Scene: React.FC = () => {
 						SAME INDEX — <span style={{color: P.accent}}>FEES & RETURNS CAN DIFFER</span>
 					</div>
 					<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right - 40, top: 1250, fontSize: 24, fontWeight: 700, color: P.muted, lineHeight: 1.3}}>
-						Expense ratios: issuer websites, checked Nov 13, 2026 (SPY, SPYM: gross).
+						Source: fund issuers, Nov 2026. SPY and SPYM: gross expense ratio.
 					</div>
 				</div>
 			)}
