@@ -50,7 +50,7 @@ export const Header: React.FC<{spec: Spec; frame: number; questionFrame: number}
 			{hookOut > 0 && (
 				<div style={{opacity: hookOut, transform: `scale(${settle})`, transformOrigin: 'left top'}}>
 					{spec.hook.kicker && (
-						<div style={{fontSize: kfs, fontWeight: 800, letterSpacing: 4, color: theme.up, marginBottom: 12, lineHeight: 1.2, whiteSpace: 'nowrap'}}>
+						<div style={{fontSize: kfs, fontWeight: 800, letterSpacing: kfs > 48 ? 2 : 4, color: theme.up, marginBottom: 12, lineHeight: 1.2, whiteSpace: 'nowrap'}}>
 							{spec.hook.kicker}
 						</div>
 					)}

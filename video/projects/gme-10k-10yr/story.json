@@ -5,14 +5,14 @@
  "dynamicY": true,
  "yScale": "linear",
  "hook": {
-  "kicker": "POV: $10K IN GME, 2016",
+  "kicker": "POV: $10K IN GAMESTOP, 2016",
   "lines": [
    "You never sold.",
    "Not even at",
    "{GME.peak_value:compact}"
   ],
   "highlight": "{GME.peak_value:compact}",
-  "kickerSize": 55
+  "kickerSize": 52
  },
  "counterLabel": "Your $10,000",
  "events": [
