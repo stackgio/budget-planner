@@ -79,28 +79,28 @@ export const OrderScene: React.FC = () => {
 		[t24end, 15.6],
 	]);
 
-	const top = {cx: 603, cy: 930, zoom: 1};
-	const bottom = {cx: 603, cy: 1800, zoom: 1};
+	// v05: tighter, readable framing on every button, amount and confirmation
 	const cam = camAt(frame, [
-		{at: 0, ...top},
-		{at: tapRow + 12, ...top},
-		{at: tapTrade - 14, ...bottom},
-		{at: tapBuy + 12, ...bottom},
-		{at: tapBuy + 26, cx: 900, cy: 600, zoom: 1.25},
-		{at: tFrac - 4, cx: 900, cy: 600, zoom: 1.25},
-		{at: tFrac + 10, cx: 603, cy: 760, zoom: 1.2},
-		{at: tEst - 6, cx: 603, cy: 800, zoom: 1.2},
-		{at: tEst + 10, cx: 603, cy: 940, zoom: 1.3},
-		{at: t20end, cx: 603, cy: 960, zoom: 1.4},
-		{at: tapReview - 12, cx: 603, cy: 1300, zoom: 1},
-		{at: tapReview + 18, cx: 603, cy: 1080, zoom: 1.22},
-		{at: tAcct + 10, cx: 603, cy: 1120, zoom: 1.26},
-		{at: tapSwipe - 12, ...bottom},
-		{at: tSubEnd, ...bottom},
-		{at: tQ - 6, cx: 603, cy: 930, zoom: 1.15},
-		{at: tWait, cx: 603, cy: 930, zoom: 1.2},
-		{at: tFills, cx: 603, cy: 1000, zoom: 1.24},
-		{at: t24end, cx: 603, cy: 1000, zoom: 1.28},
+		{at: 0, cx: 603, cy: 700, zoom: 1.32},
+		{at: tapRow + 6, cx: 603, cy: 700, zoom: 1.32},
+		{at: tapRow + 16, cx: 603, cy: 900, zoom: 1.12},
+		{at: tapTrade - 16, cx: 603, cy: 2150, zoom: 1.34},
+		{at: tapBuy + 12, cx: 603, cy: 2150, zoom: 1.34},
+		{at: tapBuy + 26, cx: 700, cy: 560, zoom: 1.45},
+		{at: tFrac - 4, cx: 700, cy: 560, zoom: 1.45},
+		{at: tFrac + 10, cx: 603, cy: 700, zoom: 1.45},
+		{at: tEst - 6, cx: 603, cy: 760, zoom: 1.45},
+		{at: tEst + 10, cx: 603, cy: 950, zoom: 1.45},
+		{at: t20end, cx: 603, cy: 960, zoom: 1.48},
+		{at: tapReview - 12, cx: 603, cy: 1560, zoom: 1.3},
+		{at: tapReview + 18, cx: 603, cy: 1080, zoom: 1.42},
+		{at: tAcct + 10, cx: 603, cy: 1130, zoom: 1.45},
+		{at: tapSwipe - 12, cx: 603, cy: 2350, zoom: 1.25},
+		{at: tSubEnd, cx: 603, cy: 2000, zoom: 1.1},
+		{at: tQ - 6, cx: 603, cy: 900, zoom: 1.38},
+		{at: tWait, cx: 603, cy: 900, zoom: 1.4},
+		{at: tFills, cx: 603, cy: 1020, zoom: 1.42},
+		{at: t24end, cx: 603, cy: 1020, zoom: 1.45},
 	]);
 
 	return (

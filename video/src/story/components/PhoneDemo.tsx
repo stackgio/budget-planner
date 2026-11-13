@@ -31,10 +31,12 @@ export const PhoneDemo: React.FC<{
 	taps?: RecTap[];
 	/** 0..1 darkens the screen (for a labelled text step on top) */
 	dim?: number;
+	/** display grade for legibility of a dark-mode UI (CSS brightness; the asset itself is untouched) */
+	brightness?: number;
 	/** subtle tilt for life (degrees) */
 	tilt?: number;
 	palette?: Palette;
-}> = ({src, natural, srcSec, camera, screenW = 740, focusY = 840, windowTop = 300, windowBottom = 1380, minTop = -Infinity, redact = [], marks = [], taps = [], dim = 0, tilt = 0, palette = cinematic}) => {
+}> = ({src, natural, srcSec, camera, screenW = 790, focusY = 840, windowTop = 300, windowBottom = 1380, minTop = -Infinity, redact = [], marks = [], taps = [], dim = 0, brightness = 1.12, tilt = 0, palette = cinematic}) => {
 	const {fps} = useVideoConfig();
 	const s0 = screenW / natural.w;
 	const SH = natural.h * s0;
@@ -95,7 +97,7 @@ export const PhoneDemo: React.FC<{
 			<div style={{position: 'absolute', left: 0, top: 0, width: screenW, height: SH, borderRadius: rScreen, overflow: 'hidden', background: '#000'}}>
 				<div style={{position: 'absolute', left: 0, top: 0, width: natural.w, height: natural.h, transformOrigin: '0 0', transform: `scale(${s0})`}}>
 					<Freeze frame={Math.max(0, Math.round(srcSec * fps))}>
-						<OffthreadVideo src={staticFile(src)} muted style={{width: natural.w, height: natural.h, display: 'block'}} />
+						<OffthreadVideo src={staticFile(src)} muted style={{width: natural.w, height: natural.h, display: 'block', filter: brightness === 1 ? undefined : `brightness(${brightness}) contrast(1.04)`}} />
 					</Freeze>
 					{active.map((r, i) => (
 						<div key={i} style={{position: 'absolute', left: r.x, top: r.y, width: r.w, height: r.h, backdropFilter: 'blur(28px)', WebkitBackdropFilter: 'blur(28px)', background: 'rgba(58,60,66,0.6)', borderRadius: 18}} />
@@ -116,7 +118,7 @@ export const PhoneDemo: React.FC<{
 									borderRadius: 28,
 									opacity: p,
 									transform: `scale(${1.05 - 0.05 * p})`,
-									boxShadow: `0 0 0 3000px rgba(0,0,0,${0.34 * p})`,
+									boxShadow: `0 0 0 3000px rgba(0,0,0,${0.2 * p})`,
 								}}
 							/>
 						);

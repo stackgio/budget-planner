@@ -36,7 +36,7 @@ export const HookScene: React.FC = () => {
 				<div style={{fontSize: 200, fontWeight: 900, letterSpacing: -6, color: P.accent, lineHeight: 0.95, marginTop: 6}}>$10</div>
 			</div>
 			<Chip text={`${usd(FACTS.estCost.value)} ESTIMATED`} at={-30} x={540} y={1262} palette={P} size={52} />
-			<Sfx at={tTen} name="pop" volume={0.3} />
+			<Sfx at={tTen - 8} name="pop" volume={0.25} />
 		</AbsoluteFill>
 	);
 };

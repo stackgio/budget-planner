@@ -54,7 +54,7 @@ export const Sp500Scene: React.FC = () => {
 	const aOut = kf(frame, [t12 - 8, t12 + 6], [0, 1], E.inOut);
 	const bIn = kf(frame, [t12 - 4, t12 + 10], [0, 1], E.out);
 	const collapse = kf(frame, [t13 - 2, t13 + 26], [0, 1], E.inOut);
-	const cIn = sp(frame, fps, t13 + 14, 'bouncy');
+	const cIn = sp(frame, fps, t13 + 4, 'bouncy');
 	const cOut = kf(frame, [t14 - 8, t14 + 4], [0, 1]);
 	const dIn = sp(frame, fps, t14 - 2, 'snappy');
 	const pick = sp(frame, fps, tVoo, 'bouncy');
@@ -68,12 +68,17 @@ export const Sp500Scene: React.FC = () => {
 	});
 	const trackP = sp(frame, fps, tTrack - 2, 'snappy');
 
-	const gridIn = kf(frame, [tList - 6, tList + 36], [0, 1], (t) => t);
+	const gridIn = kf(frame, [t12 - 2, t12 + 44], [0, 1], (t) => t);
+	void tList;
+	// slow continuous drift so no beat sits still
+	const drift = 1 + 0.03 * Math.min(1, frame / 750);
+	const count = Math.round(FACTS.sp500Companies.value * kf(collapse, [0.05, 0.95], [0, 1]));
 
 	return (
 		<AbsoluteFill style={{fontFamily: story.font, background: P.bg}}>
 			<StepHeader palette={P} steps={[{at: -30, n: '05', label: 'PICK AN S&P 500 ETF'}, {at: t14 - 2, n: '05', label: 'SAME INDEX · DIFFERENT FUNDS'}]} />
 
+			<div style={{position: 'absolute', inset: 0, transform: `scale(${drift})`, transformOrigin: '50% 45%'}}>
 			{/* ───── A · four ticker cards ───── */}
 			{aOut < 1 && (
 				<div style={{position: 'absolute', inset: 0, opacity: 1 - aOut, transform: `translateY(${-aOut * 60}px)`}}>
@@ -180,7 +185,7 @@ export const Sp500Scene: React.FC = () => {
 					{cIn > 0.01 && (
 						<div style={{position: 'absolute', left: ETF_CARD.x - 300, top: ETF_CARD.y - 190, width: 600, height: 380, borderRadius: 40, background: P.ink, color: '#FFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', transform: `scale(${0.5 + 0.5 * cIn})`, opacity: Math.min(1, cIn * 1.4), boxShadow: '0 30px 60px rgba(0,0,0,0.25)'}}>
 							<div style={{fontSize: 30, fontWeight: 800, letterSpacing: 4, color: '#9AA0A8'}}>ONE S&amp;P 500 ETF</div>
-							<div style={{fontSize: 120, fontWeight: 900, color: P.accent, lineHeight: 1.05}}>≈500</div>
+							<div style={{fontSize: 120, fontWeight: 900, color: P.accent, lineHeight: 1.05, fontVariantNumeric: 'tabular-nums'}}>≈{count}</div>
 							<div style={{fontSize: 34, fontWeight: 800, letterSpacing: 2}}>COMPANIES</div>
 						</div>
 					)}
@@ -230,15 +235,17 @@ export const Sp500Scene: React.FC = () => {
 							</div>
 						);
 					})}
+					<div style={{position: 'absolute', left: 664, width: 330, top: 374, height: 700, borderRadius: 30, border: `7px solid ${P.accent}`, opacity: kf(frame, [tSame - 6, tSame + 4], [0, 1]) * (1 - pick), transform: `scale(${1.04 - 0.04 * kf(frame, [tSame - 6, tSame + 4], [0, 1])})`}} />
 					<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right - 40, top: 1094, fontSize: 40, fontWeight: 900, color: P.ink, lineHeight: 1.15, opacity: kf(frame, [tSame - 4, tSame + 8], [0, 1])}}>
 						SAME INDEX — <span style={{color: P.accent}}>FEES & RETURNS CAN DIFFER</span>
 					</div>
 					<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right - 40, top: 1250, fontSize: 24, fontWeight: 700, color: P.muted, lineHeight: 1.3}}>
-						Expense ratios from issuer websites, Nov 2026 (SPY, SPYM: gross).
+						Expense ratios: issuer websites, checked Nov 13, 2026 (SPY, SPYM: gross).
 					</div>
 				</div>
 			)}
 
+			</div>
 			{tT.map((t, i) => (
 				<Sfx key={i} at={t} name="pop" volume={0.22} />
 			))}

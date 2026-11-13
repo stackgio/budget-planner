@@ -16,6 +16,7 @@ export const META: VideoMeta = {
 		'S&P 500 in five beats: cards → index grid → one purchase → expense-ratio table → VOO',
 		'500-square S&P 500 grid with Apple + Microsoft called out',
 		'one continuous phone take from Search to Order queued',
+		'v05: brighter, tighter phone framing; SAVE-first CTA hierarchy',
 	],
 };
 

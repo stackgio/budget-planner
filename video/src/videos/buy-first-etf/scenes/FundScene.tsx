@@ -89,17 +89,17 @@ export const FundScene: React.FC = () => {
 		[tSearch + 20, 1.75],
 	]);
 	const cam = camAt(frame, [
-		{at: 0, cx: 603, cy: 1000, zoom: 1.04},
-		{at: tUse, cx: 603, cy: 1100, zoom: 1.0},
-		{at: tHome, cx: 603, cy: 1250, zoom: 1.0},
-		{at: tBp - 4, cx: 603, cy: 1700, zoom: 1.22},
-		{at: t7, cx: 603, cy: 1700, zoom: 1.24},
+		{at: 0, cx: 603, cy: 1000, zoom: 1.16},
+		{at: tUse, cx: 603, cy: 1150, zoom: 1.12},
+		{at: tHome, cx: 603, cy: 1450, zoom: 1.2},
+		{at: tBp - 4, cx: 603, cy: 1700, zoom: 1.5},
+		{at: t7, cx: 603, cy: 1700, zoom: 1.52},
 		{at: t7 + 16, cx: 603, cy: 1300, zoom: 1.0},
 		{at: t10, cx: 603, cy: 1350, zoom: 1.0},
-		{at: tSearch - 16, cx: 603, cy: 2300, zoom: 1.2},
-		{at: tSearch + 30, cx: 603, cy: 2300, zoom: 1.2},
+		{at: tSearch - 16, cx: 603, cy: 2380, zoom: 1.45},
+		{at: tSearch + 30, cx: 603, cy: 2380, zoom: 1.45},
 	]);
-	const brokerDim = on(frame, tRh - 4, tUse, 6) * 0.55;
+	const brokerDim = on(frame, tRh - 4, tUse, 6) * 0.4;
 	const stepsShow = on(frame, t7 - 4, t10 + 2, 8);
 	const dim = Math.max(brokerDim, stepsShow);
 	return (
