@@ -1,0 +1,69 @@
+{
+ "durationSec": 24,
+ "background": "white",
+ "colorMode": "gainloss",
+ "dynamicY": true,
+ "yScale": "linear",
+ "hook": {
+  "kicker": "POV: $10K IN GAMESTOP, 2016",
+  "lines": [
+   "You never sold.",
+   "Not even at",
+   "{GME.peak_value:compact}"
+  ],
+  "highlight": "{GME.peak_value:compact}"
+ },
+ "counterLabel": "Your $10,000",
+ "events": [
+  {
+   "date": "2020-04-03",
+   "title": "COVID crash low",
+   "subtitle": "$10K became {GME@2020-04-03.value:money}",
+   "tone": "down",
+   "zoom": 1.15,
+   "holdSec": 0.9,
+   "slowdown": 3,
+   "windowDays": 45
+  },
+  {
+   "date": "2021-01-27",
+   "title": "The short squeeze",
+   "subtitle": "Worth {GME@2021-01-27.value:money}",
+   "tone": "up",
+   "zoom": 1.06,
+   "holdSec": 1.1,
+   "slowdown": 4,
+   "windowDays": 30
+  }
+ ],
+ "result": {
+  "kicker": "TODAY",
+  "headline": "{GME.multiple:x} your money",
+  "headlineTone": "up",
+  "subline": "$10,000 → {GME.final_value:money}",
+  "stats": [
+   {
+    "label": "Total return",
+    "value": "{GME.total_return_pct:pct}",
+    "tone": "up"
+   },
+   {
+    "label": "Per year (CAGR)",
+    "value": "{GME.cagr_pct:pct}",
+    "tone": "up"
+   },
+   {
+    "label": "Low · Apr 2020",
+    "value": "{GME@2020-04-03.value:money}",
+    "tone": "down"
+   },
+   {
+    "label": "Peak · Jan 2021",
+    "value": "{GME@2021-01-27.value:money}",
+    "tone": "up"
+   }
+  ]
+ },
+ "question": "Would you have sold at {GME.peak_value:compact}?",
+ "footnote": "auto"
+}

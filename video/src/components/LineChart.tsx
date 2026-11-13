@@ -82,6 +82,8 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 		}
 	} else {
 		stepWeights.forEach((w, s) => {
+			// a stale fine step during a fast rescale would pile up dozens of labels: skip it
+			if (dMax / s > 9) return;
 			for (let v = 0; v <= dMax * 1.0001; v += s) {
 				const ex = ticks.find((t) => Math.abs(t.v - v) < s * 1e-6);
 				if (ex) ex.o = Math.min(1, ex.o + w);
@@ -105,9 +107,25 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 	const tipX = xAt(p);
 
 	// --- camera: subtle drift + push-in on events
+	// Each event's push-in origin. Prefer anchoring at the axes (left / bottom edge) so the
+	// y labels and the x axis stay in frame; fall back to a halfway pull when the point would leave it.
+	const eventFocus = (ev: (typeof tl.events)[number]) => {
+		const s = spec.series.find((ss) => ss.id === ev.event.seriesId) ?? spec.series[0];
+		const px = xs[ev.index];
+		const py = y(s.values[ev.index]);
+		const z = ev.event.zoom;
+		const M = 60;
+		const fx = px * z < CHART.w - M ? 0 : px < CHART.w / 2 ? px * 0.5 : px + (CHART.w - px) * 0.5;
+		const fy =
+			CHART.h - (CHART.h - py) * z > M ? CHART.h : py < CHART.h / 3 ? 0 : 0.5 * py + 0.5 * (PAD.t + PH);
+		// right edge of the visible area (unzoomed coordinates) at full push-in, for callout placement
+		const visibleRight = fx + (CHART.w - fx) / z;
+		return {fx, fy, visibleRight};
+	};
 	let zoom = interpolate(frame, [0, tl.durationInFrames], [1, 1.025]);
-	let focusX = tipX;
-	let focusY = PAD.t + PH / 2;
+	// base drift is anchored at the bottom-left so y labels and the x axis never crop
+	let focusX = 0;
+	let focusY = CHART.h;
 	for (const ev of tl.events) {
 		const env =
 			interpolate(frame, [ev.frame - 20, ev.frame, ev.holdEnd, ev.holdEnd + 26], [0, 1, 1, 0], {
@@ -116,12 +134,10 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 				easing: smooth,
 			}) || 0;
 		if (env > 0) {
-			const s = spec.series.find((ss) => ss.id === ev.event.seriesId) ?? spec.series[0];
 			zoom *= 1 + (ev.event.zoom - 1) * env;
-			// pull the origin halfway to the nearest edge so axis labels are not cropped
-			const px = xs[ev.index];
-			focusX = px < CHART.w / 2 ? px * 0.5 : px + (CHART.w - px) * 0.5;
-			focusY = 0.5 * y(s.values[ev.index]) + 0.5 * (PAD.t + PH);
+			const f = eventFocus(ev);
+			focusX = f.fx;
+			focusY = f.fy;
 		}
 	}
 	const endDim = interpolate(frame, [tl.resultFrame - 4, tl.resultFrame + 12], [1, 0.14], {
@@ -335,7 +351,7 @@ export const LineChart: React.FC<Props> = ({spec, tl, frame}) => {
 							until={until}
 							px={xs[ev.index]}
 							py={y(s.values[ev.index])}
-							chartW={CHART.w}
+							chartW={Math.min(CHART.w, eventFocus(ev).visibleRight)}
 							plotTop={PAD.t}
 							plotLeft={PAD.l}
 							plotBottom={PAD.t + PH}
