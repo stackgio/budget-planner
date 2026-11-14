@@ -70,3 +70,8 @@ On approval: set `config.schedule.active=true` and `anchorDate`, then create the
 | Research connectors | **None in routine sessions** (no vidIQ, no Firecrawl). They fall back to WebSearch/WebFetch plus the verified library. |
 
 **To fix both (one-time, in the claude.ai app):** open the routine "Stack With Gio — Daily Money Motion (every 72 h)" → edit → add repository `stackgio/budget-planner` (and, optionally, the vidIQ and Firecrawl connectors) → save. Then ask Claude for another dry run.
+
+## GitHub access investigation — 2026-11-14 18:2x–18:4x UTC
+- Dry run 2 (routine session `cse_017GfiedaY3hHPkcBna4cAmT`): push to `dmm/dry-run-2026-11-14` was **refused (403)** again. Routine sessions have no `add_repo` tool and no repository source, and the scheduler tools can't add one.
+- Worker test (session `session_017Gfiebc5WY4ien94H1aNhz`, created with stackgio/budget-planner attached): **push verified**. `dmm/worker-test-2026-11-14` → `87077f732c35600dee7d4facf57e99bf24655399` (confirmed independently with `git ls-remote`). That session also has vidIQ, Firecrawl, WebSearch, SendUserFile and PushNotification.
+- Switching the schedule to fire into that worker session needs the creator's approval (it replaces the routine object). The live routine `trig_019vHAJJ9CFC3kkFqThZeNEB` is unchanged: enabled, delivering files first, GitHub save failing.
