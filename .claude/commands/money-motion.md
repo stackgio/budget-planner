@@ -17,6 +17,7 @@ Work from the repo root. Never publish or queue anything. The creator approves e
 - Note the **hard stop**: `config.schedule.deliverBy` minus `production_limits.hard_stop_minutes_before_delivery` (America/New_York). At the hard stop, go straight to step 8 with whatever exists.
 
 ## 1 · Reserve
+- **History first:** run `bash daily-money-motion/scripts/sync_history.sh start` (it merges the latest `dmm/<date>` episode branch so `production-log.json`, research and episodes are current) **before** `dmm.mjs new`. Exit code 2 = merge conflict: continue, and report it.
 - `dmm.mjs new <DATE> <pillar> "<topic>"`. Take the pillar from `dmm.mjs next-pillar` unless one was given.
 - If DATE already has an episode, continue it rather than making a new one.
 
@@ -66,7 +67,7 @@ Work from the repo root. Never publish or queue anything. The creator approves e
 
 ## 8 · Deliver (always, even when it isn't finished)
 - `cover.png`, `caption.md`, `metadata.json`, `script-storyboard.md`, `adaptation-notes.md`, `asset-manifest.json` in `episodes/<ID>/`.
-- Commit to the session branch and push.
+- Commit to the episode branch `dmm/<date>` and push it, then run `bash daily-money-motion/scripts/sync_history.sh finish` so the base branch carries the new history.
 - Send the MP4 (display "attach", full resolution) and cover with SendUserFile (status "proactive" on scheduled runs).
 - Then send ONE short message:
   - the label (READY FOR MY REVIEW / NEEDS FIXING)
