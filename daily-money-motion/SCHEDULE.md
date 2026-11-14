@@ -1,4 +1,18 @@
-# Proposed schedule — Daily Money Motion every 72 hours (NOT ACTIVE)
+# Daily Money Motion — schedule (ACTIVE since 2026-11-14)
+
+| | |
+|---|---|
+| Scheduled task | `trig_019vHAJJ9CFC3kkFqThZeNEB` "Stack With Gio — Daily Money Motion (every 72 h)": **enabled** (confirmed by the scheduler) |
+| Fires | daily 04:47 America/New_York, each time in a fresh cloud session; `dmm.mjs due` lets only every 3rd day from **2026-11-17** do any work |
+| Production days | 2026-11-17 · 11-20 · 11-23 · 11-26 · 11-29 · 12-02 … (rolling 72 h) |
+| Delivery | by 07:00 ET (hard stop 06:45): MP4 + cover + QC report via the Claude app, plus a push notification; files on branch `dmm/<date>` |
+| Publishing | OFF |
+| Daily Stories task | untouched (`trig_01WM5DbZfWVVpMGJYqiXPja7`, 06:50 ET) |
+| Pause or stop | ask Claude to disable or delete the trigger, or set `config.schedule.active=false` on `claude/daily-money-motion-4tu50i` (the gate then stops every run) |
+
+---
+
+## Original proposal (kept for reference)
 
 **Status: proposal only.** No scheduled task has been created and nothing publishes. It needs your explicit approval (see the end).
 

@@ -1,6 +1,6 @@
 # Daily Money Motion — Stack With Gio
 
-A research-first production system for **15-second (450-frame), 1080×1920, 30 fps** finance videos, published **every 72 hours** (see `SCHEDULE-PROPOSAL.md`; not active yet). It is a separate module: it reuses the existing Remotion project in `video/` and doesn't change any existing video, workflow or schedule.
+A research-first production system for **15-second (450-frame), 1080×1920, 30 fps** finance videos, published **every 72 hours** (see `SCHEDULE.md`; not active yet). It is a separate module: it reuses the existing Remotion project in `video/` and doesn't change any existing video, workflow or schedule.
 
 ```
 RESEARCH → SELECT A PROVEN FORMAT → ORIGINAL SCRIPT → BUILD → RENDER → QC → PREPARE TO PUBLISH
@@ -72,7 +72,7 @@ Statuses: RESEARCHING → REFERENCE_SELECTED → SCRIPT_READY → BUILDING → R
 - POST_READY only after every available check has been completed, a creative score of ≥ 9, and the creator's approval of the pilot.
 
 ## Scheduling and publishing (needs your approval)
-Nothing is scheduled or published yet. The full proposal is in **`SCHEDULE-PROPOSAL.md`**: a new, separate task fires daily at 06:13 ET, and `dmm.mjs due` lets it work only every 72 h. Delivery is by 07:00 ET, the same time of day as the Stories. The existing Daily Stories task is untouched.
+Nothing is scheduled or published yet. The full proposal is in **`SCHEDULE.md`**: a new, separate task fires daily at 06:13 ET, and `dmm.mjs due` lets it work only every 72 h. Delivery is by 07:00 ET, the same time of day as the Stories. The existing Daily Stories task is untouched.
 2. Publishing stays manual until an integration is tested. Metricool is connected to this account and has scheduled-post tools, but they haven't been tested with video uploads here, so no auto-posting happens. If you want it, the step would be "create a Metricool post **for review**" (a draft you approve), never a direct publish.
 3. Note: rendering takes about 2 minutes of container time per episode, and research uses vidIQ credits (about 50–60 per episode at today's usage).
 
