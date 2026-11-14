@@ -40,13 +40,17 @@
     "FAILED"
   ],
   "schedule": {
-    "active": false,
+    "active": true,
     "intervalDays": 3,
-    "anchorDate": null,
+    "anchorDate": "2026-11-17",
     "timezone": "America/New_York",
     "deliverBy": "07:00",
     "note": "Rolling 72 h from anchorDate. A daily trigger at 04:47 ET runs `dmm.mjs due`; only production days do any work. Hard stop 06:45 ET \u2192 deliver the best preview + an honest status.",
-    "startAt": "04:47"
+    "startAt": "04:47",
+    "baseBranch": "claude/daily-money-motion-4tu50i",
+    "episodeBranch": "dmm/<YYYY-MM-DD>",
+    "publishing": "OFF (creator reviews and posts manually)",
+    "activatedByCreator": "2026-11-14 (explicit approval in chat)"
   },
   "narrator": {
     "name": "Stack voice ",
