@@ -1,0 +1,19 @@
+{
+  "episode": "DMM-002",
+  "date": "2026-11-14",
+  "composition": "DMM002",
+  "pillar": "saving-money",
+  "engine": "C-cinematic-2.5D-motion",
+  "reference_ids": ["REF-0006", "REF-0007", "REF-0008"],
+  "hook_pattern": "small daily amount + mid-motion object on frame 0 + 'nobody notices' tension",
+  "layout": "single-hero-object-with-camera",
+  "final_render": "video/renders/daily/DMM-002/DMM-002_v03.mp4",
+  "cover": "daily-money-motion/episodes/DMM-002/cover.png",
+  "platforms": {
+    "instagram_reels": {"caption_ref": "caption.md#instagram--facebook-reels", "audio": "original (embedded)"},
+    "facebook_reels": {"caption_ref": "caption.md#instagram--facebook-reels", "audio": "original (embedded)"},
+    "tiktok": {"caption_ref": "caption.md#tiktok", "audio": "original (embedded)"},
+    "youtube_shorts": {"title": "$20 a day looks like nothing… until it doesn't #shorts", "caption_ref": "caption.md#youtube-shorts"}
+  },
+  "disclosures": ["EXAMPLE label 0-15 s", "cash only, no interest or returns assumed"]
+}

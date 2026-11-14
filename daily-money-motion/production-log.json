@@ -4,23 +4,97 @@
       "id": "DMM-001",
       "date": "2026-11-14",
       "composition": "DMM001",
-      "pillar": "spending-lifestyle-inflation",
+      "pillar": "money-discipline",
       "engine": "B",
       "topic": "Monthly raise: lifestyle creep vs investing it",
       "hook": "YOU GOT A $500 RAISE. WHERE DOES IT GO?",
       "hook_pattern": "question + identical-input A/B split",
       "layout": "stacked-two-panel",
-      "reference_ids": ["REF-0001", "REF-0004", "REF-0005"],
+      "reference_ids": [
+        "REF-0001",
+        "REF-0004",
+        "REF-0005"
+      ],
       "status": "NEEDS_FIXING",
       "final_render": "video/renders/daily/DMM-001/DMM-001_v04.mp4",
       "qc_score": 8.4,
       "history": [
-        {"at": "2026-11-14T00:00:00Z", "status": "RESEARCHING"},
-        {"at": "2026-11-14T00:00:00Z", "status": "REFERENCE_SELECTED", "note": "REF-0001"},
-        {"at": "2026-11-14T00:00:00Z", "status": "SCRIPT_READY"},
-        {"at": "2026-11-14T00:00:00Z", "status": "BUILDING"},
-        {"at": "2026-11-14T00:00:00Z", "status": "REVIEWING", "note": "v01-v04, 4 QC rounds"},
-        {"at": "2026-11-14T00:00:00Z", "status": "NEEDS_FIXING", "note": "All technical/accuracy checks pass; creative score 8.4 < 9 target. Pilot awaiting creator review."}
+        {
+          "at": "2026-11-14T00:00:00Z",
+          "status": "RESEARCHING"
+        },
+        {
+          "at": "2026-11-14T00:00:00Z",
+          "status": "REFERENCE_SELECTED",
+          "note": "REF-0001"
+        },
+        {
+          "at": "2026-11-14T00:00:00Z",
+          "status": "SCRIPT_READY"
+        },
+        {
+          "at": "2026-11-14T00:00:00Z",
+          "status": "BUILDING"
+        },
+        {
+          "at": "2026-11-14T00:00:00Z",
+          "status": "REVIEWING",
+          "note": "v01-v04, 4 QC rounds"
+        },
+        {
+          "at": "2026-11-14T00:00:00Z",
+          "status": "NEEDS_FIXING",
+          "note": "All technical/accuracy checks pass; creative score 8.4 < 9 target. Pilot awaiting creator review."
+        }
+      ],
+      "published": []
+    },
+    {
+      "id": "DMM-002",
+      "date": "2026-11-14",
+      "composition": "DMM002",
+      "pillar": "saving-money",
+      "engine": "C",
+      "topic": "Daily cash saving made visible: $20 a day for a year",
+      "hook": "$20 A DAY. NOBODY NOTICES.",
+      "hook_pattern": "small daily amount + mid-motion object on frame 0",
+      "layout": "single-hero-object-with-camera",
+      "reference_ids": [
+        "REF-0006",
+        "REF-0007",
+        "REF-0008"
+      ],
+      "status": "NEEDS_FIXING",
+      "final_render": "video/renders/daily/DMM-002/DMM-002_v03.mp4",
+      "qc_score": 8.5,
+      "history": [
+        {
+          "at": "2026-11-14T12:42:37.446672Z",
+          "status": "RESEARCHING"
+        },
+        {
+          "at": "2026-11-14T12:42:37.446672Z",
+          "status": "REFERENCE_SELECTED",
+          "note": "REF-0006"
+        },
+        {
+          "at": "2026-11-14T12:42:37.446672Z",
+          "status": "SCRIPT_READY"
+        },
+        {
+          "at": "2026-11-14T12:42:37.446672Z",
+          "status": "BUILDING"
+        },
+        {
+          "at": "2026-11-14T12:42:37.446672Z",
+          "status": "REVIEWING",
+          "note": "v01-v03"
+        },
+        {
+          "at": "2026-11-14T12:42:37.446672Z",
+          "status": "NEEDS_FIXING",
+          "note": "All checks pass; score 8.5 < 9; sound not yet heard by a person. Pilot awaiting creator review."
+        }
       ],
       "published": []
     }

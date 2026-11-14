@@ -7,6 +7,7 @@
 //   node daily-money-motion/scripts/dmm.mjs next-pillar                          → least-recently-used pillar
 //   node daily-money-motion/scripts/dmm.mjs unused-refs                          → strong references not yet used
 //   node daily-money-motion/scripts/dmm.mjs render <DMM-NNN>                      → versioned render + QC (never overwrites)
+//   node daily-money-motion/scripts/dmm.mjs due [YYYY-MM-DD]                      → exit 0 if an episode is due (rolling 72 h cadence), 3 if not
 //   node daily-money-motion/scripts/dmm.mjs list
 import {readFileSync, writeFileSync, mkdirSync, existsSync, renameSync, appendFileSync} from 'fs';
 import {spawnSync} from 'child_process';
@@ -93,6 +94,22 @@ switch (cmd) {
 		e2.status = st; e2.history.push({at: new Date().toISOString(), status: st, note: r.status === 0 ? 'render + hard checks passed; visual QC pending' : `render/check failed (exit ${r.status})`});
 		save(d2); log(`${e.id} render exit ${r.status} → ${st}`); console.log(`${e.id} → ${st}`);
 		process.exitCode = r.status ?? 1;
+		break;
+	}
+	case 'due': {
+		const S = CFG.schedule ?? {};
+		const date = a[0] ?? new Date().toLocaleDateString('en-CA', {timeZone: S.timezone ?? 'America/New_York'});
+		if (!S.active || !S.anchorDate) { console.log(`not due: schedule not activated (config.json schedule.active=${!!S.active}, anchorDate=${S.anchorDate})`); process.exitCode = 3; break; }
+		const diff = Math.round((new Date(date + 'T12:00:00Z') - new Date(S.anchorDate + 'T12:00:00Z')) / 864e5);
+		const existing = d.episodes.find((e) => e.date === date && e.status !== 'FAILED');
+		if (diff < 0 || diff % S.intervalDays !== 0) {
+			const next = new Date(new Date(S.anchorDate + 'T12:00:00Z').getTime() + (Math.max(0, Math.ceil(diff / S.intervalDays)) * S.intervalDays) * 864e5).toISOString().slice(0, 10);
+			console.log(`not due on ${date} (next: ${next})`); process.exitCode = 3; break;
+		}
+		if (existing) { console.log(`not due: ${existing.id} already exists for ${date} (${existing.status})`); process.exitCode = 3; break; }
+		const last = d.episodes.filter((e) => e.status !== 'FAILED' && e.date < date).sort((x, y) => (x.date < y.date ? 1 : -1))[0];
+		if (last && Math.round((new Date(date) - new Date(last.date)) / 864e5) < S.intervalDays) { console.log(`not due: last episode ${last.id} on ${last.date} is less than ${S.intervalDays} days ago`); process.exitCode = 3; break; }
+		console.log(`due: produce an episode for ${date} (deliver by ${S.deliverBy} ${S.timezone})`);
 		break;
 	}
 	case 'list':

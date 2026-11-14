@@ -1,6 +1,6 @@
 # Daily Money Motion — Stack With Gio
 
-A daily, research-first production system for **15-second (450-frame), 1080×1920, 30 fps** finance videos. It is a separate module: it reuses the existing Remotion project in `video/` and doesn't change any existing video, workflow or schedule.
+A research-first production system for **15-second (450-frame), 1080×1920, 30 fps** finance videos, published **every 72 hours** (see `SCHEDULE-PROPOSAL.md`; not active yet). It is a separate module: it reuses the existing Remotion project in `video/` and doesn't change any existing video, workflow or schedule.
 
 ```
 RESEARCH → SELECT A PROVEN FORMAT → ORIGINAL SCRIPT → BUILD → RENDER → QC → PREPARE TO PUBLISH
@@ -18,11 +18,12 @@ RESEARCH → SELECT A PROVEN FORMAT → ORIGINAL SCRIPT → BUILD → RENDER →
 | Path | Purpose |
 |---|---|
 | `video/src/daily/theme.ts` | Brand tokens: #080D0A / #FFFFFF / #36D979 / #9CA3AF, safe area, type scale, 450-frame duration |
-| `video/src/daily/components/` | Reusable: `Stage` + `FilmFinish` (key light, vignette, grain) · `Panel` · `Headline` (masked line rise/swap) · `GrowthChart` (value vs money-put-in) · `SplitBar` (an amount consumed by items) · `YearTrack` · `Signature` · `MusicBed` · `SafeZoneOverlay`. Also reuses the story system's `NumberCounter`, `Sfx` and motion presets. |
+| `video/src/daily/components/` | Reusable: `Stage` + `FilmFinish` (key light, vignette, grain) · `Camera2D` (keyed world camera) · `GlassBack`/`GlassFront` (2.5D glass container with internal light) · `Note` (stylised banknote, not real currency) · `Panel` · `Headline` (masked line rise/swap) · `GrowthChart` (value vs money-put-in) · `SplitBar` (an amount consumed by items) · `YearTrack` · `Signature` · `MusicBed` · `SafeZoneOverlay`. Episodes can also use `@remotion/motion-blur`'s `CameraMotionBlur`. Also reuses the story system's `NumberCounter`, `Sfx` and motion presets. |
 | `video/src/daily/episodes/<dmmNNN>/` | One folder per episode: `facts.ts` (every number, with provenance) · `timing.ts` (frame grid + QC beats) · `Episode.tsx` |
 | `video/src/daily/DailyRoot.tsx` | Registers `DMM<NNN>` compositions (one line added to `src/Root.tsx`) |
 | `video/scripts/daily/render.sh` | Versioned render plus hard checks: 450 frames, 1080×1920, 30 fps, h264, decode, blackdetect, freezedetect, audio peak. Writes beat frames, motion strips, a contact sheet and the cover. Never overwrites. |
 | `video/scripts/daily/make_music.py` | Original 120 BPM music bed, synthesized in the repo (rights-clean) |
+| `video/scripts/daily/make_dmm002_audio.py` | Per-episode soundtrack generated from the episode's own event schedule (frame-exact SFX + score). Use it as the pattern for synced sound. |
 | `daily-money-motion/research/viral-references.json` | Persistent reference library (separate from production) |
 | `daily-money-motion/research/research-notes/` | Per-session notes and winner scoring |
 | `daily-money-motion/production-log.json` | Production database: statuses, history, hooks, layouts, references used |
@@ -32,8 +33,17 @@ RESEARCH → SELECT A PROVEN FORMAT → ORIGINAL SCRIPT → BUILD → RENDER →
 
 Final MP4s live in `video/renders/daily/<ID>/<ID>_vNN.mp4` (QC folders are git-ignored).
 
-## Daily pipeline
+## Episodes so far
+| ID | Style | Pillar | Hook | Status |
+|---|---|---|---|---|
+| DMM-001 | B · split-screen dashboard | money discipline | YOU GOT A $500 RAISE. WHERE DOES IT GO? | NEEDS_FIXING (8.4) |
+| DMM-002 | C · cinematic 2.5D object + camera | saving | $20 A DAY. NOBODY NOTICES. | NEEDS_FIXING (8.5, sound unheard) |
+
+The style follows the winning reference. Don't default to DMM-001's dashboard. Keep its numbers, comparisons and growth graphics as tools, used selectively.
+
+## Pipeline (each production day)
 ```bash
+node daily-money-motion/scripts/dmm.mjs due                         # rolling 72 h gate (exit 3 = not today)
 node daily-money-motion/scripts/dmm.mjs next-pillar                 # least-recently-used pillar
 node daily-money-motion/scripts/dmm.mjs unused-refs                 # strongest unused references
 node daily-money-motion/scripts/dmm.mjs new 2026-11-15 saving-money "topic"   # reserves DMM-002 (one per date, idempotent)
@@ -54,8 +64,7 @@ Statuses: RESEARCHING → REFERENCE_SELECTED → SCRIPT_READY → BUILDING → R
 - POST_READY only after every available check has been completed, a creative score of ≥ 9, and the creator's approval of the pilot.
 
 ## Scheduling and publishing (needs your approval)
-Nothing is scheduled or published yet. When the pilot is approved, proposed next steps:
-1. A **new, separate** scheduled task (the existing Daily Stories task stays as it is), for example at 05:3x America/New_York, that runs `/money-motion` in a fresh cloud session. It researches, builds and renders, then sends the MP4 and QC report to your phone and stops at POST_READY or NEEDS_FIXING. It commits each episode to a dated branch.
+Nothing is scheduled or published yet. The full proposal is in **`SCHEDULE-PROPOSAL.md`**: a new, separate task fires daily at 06:13 ET, and `dmm.mjs due` lets it work only every 72 h. Delivery is by 07:00 ET, the same time of day as the Stories. The existing Daily Stories task is untouched.
 2. Publishing stays manual until an integration is tested. Metricool is connected to this account and has scheduled-post tools, but they haven't been tested with video uploads here, so no auto-posting happens. If you want it, the step would be "create a Metricool post **for review**" (a draft you approve), never a direct publish.
 3. Note: rendering takes about 2 minutes of container time per episode, and research uses vidIQ credits (about 50–60 per episode at today's usage).
 

@@ -1,0 +1,10 @@
+{
+  "episode": "DMM-002",
+  "assets": [
+    {"asset": "video/public/daily/audio/dmm002-mix.wav", "type": "soundtrack (music + sfx)", "source": "Synthesized by video/scripts/daily/make_dmm002_audio.py from the episode's own drop schedule", "license": "Original work owned by Stack With Gio; cleared for commercial use on all platforms", "verified": true},
+    {"asset": "@fontsource/inter 5.1.1", "type": "font", "source": "npm", "license": "SIL Open Font License 1.1", "verified": true},
+    {"asset": "Glass column, notes, light, camera", "type": "vector/motion", "source": "Drawn in code (video/src/daily/components/{GlassColumn,Note,Camera2D}.tsx)", "license": "Original; notes are stylised, not reproductions of real currency", "verified": true}
+  ],
+  "third_party_footage": "none",
+  "reference_material_used_in_video": "none (references analysed only)"
+}

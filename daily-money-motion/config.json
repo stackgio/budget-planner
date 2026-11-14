@@ -1,22 +1,48 @@
 {
-  "series": "Daily Money Motion",
+  "series": "Daily Money Motion (posting every 72 h)",
   "brand": "Stack With Gio",
-  "format": {"width": 1080, "height": 1920, "fps": 30, "frames": 450},
+  "format": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "frames": 450
+  },
   "pillars": [
-    "investing-etfs",
+    "investing-encouragement",
     "saving-money",
-    "financial-discipline",
-    "wealth-building",
-    "spending-lifestyle-inflation",
-    "money-psychology",
-    "financial-mistakes"
+    "money-discipline",
+    "building-wealth",
+    "meaningful-quotes"
   ],
-  "engines": {"A": "cinematic-motivation", "B": "motion-graphics", "C": "hybrid"},
+  "engines": {
+    "A": "cinematic (licensed footage)",
+    "B": "motion-graphics",
+    "C": "cinematic 2.5D / hybrid"
+  },
   "rules": {
     "duplicate_window_days": 30,
     "max_same_layout_in_a_row": 1,
     "max_same_reference_creator_in_7_days": 1,
     "qc_target": 9.0
   },
-  "statuses": ["RESEARCHING", "REFERENCE_SELECTED", "SCRIPT_READY", "BUILDING", "REVIEWING", "NEEDS_FIXING", "POST_READY", "QUEUED", "PUBLISHED", "FAILED"]
+  "statuses": [
+    "RESEARCHING",
+    "REFERENCE_SELECTED",
+    "SCRIPT_READY",
+    "BUILDING",
+    "REVIEWING",
+    "NEEDS_FIXING",
+    "POST_READY",
+    "QUEUED",
+    "PUBLISHED",
+    "FAILED"
+  ],
+  "schedule": {
+    "active": false,
+    "intervalDays": 3,
+    "anchorDate": null,
+    "timezone": "America/New_York",
+    "deliverBy": "07:00",
+    "note": "Rolling 72 h: an episode is due when (date - anchorDate) is a multiple of intervalDays. Activated only after pilot approval (set active=true and anchorDate)."
+  }
 }
