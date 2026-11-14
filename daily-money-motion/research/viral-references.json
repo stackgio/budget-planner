@@ -102,7 +102,14 @@
       "licensing": "Analysis only.",
       "used_in": [],
       "our_post_performance": null,
-      "how_studied": "vidIQ watch_shortform_content: an AI-generated text walkthrough plus one still image. We did not view the video ourselves."
+      "how_studied": "vidIQ watch_shortform_content: an AI-generated text walkthrough plus one still image. We did not view the video ourselves.",
+      "evidence_2026_11_14b": {
+        "VERIFIED_COUNTS": "influencers-club via Firecrawl, 2026-11-14: 1,102,444 plays, 17,987 likes, 30 comments, posted 2026-11-09.",
+        "baseline": "25.6K median and 42.1x are vidIQ's own figures (method undisclosed; not reproduced).",
+        "VERIFIED_FRAME": "Cover: near-black warm background; title 'Why you can't save.' with 'can't save.' in a peach/orange accent; two labelled rows ('SAVE WHAT'S LEFT' / 'PAY YOURSELF FIRST'); thin white line-art figure holding a pitcher over four outlined beakers labelled RENT / FOOD / FUN / SAVINGS (bottom row reordered SAVINGS first); blue liquid in expense beakers, orange-lit savings beaker; small tracked uppercase labels; '@MUSHINVISUALS' watermark.",
+        "AI_DESCRIPTION": "Pour sequence left to right; the top figure runs dry before SAVINGS and shrugs ('Nothing left.'); the bottom celebrates; the headline swaps to 'Don't save what's left. Pay yourself first.'; lo-fi beat, music only; about 12.6 s; loops.",
+        "reproducibility": "High: vector line art, liquid fill masks, label typography and a headline swap are all core Remotion techniques. No footage, real objects or voice needed."
+      }
     },
     {
       "id": "REF-0004",
@@ -337,6 +344,31 @@
       "used_in": [],
       "our_post_performance": null,
       "how_studied": "vidIQ watch_shortform_content: an AI-generated text walkthrough plus one still image. We did not view the video ourselves."
+    },
+    {
+      "id": "REF-0011",
+      "creator": "@thoughtlinevisuals",
+      "platform": "Instagram Reels",
+      "url": "https://www.instagram.com/reel/DfnO18AoUQG",
+      "published": "2026-11-11",
+      "researched": "2026-11-14",
+      "views": 581424,
+      "creator_median_views": 12000,
+      "outlier_multiple": 48.3,
+      "followers": 1500,
+      "duration_sec": null,
+      "topic": "Same $4,000 paycheck, different pipes (lifestyle creep vs skills/business/investing; then a layoff)",
+      "evidence": {
+        "VERIFIED_COUNTS": "influencers-club via Firecrawl, 2026-11-14: 581,424 plays, 5,795 likes, 4 comments (only 3 days old; low comment rate).",
+        "baseline": "12K median and 48.3x are vidIQ's figures (not reproduced).",
+        "VERIFIED_FRAME": "Cover: a detailed illustrated dark industrial set split into two floors; header 'SAME $4,000 PAYCHECK.'; colour-coded vertical pipes with pill labels (RENT, CAR LOAN, CREDIT CARD, SUBSCRIPTIONS, TAKEOUT / RENT, BILLS, FOOD, SKILLS, ONLINE BUSINESS); buckets 'SAVED $0' (red) and an 'INVESTED $0' machine; tag pills 'SPENDS ALL $4,000' / 'INVESTS $1,000/MO'; cartoon characters; 'TL' logo; floor reflection.",
+        "VERIFIED_CAPTION": "'(Example numbers, not guaranteed. Not financial advice.)', the same disclosure standard as ours.",
+        "AI_DESCRIPTION": "vidIQ search summary only (NOT watched): coins drop from a faucet into pipes, rhythmic pinging SFX, voice + background music.",
+        "reproducibility": "Medium: the pipe/flow system is very doable in Remotion; the detailed character animation is harder. It is the same split-comparison family as REF-0001/DMM-001."
+      },
+      "licensing": "Analysed only.",
+      "used_in": [],
+      "our_post_performance": null
     }
   ],
   "screened_not_selected": [
@@ -387,6 +419,52 @@
       "views": null,
       "outlier_multiple": null,
       "reason": "Proven quote-over-b-roll format, but it needs licensed footage, which this environment doesn't have. Keep for when a footage licence exists."
+    },
+    {
+      "creator": "NHI EDITX 'Power of Money'",
+      "platform": "YouTube Shorts",
+      "url": "https://www.youtube.com/shorts/xuThWbJFomg",
+      "views": 8494609,
+      "outlier_multiple": 130.0,
+      "reason": "VERIFIED_FRAME cover: reposted footage of a real woman in a car with a caption bar. Third-party footage; not reproducible or rights-clean."
+    },
+    {
+      "creator": "Fasterview '93 cents → $4.3B'",
+      "platform": "YouTube Shorts",
+      "url": "https://www.youtube.com/shorts/5QqDX7V87h8",
+      "views": 350620,
+      "outlier_multiple": 6.3,
+      "reason": "VERIFIED_FRAME cover: a Futurama clip (copyrighted animation)."
+    },
+    {
+      "creator": "Mr Planktin 'Compound interest explained'",
+      "platform": "YouTube Shorts",
+      "url": "https://www.youtube.com/shorts/uoS1qzRWdbM",
+      "views": 7087632,
+      "outlier_multiple": 19.2,
+      "reason": "VERIFIED_FRAME cover: 3D cartoon kids holding cash, word-caption style; 58 s; character-animation driven. Off-brand."
+    },
+    {
+      "creator": "Kyrox 'The Power of One Dollar'",
+      "platform": "YouTube Shorts",
+      "url": "https://www.youtube.com/shorts/l695HSvarHU",
+      "views": 851714,
+      "outlier_multiple": 7.5,
+      "reason": "VERIFIED_FRAME cover: a social-post text card over Minecraft parkour gameplay. Success is the doubling story, not editing; gameplay footage isn't ours. The doubling hook is a reusable idea."
+    },
+    {
+      "creator": "QuantLab.shorts 'Money Edits'",
+      "platform": "YouTube Shorts",
+      "url": "https://www.youtube.com/shorts/vCFBclisG3c",
+      "views": 2903440,
+      "outlier_multiple": 508.1,
+      "reason": "VERIFIED_FRAME cover/poster: a photo of a real branded charge card with a skull emoji and 'POV: The beginning of a different lifestyle.'. Brand imagery, aesthetic-photo genre; not finance education."
     }
-  ]
+  ],
+  "evidence_levels": {
+    "VERIFIED_FRAME": "We opened a real image of the video (its cover/poster or a single analysis frame). Composition, typography, palette and labels in THAT frame are verified; motion, timing, transitions and sound are not.",
+    "VERIFIED_COUNTS": "Counts read from a second, independent source (named), on the date given.",
+    "AI_DESCRIPTION": "vidIQ watch_shortform_content or vidIQ search summaries: AI-written, not checked against the footage.",
+    "ASSUMPTION": "Our hypothesis (e.g. why it worked)."
+  }
 }
