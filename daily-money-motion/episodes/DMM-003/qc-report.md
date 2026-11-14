@@ -98,3 +98,46 @@ I didn't watch it in real time and can't judge the voice's tone or feel. The mea
 - **I have not listened to this mix.** The measurements show the effects are far below the voice. At 34 dB under it they may be barely perceptible on phone speakers. If you want them a touch more present, +6 dB is a one-line change (`SFX_TRIM` in `make_dmm003_sfx.py`); the visuals don't change.
 - **The last ~4.4 s have no audio.** That's intentional (no music; you add it per platform), but the video is silent there if posted as-is.
 - **The score is unchanged at 8.1/10** (audio fix only; the creative notes above still apply).
+
+---
+
+# v04 — creative fixes under the permanent QC standard (2026-11-14)
+
+**File:** `video/renders/daily/DMM-003/DMM-003_v04.mp4` · sha256 `17a5287d1eb7f4c143a0a73f70e7c765c7cedd08425808d9fc1cc1d23543b33f` · 1080×1920 · 30 fps · 450 frames (15.00 s) · Stack voice narration (unchanged file) · SFX only, no music.
+**Label: NEEDS FIXING** (`dmm.mjs gate`: creative score 8.4 < 9.0; automated QC 0 FAIL / 0 WARN).
+
+## Root causes found by the new automated QC on v03, and the fixes
+| Finding (measured) | Root cause | Fix in v04 | Result |
+|---|---|---|---|
+| Motion in first 2 s **0.33** (WARN) | The tower finished assembling at 0.6 s; nothing else moved until the pour at 2.3 s | Assembly spread over the first line (savings tray lands on the word "saving"); the camera opens at 1.14× and pulls back to 1.0× | **0.44 (PASS)** |
+| Static hold **11.5–15.0 s (3.5 s)** (WARN) | Nothing was designed for after the narration ends at 10.1 s | A month-by-month count-up $300 → $3,600 with 12 dots (11.0–12.8 s), then "every payday": the paycheck pours again through the whole tower to the last frame (a matching soft pour, same subtle SFX level); slow 1.03× push | **1.2 s max (PASS)** |
+
+## Automated QC (`renders/daily/DMM-003/qc_auto_DMM-003_v04/QC_AUTO.md`)
+All 22 checks pass:
+- **Export:** 1080×1920, 30 fps, 450 frames, h264/yuv420p, audio present.
+- **Loudness:** −17.7 LUFS, true peak −5.1 dBFS.
+- **Voice:** untouched (correlation 0.9998, −0.01 dB).
+- **SFX:** 33.7 dB under the voice; SFX peak −33.3 dBFS; no music.
+- **Speech-to-text:** 31/31 words, max sync error 0.085 s, no audio events.
+- **Captions:** match the narration and are correctly spelled.
+- **Picture:** frame 0 has text; no abrupt jumps; safe-zone bands clear.
+- **Similarity:** to DMM-001 0.735, to DMM-002 0.826 (limit 0.85).
+
+## Human judgment (my assessment; not verified by listening; not a view prediction)
+| Category | Score | Note |
+|---|---|---|
+| Hook (0–2 s) | 8 | Strong reassuring line, readable on frame 0, and the build now moves. Still no striking image. |
+| Script and accuracy | 9 | One message, natural; the math is exact and labelled EXAMPLE |
+| Voice clarity and timing | 9 | Measured: 31/31 recognised, 0.085 s max sync error. Your judgment of the delivery is still needed. |
+| SFX levels | 8 | 33.7 dB under the voice; may now be barely audible on phones |
+| Captions | 9 | Word-synced, two lines or fewer, key words in green |
+| Visual quality | 7.5 | Clean and on-brand, but an illustration rather than cinematic |
+| Transitions and camera | 8 | The flip is the signature move; the camera is restrained |
+| Layout and safe zones | 9 | |
+| Final payoff | 8.5 | The count-up plus the payday loop make a real ending now |
+| Technical | 10 | |
+| Originality | 7.5 | The second "glass" metaphor in a row (DMM-002 column → DMM-003 trays) |
+| Likely retention | 8 | Fast and clear; the visual novelty is moderate |
+| **Average** | **8.4** | Gate 9.0 → **NEEDS FIXING** |
+
+**Why it isn't a 9, honestly:** the remaining gap is the concept's visual ceiling (illustrative trays, repeated glass language), not a fixable defect. More tweaks won't get it to 9; the next episode needs a stronger, non-glass visual idea from the start. The checklist now enforces that through the metaphor/visual-tag repetition check.

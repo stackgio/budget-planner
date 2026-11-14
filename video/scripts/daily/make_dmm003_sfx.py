@@ -76,6 +76,8 @@ place(tink(0.10, 1900), fr(T["flip"] + 24))                              # tray 
 b0, b1 = fr(T["savings2"] - 10), fr(T["rest"] + 18)
 place(pour(b1 - b0, 0.16), b0)                                           # second payday pour
 place(tink(0.10, 2640), fr(T["savings2"] + 14))                          # savings full
+if "again" in T:                                                         # v04: next payday pours to the end
+    place(pour(DUR - fr(T["again"]), 0.12), fr(T["again"]))
 
 # --- trim + duck under the narration (smooth 80 ms ramps)
 gain = np.full(N, V02_GAIN * SFX_TRIM)

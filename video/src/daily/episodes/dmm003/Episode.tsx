@@ -47,7 +47,8 @@ export const DMM003: React.FC<{showSafeZones?: boolean; audio?: boolean}> = ({sh
 		const x = mix(a.x, b.x, flipP) + (id === 'savings' ? Math.sin(Math.PI * flipP) * 220 : 0);
 		// hook motion: the tower assembles from frame 0 (each tray drops in and settles)
 		const k = ORDER_A.indexOf(id);
-		const settleIn = sp(frame, fps, -6 + k * 5, 'bouncy');
+		const dropAt = [-4, 7, 15, T.savingWord - 9][k]; // the savings tray lands on "saving."
+		const settleIn = sp(frame, fps, dropAt, 'bouncy');
 		const y = mix(a.y, b.y, flipP) - (1 - settleIn) * 40;
 		return {x, y, rot: id === 'savings' ? Math.sin(Math.PI * flipP) * -8 : 0, op: Math.min(1, Math.max(0, settleIn * 1.6))};
 	};
@@ -65,7 +66,7 @@ export const DMM003: React.FC<{showSafeZones?: boolean; audio?: boolean}> = ({sh
 	// ---- streams
 	const streamX = (k: number) => (SLOTS[k + 1].x > SLOTS[k].x ? SLOTS[k].x + 186 : SLOTS[k].x - 186);
 	const phaseA = frame < T.flip + 2;
-	const sw = phaseA
+	const sw: {src: number; s01: number; s12: number; s23: number} = phaseA
 		? {
 				src: 22 * win(frame, T.rent - 16, T.usually),
 				s01: 18 * win(frame, T.food - 5, T.usually),
@@ -78,11 +79,18 @@ export const DMM003: React.FC<{showSafeZones?: boolean; audio?: boolean}> = ({sh
 				s12: 16 * win(frame, T.live - 5, T.rest + 18),
 				s23: 14 * win(frame, T.rest - 7, T.rest + 20),
 			};
+	const again = prog(frame, T.again, 10, E.out);
+	if (!phaseA && frame >= T.again) {
+		sw.src = Math.max(sw.src, 22 * again);
+		sw.s01 = Math.max(sw.s01, 18 * prog(frame, T.again + 6, 10));
+		sw.s12 = Math.max(sw.s12, 16 * prog(frame, T.again + 12, 10));
+		sw.s23 = Math.max(sw.s23, 14 * prog(frame, T.again + 18, 10));
+	}
 	const toneAt = (k: number): 'accent' | 'muted' => (phaseA ? 'muted' : k === 0 ? 'accent' : 'muted');
 
 	// ---- camera
 	const camKeys = [
-		{at: 0, zoom: 1.0, fx: 540, fy: 930},
+		{at: 0, zoom: 1.14, fx: 540, fy: 900},
 		{at: T.last - 6, zoom: 1.0, fx: 540, fy: 930},
 		{at: T.last + 14, zoom: 1.04, fx: 560, fy: 1000},
 		{at: T.nothing + 6, zoom: 1.04, fx: 560, fy: 1000},
@@ -90,6 +98,7 @@ export const DMM003: React.FC<{showSafeZones?: boolean; audio?: boolean}> = ({sh
 		{at: T.savings2 + 10, zoom: 1.06, fx: 540, fy: 860},
 		{at: T.rest, zoom: 1.02, fx: 540, fy: 900},
 		{at: T.endCard, zoom: 1.0, fx: 540, fy: 930},
+		{at: 449, zoom: 1.03, fx: 540, fy: 930},
 	];
 
 	const lastTag = win(frame, T.last - 2, T.flip, 8);
@@ -99,6 +108,7 @@ export const DMM003: React.FC<{showSafeZones?: boolean; audio?: boolean}> = ({sh
 	const paydayPulse = 1 + 0.08 * Math.max(0, 1 - Math.abs(frame - T.payday - 4) / 8);
 	const savingsGlow = !phaseA ? level.savings * (0.6 + 0.4 * prog(frame, T.endCard, 20)) : 0;
 	const yearIn = sp(frame, fps, T.yearCallout, 'bouncy');
+	const months = Math.max(1, Math.min(12, 1 + Math.floor(11 * prog(frame, T.yearCallout + 4, T.countDone - T.yearCallout - 4, E.inOut) + 1e-6)));
 	const signIn = prog(frame, T.sign, 16);
 
 	return (
@@ -184,11 +194,18 @@ export const DMM003: React.FC<{showSafeZones?: boolean; audio?: boolean}> = ({sh
 
 			{/* the year view (after the voice ends) */}
 			<div style={{position: 'absolute', left: 0, width: 1080, top: 1300, textAlign: 'center', opacity: Math.min(1, yearIn * 1.3), transform: `translateY(${(1 - yearIn) * 30}px)`}}>
-				<div style={{fontSize: 64, fontWeight: 900, color: C.accent, letterSpacing: -1}}>{usd(SAVE_YEARLY.value)} A YEAR</div>
-				<div style={{fontSize: 26, fontWeight: 700, color: C.muted, letterSpacing: 2, marginTop: 4}}>{usd(SAVE_MONTHLY.value)}/MO SAVED FIRST × 12</div>
+				<div style={{fontSize: 64, fontWeight: 900, color: C.accent, letterSpacing: -1, fontVariantNumeric: 'tabular-nums'}}>
+					{usd(SAVE_MONTHLY.value * months)} {months === 12 ? 'A YEAR' : 'SO FAR'}
+				</div>
+				<div style={{display: 'flex', justifyContent: 'center', gap: 10, marginTop: 10}}>
+					{Array.from({length: 12}, (_, i) => (
+						<div key={i} style={{width: 14, height: 14, borderRadius: 7, background: i < months ? C.accent : 'rgba(255,255,255,0.14)'}} />
+					))}
+				</div>
+				<div style={{fontSize: 26, fontWeight: 700, color: C.muted, letterSpacing: 2, marginTop: 10}}>{usd(SAVE_MONTHLY.value)}/MO SAVED FIRST × 12</div>
 			</div>
 			<div style={{opacity: signIn}}>
-				<Signature y={1446} />
+				<Signature y={1454} />
 			</div>
 			<div style={{position: 'absolute', left: dmm.safe.left, top: 1500, width: 888, fontSize: 24, lineHeight: 1.3, fontWeight: 600, color: C.muted}}>
 				<span style={{color: C.ink, fontWeight: 800, letterSpacing: 2}}>EXAMPLE</span> · {usd(PAYCHECK.value)} paycheck, 10% saved first = {usd(SAVE_MONTHLY.value)}/mo · {usd(SAVE_YEARLY.value)}/yr in cash, no interest. Not advice.
@@ -198,7 +215,7 @@ export const DMM003: React.FC<{showSafeZones?: boolean; audio?: boolean}> = ({sh
 			{showSafeZones && <SafeZoneOverlay />}
 			{audio && (
 				<>
-					<Html5Audio src={staticFile('daily/audio/dmm003-sfx-v03.wav')} />
+					<Html5Audio src={staticFile('daily/audio/dmm003-sfx-v04.wav')} />
 					<Sequence from={VO_OFFSET} layout="none" name="voice: Stack voice">
 						<Html5Audio src={staticFile('daily/voice/DMM-003/voice.mp3')} />
 					</Sequence>

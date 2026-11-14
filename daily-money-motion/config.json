@@ -8,11 +8,12 @@
     "frames": 450
   },
   "pillars": [
-    "investing-encouragement",
     "saving-money",
+    "investing-encouragement",
     "money-discipline",
     "building-wealth",
-    "meaningful-quotes"
+    "spending-habits",
+    "meaningful-messages"
   ],
   "engines": {
     "A": "cinematic (licensed footage)",
@@ -32,7 +33,8 @@
     "BUILDING",
     "REVIEWING",
     "NEEDS_FIXING",
-    "POST_READY",
+    "READY_FOR_REVIEW",
+    "APPROVED",
     "QUEUED",
     "PUBLISHED",
     "FAILED"
@@ -43,7 +45,8 @@
     "anchorDate": null,
     "timezone": "America/New_York",
     "deliverBy": "07:00",
-    "note": "Rolling 72 h: an episode is due when (date - anchorDate) is a multiple of intervalDays. Activated only after pilot approval (set active=true and anchorDate)."
+    "note": "Rolling 72 h from anchorDate. A daily trigger at 04:47 ET runs `dmm.mjs due`; only production days do any work. Hard stop 06:45 ET \u2192 deliver the best preview + an honest status.",
+    "startAt": "04:47"
   },
   "narrator": {
     "name": "Stack voice ",
@@ -79,5 +82,47 @@
       "speech-to-text on the final mix: every word recognised, no 'music' audio event",
       "voice gain vs original about 0 dB, correlation > 0.99"
     ]
+  },
+  "safe": {
+    "top": 170,
+    "bottom": 330,
+    "left": 72,
+    "right": 120
+  },
+  "qc_thresholds": {
+    "lufs_min": -20,
+    "lufs_max": -14,
+    "true_peak_max": -1.0,
+    "voice_corr_min": 0.99,
+    "voice_gain_tol_db": 0.5,
+    "sfx_below_voice_db_min": 20,
+    "sfx_peak_max": -24,
+    "no_music_residual_max": -55,
+    "sync_max_sec": 0.12,
+    "hook_motion_min": 0.4,
+    "static_diff": 0.15,
+    "max_static_sec": 1.5,
+    "max_visual_similarity": 0.85,
+    "allowed_words": [
+      "whatever's",
+      "payday",
+      "dmm"
+    ]
+  },
+  "gate": {
+    "ready_label": "READY FOR MY REVIEW",
+    "fail_label": "NEEDS FIXING",
+    "min_creative_score": 9.0,
+    "requires": [
+      "qc_auto.json with 0 FAIL",
+      "human-judgment scores written in qc-report.md",
+      "no unresolved important issue"
+    ],
+    "never": "POST READY / auto-publish: the creator approves every episode"
+  },
+  "production_limits": {
+    "max_render_rounds": 4,
+    "max_still_rounds": 4,
+    "hard_stop_minutes_before_delivery": 15
   }
 }

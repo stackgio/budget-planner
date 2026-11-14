@@ -34,6 +34,9 @@ export const T = {
 	endCard: we(WORDS.length - 1) + 22,
 	yearCallout: we(WORDS.length - 1) + 34,
 	sign: we(WORDS.length - 1) + 70,
+	savingWord: ws(W.saving1), // the savings tray lands on this word
+	countDone: we(WORDS.length - 1) + 34 + 54, // $300 → $3,600 count-up ends
+	again: we(WORDS.length - 1) + 34 + 62, // next payday pours (habit loop) to the end
 };
 
 /** Caption pages: break after these word indices; key words in accent. */
@@ -49,6 +52,7 @@ export const QC_BEATS: [string, number][] = [
 	['c_flip_mid', T.flip + 12],
 	['c_savings_full', T.payday + 4],
 	['c_rest', T.rest + 14],
-	['d_endcard', T.yearCallout + 20],
+	['d_count_mid', T.yearCallout + 27],
+	['d_again', T.again + 20],
 	['z_last', 449],
 ];

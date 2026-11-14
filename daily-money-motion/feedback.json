@@ -1,0 +1,28 @@
+{
+  "schema": "dmm-feedback-v1",
+  "note": "Creator reviews and real platform analytics. Never invent numbers; leave null until real data exists.",
+  "reviews": [
+    {
+      "episode": "DMM-002",
+      "date": "2026-11-14",
+      "from": "creator",
+      "notes": "Research audit requested; reference was never actually watched; looked like an infographic.",
+      "lessons": [
+        "Never claim to have watched a reference",
+        "Choose references whose techniques Remotion can reproduce"
+      ]
+    },
+    {
+      "episode": "DMM-003",
+      "date": "2026-11-14",
+      "from": "creator",
+      "notes": "Music and SFX too loud; competing with the narration.",
+      "lessons": [
+        "No background music by default",
+        "SFX at least 20 dB below the voice, ducked",
+        "Fixed gain; never peak-normalise SFX"
+      ]
+    }
+  ],
+  "analytics": []
+}

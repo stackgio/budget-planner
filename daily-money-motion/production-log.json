@@ -47,7 +47,14 @@
           "note": "All technical/accuracy checks pass; creative score 8.4 < 9 target. Pilot awaiting creator review."
         }
       ],
-      "published": []
+      "published": [],
+      "metaphor": "split-screen spend vs invest dashboard + growth chart",
+      "visual_tags": [
+        "split-screen",
+        "panels",
+        "line-chart",
+        "counters"
+      ]
     },
     {
       "id": "DMM-002",
@@ -96,7 +103,15 @@
           "note": "All checks pass; score 8.5 < 9; sound not yet heard by a person. Pilot awaiting creator review."
         }
       ],
-      "published": []
+      "published": [],
+      "metaphor": "glass column filling with daily notes (savings tube)",
+      "visual_tags": [
+        "glass-column",
+        "notes",
+        "time-lapse",
+        "2.5d",
+        "motion-blur"
+      ]
     },
     {
       "id": "DMM-003",
@@ -112,8 +127,8 @@
         "REF-0003"
       ],
       "status": "NEEDS_FIXING",
-      "final_render": "video/renders/daily/DMM-003/DMM-003_v03.mp4",
-      "qc_score": 8.1,
+      "final_render": "video/renders/daily/DMM-003/DMM-003_v04.mp4",
+      "qc_score": 8.4,
       "narration": {
         "voice_id": "xwJCF4OpyrvnHPQlIyZD",
         "cache_key": "4f523e46c7ab92be47ec"
@@ -147,9 +162,27 @@
           "at": "2026-11-14T16:38:31.565053+00:00",
           "status": "NEEDS_FIXING",
           "note": "v03 audio-only fix: music removed, SFX about -13 dB plus a 6 dB duck under the voice; visuals bit-identical to v02. Awaiting creator listen/approval and ElevenLabs commercial-use confirmation."
+        },
+        {
+          "at": "2026-11-14T17:15:34.587963+00:00",
+          "status": "NEEDS_FIXING",
+          "note": "v04: hook motion + ending payoff fixed (auto-QC 0 FAIL/0 WARN). Creative 8.4 < 9: no striking hook image; illustrative rather than cinematic."
+        },
+        {
+          "at": "2026-11-14T17:15:50.055Z",
+          "status": "NEEDS_FIXING",
+          "note": "creative score 8.4 < 9"
         }
       ],
-      "published": []
+      "published": [],
+      "metaphor": "cascading glass trays; order-of-filling (pay yourself first)",
+      "visual_tags": [
+        "glass-trays",
+        "liquid",
+        "cascade",
+        "karaoke-captions",
+        "narrated"
+      ]
     }
   ]
 }

@@ -9,7 +9,7 @@
   ],
   "hook_pattern": "reassuring reframe ('you're not bad at X') + word-synced captions",
   "layout": "single-metaphor-tower-reorder",
-  "final_render": "video/renders/daily/DMM-003/DMM-003_v03.mp4",
+  "final_render": "video/renders/daily/DMM-003/DMM-003_v04.mp4",
   "cover": "daily-money-motion/episodes/DMM-003/cover.png",
   "narration": {
     "voice_name": "Stack voice ",
@@ -18,12 +18,14 @@
     "cache_key": "4f523e46c7ab92be47ec",
     "file": "video/public/daily/voice/DMM-003/voice.mp3",
     "duration_sec": 9.87,
-    "offset_sec": 0.2
+    "offset_sec": 0.2,
+    "script": "You're not bad at saving. You're just saving last. Rent, food, fun, and then savings gets whatever's left. Usually nothing. Flip it. Savings first, on payday. Then live on the rest."
   },
   "disclosures": [
     "EXAMPLE footnote 0-15 s",
     "cash only, no interest",
     "Not advice"
   ],
-  "audio": "voice + subtle SFX, no music (creator adds music per platform)"
+  "audio": "voice + subtle SFX, no music (creator adds music per platform)",
+  "sfx_track": "public/daily/audio/dmm003-sfx-v04.wav"
 }

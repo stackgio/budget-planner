@@ -76,4 +76,8 @@ ffmpeg -nostdin -v error -y -i "$OUT" -vf "select='not(mod(n\,45))',scale=270:-1
 ffmpeg -nostdin -v error -y -i "$OUT" -vf "select=eq(n\,372)" -vsync 0 -frames:v 1 "$OUTDIR/cover_v$V.png"
 sha256sum "$OUT" | cut -c1-64 > "$QC/sha256.txt"
 echo "rendered $OUT — inspect $QC before approving. hard checks: $([ $FAIL = 0 ] && echo PASS || echo FAIL)"
+if [ -f "../daily-money-motion/episodes/$EP/metadata.json" ]; then
+  echo "== automated QC (qc_episode.py; add STT with: python3 scripts/daily/qc_episode.py $EP $OUT --stt)"
+  python3 scripts/daily/qc_episode.py "$EP" "$OUT" --out "$QC/auto" || FAIL=1
+fi
 exit $FAIL

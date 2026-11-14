@@ -8,6 +8,8 @@
 //   node daily-money-motion/scripts/dmm.mjs unused-refs                          → strong references not yet used
 //   node daily-money-motion/scripts/dmm.mjs render <DMM-NNN>                      → versioned render + QC (never overwrites)
 //   node daily-money-motion/scripts/dmm.mjs due [YYYY-MM-DD]                      → exit 0 if an episode is due (rolling 72 h cadence), 3 if not
+//   node daily-money-motion/scripts/dmm.mjs search <words…>                       → search episode history (topic, hook, metaphor, tags, notes)
+//   node daily-money-motion/scripts/dmm.mjs gate <DMM-NNN> <score> <qc_auto.json> → READY_FOR_REVIEW only if auto-QC has 0 FAIL and score ≥ gate; else NEEDS_FIXING
 //   node daily-money-motion/scripts/dmm.mjs list
 import {readFileSync, writeFileSync, mkdirSync, existsSync, renameSync, appendFileSync} from 'fs';
 import {spawnSync} from 'child_process';
@@ -47,7 +49,8 @@ switch (cmd) {
 		const [id, st, note] = a; const e = find(d, id);
 		if (!CFG.statuses.includes(st)) die(`status must be one of ${CFG.statuses.join(', ')}`);
 		if (e.status === 'PUBLISHED' && st !== 'PUBLISHED') die(`${id} is PUBLISHED — refusing to move it back`);
-		if (st === 'QUEUED' && e.status !== 'POST_READY') die(`${id} must be POST_READY before QUEUED (is ${e.status})`);
+		if (st === 'READY_FOR_REVIEW') die('use `gate` — READY_FOR_REVIEW requires passing auto-QC and a creative score ≥ the gate');
+		if (st === 'QUEUED' && e.status !== 'APPROVED') die(`${id} must be APPROVED by the creator before QUEUED (is ${e.status})`);
 		if ((st === 'QUEUED' || st === 'PUBLISHED') && e.history.some((h) => h.status === st)) die(`${id} was already ${st} — refusing to queue/publish twice`);
 		e.status = st; e.history.push({at: new Date().toISOString(), status: st, ...(note ? {note} : {})});
 		save(d); log(`${id} → ${st}${note ? ` (${note})` : ''}`); console.log(`${id} → ${st}`);
@@ -66,6 +69,11 @@ switch (cmd) {
 			if (overlap(p.topic, e.topic) >= 0.6) issues.push(`topic too close to ${p.id} ("${p.topic}")`);
 			if (overlap(p.hook, e.hook) >= 0.5) issues.push(`hook too close to ${p.id} ("${p.hook}")`);
 			for (const r of e.reference_ids ?? []) if ((p.reference_ids ?? []).includes(r)) issues.push(`reference ${r} already used by ${p.id}`);
+		}
+		for (const p of prior) {
+			if (e.metaphor && p.metaphor && overlap(p.metaphor, e.metaphor) >= 0.5) issues.push(`metaphor too close to ${p.id} ("${p.metaphor}")`);
+			const shared = (e.visual_tags ?? []).filter((t) => (p.visual_tags ?? []).includes(t));
+			if (shared.length >= 2) issues.push(`visual tags shared with ${p.id}: ${shared.join(', ')}`);
 		}
 		const prev = d.episodes.filter((p) => p.date < e.date && p.status !== 'FAILED').sort((x, y) => (x.date < y.date ? 1 : -1))[0];
 		if (prev && e.layout && prev.layout === e.layout) issues.push(`same layout as previous episode ${prev.id} (${e.layout})`);
@@ -110,6 +118,32 @@ switch (cmd) {
 		const last = d.episodes.filter((e) => e.status !== 'FAILED' && e.date < date).sort((x, y) => (x.date < y.date ? 1 : -1))[0];
 		if (last && Math.round((new Date(date) - new Date(last.date)) / 864e5) < S.intervalDays) { console.log(`not due: last episode ${last.id} on ${last.date} is less than ${S.intervalDays} days ago`); process.exitCode = 3; break; }
 		console.log(`due: produce an episode for ${date} (deliver by ${S.deliverBy} ${S.timezone})`);
+		break;
+	}
+	case 'search': {
+		const q = a.join(' ').toLowerCase();
+		if (!q) die('usage: search <words>');
+		const terms = q.split(/\s+/);
+		for (const e of d.episodes) {
+			const hay = JSON.stringify([e.topic, e.hook, e.hook_pattern, e.layout, e.metaphor, e.visual_tags, e.pillar, e.history?.map((h) => h.note)]).toLowerCase();
+			const hits = terms.filter((t) => hay.includes(t)).length;
+			if (hits) console.log(`${e.id}  ${e.date}  ${hits}/${terms.length}  ${e.metaphor ?? e.topic}  [${(e.visual_tags ?? []).join(', ')}]`);
+		}
+		break;
+	}
+	case 'gate': {
+		const [id, score, qcPath] = a; const e = find(d, id); const G = CFG.gate;
+		if (!score || !qcPath) die('usage: gate <ID> <creative score> <qc_auto.json>');
+		const qc = JSON.parse(readFileSync(qcPath, 'utf8'));
+		const sc = Number(score); const reasons = [];
+		if (qc.episode !== id) reasons.push(`qc file is for ${qc.episode}`);
+		if (qc.fails > 0) reasons.push(`${qc.fails} automated FAIL(s)`);
+		if (!(sc >= G.min_creative_score)) reasons.push(`creative score ${sc} < ${G.min_creative_score}`);
+		const st = reasons.length ? 'NEEDS_FIXING' : 'READY_FOR_REVIEW';
+		e.status = st; e.qc_score = sc; e.history.push({at: new Date().toISOString(), status: st, note: reasons.length ? reasons.join('; ') : `auto-QC 0 FAIL (${qc.warns} WARN), score ${sc}`});
+		save(d); log(`${id} gate → ${st}`);
+		console.log(st === 'READY_FOR_REVIEW' ? `${id}: ${G.ready_label}` : `${id}: ${G.fail_label} — ${reasons.join('; ')}`);
+		process.exitCode = reasons.length ? 2 : 0;
 		break;
 	}
 	case 'list':

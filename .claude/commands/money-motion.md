@@ -1,19 +1,77 @@
 ---
-description: Stack With Gio Daily Money Motion — research a proven short-form finance format, build an original 15 s (450-frame) video, render, QC, and prepare it for publishing
-argument-hint: "[date YYYY-MM-DD] [optional pillar or topic]"
+description: Stack With Gio Daily Money Motion — produce ONE original, narrated, QC-gated 15 s episode (every 72 h when scheduled). Never publishes.
+argument-hint: "[date YYYY-MM-DD] [optional pillar or topic] [--scheduled]"
 ---
-# /money-motion — one Daily Money Motion episode
+# /money-motion — one episode, end to end
 
-Read `daily-money-motion/README.md` first. It holds the architecture, the rules and the CLI. Work from the repo root.
+Read first, every run:
+- `daily-money-motion/README.md`: architecture
+- `daily-money-motion/CHECKLIST.md`: the production checklist and recurring problems; follow it line by line
+- `daily-money-motion/config.json`: narrator, audio, qc_thresholds, gate, schedule
+- `daily-money-motion/feedback.json`: the creator's notes and analytics; apply every lesson
 
-0. **Gate.** For a scheduled run, run `node daily-money-motion/scripts/dmm.mjs due` first. If it exits non-zero, stop silently: it isn't a production day.
-1. **Reserve.** Use DATE = $ARGUMENTS date, or today in America/New_York. Run `node daily-money-motion/scripts/dmm.mjs new DATE <pillar> "<topic>"`. Pick the pillar from `next-pillar` unless one was given. If an episode already exists for DATE, continue that one instead of making a new one.
-2. **Research (mandatory).** Use the vidIQ tools: `vidiq_instagram_tiktok_outlier_search` (last 30 days, ≥100K views, ≤40 s, finance concept for the pillar) and `vidiq_outliers` (Shorts). Run `vidiq_watch_shortform_content` on the top 3–5 candidates. Exclude paid ads (≈0% engagement). Add every reference to `research/viral-references.json` with real URLs and counts, and write `research/research-notes/DATE.md` with the 1–10 scoring table. If the tools fail, use only unused verified references from the library. If there are none, stop at RESEARCHING and report it. Never invent evidence.
-3. **Select and adapt.** Score the top 3 and pick a winner. Don't reuse a creator from the last 7 days, or the previous episode's layout. Write `episodes/<ID>/adaptation-notes.md` (borrowed vs changed). Use original phrasing only.
-4. **Script and storyboard.** One idea, about 25–35 visible words, using the 0–2 / 2–6 / 6–12 / 12–15 s structure. No generic quotes. Readable on frame 0, with motion by 0.3 s. Run `dmm.mjs set` for hook, hook_pattern, layout, engine and reference_ids, then `dmm.mjs check <ID>`. Fix any duplicate risk.
-4b. **Narration (default).** Write the script in the creator's voice (natural, conversational, ≤ 12 s spoken). Generate it with `python3 video/scripts/daily/voice_tts.py <ID> "<script>"`: the creator's own ElevenLabs voice from `config.json → narrator` (never create or clone a voice), cached, with word timestamps. Copy `words.json` into the episode folder and key every caption and reveal to it. Verify clarity afterwards by running the final MP4's audio through ElevenLabs speech-to-text.
-4c. **Audio default: voice + very subtle SFX + NO music** (`config.json → audio`). Never add a music bed, pad or drone; the creator adds music per platform. SFX use fixed gain (never peak-normalised), stay about 30 dB below the narration and duck a further 6 dB under it, with soft attacks and no impacts or repetitive ticks. Never regenerate the voice to fix a mix.
-5. **Build.** Create `video/src/daily/episodes/dmmNNN/{facts.ts,timing.ts,Episode.tsx}`, using the dmm001 folder as the pattern (but not its layout). Register it in `DailyRoot.tsx`. Every number goes in `facts.ts`, computed in code; hypothetical figures get an EXAMPLE footnote. Reuse `video/src/daily/components/`, and add new reusable components there. Let the winning reference decide the style: A cinematic (only with licensed footage, recorded in the manifest), B motion graphics, or C cinematic 2.5D/hybrid. Never default to the DMM-001 dashboard; change the layout from the previous episode. For quote episodes, use our own words or properly attributed quotes, never invented attributions. Only licensed or original assets; record each one in `asset-manifest.json`.
-6. **Render and QC.** Run `node daily-money-motion/scripts/dmm.mjs render <ID>`. Open every beat PNG, the strips and the contact sheet, and check them against the QC list in the README and the pilot's `qc-report.md`. Fix and re-render, up to 3 rounds. Write `episodes/<ID>/qc-report.md` with honest scores. Say exactly what was and wasn't inspected (you can't hear the audio).
-7. **Package.** Write `caption.md`, `metadata.json` and `cover.png` (copy `cover_vNN.png`). Set the status to POST_READY only if the score is ≥ 9 and every check passes; otherwise set NEEDS_FIXING with reasons. Never publish or queue automatically.
-8. **Deliver.** Send the MP4 and the cover to the user, with the research links, the score and any remaining issues. Commit to the session branch.
+Work from the repo root. Never publish or queue anything. The creator approves every episode.
+
+## 0 · Gate the day (scheduled runs)
+- Run `node daily-money-motion/scripts/dmm.mjs due`. If the exit code is non-zero, stop silently: it isn't a production day.
+- Note the **hard stop**: `config.schedule.deliverBy` minus `production_limits.hard_stop_minutes_before_delivery` (America/New_York). At the hard stop, go straight to step 8 with whatever exists.
+
+## 1 · Reserve
+- `dmm.mjs new <DATE> <pillar> "<topic>"`. Take the pillar from `dmm.mjs next-pillar` unless one was given.
+- If DATE already has an episode, continue it rather than making a new one.
+
+## 2 · Research (real, labelled, not dependent on vidIQ)
+- **Sources, in order of preference:**
+  - vidIQ outlier tools (if they return "Not enough credits", don't retry)
+  - Firecrawl web search for recent high-performing finance shorts
+  - Firecrawl scrape of Instagram reel URLs (influencers-club gives play counts)
+  - covers via `vidiq_get_images` (free)
+  - unused references in `research/viral-references.json`
+- **Labels:** tag every observation VERIFIED_FRAME / VERIFIED_COUNTS / AI_DESCRIPTION / ASSUMPTION. Never say "watched" unless frames were actually inspected.
+- **Selection:** choose on BOTH performance evidence and Remotion reproducibility. Reject anything that depends on real footage, physical action, a personal identity or third-party clips.
+- **Records:** write `research/research-notes/<DATE>.md` and add the references to the library.
+
+## 3 · Concept, script, uniqueness
+- **The idea:** one clear message with educational or emotional value. No generic quotes, no filler.
+- **Rotation:** saving · investing · discipline · wealth · spending habits · meaningful messages.
+- **The script:** natural and conversational, in the creator's voice. About 25–35 words, narration ≤ 12 s. Hook in 0–2 s. Every number goes in `facts.ts`; never imply guaranteed returns.
+- **The treatment:** pick a NEW metaphor and visual treatment. Run `dmm.mjs search <metaphor words>` and `dmm.mjs check <ID>` (after `set metaphor` / `set visual_tags` / `set hook` / `set layout`). Fix every duplicate risk. No reused trays, columns, split dashboards or pipes as the hero.
+
+## 4 · Narration (before any timing)
+- `python3 video/scripts/daily/voice_tts.py <ID> "<script>"`: the creator's own voice from `config.narrator`, cached. Never create or clone a voice. Never regenerate to fix a mix.
+- Copy `video/public/daily/voice/<ID>/words.json` into the episode's source folder. Every caption and major visual event is keyed to these word times.
+
+## 5 · Build
+- Create `video/src/daily/episodes/dmmNNN/{facts.ts,timing.ts,Episode.tsx}` and register it in `DailyRoot.tsx`.
+- Reuse `video/src/daily/components/` (WordCaptions, Camera2D, FilmLook, Headline, Chrome …). Add new reusable components there.
+- **Audio:** voice MP3 untouched on its own track, plus an SFX-only WAV generated from the episode's event timing (pattern: `video/scripts/daily/make_dmm003_sfx.py`). Follow `config.audio`: no music, fixed gain, ducked.
+- **Episode package:** `metadata.json` with `narration.{file,offset_sec,script}` and `sfx_track` (the QC tool reads them).
+- **The ending is designed:** after the voice ends, a payoff in motion; no static hold.
+
+## 6 · Render → QC → self-correct (at most `production_limits.max_render_rounds`)
+1. Run still rounds first (`node video/scripts/stills.mjs <Comp> <dir> name=frame … --props=<{showSafeZones:true}>`) and fix layout problems before any full render.
+2. `bash video/scripts/daily/render.sh <ID> <Comp>`: versioned; never overwrites; runs the export checks **and** `qc_episode.py` automatically.
+3. `python3 video/scripts/daily/qc_episode.py <ID> <mp4> --stt` once on the candidate final.
+4. Open and judge: frame 0, 1 s, 2 s, every transition, the payoff, the last frame, the 4 motion strips and the contact sheet.
+5. For each problem, write the **root cause**, fix the cause (not the symptom), re-render, and re-inspect the affected section **and** the whole output. No cosmetic churn.
+6. If a problem has now happened twice across episodes, add it to `CHECKLIST.md` (and to `qc_episode.py` if it can be measured).
+
+## 7 · Gate (honest)
+- Write `episodes/<ID>/qc-report.md` with:
+  - the automated table (copy `QC_AUTO.md`)
+  - human-judgment scores 1–10 for: hook, script and accuracy, voice clarity and timing, SFX levels, captions, visual quality, transitions and camera, layout and safe zones, payoff, technical, originality, likely retention
+  - the corrections made (with root causes)
+  - remaining concerns and what was NOT verified, in particular: **"audio measured, not listened to"**
+- `dmm.mjs gate <ID> <avg score> <qc_auto.json>` → **READY FOR MY REVIEW** (≥ 9 and 0 FAIL) or **NEEDS FIXING**. Never claim more than the gate gives.
+
+## 8 · Deliver (always, even when it isn't finished)
+- `cover.png`, `caption.md`, `metadata.json`, `script-storyboard.md`, `adaptation-notes.md`, `asset-manifest.json` in `episodes/<ID>/`.
+- Commit to the session branch and push.
+- Send the MP4 (display "attach", full resolution) and cover with SendUserFile (status "proactive" on scheduled runs).
+- Then send ONE short message:
+  - the label (READY FOR MY REVIEW / NEEDS FIXING)
+  - title and hook, a one-line concept, and the score
+  - the voice/audio/1080×1920/30 fps/15.0 s confirmation
+  - the top 3 corrections and the remaining concerns
+- **If the hard stop hit:** label the file "REVIEW PREVIEW — NOT FINISHED", say exactly what's unresolved, and set the status to NEEDS_FIXING.
+- **If no video exists at all** (for example a render failure), send a status report with the error and what was tried, and set the status to FAILED via `dmm.mjs status`.
