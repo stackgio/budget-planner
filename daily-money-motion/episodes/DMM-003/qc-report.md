@@ -66,3 +66,35 @@ I didn't watch it in real time and can't judge the voice's tone or feel. The mea
 2. **Hook image:** open on the dry SAVINGS tray close-up with "$0" (the problem first), then pull back to the tower.
 3. **Voice check:** listen once. If the delivery feels flat, we can raise the voice's "style" setting slightly. That's one cached regeneration.
 4. **Rights:** confirm your ElevenLabs plan includes commercial use.
+
+---
+
+# v03 — audio-only revision (2026-11-14)
+
+**File:** `video/renders/daily/DMM-003/DMM-003_v03.mp4` · sha256 `78f8c71e756867e5ac9b64621baa24942ea0f2d902e9bc9e8f11992b691ce5df` · 1080×1920 · 30 fps · 450 frames · all hard checks pass.
+**Requested by the creator:** remove the music, cut the effects by 10–15 dB, keep the voice untouched.
+
+## What changed
+| | v02 | v03 |
+|---|---|---|
+| Background music (pad, pluck pulse) | yes | **removed entirely** |
+| Kept effects (pour, trickle, last drip, flip air, tray settle, savings chime) | v02 level | **about −13 dB**, plus **−6 dB more under the narration**, softer attacks |
+| Removed effects | — | 4 tower-assembly tinks (repetitive), the end-card low "boom" (startling), a second chime partial, the final tink |
+| Gain staging | peak-normalised | fixed gain (normalising would have pushed quiet effects back up) |
+| Narration | Stack voice MP3 | **the same file**: sha256 `ab7eab859b1e4519…`, no regeneration, **0 ElevenLabs credits** |
+| Visuals | — | **bit-identical to v02** (whole-video picture comparison: PSNR = ∞) |
+
+## Audio measured across the whole video (not listened to: I can't hear audio)
+- **Narration in the mix:** correlation with the original file 0.9998, level −0.01 dB vs the original. No compression or limiting applied.
+- **Effects vs voice during narration:** voice −17.4 dBFS RMS vs everything else −51.1 dBFS → **33.7 dB below the voice**. The effects track peaks at −33.5 dBFS.
+- **No music:**
+  - The non-voice residual is −58.7 dBFS before the first pour (v02 had −24.8 dBFS of music there).
+  - It is **digital silence (−240 dBFS) from 10.6 s to the end** (v02 had −17.9 dBFS).
+- **Per-second level, v03 (dBFS RMS):** 0:−16 1:−18 2:−19 3:−17 4:−17 5:−19 6:−16 7:−18 8:−18 9:−18 · then silence from 10.6 s.
+- **Loudness:** −17.7 LUFS integrated, true peak −5.1 dBFS, no clipping.
+- **Speech-to-text on the final mix:** **31/31 words recognised**; **no audio events detected** (v02 was tagged "[gentle music]").
+
+## Honest caveats
+- **I have not listened to this mix.** The measurements show the effects are far below the voice. At 34 dB under it they may be barely perceptible on phone speakers. If you want them a touch more present, +6 dB is a one-line change (`SFX_TRIM` in `make_dmm003_sfx.py`); the visuals don't change.
+- **The last ~4.4 s have no audio.** That's intentional (no music; you add it per platform), but the video is silent there if posted as-is.
+- **The score is unchanged at 8.1/10** (audio fix only; the creative notes above still apply).

@@ -56,6 +56,9 @@ node daily-money-motion/scripts/dmm.mjs status DMM-002 POST_READY "QC 9.1, all c
 ```
 Statuses: RESEARCHING → REFERENCE_SELECTED → SCRIPT_READY → BUILDING → REVIEWING → NEEDS_FIXING | POST_READY → QUEUED → PUBLISHED (or FAILED). The CLI refuses to queue anything that isn't POST_READY, to queue or publish the same episode twice, or to create a second episode for the same date. Every action is appended to `logs/pipeline.log`. Retry = run `render` again (a new version; earlier versions are kept).
 
+## Audio default (from DMM-003 v03)
+**Stack voice narration + very subtle SFX + no background music.** The creator adds music on each platform. Measured targets: SFX about 30 dB+ below the voice during speech; digital silence wherever no effect is scheduled; the voice track untouched (gain about 0 dB vs the ElevenLabs file). See `config.json → audio`.
+
 ## Rules that never bend
 - Research comes first, using real posts with visible evidence. If the research tools are unavailable, use only the verified library or ask the creator for links. Never invent creators, URLs or views.
 - Every number lives in `facts.ts`, computed in code. Hypothetical figures carry an on-screen **EXAMPLE** label and their assumptions. Nothing is guaranteed, and nothing is personalised advice.

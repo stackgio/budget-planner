@@ -112,7 +112,7 @@
         "REF-0003"
       ],
       "status": "NEEDS_FIXING",
-      "final_render": "video/renders/daily/DMM-003/DMM-003_v02.mp4",
+      "final_render": "video/renders/daily/DMM-003/DMM-003_v03.mp4",
       "qc_score": 8.1,
       "narration": {
         "voice_id": "xwJCF4OpyrvnHPQlIyZD",
@@ -142,6 +142,11 @@
           "at": "2026-11-14T16:29:40.966901+00:00",
           "status": "NEEDS_FIXING",
           "note": "Score 8.1 < 9; awaiting creator approval and ElevenLabs commercial-use confirmation"
+        },
+        {
+          "at": "2026-11-14T16:38:31.565053+00:00",
+          "status": "NEEDS_FIXING",
+          "note": "v03 audio-only fix: music removed, SFX about -13 dB plus a 6 dB duck under the voice; visuals bit-identical to v02. Awaiting creator listen/approval and ElevenLabs commercial-use confirmation."
         }
       ],
       "published": []

@@ -198,7 +198,7 @@ export const DMM003: React.FC<{showSafeZones?: boolean; audio?: boolean}> = ({sh
 			{showSafeZones && <SafeZoneOverlay />}
 			{audio && (
 				<>
-					<Html5Audio src={staticFile('daily/audio/dmm003-bed-sfx.wav')} />
+					<Html5Audio src={staticFile('daily/audio/dmm003-sfx-v03.wav')} />
 					<Sequence from={VO_OFFSET} layout="none" name="voice: Stack voice">
 						<Html5Audio src={staticFile('daily/voice/DMM-003/voice.mp3')} />
 					</Sequence>

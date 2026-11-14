@@ -58,5 +58,26 @@
       "speed": 1.0
     },
     "auth": "ELEVENLABS_API_KEY env var; in this cloud environment the network proxy injects the key for api.elevenlabs.io. Never commit keys."
+  },
+  "audio": {
+    "default": "Stack voice narration + very subtle SFX + NO background music",
+    "music": "none. The creator adds music on each platform (TikTok, Instagram, Facebook, YouTube).",
+    "sfx": {
+      "max_level": "about 30 dB+ below the narration during speech (DMM-003 v03 measured 33.7 dB below); peak at or under -30 dBFS",
+      "duck_under_voice_db": 6,
+      "avoid": [
+        "music beds, pads, drones",
+        "impacts/booms",
+        "repetitive ticks",
+        "sharp clicks (use soft attacks)"
+      ],
+      "gain": "fixed: never peak-normalise an SFX-only track"
+    },
+    "voice": "Play the ElevenLabs MP3 untouched on its own track at volume 1.0: no compression, no limiter, no re-generation for audio fixes.",
+    "qc": [
+      "no-music check: the residual (mix minus voice) must be digital silence wherever no SFX is scheduled",
+      "speech-to-text on the final mix: every word recognised, no 'music' audio event",
+      "voice gain vs original about 0 dB, correlation > 0.99"
+    ]
   }
 }
