@@ -7,3 +7,8 @@ projects/_selftest*/
 __pycache__/
 renders/*/qc_v*/
 renders/*/.rendering_*
+renders/daily/*/qc_v*/
+renders/daily/*/cover_v*.png
+renders/daily/*/.rendering_*
+# superseded pilot drafts (kept locally, final is v04)
+renders/daily/DMM-001/DMM-001_v0[1-3].mp4
