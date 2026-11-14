@@ -97,6 +97,54 @@
         }
       ],
       "published": []
+    },
+    {
+      "id": "DMM-003",
+      "date": "2026-11-14",
+      "composition": "DMM003",
+      "pillar": "saving-money",
+      "engine": "B",
+      "topic": "Pay yourself first: savings last gets nothing; flip the order",
+      "hook": "YOU'RE NOT BAD AT SAVING. YOU'RE JUST SAVING LAST.",
+      "hook_pattern": "reassuring reframe + word-synced captions + narration",
+      "layout": "single-metaphor-tower-reorder",
+      "reference_ids": [
+        "REF-0003"
+      ],
+      "status": "NEEDS_FIXING",
+      "final_render": "video/renders/daily/DMM-003/DMM-003_v02.mp4",
+      "qc_score": 8.1,
+      "narration": {
+        "voice_id": "xwJCF4OpyrvnHPQlIyZD",
+        "cache_key": "4f523e46c7ab92be47ec"
+      },
+      "history": [
+        {
+          "at": "2026-11-14T16:29:40.966901+00:00",
+          "status": "REFERENCE_SELECTED",
+          "note": "REF-0003 (creator-approved direction)"
+        },
+        {
+          "at": "2026-11-14T16:29:40.966901+00:00",
+          "status": "SCRIPT_READY",
+          "note": "narration generated with Stack voice"
+        },
+        {
+          "at": "2026-11-14T16:29:40.966901+00:00",
+          "status": "BUILDING"
+        },
+        {
+          "at": "2026-11-14T16:29:40.966901+00:00",
+          "status": "REVIEWING",
+          "note": "v01-v02; STT 31/31 words"
+        },
+        {
+          "at": "2026-11-14T16:29:40.966901+00:00",
+          "status": "NEEDS_FIXING",
+          "note": "Score 8.1 < 9; awaiting creator approval and ElevenLabs commercial-use confirmation"
+        }
+      ],
+      "published": []
     }
   ]
 }

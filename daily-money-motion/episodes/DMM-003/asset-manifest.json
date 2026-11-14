@@ -1,0 +1,9 @@
+{
+  "episode": "DMM-003",
+  "assets": [
+    {"asset": "video/public/daily/voice/DMM-003/voice.mp3", "type": "narration", "source": "ElevenLabs TTS, the creator's own saved voice 'Stack voice ' (category: generated/Voice Design), generated 2026-11-14 through the creator's account", "license": "Governed by the creator's ElevenLabs plan. Commercial use requires a paid plan (free-tier output is non-commercial and requires attribution). The plan tier could not be read via the API key (the subscription endpoint returned no data); the account refused the 192 kbps output format, which is reserved for the Creator tier and up. CONFIRM the plan allows commercial use before posting.", "verified": false},
+    {"asset": "video/public/daily/audio/dmm003-bed-sfx.wav", "type": "music + sfx", "source": "Synthesized by video/scripts/daily/make_dmm003_audio.py from the episode's own event timing", "license": "Original work owned by Stack With Gio", "verified": true},
+    {"asset": "@fontsource/inter 5.1.1", "type": "font", "license": "SIL Open Font License 1.1", "verified": true},
+    {"asset": "Trays, streams, captions", "type": "vector/motion", "source": "Drawn in code (video/src/daily/components/{Tray,WordCaptions}.tsx)", "license": "Original", "verified": true}
+  ]
+}

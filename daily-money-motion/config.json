@@ -44,5 +44,19 @@
     "timezone": "America/New_York",
     "deliverBy": "07:00",
     "note": "Rolling 72 h: an episode is due when (date - anchorDate) is a multiple of intervalDays. Activated only after pilot approval (set active=true and anchorDate)."
+  },
+  "narrator": {
+    "name": "Stack voice ",
+    "voice_id": "xwJCF4OpyrvnHPQlIyZD",
+    "source": "Creator's own saved ElevenLabs voice (category: generated / Voice Design), found by name on 2026-11-14. Never create or clone another voice.",
+    "model_id": "eleven_multilingual_v2",
+    "voice_settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.0,
+      "use_speaker_boost": true,
+      "speed": 1.0
+    },
+    "auth": "ELEVENLABS_API_KEY env var; in this cloud environment the network proxy injects the key for api.elevenlabs.io. Never commit keys."
   }
 }

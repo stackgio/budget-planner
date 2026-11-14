@@ -100,7 +100,9 @@
       "why_it_worked_hypothesis": "Diagnoses a personal pain ('why YOU can't save') and the fix is one rule; calm premium look",
       "adaptation_notes": "Strong candidate for the Saving pillar: order-of-operations metaphor. Avoid beaker/pitcher imagery and their phrasing.",
       "licensing": "Analysis only.",
-      "used_in": [],
+      "used_in": [
+        "DMM-003"
+      ],
       "our_post_performance": null,
       "how_studied": "vidIQ watch_shortform_content: an AI-generated text walkthrough plus one still image. We did not view the video ourselves.",
       "evidence_2026_11_14b": {

@@ -1,0 +1,8 @@
+{
+  "episode": "DMM-003", "date": "2026-11-14", "composition": "DMM003", "pillar": "saving-money", "engine": "B-narrated",
+  "reference_ids": ["REF-0003"], "hook_pattern": "reassuring reframe ('you're not bad at X') + word-synced captions",
+  "layout": "single-metaphor-tower-reorder", "final_render": "video/renders/daily/DMM-003/DMM-003_v02.mp4",
+  "cover": "daily-money-motion/episodes/DMM-003/cover.png",
+  "narration": {"voice_name": "Stack voice ", "voice_id": "xwJCF4OpyrvnHPQlIyZD", "model_id": "eleven_multilingual_v2", "cache_key": "4f523e46c7ab92be47ec", "file": "video/public/daily/voice/DMM-003/voice.mp3", "duration_sec": 9.87, "offset_sec": 0.2},
+  "disclosures": ["EXAMPLE footnote 0-15 s", "cash only, no interest", "Not advice"]
+}

@@ -1,0 +1,163 @@
+{
+ "cache_key": "4f523e46c7ab92be47ec",
+ "voice_id": "xwJCF4OpyrvnHPQlIyZD",
+ "model_id": "eleven_multilingual_v2",
+ "text": "You're not bad at saving. You're just saving last. Rent, food, fun, and then savings gets whatever's left. Usually nothing. Flip it. Savings first, on payday. Then live on the rest.",
+ "words": [
+  {
+   "text": "You're",
+   "start": 0.035,
+   "end": 0.232
+  },
+  {
+   "text": "not",
+   "start": 0.267,
+   "end": 0.372
+  },
+  {
+   "text": "bad",
+   "start": 0.418,
+   "end": 0.627
+  },
+  {
+   "text": "at",
+   "start": 0.673,
+   "end": 0.743
+  },
+  {
+   "text": "saving.",
+   "start": 0.789,
+   "end": 1.196
+  },
+  {
+   "text": "You're",
+   "start": 1.254,
+   "end": 1.451
+  },
+  {
+   "text": "just",
+   "start": 1.474,
+   "end": 1.637
+  },
+  {
+   "text": "saving",
+   "start": 1.672,
+   "end": 1.962
+  },
+  {
+   "text": "last.",
+   "start": 2.032,
+   "end": 2.508
+  },
+  {
+   "text": "Rent,",
+   "start": 2.659,
+   "end": 2.995
+  },
+  {
+   "text": "food,",
+   "start": 3.077,
+   "end": 3.471
+  },
+  {
+   "text": "fun,",
+   "start": 3.541,
+   "end": 3.901
+  },
+  {
+   "text": "and",
+   "start": 3.936,
+   "end": 4.063
+  },
+  {
+   "text": "then",
+   "start": 4.11,
+   "end": 4.249
+  },
+  {
+   "text": "savings",
+   "start": 4.319,
+   "end": 4.667
+  },
+  {
+   "text": "gets",
+   "start": 4.714,
+   "end": 4.876
+  },
+  {
+   "text": "whatever's",
+   "start": 4.899,
+   "end": 5.248
+  },
+  {
+   "text": "left.",
+   "start": 5.306,
+   "end": 5.642
+  },
+  {
+   "text": "Usually",
+   "start": 5.817,
+   "end": 6.095
+  },
+  {
+   "text": "nothing.",
+   "start": 6.153,
+   "end": 6.525
+  },
+  {
+   "text": "Flip",
+   "start": 6.583,
+   "end": 6.838
+  },
+  {
+   "text": "it.",
+   "start": 6.896,
+   "end": 7.07
+  },
+  {
+   "text": "Savings",
+   "start": 7.152,
+   "end": 7.512
+  },
+  {
+   "text": "first,",
+   "start": 7.558,
+   "end": 7.883
+  },
+  {
+   "text": "on",
+   "start": 7.941,
+   "end": 8.104
+  },
+  {
+   "text": "payday.",
+   "start": 8.162,
+   "end": 8.638
+  },
+  {
+   "text": "Then",
+   "start": 8.696,
+   "end": 8.835
+  },
+  {
+   "text": "live",
+   "start": 8.893,
+   "end": 9.033
+  },
+  {
+   "text": "on",
+   "start": 9.067,
+   "end": 9.125
+  },
+  {
+   "text": "the",
+   "start": 9.16,
+   "end": 9.23
+  },
+  {
+   "text": "rest.",
+   "start": 9.265,
+   "end": 9.683
+  }
+ ]
+}
