@@ -55,3 +55,18 @@ On approval: set `config.schedule.active=true` and `anchorDate`, then create the
 
 ## Exact prompt the scheduled task would run (fresh session each time)
 > You are producing Stack With Gio's Daily Money Motion episode. Gio set this schedule up and is not watching: don't ask questions; decide, finish and report honestly. Repo: stackgio/budget-planner. 1) `cd` to the repo; `cd video && npm install` if needed. 2) Run `node daily-money-motion/scripts/dmm.mjs due`; if it exits non-zero, stop with no message. 3) Otherwise run the `/money-motion` command with today's date (America/New_York) and `--scheduled`, following `.claude/commands/money-motion.md` exactly, including the hard stop at 06:45 ET. 4) Never publish or queue posts. Never claim to have watched references or listened to audio. Never label anything READY FOR MY REVIEW unless `dmm.mjs gate` returned it. 5) Commit and push to a new branch `dmm/<date>`, then deliver the MP4 + cover with SendUserFile (proactive) and one short status message.
+
+## Dry run — 2026-11-14 17:35 UTC (session cse_017GfiedjssRo8sdvbjV484u, fired manually)
+| Check | Result |
+|---|---|
+| Unattended start in a fresh session; gate on a non-production day | OK: "not due on 2026-11-14 (next: 2026-11-17)"; stopped silently |
+| Repo clone + base branch | OK (plain `git clone`; `add_repo` isn't available in routine sessions) |
+| npm install + typecheck | OK |
+| Gate for 2026-11-17 | OK: "due" |
+| ElevenLabs (Stack voice) | OK: cache hit; live voice lookup HTTP 200 |
+| Render | OK: still rendered |
+| File delivery + push notification | OK: cover sent via SendUserFile, notification sent |
+| **git push of `dmm/<date>`** | **FAILED (403): the routine's sessions have no repository in their sources.** Delivery doesn't depend on it; the prompt now delivers first and, on 403, also sends production-log.json and says "NOT SAVED TO GITHUB". |
+| Research connectors | **None in routine sessions** (no vidIQ, no Firecrawl). They fall back to WebSearch/WebFetch plus the verified library. |
+
+**To fix both (one-time, in the claude.ai app):** open the routine "Stack With Gio — Daily Money Motion (every 72 h)" → edit → add repository `stackgio/budget-planner` (and, optionally, the vidIQ and Firecrawl connectors) → save. Then ask Claude for another dry run.
