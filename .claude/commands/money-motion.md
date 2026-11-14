@@ -1,0 +1,16 @@
+---
+description: Stack With Gio Daily Money Motion — research a proven short-form finance format, build an original 15 s (450-frame) video, render, QC, and prepare it for publishing
+argument-hint: "[date YYYY-MM-DD] [optional pillar or topic]"
+---
+# /money-motion — one Daily Money Motion episode
+
+Read `daily-money-motion/README.md` first. It holds the architecture, the rules and the CLI. Work from the repo root.
+
+1. **Reserve.** Use DATE = $ARGUMENTS date, or today in America/New_York. Run `node daily-money-motion/scripts/dmm.mjs new DATE <pillar> "<topic>"`. Pick the pillar from `next-pillar` unless one was given. If an episode already exists for DATE, continue that one instead of making a new one.
+2. **Research (mandatory).** Use the vidIQ tools: `vidiq_instagram_tiktok_outlier_search` (last 30 days, ≥100K views, ≤40 s, finance concept for the pillar) and `vidiq_outliers` (Shorts). Run `vidiq_watch_shortform_content` on the top 3–5 candidates. Exclude paid ads (≈0% engagement). Add every reference to `research/viral-references.json` with real URLs and counts, and write `research/research-notes/DATE.md` with the 1–10 scoring table. If the tools fail, use only unused verified references from the library. If there are none, stop at RESEARCHING and report it. Never invent evidence.
+3. **Select and adapt.** Score the top 3 and pick a winner. Don't reuse a creator from the last 7 days, or the previous episode's layout. Write `episodes/<ID>/adaptation-notes.md` (borrowed vs changed). Use original phrasing only.
+4. **Script and storyboard.** One idea, about 25–35 visible words, using the 0–2 / 2–6 / 6–12 / 12–15 s structure. No generic quotes. Readable on frame 0, with motion by 0.3 s. Run `dmm.mjs set` for hook, hook_pattern, layout, engine and reference_ids, then `dmm.mjs check <ID>`. Fix any duplicate risk.
+5. **Build.** Create `video/src/daily/episodes/dmmNNN/{facts.ts,timing.ts,Episode.tsx}`, using the dmm001 folder as the pattern (but not its layout). Register it in `DailyRoot.tsx`. Every number goes in `facts.ts`, computed in code; hypothetical figures get an EXAMPLE footnote. Reuse `video/src/daily/components/`, and add new reusable components there. Vary the engine (A cinematic / B motion graphics / C hybrid) across the week. Only licensed or original assets; record each one in `asset-manifest.json`.
+6. **Render and QC.** Run `node daily-money-motion/scripts/dmm.mjs render <ID>`. Open every beat PNG, the strips and the contact sheet, and check them against the QC list in the README and the pilot's `qc-report.md`. Fix and re-render, up to 3 rounds. Write `episodes/<ID>/qc-report.md` with honest scores. Say exactly what was and wasn't inspected (you can't hear the audio).
+7. **Package.** Write `caption.md`, `metadata.json` and `cover.png` (copy `cover_vNN.png`). Set the status to POST_READY only if the score is ≥ 9 and every check passes; otherwise set NEEDS_FIXING with reasons. Never publish or queue automatically.
+8. **Deliver.** Send the MP4 and the cover to the user, with the research links, the score and any remaining issues. Commit to the session branch.

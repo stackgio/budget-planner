@@ -1,0 +1,198 @@
+{
+  "schema": "dmm-reference-v1",
+  "notes": "Persistent viral reference library. Kept separate from the production log. Views/medians are the publicly visible counts as indexed by the vidIQ connector on the research date; they change over time. 'why_it_worked' fields are HYPOTHESES, not proven causes. Scene analysis came from vidIQ's short-form video analysis (an AI watch of the public post), not from frame-by-frame human review.",
+  "references": [
+    {
+      "id": "REF-0001",
+      "creator": "@pathlightvisuals",
+      "platform": "Instagram Reels",
+      "url": "https://www.instagram.com/reel/DfOxfoKAFpC",
+      "published": "2026-11-02",
+      "researched": "2026-11-14",
+      "views": 8100000,
+      "creator_median_views": 24300,
+      "outlier_multiple": 334.0,
+      "followers": 40700,
+      "duration_sec": 10.5,
+      "topic": "Same $10K: buy a car vs buy an income-producing asset",
+      "hook_0_2s": "Split screen on frame 0 with header 'SAME $10K. TWO MOVES.'; coins tossed toward car (top) vs house (bottom)",
+      "editing_style": "2D stick-figure animation, stacked two-panel comparison, fast beat-synced updates",
+      "shot_progression": "Static locked two-panel frame; outcome diverges inside each panel; header swaps to moral at end",
+      "typography": "Bold geometric uppercase sans, wide tracking, soft glow",
+      "motion_techniques": [
+        "stacked split-screen",
+        "beat-synced counters stepping up/down",
+        "red expense callouts",
+        "coin arcs",
+        "posture change on characters",
+        "header swap for the takeaway"
+      ],
+      "sound": "Music only (electronic beat) + coin/cash-register and dull-thud SFX on each number change",
+      "payoff": "Asset side ends +$11,000 and the car appears anyway; spender's car halves in value",
+      "performance_evidence": "8.1M views = 334x creator median (strongest relative outlier found)",
+      "why_it_worked_hypothesis": "Instant A-vs-B framing needs no explanation; constant number movement holds attention; ~10 s length encourages loops; aspirational moral",
+      "adaptation_notes": "Keep: identical-input A/B split, numbers that move on the beat, header swap ending. Change: no stick figures/characters, no car-vs-house props, original headline wording, honest compound math with visible assumptions, our own palette/type/motion.",
+      "licensing": "Watched for analysis only. No footage, audio, graphics, character designs or text reused.",
+      "used_in": [
+        "DMM-001"
+      ],
+      "our_post_performance": null
+    },
+    {
+      "id": "REF-0002",
+      "creator": "@rovo.stories",
+      "platform": "Instagram Reels",
+      "url": "https://www.instagram.com/reel/DfaINszyOV4",
+      "published": "2026-11-06",
+      "researched": "2026-11-14",
+      "views": 3900000,
+      "creator_median_views": 782700,
+      "outlier_multiple": 5.0,
+      "followers": 20000,
+      "duration_sec": 17.7,
+      "topic": "Same $1,500, same $1,000 emergency, three habits (spend / save / invest)",
+      "hook_0_2s": "Three stacked floors, header 'SAME $1,500. SAME EMERGENCY.'",
+      "editing_style": "2D animated three-tier split, industrial set, month counter",
+      "shot_progression": "Allocation → emergency slam → months pass with debt compounding vs money tree growing through ceilings",
+      "typography": "Heavy all-caps display with stroke + serif tier labels",
+      "motion_techniques": [
+        "three-way split",
+        "screen-shake on impact",
+        "month ticker",
+        "object growing across panel boundaries"
+      ],
+      "sound": "Upbeat game-like beat, siren on emergency, cash/coin SFX",
+      "payoff": "Investor's tree breaks through the floors above",
+      "performance_evidence": "3.9M views, 5x a high (782.7K) median",
+      "why_it_worked_hypothesis": "Relatable shock event (emergency) plus 90%/9%/1% identity labels invite self-comparison and comments",
+      "adaptation_notes": "Future episode idea: emergency-fund pillar with a shock event; growth crossing panel borders is a strong visual. Must use honest interest math.",
+      "licensing": "Analysis only.",
+      "used_in": [],
+      "our_post_performance": null
+    },
+    {
+      "id": "REF-0003",
+      "creator": "@mushinvisuals",
+      "platform": "Instagram Reels",
+      "url": "https://www.instagram.com/reel/DfhOeOBPVyg",
+      "published": "2026-11-09",
+      "researched": "2026-11-14",
+      "views": 1100000,
+      "creator_median_views": 25600,
+      "outlier_multiple": 42.1,
+      "followers": 6600,
+      "duration_sec": 12.6,
+      "topic": "Pay yourself first vs save what's left",
+      "hook_0_2s": "Header 'Why you can't save.' over two rows of labelled beakers",
+      "editing_style": "Minimal glowing line animation, dark background, warm accent",
+      "shot_progression": "Two rows pour salary into beakers in different order; top runs dry before SAVINGS",
+      "typography": "Clean Inter-like sans, mixed case, one accent word",
+      "motion_techniques": [
+        "fluid fill masks",
+        "ordered sequence comparison",
+        "header swap to solution"
+      ],
+      "sound": "Lo-fi beat, music only",
+      "payoff": "'Don't save what's left. Pay yourself first.'",
+      "performance_evidence": "1.1M views = 42x median on a 6.6K-follower account",
+      "why_it_worked_hypothesis": "Diagnoses a personal pain ('why YOU can't save') and the fix is one rule; calm premium look",
+      "adaptation_notes": "Strong candidate for the Saving pillar: order-of-operations metaphor. Avoid beaker/pitcher imagery and their phrasing.",
+      "licensing": "Analysis only.",
+      "used_in": [],
+      "our_post_performance": null
+    },
+    {
+      "id": "REF-0004",
+      "creator": "@amberstepsofficial",
+      "platform": "Instagram Reels",
+      "url": "https://www.instagram.com/reel/Dff_qiwE6rs",
+      "published": "2026-11-09",
+      "researched": "2026-11-14",
+      "views": 1100000,
+      "creator_median_views": 18800,
+      "outlier_multiple": 56.3,
+      "followers": 844,
+      "duration_sec": 12.4,
+      "topic": "Luxury first vs assets first over 10 years",
+      "hook_0_2s": "Split 'LUXURY FIRST / ASSETS FIRST', YEAR counter starts",
+      "editing_style": "2D silhouettes, cold vs warm grading per half",
+      "shot_progression": "Year 1→10 ticker; car depreciates/rusts vs house lights up and appreciates; car bought in cash",
+      "typography": "Wide-tracked uppercase sans",
+      "motion_techniques": [
+        "year ticker",
+        "color temperature as meaning",
+        "depreciation counter"
+      ],
+      "sound": "Marimba/synth, cash chimes per action",
+      "payoff": "'SAME SALARY. DIFFERENT FUTURE.'",
+      "performance_evidence": "1.1M views = 56x median; account had only 844 followers (format, not audience, carried it)",
+      "why_it_worked_hypothesis": "Format-driven: A/B + time-lapse. Note: its house appreciation figures are not explained (accuracy risk we will not copy).",
+      "adaptation_notes": "Borrowed principle for DMM-001: losing side drains of colour while the winning side warms. Our numbers must be computed and labelled.",
+      "licensing": "Analysis only.",
+      "used_in": [
+        "DMM-001 (supporting principle only)"
+      ],
+      "our_post_performance": null
+    },
+    {
+      "id": "REF-0005",
+      "creator": "@dlf.visuals",
+      "platform": "TikTok",
+      "url": "https://www.tiktok.com/@dlf.visuals/video/7705089291604462870",
+      "published": "2026-11-06",
+      "researched": "2026-11-14",
+      "views": 296700,
+      "creator_median_views": 7400,
+      "outlier_multiple": 40.2,
+      "followers": 4400,
+      "duration_sec": 39,
+      "topic": "$10/day invested for 30 years vs spent",
+      "hook_0_2s": "'$10 A DAY is how you end up in a LAMBORGHINI' with car render",
+      "editing_style": "2D motion graphics + voiceover, odometer counters, exponential line chart",
+      "shot_progression": "Hook → two friends → year 1/10/20/30 milestones → 'last 10 years beat first 20' → payoff → loop",
+      "typography": "Heavy/light weight contrast sans",
+      "motion_techniques": [
+        "odometer counters",
+        "exponential line with glowing tip",
+        "contribution vs value callout",
+        "seamless loop"
+      ],
+      "sound": "Female VO + tech synth groove, ticks on counters",
+      "payoff": "'He only put in $109K' vs $453K",
+      "performance_evidence": "296.7K views = 40x median",
+      "why_it_worked_hypothesis": "Aspirational object + surprising compound number; stating the assumed return on screen builds trust",
+      "adaptation_notes": "Borrowed principle: show money put in vs value as two lines so the gap IS the growth. Too long for 15 s as-is; one idea only.",
+      "licensing": "Analysis only. Includes a branded car image — never reuse brand imagery.",
+      "used_in": [
+        "DMM-001 (supporting principle only)"
+      ],
+      "our_post_performance": null
+    }
+  ],
+  "screened_not_selected": [
+    {
+      "creator": "@sticktoit.daily",
+      "platform": "TikTok",
+      "url": "https://www.tiktok.com/@sticktoit.daily/video/7703605362947067168",
+      "views": 1200000,
+      "outlier_multiple": 93.4,
+      "reason": "Egg-vs-goose metaphor; good for a future Money-psychology episode. Not watched in depth yet."
+    },
+    {
+      "creator": "@neuronvisuals",
+      "platform": "Instagram Reels",
+      "url": "https://www.instagram.com/reel/Depgy88RMMw",
+      "views": 2200000,
+      "outlier_multiple": 8.4,
+      "reason": "Poor vs rich split; same format family as REF-0001, lower relative outlier. Not watched in depth yet."
+    },
+    {
+      "creator": "YouTube Shorts: Zurich Insurance, Scotiabank, Sarwa, SEBI Awareness",
+      "platform": "YouTube Shorts",
+      "url": null,
+      "views": null,
+      "outlier_multiple": null,
+      "reason": "Excluded: ~0% engagement indicates paid ad distribution, so views are not organic evidence."
+    }
+  ]
+}

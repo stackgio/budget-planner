@@ -1,0 +1,11 @@
+{
+  "episode": "DMM-001",
+  "assets": [
+    {"asset": "video/public/daily/music/dmm-bed-120bpm.wav", "type": "music", "source": "Synthesized by video/scripts/daily/make_music.py (in-repo, deterministic)", "license": "Original work owned by Stack With Gio; cleared for commercial use on all platforms", "verified": true},
+    {"asset": "video/public/sfx/{pop,card,click,thud,coin,chime,whoosh-soft}.wav", "type": "sfx", "source": "Synthesized by video/scripts/make_sfx.py (existing project kit)", "license": "Original work owned by Stack With Gio", "verified": true},
+    {"asset": "@fontsource/inter 5.1.1", "type": "font", "source": "npm", "license": "SIL Open Font License 1.1 (commercial use permitted)", "verified": true},
+    {"asset": "All graphics", "type": "vector/motion", "source": "Drawn in code (video/src/daily/)", "license": "Original", "verified": true}
+  ],
+  "third_party_footage": "none",
+  "reference_material_used_in_video": "none (references were analysed only)"
+}

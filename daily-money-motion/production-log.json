@@ -1,0 +1,28 @@
+{
+  "episodes": [
+    {
+      "id": "DMM-001",
+      "date": "2026-11-14",
+      "composition": "DMM001",
+      "pillar": "spending-lifestyle-inflation",
+      "engine": "B",
+      "topic": "Monthly raise: lifestyle creep vs investing it",
+      "hook": "YOU GOT A $500 RAISE. WHERE DOES IT GO?",
+      "hook_pattern": "question + identical-input A/B split",
+      "layout": "stacked-two-panel",
+      "reference_ids": ["REF-0001", "REF-0004", "REF-0005"],
+      "status": "NEEDS_FIXING",
+      "final_render": "video/renders/daily/DMM-001/DMM-001_v04.mp4",
+      "qc_score": 8.4,
+      "history": [
+        {"at": "2026-11-14T00:00:00Z", "status": "RESEARCHING"},
+        {"at": "2026-11-14T00:00:00Z", "status": "REFERENCE_SELECTED", "note": "REF-0001"},
+        {"at": "2026-11-14T00:00:00Z", "status": "SCRIPT_READY"},
+        {"at": "2026-11-14T00:00:00Z", "status": "BUILDING"},
+        {"at": "2026-11-14T00:00:00Z", "status": "REVIEWING", "note": "v01-v04, 4 QC rounds"},
+        {"at": "2026-11-14T00:00:00Z", "status": "NEEDS_FIXING", "note": "All technical/accuracy checks pass; creative score 8.4 < 9 target. Pilot awaiting creator review."}
+      ],
+      "published": []
+    }
+  ]
+}

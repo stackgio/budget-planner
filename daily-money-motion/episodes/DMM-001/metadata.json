@@ -1,0 +1,19 @@
+{
+  "episode": "DMM-001",
+  "date": "2026-11-14",
+  "composition": "DMM001",
+  "pillar": "spending-lifestyle-inflation",
+  "engine": "B-motion-graphics",
+  "reference_ids": ["REF-0001", "REF-0004", "REF-0005"],
+  "hook_pattern": "question-about-viewer's-money + identical-input A/B split",
+  "layout": "stacked-two-panel + year-track",
+  "final_render": "video/renders/daily/DMM-001/DMM-001_v04.mp4",
+  "cover": "daily-money-motion/episodes/DMM-001/cover.png",
+  "platforms": {
+    "instagram_reels": {"caption_ref": "caption.md#primary", "audio": "original (embedded)"},
+    "facebook_reels": {"caption_ref": "caption.md#primary", "audio": "original (embedded)"},
+    "tiktok": {"caption_ref": "caption.md#tiktok", "audio": "original (embedded)"},
+    "youtube_shorts": {"title": "Where your $500 raise really goes #shorts", "caption_ref": "caption.md#youtube-shorts"}
+  },
+  "disclosures": ["EXAMPLE label on screen 0-15 s", "hypothetical 7%/yr compounded monthly", "Not guaranteed", "Not advice"]
+}

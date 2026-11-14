@@ -6,6 +6,7 @@ import {theme} from './theme';
 // Studio preview only: synthetic pipeline self-test data, clearly labelled on screen.
 import placeholder from './placeholder-spec.json';
 import {StoryCompositions} from './StoryRoot';
+import {DailyCompositions} from './daily/DailyRoot';
 
 const calculateMetadata: CalculateMetadataFunction<Spec> = ({props}) => {
 	const spec = specSchema.parse(props);
@@ -30,5 +31,6 @@ export const RemotionRoot: React.FC = () => (
 		calculateMetadata={calculateMetadata}
 	/>
 	<StoryCompositions />
+	<DailyCompositions />
 	</>
 );
