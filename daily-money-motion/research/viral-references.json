@@ -36,7 +36,8 @@
       "used_in": [
         "DMM-001"
       ],
-      "our_post_performance": null
+      "our_post_performance": null,
+      "how_studied": "vidIQ watch_shortform_content: an AI-generated text walkthrough plus one still image. We did not view the video ourselves."
     },
     {
       "id": "REF-0002",
@@ -68,7 +69,8 @@
       "adaptation_notes": "Future episode idea: emergency-fund pillar with a shock event; growth crossing panel borders is a strong visual. Must use honest interest math.",
       "licensing": "Analysis only.",
       "used_in": [],
-      "our_post_performance": null
+      "our_post_performance": null,
+      "how_studied": "vidIQ watch_shortform_content: an AI-generated text walkthrough plus one still image. We did not view the video ourselves."
     },
     {
       "id": "REF-0003",
@@ -99,7 +101,8 @@
       "adaptation_notes": "Strong candidate for the Saving pillar: order-of-operations metaphor. Avoid beaker/pitcher imagery and their phrasing.",
       "licensing": "Analysis only.",
       "used_in": [],
-      "our_post_performance": null
+      "our_post_performance": null,
+      "how_studied": "vidIQ watch_shortform_content: an AI-generated text walkthrough plus one still image. We did not view the video ourselves."
     },
     {
       "id": "REF-0004",
@@ -132,7 +135,8 @@
       "used_in": [
         "DMM-001 (supporting principle only)"
       ],
-      "our_post_performance": null
+      "our_post_performance": null,
+      "how_studied": "vidIQ watch_shortform_content: an AI-generated text walkthrough plus one still image. We did not view the video ourselves."
     },
     {
       "id": "REF-0005",
@@ -166,7 +170,8 @@
       "used_in": [
         "DMM-001 (supporting principle only)"
       ],
-      "our_post_performance": null
+      "our_post_performance": null,
+      "how_studied": "vidIQ watch_shortform_content: an AI-generated text walkthrough plus one still image. We did not view the video ourselves."
     },
     {
       "id": "REF-0006",
@@ -181,7 +186,7 @@
       "followers": 36600,
       "duration_sec": 14.1,
       "topic": "Day 82 of a saving journey: a note dropped into a clear acrylic tower",
-      "hook_0_2s": "A note is already sliding into the slot on frame 0. Text 'DAY 82 / MY SAVING JOURNEY / ONE DAY AT A TIME.'",
+      "hook_0_2s": "Per vidIQ's AI analysis (not viewed by us): a high-angle static shot of a tall clear acrylic tower; an off-screen hand slides a $100 note into the top slot; text 'DAY 82 / MY SAVING JOURNEY / ONE DAY AT A TIME.' at the top. The single frame we received shows the text, the tower and a note near the top; no hand is visible in that frame.",
       "main_message": "Consistency, one day at a time",
       "visual_style": "Static high-angle phone shot, bright flat room light, clear acrylic tower with staggered internal shelves",
       "motion_graphics": "None (live action)",
@@ -197,7 +202,14 @@
       "used_in": [
         "DMM-002"
       ],
-      "our_post_performance": null
+      "our_post_performance": null,
+      "evidence_audit_2026_11_14": {
+        "views_source": "vidIQ instagram_tiktok_outlier_search (indexed count 23.8M); cross-checked via vidIQ tiktok_profile_videos on 2026-11-14: 24M views, 1.9M likes, 97.8K shares, 92.8K saves (pinned post).",
+        "baseline_source": "The 17.7K 'median' and the 1,344.6x multiple are vidIQ's own figures. Its sample window and method are not disclosed to us.",
+        "independent_baseline": "Median of the creator's 7 most recent non-pinned posts older than 1 day (2026-11-09..11-13) = 52,300 views -> about 459x. Including the 1-day-old post (3.1K): median 40,850 -> about 588x. Still an extreme outlier, but '1,345x' depends on vidIQ's baseline and was not reproduced.",
+        "other_notes": "The account also has a second pinned hit (7.8M, 'Day 12', posted 2026-07-22). Several captions use #acrylicsavingsbox, and one reads like a product pitch, so the account may be tied to selling the box (not confirmed; no paid/promoted flag returned)."
+      },
+      "how_studied": "vidIQ watch_shortform_content: an AI-generated text walkthrough plus one still image. We did not view the video ourselves."
     },
     {
       "id": "REF-0007",
@@ -228,7 +240,11 @@
       "used_in": [
         "DMM-002 (supporting principle only)"
       ],
-      "our_post_performance": null
+      "our_post_performance": null,
+      "evidence_audit_2026_11_14": {
+        "possible_repost": "The Instagram caption 'Day 12 of my saving journey... Another $100 added today. Slowly filling this box, one day at a time.' is word-for-word the caption of @savingjourney_daily's TikTok 7665336468377783582 (7.8M views, posted 2026-07-22, about 6 weeks before this IG post). This is likely the same footage reposted, so it is NOT independent evidence for the format. Not verified frame by frame."
+      },
+      "how_studied": "vidIQ watch_shortform_content: an AI-generated text walkthrough plus one still image. We did not view the video ourselves."
     },
     {
       "id": "REF-0008",
@@ -259,7 +275,8 @@
       "used_in": [
         "DMM-002 (supporting principle only)"
       ],
-      "our_post_performance": null
+      "our_post_performance": null,
+      "how_studied": "vidIQ watch_shortform_content: an AI-generated text walkthrough plus one still image. We did not view the video ourselves."
     },
     {
       "id": "REF-0009",
@@ -288,7 +305,8 @@
       "adaptation_notes": "Future idea (spending pillar). Don't reuse its punchline structure verbatim.",
       "licensing": "Analysed only.",
       "used_in": [],
-      "our_post_performance": null
+      "our_post_performance": null,
+      "how_studied": "vidIQ watch_shortform_content: an AI-generated text walkthrough plus one still image. We did not view the video ourselves."
     },
     {
       "id": "REF-0010",
@@ -317,7 +335,8 @@
       "adaptation_notes": "Future 'meaningful quote' episode: beat-synced word reveals plus a change of look per line. Our own words only.",
       "licensing": "Analysed only. Its music track is not licensed for our use.",
       "used_in": [],
-      "our_post_performance": null
+      "our_post_performance": null,
+      "how_studied": "vidIQ watch_shortform_content: an AI-generated text walkthrough plus one still image. We did not view the video ourselves."
     }
   ],
   "screened_not_selected": [
