@@ -371,6 +371,35 @@
       "licensing": "Analysed only.",
       "used_in": [],
       "our_post_performance": null
+    },
+    {
+      "id": "REF-0012",
+      "creator": "@investwithqueenie",
+      "platform": "Instagram Reels",
+      "url": "https://www.instagram.com/reel/DegEk0JzWK-/",
+      "published": "2026-10-15",
+      "researched": "2026-11-14",
+      "views": 224206,
+      "creator_median_views": null,
+      "outlier_multiple": null,
+      "followers": null,
+      "duration_sec": 65.1,
+      "topic": "Investing at 25 vs 35: the difference compound growth makes",
+      "evidence": {
+        "VERIFIED_COUNTS": "influencers-club via Firecrawl, 2026-11-14: 224,206 plays, 2,151 likes, 120 comments; duration 65.1 s.",
+        "VERIFIED_CAPTION": "'Investing at 25 vs 35. The difference is WILD … The best time to plant a tree was 10 years ago. The second best time is today!'",
+        "baseline": "No creator median available (vidIQ credits exhausted), so no outlier multiple is claimed.",
+        "VERIFIED_FRAME": "none",
+        "AI_DESCRIPTION": "none",
+        "ASSUMPTION": "Topic demand: several other recent reels use the same 25-vs-35 / 'waiting 10 years' framing (see research-notes/2026-11-14-dmm004.md). Their counts were far lower (553–9,878 plays)."
+      },
+      "how_studied": "Counts and caption only. We did not view the video.",
+      "reproducibility": "High for the idea (pure maths); the reel's own visuals are unknown and were not used.",
+      "licensing": "Analysed only.",
+      "used_in": [
+        "DMM-004"
+      ],
+      "our_post_performance": null
     }
   ],
   "screened_not_selected": [

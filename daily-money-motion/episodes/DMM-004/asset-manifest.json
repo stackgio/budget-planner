@@ -1,0 +1,11 @@
+{
+  "episode": "DMM-004",
+  "assets": [
+    {"asset": "video/public/daily/voice/DMM-004/voice.mp3", "type": "narration", "source": "ElevenLabs TTS (eleven_multilingual_v2), the creator's own saved voice 'Stack voice ' (xwJCF4OpyrvnHPQlIyZD), generated 2026-11-14; cache key 791fd3f97e06b5dc65e5. No voice was created or cloned.", "license": "Governed by the creator's ElevenLabs plan. CONFIRM the plan allows commercial use before posting (open item since DMM-003).", "verified": false},
+    {"asset": "video/public/daily/audio/dmm004-sfx-v02.wav", "type": "sfx only (no music)", "source": "Synthesized by video/scripts/daily/make_dmm004_sfx.py from the episode timing", "license": "Original work owned by Stack With Gio", "verified": true},
+    {"asset": "@fontsource/inter", "type": "font", "license": "SIL Open Font License 1.1", "verified": true},
+    {"asset": "Tree-ring cross-section, captions, readouts", "type": "vector/motion", "source": "Drawn in code (video/src/daily/components/TreeRings.tsx, WordCaptions.tsx; episodes/dmm004/Episode.tsx)", "license": "Original", "verified": true}
+  ],
+  "music": "none (creator adds music per platform)",
+  "third_party_footage": "none"
+}

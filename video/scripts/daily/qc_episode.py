@@ -171,9 +171,12 @@ try:
     from spellchecker import SpellChecker
     spc = SpellChecker()
     extra = set(w.lower() for w in TH.get("allowed_words", []))
-    toks = {re.sub(r"('s|'re|'t|'ll|'ve|'d|'m)$", "", re.sub(r"[^\w'$%]", "", w).lower()) for w in script_words}
-    toks = {t for t in toks if t and not re.match(r"^[$\d%,.]+$", t) and t not in extra}
-    unk = sorted(spc.unknown(toks))
+    # Keep the whole contraction first ("doesn't" is in the dictionary, its stem "doesn" is not);
+    # a word is unknown only if both the full token and its suffix-stripped stem are unknown.
+    strip = lambda t: re.sub(r"('s|'re|'t|'ll|'ve|'d|'m)$", "", t)
+    toks = {re.sub(r"[^\w'$%]", "", w).lower().strip("'") for w in script_words}
+    toks = {t for t in toks if t and not re.match(r"^[$\d%,.]+$", t) and t not in extra and strip(t) not in extra}
+    unk = sorted(t for t in toks if spc.unknown([t]) and spc.unknown([strip(t)]))
     rec("captions", "spelling", "PASS" if not unk else "FAIL", f"unknown: {unk}" if unk else f"{len(toks)} distinct words OK")
 except ImportError:
     rec("captions", "spelling", "WARN", "pyspellchecker not installed: pip install pyspellchecker")

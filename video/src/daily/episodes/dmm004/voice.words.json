@@ -1,0 +1,173 @@
+{
+ "cache_key": "791fd3f97e06b5dc65e5",
+ "voice_id": "xwJCF4OpyrvnHPQlIyZD",
+ "model_id": "eleven_multilingual_v2",
+ "text": "Waiting ten years to invest doesn't cost you the small years. It costs you the biggest ones. Every year adds a ring. The last ten add more than the first thirty. Start now.",
+ "words": [
+  {
+   "text": "Waiting",
+   "start": 0.035,
+   "end": 0.325
+  },
+  {
+   "text": "ten",
+   "start": 0.372,
+   "end": 0.522
+  },
+  {
+   "text": "years",
+   "start": 0.569,
+   "end": 0.755
+  },
+  {
+   "text": "to",
+   "start": 0.789,
+   "end": 0.848
+  },
+  {
+   "text": "invest",
+   "start": 0.917,
+   "end": 1.242
+  },
+  {
+   "text": "doesn't",
+   "start": 1.289,
+   "end": 1.521
+  },
+  {
+   "text": "cost",
+   "start": 1.556,
+   "end": 1.8
+  },
+  {
+   "text": "you",
+   "start": 1.834,
+   "end": 1.916
+  },
+  {
+   "text": "the",
+   "start": 1.95,
+   "end": 2.02
+  },
+  {
+   "text": "small",
+   "start": 2.055,
+   "end": 2.276
+  },
+  {
+   "text": "years.",
+   "start": 2.334,
+   "end": 2.682
+  },
+  {
+   "text": "It",
+   "start": 2.705,
+   "end": 2.821
+  },
+  {
+   "text": "costs",
+   "start": 2.868,
+   "end": 3.088
+  },
+  {
+   "text": "you",
+   "start": 3.123,
+   "end": 3.193
+  },
+  {
+   "text": "the",
+   "start": 3.239,
+   "end": 3.309
+  },
+  {
+   "text": "biggest",
+   "start": 3.344,
+   "end": 3.599
+  },
+  {
+   "text": "ones.",
+   "start": 3.669,
+   "end": 3.924
+  },
+  {
+   "text": "Every",
+   "start": 3.959,
+   "end": 4.214
+  },
+  {
+   "text": "year",
+   "start": 4.272,
+   "end": 4.435
+  },
+  {
+   "text": "adds",
+   "start": 4.493,
+   "end": 4.679
+  },
+  {
+   "text": "a",
+   "start": 4.714,
+   "end": 4.737
+  },
+  {
+   "text": "ring.",
+   "start": 4.807,
+   "end": 5.062
+  },
+  {
+   "text": "The",
+   "start": 5.085,
+   "end": 5.19
+  },
+  {
+   "text": "last",
+   "start": 5.248,
+   "end": 5.457
+  },
+  {
+   "text": "ten",
+   "start": 5.492,
+   "end": 5.654
+  },
+  {
+   "text": "add",
+   "start": 5.7,
+   "end": 5.828
+  },
+  {
+   "text": "more",
+   "start": 5.875,
+   "end": 6.014
+  },
+  {
+   "text": "than",
+   "start": 6.049,
+   "end": 6.165
+  },
+  {
+   "text": "the",
+   "start": 6.2,
+   "end": 6.269
+  },
+  {
+   "text": "first",
+   "start": 6.293,
+   "end": 6.513
+  },
+  {
+   "text": "thirty.",
+   "start": 6.56,
+   "end": 6.954
+  },
+  {
+   "text": "Start",
+   "start": 7.012,
+   "end": 7.256
+  },
+  {
+   "text": "now.",
+   "start": 7.314,
+   "end": 7.628
+  }
+ ]
+}

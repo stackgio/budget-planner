@@ -1,0 +1,35 @@
+{
+  "episode": "DMM-004",
+  "date": "2026-11-14",
+  "composition": "DMM004",
+  "pillar": "investing-encouragement",
+  "engine": "B-narrated",
+  "reference_ids": [
+    "REF-0012"
+  ],
+  "hook": "WAITING TEN YEARS TO INVEST DOESN'T COST YOU THE SMALL YEARS.",
+  "hook_pattern": "myth-correction (doesn't cost X, costs Y) + word-synced captions",
+  "layout": "single-hero-cross-section-peel",
+  "metaphor": "tree-trunk cross-section: one ring per invested year, ring area = balance",
+  "final_render": "video/renders/daily/DMM-004/DMM-004_v03.mp4",
+  "cover": "daily-money-motion/episodes/DMM-004/cover.png",
+  "narration": {
+    "voice_name": "Stack voice ",
+    "voice_id": "xwJCF4OpyrvnHPQlIyZD",
+    "model_id": "eleven_multilingual_v2",
+    "cache_key": "791fd3f97e06b5dc65e5",
+    "file": "video/public/daily/voice/DMM-004/voice.mp3",
+    "duration_sec": 7.63,
+    "offset_sec": 0.2,
+    "script": "Waiting ten years to invest doesn't cost you the small years. It costs you the biggest ones. Every year adds a ring. The last ten add more than the first thirty. Start now."
+  },
+  "disclosures": [
+    "EXAMPLE footnote 0-15 s",
+    "$250/mo to age 65, 7%/yr average return assumed, compounded monthly",
+    "not guaranteed",
+    "Not advice"
+  ],
+  "audio": "voice + subtle SFX, no music (creator adds music per platform)",
+  "sfx_track": "public/daily/audio/dmm004-sfx-v02.wav",
+  "publishing": "OFF"
+}

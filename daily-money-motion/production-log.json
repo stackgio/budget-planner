@@ -183,6 +183,50 @@
         "karaoke-captions",
         "narrated"
       ]
+    },
+    {
+      "id": "DMM-004",
+      "date": "2026-11-14",
+      "composition": "DMM004",
+      "pillar": "investing-encouragement",
+      "topic": "Starting late cuts the biggest years of compounding, not the small ones",
+      "status": "NEEDS_FIXING",
+      "history": [
+        {
+          "at": "2026-11-14T19:46:55.083Z",
+          "status": "RESEARCHING",
+          "note": "one-time off-schedule full production test requested by the creator; reserved manually because dmm.mjs new allows one episode per date"
+        },
+        {
+          "at": "2026-11-14T19:52:40.169Z",
+          "status": "BUILDING",
+          "note": "tree-ring concept; narration generated; still rounds 2"
+        },
+        {
+          "at": "2026-11-14T20:02:34.302Z",
+          "status": "NEEDS_FIXING",
+          "note": "creative score 8.75 < 9"
+        }
+      ],
+      "published": [],
+      "hook": "WAITING TEN YEARS TO INVEST DOESN'T COST YOU THE SMALL YEARS.",
+      "layout": "single-hero-cross-section-peel",
+      "metaphor": "tree-trunk cross-section: one ring per invested year, ring area = balance; outer rings peel off (late start)",
+      "visual_tags": [
+        "tree-rings",
+        "cross-section",
+        "concentric",
+        "peel-away",
+        "regrow"
+      ],
+      "engine": "B-narrated",
+      "hook_pattern": "myth-correction (doesn't cost X, costs Y) + word-synced captions",
+      "reference_ids": [
+        "REF-0012"
+      ],
+      "final_render": "video/renders/daily/DMM-004/DMM-004_v03.mp4",
+      "cover": "daily-money-motion/episodes/DMM-004/cover.png",
+      "qc_score": 8.75
     }
   ]
 }
