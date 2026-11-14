@@ -1,14 +1,31 @@
-# Daily Money Motion — schedule (ACTIVE since 2026-11-14)
+# Daily Money Motion — schedule (ACTIVE; switched to the worker on 2026-11-14)
 
 | | |
 |---|---|
-| Scheduled task | `trig_019vHAJJ9CFC3kkFqThZeNEB` "Stack With Gio — Daily Money Motion (every 72 h)": **enabled** (confirmed by the scheduler) |
-| Fires | daily 04:47 America/New_York, each time in a fresh cloud session; `dmm.mjs due` lets only every 3rd day from **2026-11-17** do any work |
-| Production days | 2026-11-17 · 11-20 · 11-23 · 11-26 · 11-29 · 12-02 … (rolling 72 h) |
-| Delivery | by 07:00 ET (hard stop 06:45): MP4 + cover + QC report via the Claude app, plus a push notification; files on branch `dmm/<date>` |
+| **Active routine** | `trig_01UHp7TtqVUD6yCo532R1V2z` "Stack With Gio — Daily Money Motion (every 72 h) · worker": **enabled** (scheduler-confirmed) |
+| Runs in | the dedicated worker session `session_017Gfiebc5WY4ien94H1aNhz` (stackgio/budget-planner attached; pushes verified) |
+| Fires | daily 04:47 America/New_York; `dmm.mjs due` lets only every 3rd day from **2026-11-17** do any work |
+| Production days | Tue 2026-11-17 · Fri 11-20 · Mon 11-23 · Thu 11-26 · then 11-29, 12-02 … |
+| Delivery | by 07:00 ET (hard stop 06:45): MP4 + cover + QC report + caption via SendUserFile, then a PushNotification; branch `dmm/<date>` |
+| History | `scripts/sync_history.sh start` merges the latest `dmm/<date>` branch before each run; `finish` carries the new episode into `claude/daily-money-motion-4tu50i`. Episode IDs come from the merged log; renders are versioned and never overwritten. |
 | Publishing | OFF |
-| Daily Stories task | untouched (`trig_01WM5DbZfWVVpMGJYqiXPja7`, 06:50 ET) |
-| Pause or stop | ask Claude to disable or delete the trigger, or set `config.schedule.active=false` on `claude/daily-money-motion-4tu50i` (the gate then stops every run) |
+| Old routine | `trig_019vHAJJ9CFC3kkFqThZeNEB`: **disabled, not deleted** (its sessions couldn't push). Re-enable it to roll back. |
+| Daily Stories | `trig_01WM5DbZfWVVpMGJYqiXPja7`: untouched |
+
+**Operating note:** pressing "Run now" on a routine starts a **fresh, repo-less** session, not the worker, so it can't push. Timed firings go into the worker (verified 2026-11-14 19:15 UTC). For an on-demand episode, ask Claude for a one-shot timed run into the worker, or message the worker session directly ("RUN NOW date=YYYY-MM-DD").
+
+## Verified dry run — 2026-11-14 19:15 UTC (timed firing into the worker)
+| Check | Result | Evidence |
+|---|---|---|
+| Correct project branch + history sync | OK | `sync_history.sh start` → base `653d29b` (latest) |
+| Build + typecheck | OK | npm install, `tsc --noEmit` exit 0 |
+| Gate | OK | `due 2026-11-17` → due |
+| Stack voice | OK | cache hit `4f523e46c7ab92be47ec`, no API credits used |
+| Render | OK | `render.sh` hard checks PASS; MP4 1080×1920, 30 fps, 450 frames (re-verified from GitHub) |
+| Automated QC | OK | `qc_episode.py`: **0 FAIL · 0 WARN** (STT check skipped by design in dry runs) |
+| GitHub push | **OK** | `dmm/dry-run-2026-11-14` → `0d9597c`, later `222e5ec` (confirmed with `git ls-remote` from another session) |
+| Delivery + notification | OK | worker transcript: SendUserFile (MP4, cover, QC_AUTO.md, proactive) + PushNotification sent |
+| Tools in the worker | vidIQ, Firecrawl, WebSearch, SendUserFile, PushNotification | worker report |
 
 ---
 
