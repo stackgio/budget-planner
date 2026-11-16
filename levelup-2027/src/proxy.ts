@@ -6,7 +6,7 @@ import { NextResponse, type NextRequest } from "next/server";
  */
 const PUBLIC = ["/login", "/setup", "/api/auth/passkey/login", "/api/health", "/manifest.webmanifest", "/icon.svg", "/apple-touch-icon.png"];
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   if (PUBLIC.some((p) => pathname === p || pathname.startsWith(p + "/"))) return NextResponse.next();
   if (!req.cookies.get("lu_session")) {

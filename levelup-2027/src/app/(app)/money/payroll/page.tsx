@@ -9,13 +9,13 @@ import { PaydayRow } from "../PaydayRow";
 import { ScheduleCard } from "../ScheduleCard";
 
 export default async function RegularPayrollPage({ searchParams }: { searchParams: Promise<{ year?: string }> }) {
-  const { user, today } = await appContext();
+  const { user, today, trackingStart } = await appContext();
   const { schedule, paydays } = await loadPayroll(user.id, "REGULAR");
   const sp = await searchParams;
   const year = /^\d{4}$/.test(sp.year ?? "") ? Number(sp.year) : Math.max(2027, Number(today.slice(0, 4)));
   const provisional = !schedule.anchorVerified;
 
-  const needs = paydays.filter((p) => !p.deposit && p.status === "EXPECTED" && (p.manualDepositDate ?? p.expectedDepositDate) <= today && p.officialDate >= "2026-11-01");
+  const needs = paydays.filter((p) => !p.deposit && p.status === "EXPECTED" && (p.manualDepositDate ?? p.expectedDepositDate) <= today && (p.manualDepositDate ?? p.expectedDepositDate) >= trackingStart);
   const upcoming = paydays.filter((p) => p.officialDate >= today && !needs.includes(p)).slice(0, 8);
   const confirmed = paydays.filter((p) => p.deposit).reverse();
   const yearKey = String(year);
@@ -35,7 +35,7 @@ export default async function RegularPayrollPage({ searchParams }: { searchParam
       </section>
 
       {needs.length > 0 && (
-        <Section title="Did these arrive?">
+        <Section title="Did these arrive? (optional)">
           <ul className="divide-line">{needs.map((p) => <PaydayRow key={p.id} p={p} today={today} provisional={provisional} />)}</ul>
         </Section>
       )}

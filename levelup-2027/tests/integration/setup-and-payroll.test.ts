@@ -68,11 +68,11 @@ describe("payroll persistence", () => {
   it("never creates income from a scheduled payday; deposits are confirmed explicitly and only once", async () => {
     const p = await prisma.payday.findFirstOrThrow({ where: { ownerId, kind: "REGULAR", officialDate: localToDbDate("2027-01-08") } });
     expect(p.status).toBe("EXPECTED");
-    await recordDeposit(ownerId, p.id, { netCents: 148237, actualDepositDate: "2027-01-07" });
-    await expect(recordDeposit(ownerId, p.id, { netCents: 148237, actualDepositDate: "2027-01-07" })).rejects.toBeInstanceOf(UserError);
+    await recordDeposit(ownerId, p.id, { netCents: 148237, actualDepositDate: "2027-01-07", idempotencyKey: crypto.randomUUID() });
+    await expect(recordDeposit(ownerId, p.id, { netCents: 148237, actualDepositDate: "2027-01-07", idempotencyKey: crypto.randomUUID() })).rejects.toBeInstanceOf(UserError);
     // Concurrent double-submit
     const p2 = await prisma.payday.findFirstOrThrow({ where: { ownerId, kind: "REGULAR", officialDate: localToDbDate("2027-01-22") } });
-    const r = await Promise.allSettled([1, 2, 3].map(() => recordDeposit(ownerId, p2.id, { netCents: 100, actualDepositDate: "2027-01-21" })));
+    const r = await Promise.allSettled([1, 2, 3].map(() => recordDeposit(ownerId, p2.id, { netCents: 100, actualDepositDate: "2027-01-21", idempotencyKey: crypto.randomUUID() })));
     expect(r.filter((x) => x.status === "fulfilled")).toHaveLength(1);
     expect(await prisma.incomeDeposit.count()).toBe(2);
     const d = await prisma.incomeDeposit.findFirstOrThrow({ where: { paydayId: p.id } });
@@ -83,14 +83,14 @@ describe("payroll persistence", () => {
     const ot = await prisma.payday.findFirstOrThrow({ where: { ownerId, kind: "OVERTIME", officialDate: localToDbDate("2027-01-15") } });
     await setPaydayStatus(ownerId, ot.id, "ZERO", "No overtime");
     expect(await prisma.incomeDeposit.count()).toBe(0);
-    await expect(recordDeposit(ownerId, ot.id, { netCents: 1, actualDepositDate: "2027-01-15" })).resolves.toBeTruthy(); // still allowed if money actually arrived
+    await expect(recordDeposit(ownerId, ot.id, { netCents: 1, actualDepositDate: "2027-01-15", idempotencyKey: crypto.randomUUID() })).resolves.toBeTruthy(); // still allowed if money actually arrived
     const dep = await prisma.incomeDeposit.findFirstOrThrow();
     expect(dep.kind).toBe("OVERTIME");
   });
 
   it("changing the anchor recalculates projections but preserves confirmed deposits and overrides", async () => {
     const jan8 = await prisma.payday.findFirstOrThrow({ where: { ownerId, kind: "REGULAR", officialDate: localToDbDate("2027-01-08") } });
-    await recordDeposit(ownerId, jan8.id, { netCents: 150000, actualDepositDate: "2027-01-07" });
+    await recordDeposit(ownerId, jan8.id, { netCents: 150000, actualDepositDate: "2027-01-07", idempotencyKey: crypto.randomUUID() });
     const feb5 = await prisma.payday.findFirstOrThrow({ where: { ownerId, kind: "REGULAR", officialDate: localToDbDate("2027-02-05") } });
     await prisma.payday.update({ where: { id: feb5.id }, data: { manualDepositDate: localToDbDate("2027-02-03") } });
 
@@ -110,9 +110,10 @@ describe("payroll persistence", () => {
 
   it("corrections keep an audit trail", async () => {
     const p = await prisma.payday.findFirstOrThrow({ where: { ownerId, kind: "REGULAR", officialDate: localToDbDate("2027-01-08") } });
-    await recordDeposit(ownerId, p.id, { netCents: 999, actualDepositDate: "2027-01-07" });
+    await recordDeposit(ownerId, p.id, { netCents: 999, actualDepositDate: "2027-01-07", idempotencyKey: crypto.randomUUID() });
     await voidDeposit(ownerId, p.id, "typo");
-    expect(await prisma.incomeDeposit.count()).toBe(0);
+    expect(await prisma.incomeDeposit.count({ where: { voidedAt: null } })).toBe(0);
+    expect(await prisma.incomeDeposit.count()).toBe(1); // kept as history
     expect((await prisma.payday.findUniqueOrThrow({ where: { id: p.id } })).status).toBe("EXPECTED");
     const log = await prisma.auditLog.findMany({ where: { entity: "IncomeDeposit" }, orderBy: { at: "asc" } });
     expect(log.map((l) => l.action)).toEqual(["confirm", "void: typo"]);

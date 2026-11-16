@@ -30,10 +30,10 @@ export async function updateScheduleAction(_p: ActionState, fd: FormData): Promi
 export async function recordDepositAction(_p: ActionState, fd: FormData): Promise<ActionState> {
   const user = await requireUser();
   const r = await run(async () => {
-    const i = z.object({ paydayId: z.string().min(1), amount: z.string(), date, notes: z.string().max(500).optional() }).parse(Object.fromEntries(fd));
+    const i = z.object({ paydayId: z.string().min(1), amount: z.string(), date, notes: z.string().max(500).optional(), idempotencyKey: z.string() }).parse(Object.fromEntries(fd));
     const cents = parseDollarsToCents(i.amount);
     if (cents === null) throw new UserError("Enter the net amount deposited, e.g. 1482.37");
-    await recordDeposit(user.id, i.paydayId, { netCents: cents, actualDepositDate: i.date, notes: i.notes });
+    await recordDeposit(user.id, i.paydayId, { netCents: cents, actualDepositDate: i.date, notes: i.notes, idempotencyKey: i.idempotencyKey });
     return "Deposit confirmed.";
   });
   done();
@@ -45,7 +45,7 @@ export async function voidDepositAction(_p: ActionState, fd: FormData): Promise<
   const r = await run(async () => {
     const i = z.object({ paydayId: z.string().min(1), reason: z.string().trim().min(3, "Say briefly why (kept in the audit log).").max(200) }).parse(Object.fromEntries(fd));
     await voidDeposit(user.id, i.paydayId, i.reason);
-    return "Deposit removed. The original record is kept in the audit log.";
+    return "Deposit voided. The original stays in your history and audit log.";
   });
   done();
   return r;

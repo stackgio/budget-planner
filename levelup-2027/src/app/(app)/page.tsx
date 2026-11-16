@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarPlus, CheckCircle2, Clock, ListPlus, Moon, Timer } from "lucide-react";
+import { CalendarPlus, CheckCircle2, Clock, Dices, ListPlus, Moon, Sparkles, Timer } from "lucide-react";
 import { appContext } from "@/server/context";
 import { prisma } from "@/server/db";
 import { loadOccurrences } from "@/server/calendar";
@@ -20,7 +20,7 @@ import { ActivationButton } from "./ActivationButton";
 import { quickModeAction } from "./mode-actions";
 
 export default async function HomePage() {
-  const { user, tz, today, mode } = await appContext();
+  const { user, tz, today, mode, trackingStart } = await appContext();
   const now = new Date();
   const occ = await loadOccurrences(user.id, tz, zonedToInstant(today, "00:00", tz), zonedToInstant(addDays(today, 14), "00:00", tz), { includeTasks: false });
   const todays = occ.filter((o) => instantToLocalDate(o.start, tz) === today || (o.start < zonedToInstant(today, "00:00", tz) && o.end > zonedToInstant(today, "00:00", tz)));
@@ -38,11 +38,12 @@ export default async function HomePage() {
   const ot = await loadPayroll(user.id, "OVERTIME");
   const nextReg = reg.paydays.find((p) => p.officialDate >= today);
   const nextOt = ot.paydays.find((p) => p.officialDate >= today);
-  const toConfirm = [...reg.paydays, ...ot.paydays].filter((p) => !p.deposit && p.status === "EXPECTED" && (p.manualDepositDate ?? p.expectedDepositDate) <= today && p.officialDate >= "2026-11-01");
+  const toConfirm = [...reg.paydays, ...ot.paydays].filter((p) => !p.deposit && p.status === "EXPECTED" && (p.manualDepositDate ?? p.expectedDepositDate) <= today && (p.manualDepositDate ?? p.expectedDepositDate) >= trackingStart);
   const { months, verified } = await loadExtraMonths(user.id);
   const extra = nextExtraMonth(months, today);
 
   const challenges = await prisma.challenge.findMany({ where: { ownerId: user.id }, include: { tiles: { where: { status: "COMPLETED" }, select: { amountCents: true } } } });
+  const waitingTransfers = await prisma.allocationLine.count({ where: { status: "RESERVED", plan: { ownerId: user.id } } });
   const overdue = tasks.filter((t) => inView(t, "overdue", today)).length;
   const paused = suppressOptional(mode);
 
@@ -71,6 +72,9 @@ export default async function HomePage() {
         {mode !== "RECOVERY" && (
           <form action={quickModeAction} className="shrink-0"><input type="hidden" name="mode" value="RECOVERY" /><button className="btn-secondary"><Moon size={16} /> Start Recovery Mode</button></form>
         )}
+        <Link href="/money/roulette" className="btn-secondary shrink-0"><Dices size={16} /> Spin My Overtime</Link>
+        <Link href="/money/extra" className="btn-secondary shrink-0"><Sparkles size={16} /> Plan Extra Paycheck</Link>
+        {waitingTransfers > 0 && <Link href="/money/roulette" className="btn-primary shrink-0"><CheckCircle2 size={16} /> Confirm Payment ({waitingTransfers})</Link>}
         {toConfirm.length > 0 && <Link href={toConfirm[0]!.kind === "REGULAR" ? "/money/payroll" : "/money/overtime"} className="btn-primary shrink-0"><CheckCircle2 size={16} /> Confirm payday</Link>}
       </nav>
 

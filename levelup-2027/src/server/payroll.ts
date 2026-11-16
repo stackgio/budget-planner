@@ -2,6 +2,7 @@ import "server-only";
 import { Prisma, type PayKind, type PrismaClient } from "@prisma/client";
 import { prisma } from "./db";
 import { audit } from "./audit";
+import { IDEMPOTENCY_KEY_RE, isLedgerViolation, isUniqueViolation, requestHash } from "./idempotency";
 import { type LocalDate, dateToLocal, localToDbDate, makeLocalDate, todayLocal } from "@/domain/dates";
 import { projectPaydays } from "@/domain/payroll";
 
@@ -46,7 +47,7 @@ const untouched = (ownerId: string, kind: PayKind): Prisma.PaydayWhereInput => (
   kind,
   status: "EXPECTED",
   manualDepositDate: null,
-  deposit: { is: null },
+  deposits: { none: {} }, // any deposit — even a voided correction — keeps the payday as history
 });
 
 export async function updateSchedule(
@@ -81,24 +82,39 @@ export async function updateSchedule(
 
 export class UserError extends Error {}
 
-export async function recordDeposit(
-  ownerId: string,
-  paydayId: string,
-  input: { netCents: number; actualDepositDate: LocalDate; notes?: string | null },
-) {
+export interface DepositInput {
+  netCents: number;
+  actualDepositDate: LocalDate;
+  notes?: string | null;
+  idempotencyKey: string;
+}
+
+/**
+ * Confirm money that actually arrived. Idempotent: the same key returns the same deposit;
+ * the same key with different data is rejected. At most one active deposit per payday (DB index).
+ */
+export async function recordDeposit(ownerId: string, paydayId: string, input: DepositInput) {
+  if (!IDEMPOTENCY_KEY_RE.test(input.idempotencyKey)) throw new UserError("Missing request key. Refresh and try again.");
+  if (!Number.isSafeInteger(input.netCents) || input.netCents < 0) throw new UserError("Amount must be zero or more.");
+  const hash = requestHash({ op: "deposit", ownerId, paydayId, netCents: input.netCents, date: input.actualDepositDate, notes: input.notes || null });
+  const replay = async () => {
+    const prior = await prisma.incomeDeposit.findUnique({ where: { idempotencyKey: input.idempotencyKey } });
+    if (!prior) return null;
+    if (prior.ownerId !== ownerId || prior.requestHash !== hash) throw new UserError("This confirmation was already used for different data. Refresh and try again.");
+    return prior;
+  };
+  const prior = await replay();
+  if (prior) return prior;
   try {
     return await prisma.$transaction(async (tx) => {
-      const p = await tx.payday.findFirst({ where: { id: paydayId, ownerId }, include: { deposit: true } });
+      const p = await tx.payday.findFirst({ where: { id: paydayId, ownerId }, include: { deposits: { where: { voidedAt: null } } } });
       if (!p) throw new UserError("Payday not found.");
-      if (p.deposit) throw new UserError("A deposit is already recorded for this payday.");
+      if (p.deposits.length) throw new UserError("A deposit is already recorded for this payday.");
       const deposit = await tx.incomeDeposit.create({
         data: {
-          ownerId,
-          kind: p.kind,
-          paydayId: p.id,
-          netCents: input.netCents,
-          actualDepositDate: localToDbDate(input.actualDepositDate),
-          notes: input.notes || null,
+          ownerId, kind: p.kind, paydayId: p.id, netCents: input.netCents,
+          actualDepositDate: localToDbDate(input.actualDepositDate), notes: input.notes || null,
+          idempotencyKey: input.idempotencyKey, requestHash: hash,
         },
       });
       await tx.payday.update({ where: { id: p.id }, data: { status: "RECEIVED" } });
@@ -106,29 +122,44 @@ export async function recordDeposit(
       return deposit;
     });
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+    if (isUniqueViolation(e)) {
+      const again = await replay();
+      if (again) return again;
       throw new UserError("A deposit is already recorded for this payday.");
     }
     throw e;
   }
 }
 
-/** Correction: removes a mistaken deposit. The audit log keeps the full original record. */
+/**
+ * Correction: voids a mistaken deposit (kept as history) so it can be re-entered.
+ * Refused while any allocation is reserved or completed against it.
+ */
 export async function voidDeposit(ownerId: string, paydayId: string, reason: string) {
-  return prisma.$transaction(async (tx) => {
-    const p = await tx.payday.findFirst({ where: { id: paydayId, ownerId }, include: { deposit: true } });
-    if (!p?.deposit) throw new UserError("No deposit to correct.");
-    await tx.incomeDeposit.delete({ where: { id: p.deposit.id } });
-    await tx.payday.update({ where: { id: p.id }, data: { status: "EXPECTED" } });
-    await audit(tx, ownerId, "IncomeDeposit", p.deposit.id, `void: ${reason.slice(0, 200)}`, p.deposit, undefined);
-  });
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const p = await tx.payday.findFirst({ where: { id: paydayId, ownerId }, include: { deposits: { where: { voidedAt: null } } } });
+      const d = p?.deposits[0];
+      if (!p || !d) throw new UserError("No deposit to correct.");
+      await tx.$queryRaw`SELECT id FROM "IncomeDeposit" WHERE id = ${d.id} FOR UPDATE`;
+      const committed = await tx.allocationLine.count({ where: { plan: { depositId: d.id }, status: { in: ["RESERVED", "COMPLETED"] } } });
+      if (committed) throw new UserError("Money from this deposit is already approved or completed in a plan. Cancel or reverse those allocations first.");
+      await tx.allocationPlan.updateMany({ where: { depositId: d.id, status: "DRAFT" }, data: { status: "CANCELLED", closedAt: new Date() } });
+      const after = await tx.incomeDeposit.update({ where: { id: d.id }, data: { voidedAt: new Date(), voidReason: reason.slice(0, 200) } });
+      await tx.payday.update({ where: { id: p.id }, data: { status: "EXPECTED" } });
+      await audit(tx, ownerId, "IncomeDeposit", d.id, `void: ${reason.slice(0, 200)}`, d, after);
+    });
+  } catch (e) {
+    if (isLedgerViolation(e)) throw new UserError("Money from this deposit is committed in a plan. Cancel or reverse those allocations first.");
+    throw e;
+  }
 }
 
 export async function setPaydayStatus(ownerId: string, paydayId: string, status: "EXPECTED" | "ZERO" | "SKIPPED", note?: string | null) {
   return prisma.$transaction(async (tx) => {
-    const p = await tx.payday.findFirst({ where: { id: paydayId, ownerId }, include: { deposit: true } });
+    const p = await tx.payday.findFirst({ where: { id: paydayId, ownerId }, include: { deposits: { where: { voidedAt: null } } } });
     if (!p) throw new UserError("Payday not found.");
-    if (p.deposit) throw new UserError("This payday has a confirmed deposit. Correct the deposit first.");
+    if (p.deposits.length) throw new UserError("This payday has a confirmed deposit. Correct the deposit first.");
     const after = await tx.payday.update({ where: { id: p.id }, data: { status, note: note ?? p.note } });
     await audit(tx, ownerId, "Payday", p.id, `status:${status}`, p, after);
   });

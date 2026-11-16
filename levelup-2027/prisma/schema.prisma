@@ -100,25 +100,25 @@ enum EventCategory {
 }
 
 model CalendarEvent {
-  id            String           @id @default(cuid())
-  ownerId       String
-  title         String
-  description   String?
-  location      String?
-  category      EventCategory
-  startAt       DateTime         @db.Timestamptz // first occurrence start
-  endAt         DateTime         @db.Timestamptz // first occurrence end
-  allDay        Boolean          @default(false)
-  timezone      String           @default("America/New_York")
-  rrule         String? // RFC 5545 subset, e.g. FREQ=WEEKLY;BYDAY=SA,SU,MO,TU,WE
-  reminderMin   Int?
-  important     Boolean          @default(false) // never suggested for rescheduling
-  optional      Boolean          @default(false) // may be suggested for postponing in OT/activation
-  sourceType    String? // generated events: OVERTIME_SHIFT | MODE_SESSION | DOC_SCHEDULE
-  sourceId      String?
-  createdAt     DateTime         @default(now()) @db.Timestamptz
-  updatedAt     DateTime         @updatedAt @db.Timestamptz
-  exceptions    EventException[]
+  id          String           @id @default(cuid())
+  ownerId     String
+  title       String
+  description String?
+  location    String?
+  category    EventCategory
+  startAt     DateTime         @db.Timestamptz // first occurrence start
+  endAt       DateTime         @db.Timestamptz // first occurrence end
+  allDay      Boolean          @default(false)
+  timezone    String           @default("America/New_York")
+  rrule       String? // RFC 5545 subset, e.g. FREQ=WEEKLY;BYDAY=SA,SU,MO,TU,WE
+  reminderMin Int?
+  important   Boolean          @default(false) // never suggested for rescheduling
+  optional    Boolean          @default(false) // may be suggested for postponing in OT/activation
+  sourceType  String? // generated events: OVERTIME_SHIFT | MODE_SESSION | DOC_SCHEDULE
+  sourceId    String?
+  createdAt   DateTime         @default(now()) @db.Timestamptz
+  updatedAt   DateTime         @updatedAt @db.Timestamptz
+  exceptions  EventException[]
 
   @@unique([ownerId, sourceType, sourceId])
   @@index([ownerId, startAt])
@@ -262,7 +262,7 @@ model Payday {
   status              PaydayStatus    @default(EXPECTED)
   note                String?
   createdAt           DateTime        @default(now()) @db.Timestamptz
-  deposit             IncomeDeposit?
+  deposits            IncomeDeposit[] // at most one ACTIVE (non-voided) — partial unique index
   overtimeShifts      OvertimeShift[]
 
   @@unique([ownerId, kind, officialDate])
@@ -277,27 +277,35 @@ enum IncomeKind {
 }
 
 /// The ONLY record meaning money actually arrived. Created solely by user confirmation.
-/// Shared later by the ledger, Extra Paycheck Planner and Money Roulette.
+/// Funding source for the ledger, Extra Paycheck Planner and Money Roulette.
+/// Never deleted: a correction sets voidedAt (only allowed when nothing is committed against it).
 model IncomeDeposit {
-  id                String     @id @default(cuid())
+  id                String           @id @default(cuid())
   ownerId           String
   kind              IncomeKind
-  paydayId          String?    @unique
-  payday            Payday?    @relation(fields: [paydayId], references: [id])
+  paydayId          String?
+  payday            Payday?          @relation(fields: [paydayId], references: [id])
   netCents          Int
-  actualDepositDate DateTime   @db.Date
+  actualDepositDate DateTime         @db.Date
   notes             String?
-  createdAt         DateTime   @default(now()) @db.Timestamptz
+  idempotencyKey    String?          @unique
+  requestHash       String?
+  voidedAt          DateTime?        @db.Timestamptz
+  voidReason        String?
+  createdAt         DateTime         @default(now()) @db.Timestamptz
+  plans             AllocationPlan[]
+
+  @@index([ownerId, kind])
 }
 
 model PayRate {
-  id                  String   @id @default(cuid())
-  ownerId             String
-  regularHourlyCents  Int // 2420 = $24.20
+  id                   String   @id @default(cuid())
+  ownerId              String
+  regularHourlyCents   Int // 2420 = $24.20
   overtimeMultiplierBp Int // 15000 = 1.5x
-  provisional         Boolean  @default(true)
-  effectiveFrom       DateTime @db.Date
-  createdAt           DateTime @default(now()) @db.Timestamptz
+  provisional          Boolean  @default(true)
+  effectiveFrom        DateTime @db.Date
+  createdAt            DateTime @default(now()) @db.Timestamptz
 
   @@index([ownerId, effectiveFrom])
 }
@@ -312,24 +320,24 @@ enum OvertimeStatus {
 }
 
 model OvertimeShift {
-  id                   String         @id @default(cuid())
-  ownerId              String
-  date                 DateTime       @db.Date
-  startAt              DateTime       @db.Timestamptz
-  endAt                DateTime       @db.Timestamptz
-  breakMinutes         Int            @default(0)
-  regularHoursX100     Int            @default(0) // extra hours paid at the regular rate
-  overtimeHoursX100    Int            @default(0) // hours the user says qualify for the OT multiplier
-  rateHourlyCents      Int // snapshot of the regular rate used for the estimate
-  rateMultiplierBp     Int // snapshot of the multiplier used for the estimate
-  estimatedGrossCents  Int // ESTIMATE before taxes/deductions — never income
-  isActivation         Boolean        @default(false)
-  payrollPeriod        String?
-  paydayId             String?
-  payday               Payday?        @relation(fields: [paydayId], references: [id])
-  status               OvertimeStatus @default(WORKED)
-  notes                String?
-  createdAt            DateTime       @default(now()) @db.Timestamptz
+  id                  String         @id @default(cuid())
+  ownerId             String
+  date                DateTime       @db.Date
+  startAt             DateTime       @db.Timestamptz
+  endAt               DateTime       @db.Timestamptz
+  breakMinutes        Int            @default(0)
+  regularHoursX100    Int            @default(0) // extra hours paid at the regular rate
+  overtimeHoursX100   Int            @default(0) // hours the user says qualify for the OT multiplier
+  rateHourlyCents     Int // snapshot of the regular rate used for the estimate
+  rateMultiplierBp    Int // snapshot of the multiplier used for the estimate
+  estimatedGrossCents Int // ESTIMATE before taxes/deductions — never income
+  isActivation        Boolean        @default(false)
+  payrollPeriod       String?
+  paydayId            String?
+  payday              Payday?        @relation(fields: [paydayId], references: [id])
+  status              OvertimeStatus @default(WORKED)
+  notes               String?
+  createdAt           DateTime       @default(now()) @db.Timestamptz
 
   @@index([ownerId, date])
 }
@@ -354,16 +362,20 @@ enum ChallengeStatus {
 }
 
 model Challenge {
-  id            String          @id @default(cuid())
-  ownerId       String
-  kind          ChallengeKind
-  name          String
-  selectionRule SelectionRule
-  topN          Int             @default(10)
-  targetCents   Int?
-  nextNumber    Int? // SCHD: next sequential day
-  status        ChallengeStatus
-  tiles         ChallengeTile[]
+  id             String          @id @default(cuid())
+  ownerId        String
+  kind           ChallengeKind
+  name           String
+  selectionRule  SelectionRule
+  topN           Int             @default(10)
+  targetCents    Int?
+  nextNumber     Int? // SCHD: first day the roulette may pick (resume point)
+  status         ChallengeStatus
+  priorPaidCents Int? // DEBT: informational, paid before the challenge began
+  setupNote      String?
+  configuredAt   DateTime?       @db.Timestamptz
+  tiles          ChallengeTile[]
+  balances       DebtBalance[]
 
   @@unique([ownerId, kind])
 }
@@ -375,14 +387,168 @@ enum TileStatus {
 }
 
 model ChallengeTile {
-  id          String     @id @default(cuid())
+  id          String           @id @default(cuid())
   challengeId String
-  challenge   Challenge  @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  challenge   Challenge        @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   number      Int
   amountCents Int
-  status      TileStatus @default(OPEN)
+  status      TileStatus       @default(OPEN)
+  lines       AllocationLine[]
+  payments    Payment[]
 
   @@unique([challengeId, number])
+}
+
+/// Append-only debt balance snapshots. Corrections add a new row; history is never rewritten.
+model DebtBalance {
+  id           String    @id @default(cuid())
+  challengeId  String
+  challenge    Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  balanceCents Int
+  asOf         DateTime  @db.Date
+  note         String?
+  createdAt    DateTime  @default(now()) @db.Timestamptz
+}
+
+// ───────────────────────── Ledger & allocations (Phase 2) ─────────────────────────
+
+enum PlanKind {
+  OVERTIME_ROULETTE // may only be funded by an OVERTIME deposit
+  EXTRA_PAYCHECK // may only be funded by a REGULAR deposit
+}
+
+enum PlanStatus {
+  DRAFT // proposal only — reserves nothing
+  APPROVED // lines reserved against the deposit
+  COMPLETED // every line completed or cancelled, at least one completed
+  CANCELLED
+}
+
+enum LineTarget {
+  ROTH
+  FUN
+  EMERGENCY
+  GOAL
+  MOVING_TILE
+  SCHD_DAY
+  DEBT_TILE
+}
+
+enum LineStatus {
+  PLANNED // in a draft
+  RESERVED // approved, waiting for the real transfer
+  COMPLETED // real transfer confirmed (paidCents may be less for non-tile lines)
+  CANCELLED // released
+}
+
+model AllocationPlan {
+  id            String           @id @default(cuid())
+  ownerId       String
+  kind          PlanKind
+  depositId     String? // null only for a non-binding Extra Paycheck forecast draft
+  deposit       IncomeDeposit?   @relation(fields: [depositId], references: [id], onDelete: Restrict)
+  forecastMonth String? // YYYY-MM for extra-paycheck forecast drafts
+  forecastCents Int?
+  budgetCents   Int // what the user chose to make available (≤ deposit available)
+  status        PlanStatus       @default(DRAFT)
+  seed          String?
+  params        Json? // last spin settings, so REROLL reuses them
+  leftoverToFun Boolean          @default(false)
+  notes         String?
+  version       Int              @default(1)
+  createdAt     DateTime         @default(now()) @db.Timestamptz
+  updatedAt     DateTime         @updatedAt @db.Timestamptz
+  approvedAt    DateTime?        @db.Timestamptz
+  closedAt      DateTime?        @db.Timestamptz
+  lines         AllocationLine[]
+
+  @@index([ownerId, status])
+}
+
+model AllocationLine {
+  id          String         @id @default(cuid())
+  planId      String
+  plan        AllocationPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  target      LineTarget
+  label       String?
+  tileId      String?
+  tile        ChallengeTile? @relation(fields: [tileId], references: [id], onDelete: Restrict)
+  amountCents Int
+  paidCents   Int?
+  status      LineStatus     @default(PLANNED)
+  sortOrder   Int            @default(0)
+  createdAt   DateTime       @default(now()) @db.Timestamptz
+  settledAt   DateTime?      @db.Timestamptz
+  payments    Payment[]
+
+  @@index([planId])
+}
+
+enum PaymentKind {
+  ROTH_CONTRIBUTION
+  SAVINGS_TRANSFER
+  INVESTMENT_CONTRIBUTION
+  DEBT_PAYMENT
+  FUN_MONEY
+  EMERGENCY_SAVINGS
+  GOAL_TRANSFER
+}
+
+enum PaymentSource {
+  ROULETTE
+  EXTRA_PAYCHECK
+  MANUAL
+  HISTORICAL_IMPORT
+}
+
+/// A confirmed real-world transfer the user made outside the app. LEVEL UP never moves money.
+/// Corrections create a reversal row (negative amount) pointing at the original.
+model Payment {
+  id             String          @id @default(cuid())
+  ownerId        String
+  kind           PaymentKind
+  source         PaymentSource
+  lineId         String?
+  line           AllocationLine? @relation(fields: [lineId], references: [id], onDelete: Restrict)
+  tileId         String?
+  tile           ChallengeTile?  @relation(fields: [tileId], references: [id], onDelete: Restrict)
+  amountCents    Int
+  paidOn         DateTime        @db.Date
+  taxYear        Int?
+  label          String?
+  note           String?
+  idempotencyKey String          @unique
+  requestHash    String
+  reversalOfId   String?         @unique
+  reversalOf     Payment?        @relation("Reversal", fields: [reversalOfId], references: [id], onDelete: Restrict)
+  reversal       Payment?        @relation("Reversal")
+  reversedAt     DateTime?       @db.Timestamptz
+  createdAt      DateTime        @default(now()) @db.Timestamptz
+
+  @@index([ownerId, kind])
+}
+
+model RothYear {
+  id         String  @id @default(cuid())
+  ownerId    String
+  taxYear    Int
+  limitCents Int? // entered by the user — never a hardcoded IRS figure
+  note       String?
+
+  @@unique([ownerId, taxYear])
+}
+
+model RouletteSettings {
+  id              String   @id @default(cuid())
+  ownerId         String
+  kind            PlanKind
+  rothCents       Int
+  funCents        Int
+  leftoverToFun   Boolean
+  topN            Int      @default(10)
+  rotationPointer Int      @default(0)
+
+  @@unique([ownerId, kind])
 }
 
 // ───────────────────────── Audit ─────────────────────────

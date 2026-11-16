@@ -1,75 +1,137 @@
+import Link from "next/link";
 import { appContext } from "@/server/context";
 import { prisma } from "@/server/db";
+import { challengeTotals } from "@/server/ledger";
+import { formatLocalDate, dateToLocal } from "@/domain/dates";
 import { formatCents } from "@/domain/money";
-import { PageHeader, Section, Stat } from "@/ui/bits";
+import { PageHeader, Section, Stat, Empty } from "@/ui/bits";
 import { ActionForm, Field, SubmitButton } from "@/ui/form";
-import { cn } from "@/ui/cn";
+import { Dialog } from "@/ui/dialog";
+import { IdemKey } from "@/ui/IdemKey";
 import { schdNextDayAction } from "../actions";
+import { manualPaymentAction, reverseAction } from "../ledger-actions";
+import { Progress, TileGrid } from "../parts";
 
 export default async function ChallengesPage() {
-  const { user } = await appContext();
-  const challenges = await prisma.challenge.findMany({ where: { ownerId: user.id }, include: { tiles: { orderBy: { number: "asc" } } } });
-  const by = Object.fromEntries(challenges.map((c) => [c.kind, c]));
-  const moving = by.MOVING_OUT, schd = by.SCHD, debt = by.DEBT;
-  const confirmed = (c: (typeof challenges)[number]) => c.tiles.filter((t) => t.status === "COMPLETED").reduce((s, t) => s + t.amountCents, 0);
+  const { user, today } = await appContext();
+  const totals = await challengeTotals(user.id);
+  const by = Object.fromEntries(totals.map((c) => [c.kind, c]));
+  const moving = by.MOVING_OUT!, schd = by.SCHD!, debt = by.DEBT!;
+  const history = await prisma.payment.findMany({
+    where: { ownerId: user.id, tileId: { not: null } }, include: { tile: { include: { challenge: true } }, reversal: true }, orderBy: { createdAt: "desc" }, take: 25,
+  });
+
+  const recordForm = (kind: "MOVING_OUT" | "SCHD" | "DEBT", label: string) => {
+    const c = by[kind]!;
+    const open = c.tiles.filter((t) => t.status !== "COMPLETED" && !t.reserved && (kind !== "SCHD" || t.number >= (c.nextNumber ?? 1)));
+    return (
+      <Dialog title={`Record a ${label} transfer`} trigger="Record transfer made outside Roulette" triggerClassName="btn-ghost btn-sm">
+        <ActionForm action={manualPaymentAction} className="space-y-4">
+          <input type="hidden" name="kind" value="TILE" /><IdemKey />
+          <p className="text-sm text-mute-300">Only record a transfer you actually made. The tile completes at its exact amount.</p>
+          <Field label={kind === "SCHD" ? "Day" : "Tile"}>
+            <select className="input" name="tileId" required defaultValue="">
+              <option value="" disabled>Choose…</option>
+              {(kind === "SCHD" ? open.slice(0, 1) : [...open].reverse()).map((t) => <option key={t.id} value={t.id}>#{t.number} · {formatCents(t.amountCents)}</option>)}
+            </select>
+          </Field>
+          <Field label="Date"><input className="input" type="date" name="date" defaultValue={today} max={today} required /></Field>
+          <Field label="Note (optional)"><input className="input" name="note" maxLength={300} /></Field>
+          <SubmitButton className="btn-primary w-full">Record transfer</SubmitButton>
+        </ActionForm>
+      </Dialog>
+    );
+  };
 
   return (
     <div className="space-y-4">
       <PageHeader eyebrow="Money" title="Financial Challenges" />
-      <p className="text-sm text-mute-300">Your confirmed challenge setup. Tiles are completed only by confirmed payments, which arrive with Money Roulette and the ledger in Phase 2.</p>
+      <p className="text-sm text-mute-300">Progress counts only confirmed transfers. Reserved tiles are earmarked in an approved plan but not paid yet.</p>
 
-      {moving && (
-        <Section title="Moving-Out Savings · 141 tiles">
-          <div className="mb-4 grid grid-cols-3 gap-3">
-            <Stat label="Target" value={formatCents(moving.targetCents ?? 0)} />
-            <Stat label="Confirmed" value={formatCents(confirmed(moving))} tone="go" />
-            <Stat label="Remaining" value={formatCents((moving.targetCents ?? 0) - confirmed(moving))} tone="mute" />
-          </div>
-          <TileGrid tiles={moving.tiles} />
-          <p className="mt-2 text-xs text-mute-400">Selection rule: big numbers first — random among the 10 highest affordable open tiles.</p>
-        </Section>
-      )}
-
-      {schd && (
-        <Section title="SCHD Investing · 100 days">
-          <div className="mb-4 grid grid-cols-3 gap-3">
-            <Stat label="Total" value={formatCents(schd.targetCents ?? 0)} />
-            <Stat label="Next day" value={`Day ${schd.nextNumber}`} tone="go" sub={`$${schd.nextNumber} contribution`} />
-            <Stat label="Verified" value={formatCents(confirmed(schd))} tone="mute" />
-          </div>
-          <TileGrid tiles={schd.tiles} next={schd.nextNumber ?? undefined} />
-          <p className="mt-2 text-xs text-warn">Days marked provisional are shown as previously done but are NOT verified financial records until you import or confirm them.</p>
-          <ActionForm action={schdNextDayAction} className="mt-4 flex items-end gap-2">
-            <Field label="Next planned day" className="w-40"><input className="input" type="number" name="nextDay" min={1} max={101} defaultValue={schd.nextNumber ?? 1} required /></Field>
-            <SubmitButton className="btn-secondary">Update</SubmitButton>
-          </ActionForm>
-          <p className="mt-2 text-xs text-mute-400">Selection rule: next day first, sequential only — never skips ahead.</p>
-        </Section>
-      )}
-
-      {debt && (
-        <Section title="Debt Payoff">
-          <p className="chip-warn">Setup required</p>
-          <p className="mt-3 text-sm text-mute-300">No debt balance or tile mapping has been entered, so this challenge is excluded from Money Roulette. No amount is assumed. You will be able to enter the balance and a tile mapping that reconciles to it in Phase 2.</p>
-        </Section>
-      )}
-    </div>
-  );
-}
-
-function TileGrid({ tiles, next }: { tiles: { number: number; status: string }[]; next?: number }) {
-  return (
-    <div className="grid grid-cols-10 gap-1 sm:grid-cols-[repeat(15,minmax(0,1fr))]">
-      {tiles.map((t) => (
-        <div key={t.number} title={`#${t.number} · $${t.number} · ${t.status.toLowerCase()}`}
-          className={cn("flex aspect-square items-center justify-center rounded-md border text-[10px] font-semibold num sm:text-[11px]",
-            t.status === "COMPLETED" && "border-go bg-go text-ink-950",
-            t.status === "PROVISIONAL" && "border-dashed border-warn/60 bg-warn/10 text-warn",
-            t.status === "OPEN" && "border-ink-700 bg-ink-900 text-mute-300",
-            t.number === next && "ring-2 ring-go")}>
-          {t.number}
+      <Section title="🏠 Moving-Out Savings · 141 tiles">
+        <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Stat label="Goal" value={formatCents(moving.targetCents ?? 0)} />
+          <Stat label="Confirmed savings" value={formatCents(moving.confirmedCents)} tone="go" sub={`${((moving.confirmedCents / (moving.targetCents || 1)) * 100).toFixed(1)}% complete`} />
+          <Stat label="Remaining" value={formatCents(moving.remainingCents ?? 0)} tone="mute" />
+          <Stat label="Tiles" value={`${moving.completedTiles}/${moving.tileCount}`} tone="mute" sub={`${moving.tileCount - moving.completedTiles} incomplete${moving.reservedCents ? ` · ${formatCents(moving.reservedCents)} reserved` : ""}`} />
         </div>
-      ))}
+        <div className="mb-4"><Progress label="Moving-out progress" value={moving.confirmedCents} max={moving.targetCents ?? 1} /></div>
+        <TileGrid tiles={moving.tiles} label="Moving-out tiles" />
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2"><p className="text-xs text-mute-400">Roulette rule: random among the 10 largest affordable open tiles.</p>{recordForm("MOVING_OUT", "Moving-Out")}</div>
+      </Section>
+
+      <Section title="📈 SCHD Investing · 100 days">
+        <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Stat label="Next day" value={schd.nextDay ? `Day ${schd.nextDay}` : "Done"} tone="go" sub={schd.nextDay ? `${formatCents(schd.nextDay * 100)} contribution` : undefined} />
+          <Stat label="Confirmed contributions" value={formatCents(schd.confirmedCents)} sub={`incl. ${formatCents(schd.verifiedHistoricalCents)} verified history`} />
+          <Stat label="Unverified history" value={formatCents(schd.provisionalCents)} tone="warn" sub="not counted" />
+          <Stat label="Remaining target" value={formatCents(schd.remainingCents ?? 0)} tone="mute" sub={`of ${formatCents(schd.targetCents ?? 0)}`} />
+        </div>
+        <div className="mb-4"><Progress label="SCHD progress" value={schd.confirmedCents} max={schd.targetCents ?? 1} /></div>
+        <TileGrid tiles={schd.tiles} next={schd.nextDay} label="SCHD days" />
+        <p className="mt-3 text-xs text-mute-400">Tracks contribution amounts — not the market value of your shares. LEVEL UP never buys securities. Roulette always takes the next day in order.</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {schd.provisionalCents > 0 && <Link href="/money/challenges/schd-import" className="btn-secondary btn-sm">Verify Days 1–{(schd.nextNumber ?? 38) - 1} history</Link>}
+          {recordForm("SCHD", "SCHD")}
+          <Dialog title="Resume point" trigger="Change resume day" triggerClassName="btn-ghost btn-sm">
+            <ActionForm action={schdNextDayAction} className="space-y-4">
+              <p className="text-sm text-mute-300">Roulette starts from this day. Earlier unverified days stay provisional; verified days are never changed.</p>
+              <Field label="Next planned day"><input className="input" type="number" name="nextDay" min={1} max={101} defaultValue={schd.nextNumber ?? 1} required /></Field>
+              <SubmitButton className="btn-primary w-full">Save</SubmitButton>
+            </ActionForm>
+          </Dialog>
+        </div>
+      </Section>
+
+      <Section title="⛓️ Debt Payoff">
+        {debt.status === "SETUP_REQUIRED" ? (
+          <div>
+            <p className="chip-warn">Setup required</p>
+            <p className="mt-3 text-sm text-mute-300">No balance or tile mapping yet, so debt is excluded from Money Roulette and shows no progress. Nothing is assumed.</p>
+            <Link href="/money/challenges/debt" className="btn-primary btn-sm mt-3">Set up debt challenge</Link>
+          </div>
+        ) : (
+          <>
+            <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <Stat label="Latest balance" value={debt.latestBalance ? formatCents(debt.latestBalance.cents) : "—"} sub={debt.latestBalance ? `as of ${formatLocalDate(debt.latestBalance.asOf)}` : undefined} />
+              <Stat label="Challenge target" value={formatCents(debt.targetCents ?? 0)} />
+              <Stat label="Confirmed payments" value={formatCents(debt.confirmedCents)} tone="go" />
+              <Stat label="Tiles" value={`${debt.completedTiles}/${debt.tileCount}`} tone="mute" />
+            </div>
+            <div className="mb-4"><Progress label="Debt challenge progress" value={debt.confirmedCents} max={debt.targetCents ?? 1} /></div>
+            <TileGrid tiles={debt.tiles} label="Debt tiles" />
+            <div className="mt-3 flex flex-wrap gap-2">{recordForm("DEBT", "debt")}<Link href="/money/challenges/debt" className="btn-ghost btn-sm">Balance & setup</Link></div>
+          </>
+        )}
+      </Section>
+
+      <Section title="Contribution history">
+        {history.length ? (
+          <ul className="divide-line">
+            {history.map((p) => (
+              <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-sm">
+                <span className={p.reversedAt ? "text-mute-400 line-through" : ""}>
+                  {p.tile!.challenge.kind === "SCHD" ? `SCHD Day ${p.tile!.number}` : `${p.tile!.challenge.name} #${p.tile!.number}`}
+                  <span className="ml-2 text-xs text-mute-400">{formatLocalDate(dateToLocal(p.paidOn), "weekday")} · {p.source === "HISTORICAL_IMPORT" ? "verified history" : p.source === "MANUAL" ? "outside Roulette" : p.source === "ROULETTE" ? "Roulette" : "extra paycheck"}</span>
+                </span>
+                <span className="flex items-center gap-2">
+                  <span className="num font-semibold">{formatCents(p.amountCents)}</span>
+                  {!p.reversedAt && !p.lineId && (
+                    <Dialog title="Correct this record" trigger="Correct" triggerClassName="btn-ghost btn-sm">
+                      <ActionForm action={reverseAction} className="space-y-4">
+                        <input type="hidden" name="paymentId" value={p.id} /><IdemKey />
+                        <Field label="Reason"><input className="input" name="reason" required minLength={3} maxLength={200} /></Field>
+                        <SubmitButton className="btn-danger w-full">Record correction</SubmitButton>
+                      </ActionForm>
+                    </Dialog>
+                  )}
+                  {p.reversedAt && <span className="chip-mute">corrected</span>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : <Empty>No confirmed contributions yet.</Empty>}
+      </Section>
     </div>
   );
 }

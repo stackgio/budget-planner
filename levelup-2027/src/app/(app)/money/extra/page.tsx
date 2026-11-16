@@ -3,7 +3,8 @@ import { loadExtraMonths } from "@/server/extra";
 import { monthKey } from "@/domain/dates";
 import { formatCents } from "@/domain/money";
 import { PageHeader, Section, Empty } from "@/ui/bits";
-import { ExtraCard } from "../ExtraCard";
+import Link from "next/link";
+import { ExtraCard, monthLabel } from "../ExtraCard";
 
 export default async function ExtraPaycheckPage() {
   const { user, today } = await appContext();
@@ -18,7 +19,12 @@ export default async function ExtraPaycheckPage() {
         <p className="mt-2">An extra paycheck is a budgeting opportunity — not automatically surplus. Bills and obligations come first.</p>
         <p className="mt-2 text-xs text-mute-400">Official payday, estimated early deposit and your confirmed deposit are always shown separately.</p>
       </section>
-      {upcoming.length ? upcoming.map((m) => <ExtraCard key={m.month} m={m} verified={verified} today={today} />) : <Section title="Upcoming"><Empty>No three-paycheck months in the projected window.</Empty></Section>}
+      {upcoming.length ? upcoming.map((m) => (
+        <div key={m.month} className="space-y-2">
+          <ExtraCard m={m} verified={verified} today={today} />
+          <Link href={`/money/extra/${m.month}`} className="btn-primary w-full">Plan {monthLabel(m.month).split(" ")[0]}&apos;s extra paycheck</Link>
+        </div>
+      )) : <Section title="Upcoming"><Empty>No three-paycheck months in the projected window.</Empty></Section>}
       <Section title="Estimated extra amount">
         <p className="text-sm">
           {lastConfirmedNet !== null
@@ -26,8 +32,13 @@ export default async function ExtraPaycheckPage() {
             : "Confirm at least one regular deposit (Regular Payroll) to see an estimate. No amount is assumed."}
         </p>
       </Section>
-      <Section title="Allocation plan">
-        <p className="text-sm text-mute-300">Planning how to use the extra paycheck (debt, moving-out savings, emergency savings, SCHD, Roth IRA, guilt-free money) — including the optional <span className="font-semibold">Spin My Extra Paycheck 🎲</span> — is part of Phase 2 (Money System). Nothing is allocated or transferred yet.</p>
+      <Section title="How planning works">
+        <ol className="list-decimal space-y-1 pl-5 text-sm text-mute-300">
+          <li>Pick the confirmed regular deposit to fund the plan (or sketch a non-binding forecast before it arrives).</li>
+          <li>Say how much is truly free after bills.</li>
+          <li>Assign dollars or percentages to Roth, guilt-free, emergency savings or goals — and optionally spin challenge tiles.</li>
+          <li>Approve to reserve. Confirm each real transfer when you make it.</li>
+        </ol>
       </Section>
       {past.length > 0 && <Section title="Earlier extra-paycheck months"><div className="space-y-3">{past.map((m) => <ExtraCard key={m.month} m={m} verified={verified} today={today} compact />)}</div></Section>}
     </div>

@@ -11,7 +11,7 @@ export async function loadPayroll(ownerId: string, kind: PayKind) {
   const schedule = await prisma.paySchedule.findUniqueOrThrow({ where: { ownerId_kind: { ownerId, kind } } });
   const rows = await prisma.payday.findMany({
     where: { ownerId, kind },
-    include: { deposit: true, overtimeShifts: { select: { estimatedGrossCents: true } } },
+    include: { deposits: { where: { voidedAt: null } }, overtimeShifts: { select: { estimatedGrossCents: true } } },
     orderBy: { officialDate: "asc" },
   });
   const cfg = { anchorOfficialDate: dateToLocal(schedule.anchorOfficialDate), intervalDays: schedule.intervalDays };
@@ -19,7 +19,7 @@ export async function loadPayroll(ownerId: string, kind: PayKind) {
     id: p.id, kind: p.kind, officialDate: dateToLocal(p.officialDate), expectedDepositDate: dateToLocal(p.expectedDepositDate),
     manualDepositDate: p.manualDepositDate ? dateToLocal(p.manualDepositDate) : null, holidayNote: p.holidayNote, status: p.status, note: p.note,
     onSchedule: isOnSchedule(cfg, dateToLocal(p.officialDate)),
-    deposit: p.deposit ? { netCents: p.deposit.netCents, actualDepositDate: dateToLocal(p.deposit.actualDepositDate), notes: p.deposit.notes } : null,
+    deposit: p.deposits[0] ? { id: p.deposits[0].id, netCents: p.deposits[0].netCents, actualDepositDate: dateToLocal(p.deposits[0].actualDepositDate), notes: p.deposits[0].notes } : null,
     ...(kind === "OVERTIME" ? { shiftCount: p.overtimeShifts.length, estGrossCents: p.overtimeShifts.reduce((s, x) => s + x.estimatedGrossCents, 0) } : {}),
   }));
   return { schedule, cfg, paydays };

@@ -16,7 +16,7 @@ import { ShiftForm } from "./ShiftForm";
 import { deleteOvertimeShiftAction, payRateAction } from "../actions";
 
 export default async function OvertimePage({ searchParams }: { searchParams: Promise<{ new?: string }> }) {
-  const { user, tz, today } = await appContext();
+  const { user, tz, today, trackingStart } = await appContext();
   const sp = await searchParams;
   const rate = await currentPayRate(user.id);
   const { schedule, paydays } = await loadPayroll(user.id, "OVERTIME");
@@ -43,7 +43,7 @@ export default async function OvertimePage({ searchParams }: { searchParams: Pro
     { label: `Year ${today.slice(0, 4)}`, from: yearStart },
   ];
   const otPaydays = paydays.filter((p) => p.officialDate >= addDays(today, -28)).slice(0, 12).map((p) => ({ id: p.id, officialDate: p.officialDate }));
-  const needs = paydays.filter((p) => !p.deposit && p.status === "EXPECTED" && p.officialDate <= today && p.officialDate >= "2026-11-01");
+  const needs = paydays.filter((p) => !p.deposit && p.status === "EXPECTED" && p.officialDate <= today && p.officialDate >= trackingStart);
   const upcoming = paydays.filter((p) => p.officialDate > today).slice(0, 6);
   const rateInfo = rate ? { hourly: rate.regularHourlyCents, bp: rate.overtimeMultiplierBp } : { hourly: 0, bp: 15000 };
   const blank = { date: today, startTime: "16:00", endTime: "00:00", breakMinutes: 0, regularHours: "0", overtimeHours: "8", isActivation: false, payrollPeriod: "", paydayId: upcoming[0]?.id ?? "", status: "WORKED", notes: "" };

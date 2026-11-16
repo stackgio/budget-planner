@@ -7,7 +7,7 @@ export async function GET() {
   const user = await getCurrentUser();
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
   const ownerId = user.id;
-  const [settings, events, modeSessions, tasks, habits, schedules, paydays, deposits, payRates, overtimeShifts, challenges, auditLog] = await Promise.all([
+  const [settings, events, modeSessions, tasks, habits, schedules, paydays, deposits, payRates, overtimeShifts, challenges, auditLog, plans, payments, rothYears, rouletteSettings] = await Promise.all([
     prisma.userSettings.findUnique({ where: { userId: ownerId } }),
     prisma.calendarEvent.findMany({ where: { ownerId }, include: { exceptions: true } }),
     prisma.modeSession.findMany({ where: { ownerId } }),
@@ -18,12 +18,16 @@ export async function GET() {
     prisma.incomeDeposit.findMany({ where: { ownerId } }),
     prisma.payRate.findMany({ where: { ownerId } }),
     prisma.overtimeShift.findMany({ where: { ownerId } }),
-    prisma.challenge.findMany({ where: { ownerId }, include: { tiles: true } }),
+    prisma.challenge.findMany({ where: { ownerId }, include: { tiles: true, balances: true } }),
     prisma.auditLog.findMany({ where: { ownerId } }),
+    prisma.allocationPlan.findMany({ where: { ownerId }, include: { lines: true } }),
+    prisma.payment.findMany({ where: { ownerId } }),
+    prisma.rothYear.findMany({ where: { ownerId } }),
+    prisma.rouletteSettings.findMany({ where: { ownerId } }),
   ]);
   const body = JSON.stringify(
-    { format: "levelup-2027-export", version: 1, exportedAt: new Date().toISOString(), moneyUnits: "integer cents", hoursUnits: "hundredths of an hour",
-      account: { email: user.email, displayName: user.displayName }, settings, events, modeSessions, tasks, habits, schedules, paydays, deposits, payRates, overtimeShifts, challenges, auditLog },
+    { format: "levelup-2027-export", version: 2, exportedAt: new Date().toISOString(), moneyUnits: "integer cents", hoursUnits: "hundredths of an hour",
+      account: { email: user.email, displayName: user.displayName }, settings, events, modeSessions, tasks, habits, schedules, paydays, deposits, payRates, overtimeShifts, challenges, plans, payments, rothYears, rouletteSettings, auditLog },
     (_k, v) => (typeof v === "bigint" ? v.toString() : v),
     2,
   );

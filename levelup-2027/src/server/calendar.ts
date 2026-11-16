@@ -39,15 +39,16 @@ export async function loadOccurrences(ownerId: string, tz: string, from: Date, t
   if (includePaydays) {
     const paydays = await prisma.payday.findMany({
       where: { ownerId, officialDate: { gte: localToDbDate(fromD), lte: localToDbDate(toD) } },
-      include: { deposit: true },
+      include: { deposits: { where: { voidedAt: null } } },
     });
     const regSchedule = await prisma.paySchedule.findUnique({ where: { ownerId_kind: { ownerId, kind: "REGULAR" } } });
     for (const p of paydays) {
       const d = dateToLocal(p.officialDate);
       const r = p.kind === "REGULAR";
       const provisional = r && !regSchedule?.anchorVerified;
-      const status = p.deposit
-        ? `Received ${formatCents(p.deposit.netCents)} on ${dateToLocal(p.deposit.actualDepositDate)}`
+      const dep = p.deposits[0];
+      const status = dep
+        ? `Received ${formatCents(dep.netCents)} on ${dateToLocal(dep.actualDepositDate)}`
         : p.status === "ZERO" ? "Confirmed $0" : `Expected deposit ${dateToLocal(p.manualDepositDate ?? p.expectedDepositDate)} (estimate)`;
       out.push({
         key: `payday|${p.id}`,

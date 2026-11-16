@@ -4,12 +4,13 @@ import { ActionForm, Field, SubmitButton } from "@/ui/form";
 import { type LocalDate, formatLocalDate, monthKey } from "@/domain/dates";
 import { formatCents } from "@/domain/money";
 import { cn } from "@/ui/cn";
+import { IdemKey } from "@/ui/IdemKey";
 import { manualDepositDateAction, paydayStatusAction, recordDepositAction, voidDepositAction } from "./actions";
 
 export interface PaydayView {
   id: string; kind: "REGULAR" | "OVERTIME"; officialDate: LocalDate; expectedDepositDate: LocalDate; manualDepositDate: LocalDate | null;
   holidayNote: string | null; status: "EXPECTED" | "RECEIVED" | "ZERO" | "SKIPPED"; note: string | null; onSchedule: boolean;
-  deposit: { netCents: number; actualDepositDate: LocalDate; notes: string | null } | null;
+  deposit: { id: string; netCents: number; actualDepositDate: LocalDate; notes: string | null } | null;
   shiftCount?: number; estGrossCents?: number;
 }
 
@@ -45,6 +46,7 @@ export function PaydayRow({ p, today, provisional }: { p: PaydayView; today: Loc
             <Dialog title="Confirm actual deposit" trigger={<><CheckCircle2 size={15} /> Record deposit</>} triggerClassName={needsConfirm ? "btn-primary btn-sm" : "btn-secondary btn-sm"}>
               <ActionForm action={recordDepositAction} className="space-y-4">
                 <input type="hidden" name="paydayId" value={p.id} />
+                <IdemKey />
                 <p className="text-sm text-mute-300">{p.kind === "REGULAR" ? "Regular" : "Overtime"} payday {formatLocalDate(p.officialDate, "long")}. Enter what actually landed in your bank — take-home (net), not gross.</p>
                 <Field label="Net amount deposited"><input className="input" name="amount" inputMode="decimal" placeholder="0.00" required /></Field>
                 <Field label="Date it arrived"><input className="input" type="date" name="date" defaultValue={expected <= today ? expected : today} required /></Field>
@@ -79,9 +81,9 @@ export function PaydayRow({ p, today, provisional }: { p: PaydayView; today: Loc
             <Dialog title="Correct this deposit" trigger="Correct" triggerClassName="btn-ghost btn-sm">
               <ActionForm action={voidDepositAction} className="space-y-4">
                 <input type="hidden" name="paydayId" value={p.id} />
-                <p className="text-sm text-mute-300">This removes the confirmed deposit of {formatCents(p.deposit.netCents)} so you can re-enter it. The original stays in the audit history.</p>
+                <p className="text-sm text-mute-300">This voids the confirmed deposit of {formatCents(p.deposit.netCents)} so you can re-enter it. The original stays in your history. Not possible while money from it is approved or completed in a plan.</p>
                 <Field label="Reason"><input className="input" name="reason" required minLength={3} maxLength={200} placeholder="e.g. typo in amount" /></Field>
-                <SubmitButton className="btn-danger w-full">Remove deposit</SubmitButton>
+                <SubmitButton className="btn-danger w-full">Void deposit</SubmitButton>
               </ActionForm>
             </Dialog>
           )}

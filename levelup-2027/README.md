@@ -2,13 +2,14 @@
 
 A private, mobile-first Life Operating System: calendar, tasks, DOC schedule and payroll, extra-paycheck detection, work modes, and (in later phases) Money Roulette, the assistant, and push notifications.
 
-**Status: Phase 1 complete — local only, not deployed.** Architecture and plan: [`docs/PHASE-0-ARCHITECTURE.md`](docs/PHASE-0-ARCHITECTURE.md).
+**Status: Phase 2 (Money System) complete — local only, not deployed.**
+Docs: [Phase 0 architecture](docs/PHASE-0-ARCHITECTURE.md) · [Phase 2 report](docs/PHASE-2-REPORT.md) · [Security audit](docs/SECURITY-AUDIT-PHASE-2.md).
 
 Fully separate from `../moneyflow` and `../video`: no shared code, database, or credentials.
 
 ## Stack
 
-Next.js 15 (App Router) · TypeScript (strict) · Tailwind CSS · PostgreSQL 16 · Prisma 6 (versioned migrations) · Argon2id passwords · DB-backed sessions · WebAuthn passkeys (SimpleWebAuthn) · Vitest · Playwright.
+Next.js 16 (App Router) · TypeScript (strict) · Tailwind CSS · PostgreSQL 16 · Prisma 6 (versioned migrations) · Argon2id passwords · DB-backed sessions · WebAuthn passkeys (SimpleWebAuthn) · Vitest · Playwright.
 
 ## Run it locally
 
@@ -27,8 +28,9 @@ sudo -u postgres createdb -O levelup levelup_test     # for automated tests
 cp .env.example .env
 # set SETUP_TOKEN to a random value: openssl rand -hex 24
 
-# 3. Apply migrations and start
+# 3. Apply migrations (non-destructive) and start
 npx prisma migrate deploy
+npx dotenv -e .env.test -- npx prisma migrate deploy   # test database
 npm run dev            # http://localhost:3100
 ```
 
@@ -59,6 +61,16 @@ Integration and E2E tests truncate **only** the `levelup_test` database and refu
 - Login and setup are rate-limited (5 failures per client / 30 global per 15 min).
 - Passkeys store only a public key. Face ID / Touch ID never leave the device. Passkeys are bound to the host name (`WEBAUTHN_RP_ID`): a passkey made on `localhost` will not work on a deployed HTTPS domain, so you'll add a new one after deployment.
 - Financial changes run in transactions and write an append-only `AuditLog`. DB constraints block negative money, duplicate deposits per payday, duplicate paydays, and more than one open work mode.
+
+## Money System (Phase 2)
+
+1. **Record a real deposit:** Regular or Overtime Payroll → Record deposit (net amount, actual date).
+2. **Overtime Money Roulette:** Money → Roulette 🎲 → choose the deposit → SPIN MY OVERTIME → reroll/adjust → Approve (reserves) → confirm each transfer as you make it.
+3. **Extra Paycheck Planner:** Money → Extra Paycheck → Plan April… → set what's free after bills → dollars/percentages → optional spin → approve once a regular deposit for that month is confirmed.
+4. **Challenges:** tiles complete only from confirmed transfers. SCHD earlier days: Challenges → Verify Days 1–37. Debt: Challenges → Set up debt challenge.
+5. **Roth IRA:** set your own annual limit per tax year; LEVEL UP never hardcodes IRS figures.
+
+LEVEL UP never moves money. Every "confirm" records a transfer you made yourself.
 
 ## Data export
 

@@ -13,7 +13,7 @@ async function login(page: Page) {
 }
 
 async function shot(page: Page, name: string) {
-  if (SHOTS) await page.screenshot({ path: `${SHOTS}/${name}.png`, fullPage: true });
+  if (SHOTS) await page.screenshot({ path: `${SHOTS}/${name}.png`, fullPage: true, animations: "disabled" });
 }
 
 async function noHorizontalScroll(page: Page) {
@@ -189,5 +189,6 @@ test.describe.serial("LEVEL UP 2027 — Phase 1", () => {
     expect(body.format).toBe("levelup-2027-export");
     expect(body.challenges).toHaveLength(3);
     expect(body.deposits).toHaveLength(0);
+    expect(body.payments).toEqual([]);
   });
 });

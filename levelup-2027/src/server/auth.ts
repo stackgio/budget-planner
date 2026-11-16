@@ -68,6 +68,7 @@ export interface CurrentUser {
   email: string;
   displayName: string;
   timezone: string;
+  createdAt: Date;
 }
 
 /** Validates the session against the database. Cached per request. */
@@ -85,7 +86,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
     return null;
   }
   const u = session.user;
-  return { id: u.id, email: u.email, displayName: u.displayName, timezone: u.settings?.timezone ?? "America/New_York" };
+  return { id: u.id, email: u.email, displayName: u.displayName, timezone: u.settings?.timezone ?? "America/New_York", createdAt: u.createdAt };
 });
 
 /** Server-side authorization gate for every page, action and route handler. */

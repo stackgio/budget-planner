@@ -14,7 +14,8 @@ export async function run(fn: () => Promise<string | void>): Promise<ActionState
     unstable_rethrow(e);
     if (e instanceof UserError) return { error: e.message, nonce: Date.now() };
     if (e instanceof ZodError) return { error: e.issues.map((i) => i.message).join(" "), nonce: Date.now() };
-    console.error(e);
+    // Log only the error type/code — never messages that may echo query arguments or personal amounts.
+    console.error("[levelup] action failed:", e instanceof Error ? e.name : typeof e, (e as { code?: string })?.code ?? "");
     return { error: "Something went wrong. Nothing was changed.", nonce: Date.now() };
   }
 }
