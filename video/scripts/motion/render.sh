@@ -45,7 +45,7 @@ fi
 
 OUT="$OUTDIR/${SLUG}_v${V}_${TAG}.mp4"; TMP="$OUTDIR/.rendering_v$V.mp4"
 echo "== render → $OUT"
-npx remotion render src/index.ts "$COMP" "$TMP" "${PROPS_FLAG[@]}" --codec=h264 --crf=16 --pixel-format=yuv420p \
+npx remotion render src/index.ts "$COMP" "$TMP" "${PROPS_FLAG[@]}" --scale=1 --width=1080 --height=1920 --codec=h264 --crf=16 --pixel-format=yuv420p \
   --image-format=jpeg --jpeg-quality=95 --color-space=bt709 --audio-codec=aac --audio-bitrate=320k "${BROWSER[@]}"
 [ -e "$OUT" ] && { echo "refusing to overwrite $OUT"; exit 1; }
 mv "$TMP" "$OUT"
