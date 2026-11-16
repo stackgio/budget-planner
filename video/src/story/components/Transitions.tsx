@@ -25,7 +25,8 @@ const IrisComp: React.FC<TransitionPresentationComponentProps<IrisProps>> = ({ch
 };
 export const iris = (props: IrisProps): TransitionPresentation<IrisProps> => ({component: IrisComp, props});
 
-type SweepProps = {color: string; direction?: 'up' | 'left'};
+/** `clearBottom`: px at the bottom the panel leaves uncovered (e.g. a captions band). */
+type SweepProps = {color: string; direction?: 'up' | 'left'; clearBottom?: number};
 const SweepComp: React.FC<TransitionPresentationComponentProps<SweepProps>> = ({children, presentationDirection, presentationProgress, passedProps}) => {
 	const p = presentationProgress;
 	const up = (passedProps.direction ?? 'up') === 'up';
@@ -36,19 +37,23 @@ const SweepComp: React.FC<TransitionPresentationComponentProps<SweepProps>> = ({
 		return (
 			<AbsoluteFill>
 				{children}
-				<AbsoluteFill
-					style={{
-						background: passedProps.color,
-						transform: up ? `translateY(${(1 - cover) * 100}%)` : `translateX(${(1 - cover) * 100}%)`,
-					}}
-				/>
+				<div style={{position: 'absolute', left: 0, right: 0, top: 0, height: `calc(100% - ${passedProps.clearBottom ?? 0}px)`, overflow: 'hidden'}}>
+					<AbsoluteFill
+						style={{
+							background: passedProps.color,
+							transform: up ? `translateY(${(1 - cover) * 100}%)` : `translateX(${(1 - cover) * 100}%)`,
+						}}
+					/>
+				</div>
 			</AbsoluteFill>
 		);
 	}
 	return (
 		<AbsoluteFill style={{opacity: p < 0.5 ? 0 : 1}}>
 			{children}
-			<AbsoluteFill style={{background: passedProps.color, transform: up ? `translateY(${-reveal * 100}%)` : `translateX(${-reveal * 100}%)`}} />
+			<div style={{position: 'absolute', left: 0, right: 0, top: 0, height: `calc(100% - ${passedProps.clearBottom ?? 0}px)`, overflow: 'hidden'}}>
+				<AbsoluteFill style={{background: passedProps.color, transform: up ? `translateY(${-reveal * 100}%)` : `translateX(${-reveal * 100}%)`}} />
+			</div>
 		</AbsoluteFill>
 	);
 };

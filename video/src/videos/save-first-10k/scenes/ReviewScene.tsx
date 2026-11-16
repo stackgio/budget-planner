@@ -34,6 +34,7 @@ export const ReviewScene: React.FC = () => {
 	const tNum = cue('L13', 'Number');
 	const tLast = cue('L13', 'last');
 	const t30 = cue('L13', '30');
+	const tLook = cue('L13', 'look');
 	const tTwo = cue('L14', 'two');
 	const tCut = cue('L14', 'cut');
 	const tEnjoy = cue('L15', 'enjoying');
@@ -76,7 +77,7 @@ export const ReviewScene: React.FC = () => {
 			>
 			<Panel style={{left: L.x, top: PANEL.y, width: L.w, height: PANEL.h, opacity: panel, transform: `translateY(${(1 - panel) * 50}px)`}}>
 				{ROWS.map((r, i) => {
-					const grow = sp(frame, fps, t30 + i * 4, 'smooth');
+					const grow = kf(frame, [tLook + i * 5, t30 + 10 + i * 4], [0, 1], E.out);
 					const trim = r.cut ? sp(frame, fps, trimAt(r.order), 'snappy') : 0;
 					const cutW = (r.cut / MAX) * BAR_W;
 					const fullW = (r.amount / MAX) * BAR_W * grow;
@@ -151,7 +152,7 @@ export const ReviewScene: React.FC = () => {
 					alignItems: 'center',
 					lineHeight: 1.06,
 					opacity: Math.min(1, card * 1.5),
-					transform: `translateY(${(1 - card) * 120}px) rotate(${(1 - card) * -2}deg)`,
+					transform: `translateY(${(1 - card) * 30}px) scale(${0.94 + 0.06 * card}) rotate(${(1 - card) * -1.5}deg)`,
 					boxShadow: '0 24px 60px rgba(57,255,136,0.25)',
 				}}
 			>

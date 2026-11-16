@@ -77,7 +77,8 @@ export const HysaScene: React.FC = () => {
 	const chkIn = sp(frame, fps, 0, 'smooth');
 	const savIn = sp(frame, fps, tOpen, 'bouncy');
 	const badge = sp(frame, fps, tHY, 'snappy');
-	const sep = sp(frame, fps, tSep - 4, 'smooth');
+	const tKeepL = cue('L12', 'Keep');
+	const sep = kf(frame, [tKeepL, tSep + 6], [0, 1], E.inOut);
 	const dock = sp(frame, fps, tSet - 4, 'smooth');
 
 	const chkA: Box = {x: L.x, y: 300, w: L.w, h: 230};
@@ -107,7 +108,7 @@ export const HysaScene: React.FC = () => {
 	});
 	const autoGlow = Math.max(0, ...payAt.map((a) => kf(frame, [a + 14, a + 16, a + 26], [0, 1, 0.35], E.out)));
 	const savGlow = Math.max(kf(frame, [tMoney + 6, tMoney + 12, tSet - 4], [0, 1, 0.3], E.out) * (1 - dock), autoGlow);
-	const sepLabel = sep * (1 - dock);
+	const sepLabel = kf(sep, [0.55, 1], [0, 1]) * (1 - dock);
 
 	const sheet = sp(frame, fps, tSet, 'smooth');
 	const conf = kf(frame, [tTransE - 2, tTransE + 14], [0, 1], E.out);
@@ -130,7 +131,7 @@ export const HysaScene: React.FC = () => {
 			>
 			<AccountCard box={chk} compact={dock} kind="checking" opacity={chkIn} dy={(1 - chkIn) * 40} />
 			<AccountCard box={sav} compact={dock} kind="savings" badge={badge} glow={savGlow} opacity={Math.min(1, savIn * 1.4)} dy={(1 - savIn) * 120} />
-			<div style={{position: 'absolute', left: L.x, width: L.w, top: 579, display: 'flex', alignItems: 'center', gap: 20, opacity: sepLabel}}>
+			<div style={{position: 'absolute', left: L.x, width: L.w, top: (chkA.y + chkA.h + savA.y) / 2 - 16, display: 'flex', alignItems: 'center', gap: 20, opacity: sepLabel}}>
 				<div style={{flex: 1, borderTop: `2px dashed ${C.grayDim}`}} />
 				<div style={{fontSize: 26, fontWeight: 800, letterSpacing: 4, color: C.gray}}>KEEP SEPARATE</div>
 				<div style={{flex: 1, borderTop: `2px dashed ${C.grayDim}`}} />

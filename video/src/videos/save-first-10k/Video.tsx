@@ -37,7 +37,7 @@ const DEF: VideoDef<SceneId> = {
 		habit: {presentation: matchCut()},
 		hysa: {presentation: slide({direction: 'from-right'}), timing: 'spring'},
 		// green sweep: a bright break between the two dashboard chapters
-		review: {presentation: panelSweep({color: C.green, direction: 'up'})},
+		review: {presentation: panelSweep({color: C.green, direction: 'up', clearBottom: 1920 - 1392})},
 		extra: {presentation: slide({direction: 'from-right'}), timing: 'spring'},
 		// light opens from the goal bar (where the extra $100 just landed) into the payoff
 		payoff: {presentation: iris({x: 72 + 888 * 0.25, y: EXTRA_BAR_Y + 15})},

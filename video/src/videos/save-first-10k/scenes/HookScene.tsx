@@ -4,7 +4,7 @@ import {Camera} from '../../../story/components/Camera';
 import {Sfx} from '../../../story/components/Chrome';
 import {NumberCounter} from '../../../story/components/NumberCounter';
 import {useCues} from '../../../story/lib/cues';
-import {E, kf, mix, sp} from '../../../story/lib/motion';
+import {E, arc, kf, mix, sp} from '../../../story/lib/motion';
 import {story} from '../../../story/theme';
 import {FACTS} from '../facts';
 import {C, L, VaultBg, fmt} from '../ui';
@@ -39,16 +39,18 @@ export const HookScene: React.FC = () => {
 	const settle = kf(frame, [0, 14], [1.06, 1], E.out);
 	const beat = 1 + 0.035 * Math.sin(Math.PI * kf(frame, [tTen, tTen + 10], [0, 1], E.out));
 	const knock = sp(frame, fps, tStop, {damping: 15, stiffness: 140, mass: 0.9});
-	const tenScale = settle * beat * mix(1, 0.24, knock);
+	const eject = Math.sin(Math.PI * kf(frame, [4, 26], [0, 1], E.out));
+	const tenScale = settle * beat * (1 - 0.025 * eject) * mix(1, 0.24, knock);
 	const tenY = mix(640, 262, knock);
 	const kicker = 1 - kf(frame, [tStop - 2, tStop + 6], [0, 1], E.in);
 	const goalTag = kf(frame, [tStop + 8, tStop + 16], [0, 1], E.out);
 
 	// blocks build in during the first second
-	const blockIn = (i: number) => sp(frame, fps, 3 + i * 2, 'snappy');
+	// the ten $1,000 blocks peel out of the $10,000 and drop into their slots (first second)
+	const blockIn = (i: number) => sp(frame, fps, 4 + i * 2, {damping: 14, stiffness: 150, mass: 0.8});
 	const dimOthers = kf(frame, [tWorry, tWorry + 12], [0, 1], E.out);
 	const b1Lit = kf(frame, [tWorry + 4, tWorry + 14], [0, 1], E.out);
-	const splitLabel = kf(frame, [20, 30], [0, 1], E.out) * (1 - kf(frame, [tStop, tStop + 8], [0, 1], E.in));
+	const splitLabel = kf(frame, [24, 34], [0, 1], E.out) * (1 - kf(frame, [tStop, tStop + 8], [0, 1], E.in));
 	const fill = kf(frame, [tFirst, t1kEnd], [0, 1], E.inOut);
 	const value = fill * FACTS.milestone.value;
 	const lands = sp(frame, fps, t1kEnd, 'bouncy');
@@ -73,6 +75,9 @@ export const HookScene: React.FC = () => {
 					const p = blockIn(i);
 					const first = i === 0;
 					const x = L.x + i * (BW + ROW.gap);
+					const from: [number, number] = [L.cx + (i - 4.5) * 34, 640];
+					const to: [number, number] = [x + BW / 2, ROW.y + ROW.h / 2];
+					const [px, py] = arc(Math.min(1.04, Math.max(0, p)), from, to, 90);
 					return (
 						<div
 							key={i}
@@ -87,8 +92,8 @@ export const HookScene: React.FC = () => {
 								background: 'rgba(255,255,255,0.05)',
 								border: `2.5px solid ${first && b1Lit > 0.5 ? C.green : 'rgba(255,255,255,0.28)'}`,
 								boxShadow: first ? `0 0 ${30 * (b1Lit + fill)}px rgba(57,255,136,${0.25 * b1Lit + 0.35 * fill})` : 'none',
-								opacity: Math.min(1, p * 1.3) * (first ? 1 : 1 - 0.62 * dimOthers),
-								transform: `translateY(${(1 - p) * 40}px) scale(${0.7 + 0.3 * p})`,
+								opacity: Math.min(1, p * 2.5) * (first ? 1 : 1 - 0.62 * dimOthers),
+								transform: `translate(${px - to[0]}px, ${py - to[1]}px) scale(${0.35 + 0.65 * Math.min(1, p)}) rotate(${(1 - Math.min(1, p)) * (i - 4.5) * 4}deg)`,
 							}}
 						>
 							{first && (
@@ -97,8 +102,8 @@ export const HookScene: React.FC = () => {
 						</div>
 					);
 				})}
-				<div style={{position: 'absolute', left: L.x, top: ROW.y + ROW.h + 20, fontSize: 30, fontWeight: 800, color: C.gray, opacity: kf(frame, [16, 26], [0, 1])}}>$0</div>
-				<div style={{position: 'absolute', right: story.safe.right, top: ROW.y + ROW.h + 20, fontSize: 30, fontWeight: 800, color: C.gray, opacity: kf(frame, [16, 26], [0, 1]) * (1 - dimOthers * 0.4)}}>{fmt(FACTS.goal.value)}</div>
+				<div style={{position: 'absolute', left: L.x, top: ROW.y + ROW.h + 20, fontSize: 30, fontWeight: 800, color: C.gray, opacity: kf(frame, [22, 32], [0, 1])}}>$0</div>
+				<div style={{position: 'absolute', right: story.safe.right, top: ROW.y + ROW.h + 20, fontSize: 30, fontWeight: 800, color: C.gray, opacity: kf(frame, [22, 32], [0, 1]) * (1 - dimOthers * 0.4)}}>{fmt(FACTS.goal.value)}</div>
 				<div style={{position: 'absolute', left: L.x, width: L.w, top: ROW.y + ROW.h + 20, textAlign: 'center', fontSize: 34, fontWeight: 900, letterSpacing: 2, color: C.white, opacity: splitLabel}}>
 					= 10 × <span style={{color: C.green}}>{fmt(FACTS.milestone.value)}</span>
 				</div>
