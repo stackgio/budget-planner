@@ -1,0 +1,401 @@
+// LEVEL UP 2027 — Phase 1 schema.
+// Conventions: money = integer cents; hours = integer hundredths; date-only facts = @db.Date;
+// instants = timestamptz. Every owned row carries ownerId and every query is owner-scoped.
+// Partial unique indexes / CHECK constraints live in raw SQL inside the migrations.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────── Identity ─────────────────────────
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  displayName  String        @default("Gio")
+  passwordHash String
+  createdAt    DateTime      @default(now()) @db.Timestamptz
+  settings     UserSettings?
+  sessions     Session[]
+  passkeys     Passkey[]
+}
+
+model Session {
+  id        String   @id // SHA-256 hash of the cookie token (raw token never stored)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @db.Timestamptz
+  expiresAt DateTime @db.Timestamptz
+  userAgent String?
+  method    String   @default("password") // password | passkey
+
+  @@index([userId])
+}
+
+/// Public-key credential only. No biometric data ever reaches the server:
+/// Face ID / Touch ID stays on the device and only unlocks the private key.
+model Passkey {
+  id         String    @id // credential ID, base64url
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  publicKey  Bytes
+  counter    BigInt    @default(0)
+  transports String[]
+  deviceType String?
+  backedUp   Boolean   @default(false)
+  label      String
+  createdAt  DateTime  @default(now()) @db.Timestamptz
+  lastUsedAt DateTime? @db.Timestamptz
+}
+
+model AuthChallenge {
+  id        String   @id // random id stored in a short-lived httpOnly cookie
+  challenge String
+  purpose   String // register | login
+  userId    String?
+  expiresAt DateTime @db.Timestamptz
+}
+
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  key       String // "global" or client IP
+  success   Boolean
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  @@index([key, createdAt])
+}
+
+model UserSettings {
+  userId         String @id
+  user           User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  timezone       String @default("America/New_York")
+  wakeTime       String @default("06:00")
+  bedTime        String @default("21:30")
+  briefingTime   String @default("06:00")
+  checkInTime    String @default("17:00")
+  reflectionTime String @default("21:00")
+}
+
+// ───────────────────────── Calendar ─────────────────────────
+
+enum EventCategory {
+  DOC_SHIFT
+  OVERTIME_SHIFT
+  ACTIVATION
+  APPOINTMENT
+  WORKOUT
+  STUDY
+  GIG
+  DATE_NIGHT
+  CHURCH
+  CONTENT
+  FINANCIAL
+  PERSONAL
+  OTHER
+}
+
+model CalendarEvent {
+  id            String           @id @default(cuid())
+  ownerId       String
+  title         String
+  description   String?
+  location      String?
+  category      EventCategory
+  startAt       DateTime         @db.Timestamptz // first occurrence start
+  endAt         DateTime         @db.Timestamptz // first occurrence end
+  allDay        Boolean          @default(false)
+  timezone      String           @default("America/New_York")
+  rrule         String? // RFC 5545 subset, e.g. FREQ=WEEKLY;BYDAY=SA,SU,MO,TU,WE
+  reminderMin   Int?
+  important     Boolean          @default(false) // never suggested for rescheduling
+  optional      Boolean          @default(false) // may be suggested for postponing in OT/activation
+  sourceType    String? // generated events: OVERTIME_SHIFT | MODE_SESSION | DOC_SCHEDULE
+  sourceId      String?
+  createdAt     DateTime         @default(now()) @db.Timestamptz
+  updatedAt     DateTime         @updatedAt @db.Timestamptz
+  exceptions    EventException[]
+
+  @@unique([ownerId, sourceType, sourceId])
+  @@index([ownerId, startAt])
+}
+
+/// One changed or cancelled occurrence of a recurring event. The series is untouched.
+model EventException {
+  id            String        @id @default(cuid())
+  eventId       String
+  event         CalendarEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  originalStart DateTime      @db.Timestamptz
+  cancelled     Boolean       @default(false)
+  startAt       DateTime?     @db.Timestamptz
+  endAt         DateTime?     @db.Timestamptz
+  title         String?
+  description   String?
+
+  @@unique([eventId, originalStart])
+}
+
+// ───────────────────────── Work modes ─────────────────────────
+
+enum WorkMode {
+  NORMAL
+  OVERTIME
+  ACTIVATION
+  RECOVERY
+}
+
+model ModeSession {
+  id           String    @id @default(cuid())
+  ownerId      String
+  mode         WorkMode
+  startedAt    DateTime  @db.Timestamptz
+  estimatedEnd DateTime? @db.Timestamptz
+  endedAt      DateTime? @db.Timestamptz
+  notes        String?
+  eventId      String? // calendar event created for an activation
+
+  // SQL: one open session per owner (partial unique index in migration).
+  @@index([ownerId, startedAt])
+}
+
+// ───────────────────────── Tasks & habits ─────────────────────────
+
+enum TaskStatus {
+  OPEN
+  DONE
+  SKIPPED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  ownerId     String
+  parentId    String?
+  parent      Task?      @relation("Subtasks", fields: [parentId], references: [id], onDelete: Cascade)
+  subtasks    Task[]     @relation("Subtasks")
+  title       String
+  description String?
+  category    String?
+  priority    Priority   @default(MEDIUM)
+  dueDate     DateTime?  @db.Date
+  dueTime     String? // "HH:mm" local
+  rrule       String?
+  reminderMin Int?
+  optional    Boolean    @default(false)
+  isTopThree  Boolean    @default(false)
+  status      TaskStatus @default(OPEN)
+  completedAt DateTime?  @db.Timestamptz
+  createdAt   DateTime   @default(now()) @db.Timestamptz
+  updatedAt   DateTime   @updatedAt @db.Timestamptz
+
+  @@index([ownerId, status, dueDate])
+}
+
+model Habit {
+  id            String         @id @default(cuid())
+  ownerId       String
+  name          String
+  emoji         String?
+  targetPerWeek Int            @default(7)
+  optional      Boolean        @default(true)
+  sortOrder     Int            @default(0)
+  archived      Boolean        @default(false)
+  checkIns      HabitCheckIn[]
+
+  @@unique([ownerId, name])
+}
+
+/// Only ever created by an explicit tap. Never automatic.
+model HabitCheckIn {
+  id      String   @id @default(cuid())
+  habitId String
+  habit   Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  date    DateTime @db.Date
+
+  @@unique([habitId, date])
+}
+
+// ───────────────────────── Payroll ─────────────────────────
+
+enum PayKind {
+  REGULAR
+  OVERTIME
+}
+
+model PaySchedule {
+  id                     String   @id @default(cuid())
+  ownerId                String
+  kind                   PayKind
+  anchorOfficialDate     DateTime @db.Date
+  anchorVerified         Boolean  @default(false)
+  intervalDays           Int      @default(14)
+  earlyDepositOffsetDays Int      @default(0)
+  updatedAt              DateTime @updatedAt @db.Timestamptz
+
+  @@unique([ownerId, kind])
+}
+
+enum PaydayStatus {
+  EXPECTED
+  RECEIVED // set only together with a confirmed IncomeDeposit
+  ZERO // user confirmed nothing was paid (e.g. no overtime worked)
+  SKIPPED
+}
+
+model Payday {
+  id                  String          @id @default(cuid())
+  ownerId             String
+  kind                PayKind
+  officialDate        DateTime        @db.Date
+  expectedDepositDate DateTime        @db.Date // estimate only
+  manualDepositDate   DateTime?       @db.Date // user override (e.g. holiday exception)
+  holidayNote         String?
+  status              PaydayStatus    @default(EXPECTED)
+  note                String?
+  createdAt           DateTime        @default(now()) @db.Timestamptz
+  deposit             IncomeDeposit?
+  overtimeShifts      OvertimeShift[]
+
+  @@unique([ownerId, kind, officialDate])
+  @@index([ownerId, kind, officialDate])
+}
+
+enum IncomeKind {
+  REGULAR
+  OVERTIME
+  GIG
+  OTHER
+}
+
+/// The ONLY record meaning money actually arrived. Created solely by user confirmation.
+/// Shared later by the ledger, Extra Paycheck Planner and Money Roulette.
+model IncomeDeposit {
+  id                String     @id @default(cuid())
+  ownerId           String
+  kind              IncomeKind
+  paydayId          String?    @unique
+  payday            Payday?    @relation(fields: [paydayId], references: [id])
+  netCents          Int
+  actualDepositDate DateTime   @db.Date
+  notes             String?
+  createdAt         DateTime   @default(now()) @db.Timestamptz
+}
+
+model PayRate {
+  id                  String   @id @default(cuid())
+  ownerId             String
+  regularHourlyCents  Int // 2420 = $24.20
+  overtimeMultiplierBp Int // 15000 = 1.5x
+  provisional         Boolean  @default(true)
+  effectiveFrom       DateTime @db.Date
+  createdAt           DateTime @default(now()) @db.Timestamptz
+
+  @@index([ownerId, effectiveFrom])
+}
+
+enum OvertimeStatus {
+  WORKED
+  SUBMITTED
+  APPROVED
+  EXPECTED
+  RECEIVED
+  DISPUTED
+}
+
+model OvertimeShift {
+  id                   String         @id @default(cuid())
+  ownerId              String
+  date                 DateTime       @db.Date
+  startAt              DateTime       @db.Timestamptz
+  endAt                DateTime       @db.Timestamptz
+  breakMinutes         Int            @default(0)
+  regularHoursX100     Int            @default(0) // extra hours paid at the regular rate
+  overtimeHoursX100    Int            @default(0) // hours the user says qualify for the OT multiplier
+  rateHourlyCents      Int // snapshot of the regular rate used for the estimate
+  rateMultiplierBp     Int // snapshot of the multiplier used for the estimate
+  estimatedGrossCents  Int // ESTIMATE before taxes/deductions — never income
+  isActivation         Boolean        @default(false)
+  payrollPeriod        String?
+  paydayId             String?
+  payday               Payday?        @relation(fields: [paydayId], references: [id])
+  status               OvertimeStatus @default(WORKED)
+  notes                String?
+  createdAt            DateTime       @default(now()) @db.Timestamptz
+
+  @@index([ownerId, date])
+}
+
+// ───────────────────────── Challenge configuration (used by Phase 2) ─────────────────────────
+
+enum ChallengeKind {
+  DEBT
+  MOVING_OUT
+  SCHD
+}
+
+enum SelectionRule {
+  BIG_FIRST_RANDOM_TOP_N
+  SEQUENTIAL
+}
+
+enum ChallengeStatus {
+  SETUP_REQUIRED
+  ACTIVE
+  COMPLETE
+}
+
+model Challenge {
+  id            String          @id @default(cuid())
+  ownerId       String
+  kind          ChallengeKind
+  name          String
+  selectionRule SelectionRule
+  topN          Int             @default(10)
+  targetCents   Int?
+  nextNumber    Int? // SCHD: next sequential day
+  status        ChallengeStatus
+  tiles         ChallengeTile[]
+
+  @@unique([ownerId, kind])
+}
+
+enum TileStatus {
+  OPEN
+  PROVISIONAL // shown as previously done, NOT a verified financial record
+  COMPLETED
+}
+
+model ChallengeTile {
+  id          String     @id @default(cuid())
+  challengeId String
+  challenge   Challenge  @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  number      Int
+  amountCents Int
+  status      TileStatus @default(OPEN)
+
+  @@unique([challengeId, number])
+}
+
+// ───────────────────────── Audit ─────────────────────────
+
+model AuditLog {
+  id       String   @id @default(cuid())
+  ownerId  String
+  entity   String
+  entityId String
+  action   String
+  before   Json?
+  after    Json?
+  at       DateTime @default(now()) @db.Timestamptz
+
+  @@index([ownerId, entity, entityId])
+}

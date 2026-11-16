@@ -1,0 +1,46 @@
+{
+  "name": "levelup-2027",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LEVEL UP 2027 \u2014 private personal Life Operating System",
+  "scripts": {
+    "dev": "next dev -p 3100",
+    "build": "next build",
+    "start": "next start -p 3100",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "dotenv -e .env.test -- sh -c 'prisma migrate deploy && vitest run tests/integration'",
+    "test:e2e": "dotenv -e .env.test -- sh -c 'prisma migrate deploy && playwright test --trace off'",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "owner:create": "tsx --conditions=react-server scripts/create-owner.ts"
+  },
+  "dependencies": {
+    "@node-rs/argon2": "^2.0.2",
+    "@prisma/client": "^6.19.3",
+    "@simplewebauthn/browser": "^13.2.2",
+    "@simplewebauthn/server": "^13.2.2",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.544.0",
+    "next": "^15.5.29",
+    "react": "^19.1.10",
+    "react-dom": "^19.1.10",
+    "server-only": "^0.0.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^22.18.0",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "autoprefixer": "^10.4.21",
+    "dotenv-cli": "^8.0.0",
+    "postcss": "^8.5.33",
+    "prisma": "^6.19.3",
+    "tailwindcss": "^3.4.19",
+    "tsx": "^4.20.5",
+    "typescript": "^5.6.3",
+    "vitest": "^3.2.4"
+  }
+}
