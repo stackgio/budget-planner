@@ -29,7 +29,7 @@ export const CtaScene: React.FC = () => {
 	const reset = sp(frame, fps, tStart - 2, 'smooth');
 	const fill = mix(1, FACTS.milestone.value / FACTS.goal.value, reset);
 	const mile = kf(frame, [tFirst - 4, tFirst + 8], [0, 1], E.out);
-	const btn = sp(frame, fps, tSave - 6, 'bouncy');
+	const btn = sp(frame, fps, tSave + 2, 'bouncy');
 	const press = kf(frame, [tSave + 4, tSave + 8, tSave + 16], [0, 1, 0], E.inOut);
 	const bm = kf(frame, [tSave + 6, tSave + 20], [0, 1], E.out);
 	const brand = sp(frame, fps, tWorking, 'smooth');

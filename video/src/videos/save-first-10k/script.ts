@@ -58,4 +58,4 @@ export const SCENES: SceneDef<SceneId>[] = [
 ];
 
 /** Seconds held after the last word: enough for the brand frame to settle, no long outro. */
-export const TAIL_SEC = 1.3;
+export const TAIL_SEC = 1.0;
