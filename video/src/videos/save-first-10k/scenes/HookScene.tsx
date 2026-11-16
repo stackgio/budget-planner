@@ -1,116 +1,143 @@
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
+import {Camera} from '../../../story/components/Camera';
 import {Sfx} from '../../../story/components/Chrome';
 import {NumberCounter} from '../../../story/components/NumberCounter';
 import {useCues} from '../../../story/lib/cues';
 import {E, kf, mix, sp} from '../../../story/lib/motion';
 import {story} from '../../../story/theme';
 import {FACTS} from '../facts';
-import {C, GoalBar, L, VaultBg} from '../ui';
+import {C, L, VaultBg, fmt} from '../ui';
 
-const BAR_Y = 1150;
+/** The $10,000 goal as ten $1,000 blocks (world coordinates, inside the camera). */
+const N = FACTS.goal.value / FACTS.milestone.value; // 10
+const ROW = {y: 1000, h: 130, gap: 12};
+const BW = (L.w - (N - 1) * ROW.gap) / N;
+const B1 = {x: L.x + BW / 2, y: ROW.y + ROW.h / 2}; // centre of block 1
+const ZOOM = 2.35;
 
 /**
  * HOOK — "Trying to save your first $10,000? Stop worrying about $10,000. Focus on your first $1,000."
- * Frame 0: "SAVE YOUR FIRST $10,000" fills the screen (readable with sound off).
- * "Stop" → the number recedes in depth, then shrinks into the far end of a goal bar.
- * "$1,000" → the first milestone lands in green and the bar fills its first 10%.
+ * Frame 0: "SAVE YOUR FIRST $10,000" (readable with sound off). Within the first second the
+ * goal visibly splits into ten $1,000 blocks. "Stop" → $10,000 is knocked back to a small
+ * GOAL chip and blocks 2–10 dim. "Focus" → the camera dives into block 1, which fills green
+ * while the counter runs $0 → $1,000: the smaller-milestone strategy, shown, not told.
  */
 export const HookScene: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const {cue} = useCues();
+	const tTen = cue('L1', '$10,000?');
 	const tStop = cue('L2', 'Stop');
-	const tAbout = cue('L2', 'about');
+	const tWorry = cue('L2', 'worrying');
 	const tFocus = cue('L3', 'Focus');
 	const tFirst = cue('L3', 'first');
 	const t1k = cue('L3', '$1,000');
+	const t1kEnd = cue('L3', '$1,000', 0, 'end');
 
-	// $10,000: settle → slow push → recede in depth → fly into the bar's end label
-	const settle = kf(frame, [0, 16], [1.05, 1], E.out);
-	const push = kf(frame, [0, tStop], [1, 1.04], E.soft);
-	const recede = sp(frame, fps, tStop, 'smooth');
-	const toBar = sp(frame, fps, tFocus - 6, {damping: 200, stiffness: 70, mass: 1});
-	const from = {x: L.cx, y: 740, s: settle * push * (1 - 0.42 * recede)};
-	const ry = mix(740, 600, recede);
-	const endLabel = {x: L.x + L.w - 58, y: BAR_Y + 30 + 16 + 20, s: 30 / 210};
-	const nx = mix(from.x, endLabel.x, toBar);
-	const ny = mix(ry, endLabel.y, toBar);
-	const ns = mix(from.s, endLabel.s, toBar);
-	const tenOpacity = (1 - 0.6 * recede + 0.6 * toBar) * (toBar > 0.97 ? 0 : 1);
-	const tenGray = recede;
+	// big $10,000: frame-0 readable → weighted beat on the spoken amount → knocked back to a chip
+	const settle = kf(frame, [0, 14], [1.06, 1], E.out);
+	const beat = 1 + 0.035 * Math.sin(Math.PI * kf(frame, [tTen, tTen + 10], [0, 1], E.out));
+	const knock = sp(frame, fps, tStop, {damping: 15, stiffness: 140, mass: 0.9});
+	const tenScale = settle * beat * mix(1, 0.24, knock);
+	const tenY = mix(640, 262, knock);
+	const kicker = 1 - kf(frame, [tStop - 2, tStop + 6], [0, 1], E.in);
+	const goalTag = kf(frame, [tStop + 8, tStop + 16], [0, 1], E.out);
 
-	const kicker = 1 - kf(frame, [tStop, tStop + 10], [0, 1], E.in);
-
-	// bar
-	const barReveal = kf(frame, [tAbout, tAbout + 20], [0, 1], E.out);
-	const fill = 0.1 * sp(frame, fps, t1k, 'smooth');
-	const mile = kf(frame, [t1k + 6, t1k + 16], [0, 1], E.out);
-
-	// $1,000 lands
-	const land = sp(frame, fps, tFirst + 2, 'heavy');
-	const tag = sp(frame, fps, tFocus + 2, 'snappy');
-	const pct = sp(frame, fps, t1k + 14, 'snappy');
-	const glow = 0.6 + 0.8 * land;
+	// blocks build in during the first second
+	const blockIn = (i: number) => sp(frame, fps, 3 + i * 2, 'snappy');
+	const dimOthers = kf(frame, [tWorry, tWorry + 12], [0, 1], E.out);
+	const b1Lit = kf(frame, [tWorry + 4, tWorry + 14], [0, 1], E.out);
+	const splitLabel = kf(frame, [20, 30], [0, 1], E.out) * (1 - kf(frame, [tStop, tStop + 8], [0, 1], E.in));
+	const fill = kf(frame, [tFirst, t1kEnd], [0, 1], E.inOut);
+	const value = fill * FACTS.milestone.value;
+	const lands = sp(frame, fps, t1kEnd, 'bouncy');
+	const mileTag = sp(frame, fps, t1kEnd + 1, 'snappy');
+	const counterIn = sp(frame, fps, tFirst - 4, 'snappy');
 
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
-			<VaultBg glow={glow} gy={720} />
+			<VaultBg glow={0.6 + 0.9 * fill} gx={540} gy={mix(900, 960, fill)} />
 
-			{/* frame-0 kicker */}
-			<div style={{position: 'absolute', left: L.x, width: L.w, top: 520, textAlign: 'center', opacity: kicker}}>
+			<Camera
+				keys={[
+					{at: 0, zoom: 1, x: 540, y: 960},
+					{at: tStop, zoom: 1.03, x: 540, y: 960, ease: E.soft},
+					{at: tStop + 22, zoom: 1.1, x: 516, y: 1000, ease: E.inOut},
+					{at: tFocus - 3, zoom: 1.12, x: 516, y: 1010, ease: E.soft},
+					{at: tFirst + 8, zoom: ZOOM, x: B1.x, y: B1.y, ease: E.inOut},
+					{at: t1kEnd + 30, zoom: ZOOM * 0.96, x: B1.x + 6, y: B1.y},
+				]}
+			>
+				{Array.from({length: N}, (_, i) => {
+					const p = blockIn(i);
+					const first = i === 0;
+					const x = L.x + i * (BW + ROW.gap);
+					return (
+						<div
+							key={i}
+							style={{
+								position: 'absolute',
+								left: x,
+								top: ROW.y,
+								width: BW,
+								height: ROW.h,
+								borderRadius: 16,
+								overflow: 'hidden',
+								background: 'rgba(255,255,255,0.05)',
+								border: `2.5px solid ${first && b1Lit > 0.5 ? C.green : 'rgba(255,255,255,0.28)'}`,
+								boxShadow: first ? `0 0 ${30 * (b1Lit + fill)}px rgba(57,255,136,${0.25 * b1Lit + 0.35 * fill})` : 'none',
+								opacity: Math.min(1, p * 1.3) * (first ? 1 : 1 - 0.62 * dimOthers),
+								transform: `translateY(${(1 - p) * 40}px) scale(${0.7 + 0.3 * p})`,
+							}}
+						>
+							{first && (
+								<div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: `${fill * 100}%`, background: `linear-gradient(180deg, ${C.green} 0%, #1FAE5C 100%)`}} />
+							)}
+						</div>
+					);
+				})}
+				<div style={{position: 'absolute', left: L.x, top: ROW.y + ROW.h + 20, fontSize: 30, fontWeight: 800, color: C.gray, opacity: kf(frame, [16, 26], [0, 1])}}>$0</div>
+				<div style={{position: 'absolute', right: story.safe.right, top: ROW.y + ROW.h + 20, fontSize: 30, fontWeight: 800, color: C.gray, opacity: kf(frame, [16, 26], [0, 1]) * (1 - dimOthers * 0.4)}}>{fmt(FACTS.goal.value)}</div>
+				<div style={{position: 'absolute', left: L.x, width: L.w, top: ROW.y + ROW.h + 20, textAlign: 'center', fontSize: 34, fontWeight: 900, letterSpacing: 2, color: C.white, opacity: splitLabel}}>
+					= 10 × <span style={{color: C.green}}>{fmt(FACTS.milestone.value)}</span>
+				</div>
+			</Camera>
+
+			{/* screen-space type */}
+			<div style={{position: 'absolute', left: L.x, width: L.w, top: 430, textAlign: 'center', opacity: kicker}}>
 				<div style={{fontSize: 44, fontWeight: 800, letterSpacing: 10, color: C.gray}}>SAVE YOUR FIRST</div>
 			</div>
-
-			{/* the overwhelming goal */}
 			<div
 				style={{
 					position: 'absolute',
-					left: nx,
-					top: ny,
-					transform: `translate(-50%, -50%) scale(${ns})`,
+					left: L.cx,
+					top: tenY,
+					transform: `translate(-50%, -50%) scale(${tenScale})`,
 					fontSize: 210,
 					fontWeight: 900,
 					letterSpacing: -8,
-					color: tenGray > 0.5 ? C.gray : C.white,
-					opacity: tenOpacity,
-					filter: `blur(${4 * recede * (1 - toBar)}px)`,
+					color: knock > 0.4 ? C.gray : C.white,
 					whiteSpace: 'nowrap',
 					fontVariantNumeric: 'tabular-nums',
 				}}
 			>
-				$10,000
+				{fmt(FACTS.goal.value)}
+			</div>
+			<div style={{position: 'absolute', left: L.x, width: L.w, top: 206, textAlign: 'center', opacity: goalTag, fontSize: 26, fontWeight: 800, letterSpacing: 6, color: C.gray}}>GOAL</div>
+
+			<div style={{position: 'absolute', left: L.x, width: L.w, top: 470, display: 'flex', justifyContent: 'center', opacity: counterIn, transform: `translateY(${(1 - counterIn) * 30}px) scale(${1 + 0.06 * Math.sin(Math.PI * Math.min(1, lands))})`}}>
+				<NumberCounter value={value} fontSize={220} color={C.green} roll={false} style={{letterSpacing: -6, textShadow: `0 0 ${40 + 40 * lands}px rgba(57,255,136,0.3)`}} />
+			</div>
+			<div style={{position: 'absolute', left: L.x, width: L.w, top: 410, textAlign: 'center', opacity: counterIn * (1 - kf(frame, [t1kEnd - 6, t1kEnd], [0, 1], E.in)), fontSize: 32, fontWeight: 800, letterSpacing: 7, color: C.gray}}>FOCUS ON</div>
+			<div style={{position: 'absolute', left: L.x, width: L.w, top: 410, textAlign: 'center', opacity: mileTag, transform: `translateY(${(1 - mileTag) * 12}px)`, fontSize: 32, fontWeight: 900, letterSpacing: 6, color: C.white}}>
+				MILESTONE <span style={{color: C.green}}>1</span> OF 10
 			</div>
 
-			{/* the approachable milestone */}
-			<div style={{position: 'absolute', left: L.x, width: L.w, top: 470, display: 'flex', justifyContent: 'center', opacity: tag}}>
-				<div style={{fontSize: 34, fontWeight: 800, letterSpacing: 8, color: C.gray, transform: `translateY(${(1 - tag) * 20}px)`}}>FOCUS ON YOUR FIRST</div>
-			</div>
-			<div
-				style={{
-					position: 'absolute',
-					left: L.x,
-					width: L.w,
-					top: 540,
-					display: 'flex',
-					justifyContent: 'center',
-					opacity: Math.min(1, land * 1.4),
-					transform: `translateY(${(1 - land) * 80}px) scale(${0.9 + 0.1 * land})`,
-				}}
-			>
-				<NumberCounter value={FACTS.milestone.value} fontSize={230} color={C.green} style={{letterSpacing: -6, textShadow: '0 0 60px rgba(57,255,136,0.25)'}} />
-			</div>
-			<div style={{position: 'absolute', left: L.x, width: L.w, top: 830, textAlign: 'center', opacity: pct, transform: `translateY(${(1 - pct) * 16}px)`}}>
-				<div style={{fontSize: 34, fontWeight: 800, letterSpacing: 4, color: C.white}}>
-					<span style={{color: C.green}}>10%</span> OF THE GOAL
-				</div>
-			</div>
-
-			<GoalBar y={BAR_Y} fill={fill} reveal={barReveal} labels={barReveal} endLabel={toBar > 0.97 ? 1 : 0} mile={mile} />
-
-			<Sfx at={tStop + 2} name="whoosh-soft" volume={0.3} />
-			<Sfx at={tFocus - 4} name="whoosh" volume={0.25} />
-			<Sfx at={t1k + 18} name="chime" volume={0.3} />
+			<Sfx at={8} name="click" volume={0.16} />
+			<Sfx at={tStop + 1} name="thud" volume={0.28} />
+			<Sfx at={tFocus - 3} name="whoosh" volume={0.3} />
+			<Sfx at={t1kEnd + 2} name="chime" volume={0.32} />
 		</AbsoluteFill>
 	);
 };

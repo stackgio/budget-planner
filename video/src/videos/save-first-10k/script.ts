@@ -51,7 +51,7 @@ export const SCENES: SceneDef<SceneId>[] = [
 	{id: 'afford', firstLine: 'L5', transitionFrames: 14}, // depth push into card 01
 	{id: 'habit', firstLine: 'L8', transitionFrames: 8}, // match cut: same chip, same grid
 	{id: 'hysa', firstLine: 'L11', transitionFrames: 16}, // slide left: new step
-	{id: 'review', firstLine: 'L13', transitionFrames: 14}, // depth push
+	{id: 'review', firstLine: 'L13', transitionFrames: 16}, // green panel sweep (chapter break)
 	{id: 'extra', firstLine: 'L16', transitionFrames: 16}, // slide left: new step
 	{id: 'payoff', firstLine: 'L19', transitionFrames: 20}, // iris from the goal bar
 	{id: 'cta', firstLine: 'L21', transitionFrames: 8}, // match cut: same counter + bar

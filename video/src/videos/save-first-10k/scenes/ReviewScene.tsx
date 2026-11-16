@@ -1,11 +1,12 @@
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
+import {Camera} from '../../../story/components/Camera';
 import {Sfx} from '../../../story/components/Chrome';
 import {NumberCounter} from '../../../story/components/NumberCounter';
 import {useCues} from '../../../story/lib/cues';
 import {E, kf, mix, sp} from '../../../story/lib/motion';
 import {story} from '../../../story/theme';
-import {CUT_TOTAL, FACTS} from '../facts';
+import {CUT_TOTAL, FACTS, SPEND_TOTAL} from '../facts';
 import {C, ExampleTag, L, Panel, StepTag, VaultBg, fmt} from '../ui';
 
 type Row = {name: string; amount: number; cut: number; note: string; order: number};
@@ -40,9 +41,10 @@ export const ReviewScene: React.FC = () => {
 
 	const head = sp(frame, fps, tLast - 4, 'snappy');
 	const panel = sp(frame, fps, 0, 'smooth');
-	const pot = sp(frame, fps, tCut - 6, 'snappy');
+	const pot = sp(frame, fps, tCut + 6, 'snappy');
 	const keep = sp(frame, fps, tEnjoy, 'bouncy');
-	const t1 = sp(frame, fps, tEnjoy + 10, 'snappy');
+	const tJust = cue('L15', 'just');
+	const card = sp(frame, fps, tJust - 4, {damping: 16, stiffness: 120, mass: 0.9});
 	const t2 = sp(frame, fps, tSave - 2, 'snappy');
 	// trims arrive one by one from "two"
 	const trimAt = (o: number) => tTwo + o * 9;
@@ -60,6 +62,18 @@ export const ReviewScene: React.FC = () => {
 			</div>
 			<ExampleTag style={{right: story.safe.right, top: 290, opacity: head}} />
 
+			<Camera
+				keys={[
+					{at: 0, zoom: 1, x: 540, y: 960},
+					{at: tTwo - 6, zoom: 1, x: 540, y: 960},
+					{at: tTwo + 14, zoom: 1.06, x: 530, y: 860, ease: E.inOut},
+					{at: tCut - 4, zoom: 1.06, x: 530, y: 880, ease: E.soft},
+					{at: tCut + 18, zoom: 1, x: 540, y: 960, ease: E.inOut},
+					{at: tEnjoy - 4, zoom: 1, x: 540, y: 960},
+					{at: tEnjoy + 12, zoom: 1.05, x: 530, y: 960, ease: E.inOut},
+					{at: tJust + 6, zoom: 1, x: 540, y: 960, ease: E.inOut},
+				]}
+			>
 			<Panel style={{left: L.x, top: PANEL.y, width: L.w, height: PANEL.h, opacity: panel, transform: `translateY(${(1 - panel) * 50}px)`}}>
 				{ROWS.map((r, i) => {
 					const grow = sp(frame, fps, t30 + i * 4, 'smooth');
@@ -82,6 +96,7 @@ export const ReviewScene: React.FC = () => {
 								<div style={{position: 'absolute', left: 0, top: 56, padding: '2px 12px', borderRadius: 10, border: `1.5px solid ${C.white}`, fontSize: 24, fontWeight: 900, letterSpacing: 2, color: C.white, opacity: keep, transform: `scale(${0.8 + 0.2 * keep})`, transformOrigin: '0 50%'}}>KEEP ✓</div>
 							)}
 							<div style={{position: 'absolute', left: 0, top: 104, width: BAR_W, height: 22, borderRadius: 11, background: C.track}} />
+							{trim > 0 && <div style={{position: 'absolute', left: 0, top: 101, width: fullW, height: 28, borderRadius: 14, border: `2px dashed rgba(255,255,255,${0.35 * trim})`}} />}
 							<div style={{position: 'absolute', left: 0, top: 104, width: Math.max(0, fullW - (trim > 0 ? cutW : 0)), height: 22, borderRadius: 11, background: isKeep && keep > 0.5 ? C.white : 'rgba(255,255,255,0.55)'}} />
 							{trim > 0 && flow < 1 && (
 								<div
@@ -106,17 +121,42 @@ export const ReviewScene: React.FC = () => {
 
 			{/* savings pot */}
 			<Panel glow={landed ? 0.7 : 0.2 * pot} style={{left: L.x, top: 1030, width: L.w, height: 96, opacity: pot, transform: `scale(${0.94 + 0.06 * pot})`}}>
-				<div style={{position: 'absolute', left: 36, top: 0, bottom: 0, display: 'flex', alignItems: 'center', fontSize: 28, fontWeight: 800, letterSpacing: 3, color: C.gray}}>→ SAVINGS</div>
-				<div style={{position: 'absolute', right: 36, top: 0, bottom: 0, display: 'flex', alignItems: 'center', gap: 8}}>
-					<span style={{fontSize: 48, fontWeight: 900, color: C.green}}>+</span>
-					<NumberCounter value={saved} fontSize={48} color={C.green} roll={false} />
-					<span style={{fontSize: 30, fontWeight: 800, color: C.gray, marginLeft: 6}}>/ MONTH</span>
+				<div style={{position: 'absolute', left: 32, top: 0, bottom: 0, display: 'flex', alignItems: 'center', gap: 12}}>
+					<span style={{fontSize: 24, fontWeight: 800, letterSpacing: 2, color: C.gray}}>SPENT</span>
+					<span style={{fontSize: 34, fontWeight: 800, color: C.gray, textDecoration: saved > 0 ? 'line-through' : 'none'}}>{fmt(SPEND_TOTAL)}</span>
+					<span style={{fontSize: 30, fontWeight: 800, color: C.gray}}>→</span>
+					<NumberCounter value={SPEND_TOTAL - saved} fontSize={40} color={C.white} roll={false} />
+				</div>
+				<div style={{position: 'absolute', right: 32, top: 0, bottom: 0, display: 'flex', alignItems: 'center', gap: 8}}>
+					<span style={{fontSize: 44, fontWeight: 900, color: C.green}}>+</span>
+					<NumberCounter value={saved} fontSize={44} color={C.green} roll={false} />
+					<span style={{fontSize: 26, fontWeight: 800, color: C.gray, marginLeft: 4}}>SAVED</span>
 				</div>
 			</Panel>
+			</Camera>
 
-			<div style={{position: 'absolute', left: L.x, width: L.w, top: 1168, textAlign: 'center', lineHeight: 1.06}}>
-				<div style={{fontSize: 68, fontWeight: 900, letterSpacing: -2, color: C.white, opacity: t1, transform: `translateY(${(1 - t1) * 22}px)`}}>SPEND INTENTIONALLY.</div>
-				<div style={{fontSize: 68, fontWeight: 900, letterSpacing: -2, color: C.green, opacity: t2, transform: `translateY(${(1 - t2) * 22}px)`}}>SAVE CONSISTENTLY.</div>
+			{/* the takeaway lands on a bright card: a visual break from the dark dashboards */}
+			<div
+				style={{
+					position: 'absolute',
+					left: L.x,
+					width: L.w,
+					top: 1156,
+					height: 200,
+					borderRadius: 34,
+					background: C.green,
+					display: 'flex',
+					flexDirection: 'column',
+					justifyContent: 'center',
+					alignItems: 'center',
+					lineHeight: 1.06,
+					opacity: Math.min(1, card * 1.5),
+					transform: `translateY(${(1 - card) * 120}px) rotate(${(1 - card) * -2}deg)`,
+					boxShadow: '0 24px 60px rgba(57,255,136,0.25)',
+				}}
+			>
+				<div style={{fontSize: 60, fontWeight: 900, letterSpacing: -1.5, color: C.bg}}>SPEND INTENTIONALLY.</div>
+				<div style={{fontSize: 60, fontWeight: 900, letterSpacing: -1.5, color: C.bg, opacity: 0.35 + 0.65 * t2, transform: `translateY(${(1 - t2) * 10}px)`}}>SAVE CONSISTENTLY.</div>
 			</div>
 
 			<Sfx at={t30 + 2} name="whoosh-soft" volume={0.25} />
@@ -124,6 +164,7 @@ export const ReviewScene: React.FC = () => {
 			<Sfx at={trimAt(1)} name="click" volume={0.22} />
 			<Sfx at={trimAt(2)} name="click" volume={0.22} />
 			<Sfx at={flowEnd} name="coin" volume={0.32} />
+			<Sfx at={tJust - 2} name="whoosh-soft" volume={0.25} />
 		</AbsoluteFill>
 	);
 };

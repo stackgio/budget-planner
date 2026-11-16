@@ -1,5 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
+import {Camera} from '../../../story/components/Camera';
 import {Sfx} from '../../../story/components/Chrome';
 import {useCues} from '../../../story/lib/cues';
 import {E, kf, mix, sp} from '../../../story/lib/motion';
@@ -87,13 +88,25 @@ export const HysaScene: React.FC = () => {
 	const sav = lerpBox(savA, savB, dock);
 
 	// money moves checking → savings
-	const mt = kf(frame, [tSep, tMoney + 8], [0, 1], E.inOut);
-	const mFrom = [chkA.x + chkA.w - 200, chkA.y + 115];
-	const mTo = [savA.x + savA.w - 200, savA.y + 115];
-	const mx = mix(mFrom[0], mTo[0], mt) + Math.sin(mt * Math.PI) * 110;
-	const my = mix(mFrom[1], mTo[1], mt);
+	const PIPE_X = L.x + L.w - 150;
+	const pipe = kf(frame, [tSep - 8, tSep + 6], [0, 1], E.out) * (1 - kf(frame, [tSet - 6, tSet + 2], [0, 1], E.in));
+	const mt = kf(frame, [tSep + 2, tMoney + 8], [0, 1], E.inOut);
+	const mx = PIPE_X;
+	const my = mix(chkA.y + 150, savA.y + 112, mt);
 	const mOp = mt > 0 && mt < 1 ? 1 : 0;
-	const savGlow = kf(frame, [tMoney + 6, tMoney + 12, tSet - 4], [0, 1, 0.3], E.out);
+	const arrived = sp(frame, fps, tMoney + 8, 'bouncy') * (1 - dock);
+	// paydays on the calendar send their transfer up to the docked savings card
+	const payAt = PAYDAYS.map((_, i) => tPayday - 6 + i * 7);
+	const flights = PAYDAYS.map((d, i) => {
+		const t = kf(frame, [payAt[i] + 2, payAt[i] + 14], [0, 1], E.inOut);
+		const col = (d - 1) % 7;
+		const row = Math.floor((d - 1) / 7);
+		const from: [number, number] = [L.x + 30 + col * 118.3 + 59, 902 + 128 + row * 64 + 27];
+		const to: [number, number] = [savB.x + savB.w / 2, savB.y + savB.h / 2];
+		return {t, x: mix(from[0], to[0], t), y: mix(from[1], to[1], t) - Math.sin(t * Math.PI) * 40};
+	});
+	const autoGlow = Math.max(0, ...payAt.map((a) => kf(frame, [a + 14, a + 16, a + 26], [0, 1, 0.35], E.out)));
+	const savGlow = Math.max(kf(frame, [tMoney + 6, tMoney + 12, tSet - 4], [0, 1, 0.3], E.out) * (1 - dock), autoGlow);
 	const sepLabel = sep * (1 - dock);
 
 	const sheet = sp(frame, fps, tSet, 'smooth');
@@ -106,6 +119,15 @@ export const HysaScene: React.FC = () => {
 			<VaultBg glow={0.8} gy={700} />
 			<StepTag n="02" label="AUTOMATE" at={tNum - 2} />
 
+			<Camera
+				keys={[
+					{at: 0, zoom: 1, x: 540, y: 960},
+					{at: tOpen - 2, zoom: 1, x: 540, y: 960},
+					{at: tHY + 6, zoom: 1.08, x: 530, y: 820, ease: E.inOut},
+					{at: tMoney + 10, zoom: 1.08, x: 530, y: 870, ease: E.soft},
+					{at: tSet + 4, zoom: 1, x: 540, y: 960, ease: E.inOut},
+				]}
+			>
 			<AccountCard box={chk} compact={dock} kind="checking" opacity={chkIn} dy={(1 - chkIn) * 40} />
 			<AccountCard box={sav} compact={dock} kind="savings" badge={badge} glow={savGlow} opacity={Math.min(1, savIn * 1.4)} dy={(1 - savIn) * 120} />
 			<div style={{position: 'absolute', left: L.x, width: L.w, top: 579, display: 'flex', alignItems: 'center', gap: 20, opacity: sepLabel}}>
@@ -113,28 +135,46 @@ export const HysaScene: React.FC = () => {
 				<div style={{fontSize: 26, fontWeight: 800, letterSpacing: 4, color: C.gray}}>KEEP SEPARATE</div>
 				<div style={{flex: 1, borderTop: `2px dashed ${C.grayDim}`}} />
 			</div>
+			{/* the transfer travels through a pipe between the two accounts */}
+			<div
+				style={{
+					position: 'absolute',
+					left: PIPE_X - 4,
+					top: chkA.y + chkA.h,
+					width: 8,
+					height: Math.max(0, (savA.y - chkA.y - chkA.h) * pipe),
+					borderRadius: 4,
+					background: `repeating-linear-gradient(180deg, ${C.green} 0px, ${C.green} 10px, transparent 10px, transparent 20px)`,
+					backgroundPositionY: frame * 2.5,
+					opacity: 0.85 * pipe,
+				}}
+			/>
 			<DepositChip text={fmt(FACTS.transfer.value)} style={{left: mx, top: my, transform: 'translate(-50%,-50%)', opacity: mOp}} />
+			<div style={{position: 'absolute', left: savA.x + savA.w - 260, width: 232, textAlign: 'right', top: savA.y + 150, fontSize: 40, fontWeight: 900, color: C.green, opacity: arrived, transform: `scale(${0.7 + 0.3 * arrived})`, transformOrigin: '100% 50%'}}>
+				+{fmt(FACTS.transfer.value)}
+			</div>
 			<ExampleTag style={{left: L.x, top: 960, opacity: savIn * (1 - dock)}} text="EXAMPLE · RATES VARY BY BANK" />
+			</Camera>
 
 			{/* auto-transfer sheet */}
-			<Panel glow={conf} style={{left: L.x, top: 500, width: L.w, height: 370, opacity: sheet, transform: `translateY(${(1 - sheet) * 80}px)`}}>
-				<div style={{position: 'absolute', left: 36, top: 34, fontSize: 34, fontWeight: 900, letterSpacing: 2, color: C.white}}>AUTOMATIC TRANSFER</div>
+			<div style={{position: 'absolute', left: L.x, top: 500, width: L.w, height: 370, borderRadius: 34, background: '#FFFFFF', boxShadow: `0 30px 80px rgba(0,0,0,0.6), 0 0 ${50 * conf}px rgba(57,255,136,${0.35 * conf})`, opacity: sheet, transform: `translateY(${(1 - sheet) * 120}px)`}}>
+				<div style={{position: 'absolute', left: 36, top: 34, fontSize: 34, fontWeight: 900, letterSpacing: 2, color: C.bg}}>AUTOMATIC TRANSFER</div>
 				<div style={{position: 'absolute', right: 120, top: 26}}>
-					<Check size={52} p={conf} />
+					<Check size={52} p={conf} color="#12A150" />
 				</div>
-				<div style={{position: 'absolute', right: 32, top: 34, width: 72, height: 40, borderRadius: 20, background: toggle > 0.5 ? C.green : 'rgba(255,255,255,0.15)'}}>
+				<div style={{position: 'absolute', right: 32, top: 34, width: 72, height: 40, borderRadius: 20, background: toggle > 0.5 ? '#12A150' : 'rgba(11,15,13,0.15)'}}>
 					<div style={{position: 'absolute', top: 4, left: 4 + 32 * toggle, width: 32, height: 32, borderRadius: '50%', background: C.white}} />
 				</div>
 				{ROWS.map(([k, v, green], i) => {
 					const r = sp(frame, fps, tAuto + i * 5, 'snappy');
 					return (
-						<div key={k} style={{position: 'absolute', left: 36, right: 36, top: 112 + i * 84, height: 74, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: `1.5px solid ${C.line}`, opacity: r, transform: `translateX(${(1 - r) * 40}px)`}}>
-							<div style={{fontSize: 26, fontWeight: 700, letterSpacing: 3, color: C.gray}}>{k}</div>
-							<div style={{fontSize: 36, fontWeight: 900, color: green ? C.green : C.white}}>{v}</div>
+						<div key={k} style={{position: 'absolute', left: 36, right: 36, top: 112 + i * 84, height: 74, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1.5px solid rgba(11,15,13,0.10)', opacity: r, transform: `translateX(${(1 - r) * 40}px)`}}>
+							<div style={{fontSize: 26, fontWeight: 700, letterSpacing: 3, color: '#5F6068'}}>{k}</div>
+							<div style={{fontSize: 34, fontWeight: 900, color: C.bg, background: green ? C.green : 'transparent', padding: green ? '4px 16px' : 0, borderRadius: 12}}>{v}</div>
 						</div>
 					);
 				})}
-			</Panel>
+			</div>
 
 			{/* example payday calendar */}
 			<Panel style={{left: L.x, top: 902, width: L.w, height: 460, opacity: cal, transform: `translateY(${(1 - cal) * 60}px)`}}>
@@ -157,7 +197,11 @@ export const HysaScene: React.FC = () => {
 				})}
 			</Panel>
 
+			{flights.map((f, i) => (f.t > 0 && f.t < 1 ? <div key={i} style={{position: 'absolute', left: f.x - 16, top: f.y - 16, width: 32, height: 32, borderRadius: '50%', background: C.green, boxShadow: '0 0 22px rgba(57,255,136,0.7)'}} /> : null))}
+
 			<Sfx at={tOpen + 2} name="card" volume={0.3} />
+			<Sfx at={payAt[0] + 14} name="coin" volume={0.2} />
+			<Sfx at={payAt[1] + 14} name="coin" volume={0.2} />
 			<Sfx at={tMoney + 8} name="coin" volume={0.32} />
 			<Sfx at={tTransE + 4} name="click" volume={0.3} />
 			<Sfx at={tPayday - 4} name="pop" volume={0.22} />

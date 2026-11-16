@@ -1,9 +1,9 @@
 import React from 'react';
 import {slide} from '@remotion/transitions/slide';
-import {depthPush, iris, matchCut} from '../../story/components/Transitions';
+import {depthPush, iris, matchCut, panelSweep} from '../../story/components/Transitions';
 import {makeCalculateMetadata, NarratedVideo, narratedSchema, type NarratedProps, type VideoDef} from '../../story/lib/NarratedVideo';
 import {SCENES, SCRIPT, TAIL_SEC, type SceneId} from './script';
-import {VAULT} from './ui';
+import {C, VAULT} from './ui';
 import {HookScene} from './scenes/HookScene';
 import {PromiseScene} from './scenes/PromiseScene';
 import {AffordScene} from './scenes/AffordScene';
@@ -36,7 +36,8 @@ const DEF: VideoDef<SceneId> = {
 		afford: {presentation: depthPush()},
 		habit: {presentation: matchCut()},
 		hysa: {presentation: slide({direction: 'from-right'}), timing: 'spring'},
-		review: {presentation: depthPush()},
+		// green sweep: a bright break between the two dashboard chapters
+		review: {presentation: panelSweep({color: C.green, direction: 'up'})},
 		extra: {presentation: slide({direction: 'from-right'}), timing: 'spring'},
 		// light opens from the goal bar (where the extra $100 just landed) into the payoff
 		payoff: {presentation: iris({x: 72 + 888 * 0.25, y: EXTRA_BAR_Y + 15})},

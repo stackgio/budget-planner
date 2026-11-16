@@ -1,0 +1,899 @@
+{
+ "words": [
+  {
+   "text": "Trying",
+   "start": 0.1,
+   "end": 0.32
+  },
+  {
+   "text": "to",
+   "start": 0.36,
+   "end": 0.44
+  },
+  {
+   "text": "save",
+   "start": 0.5,
+   "end": 0.68
+  },
+  {
+   "text": "your",
+   "start": 0.7,
+   "end": 0.86
+  },
+  {
+   "text": "first",
+   "start": 0.9,
+   "end": 1.1
+  },
+  {
+   "text": "$10,000?",
+   "start": 1.16,
+   "end": 1.8
+  },
+  {
+   "text": "Stop",
+   "start": 2.76,
+   "end": 2.98
+  },
+  {
+   "text": "worrying",
+   "start": 3.1,
+   "end": 3.46
+  },
+  {
+   "text": "about",
+   "start": 3.52,
+   "end": 3.7
+  },
+  {
+   "text": "$10,000.",
+   "start": 3.72,
+   "end": 4.66
+  },
+  {
+   "text": "Focus",
+   "start": 5.0,
+   "end": 5.34
+  },
+  {
+   "text": "on",
+   "start": 5.38,
+   "end": 5.48
+  },
+  {
+   "text": "your",
+   "start": 5.52,
+   "end": 5.66
+  },
+  {
+   "text": "first",
+   "start": 5.7,
+   "end": 5.92
+  },
+  {
+   "text": "$1,000.",
+   "start": 6.06,
+   "end": 6.7
+  },
+  {
+   "text": "Here",
+   "start": 7.488,
+   "end": 7.648
+  },
+  {
+   "text": "are",
+   "start": 7.668,
+   "end": 7.888
+  },
+  {
+   "text": "four",
+   "start": 7.927,
+   "end": 8.068
+  },
+  {
+   "text": "things",
+   "start": 8.168,
+   "end": 8.388
+  },
+  {
+   "text": "I'd",
+   "start": 8.468,
+   "end": 8.628
+  },
+  {
+   "text": "do,",
+   "start": 8.668,
+   "end": 8.808
+  },
+  {
+   "text": "starting",
+   "start": 9.128,
+   "end": 9.388
+  },
+  {
+   "text": "with",
+   "start": 9.428,
+   "end": 9.528
+  },
+  {
+   "text": "my",
+   "start": 9.568,
+   "end": 9.688
+  },
+  {
+   "text": "next",
+   "start": 9.748,
+   "end": 9.928
+  },
+  {
+   "text": "paycheck.",
+   "start": 10.008,
+   "end": 10.428
+  },
+  {
+   "text": "Number",
+   "start": 10.772,
+   "end": 10.952
+  },
+  {
+   "text": "one:",
+   "start": 11.052,
+   "end": 11.252
+  },
+  {
+   "text": "pick",
+   "start": 11.607,
+   "end": 11.727
+  },
+  {
+   "text": "an",
+   "start": 11.767,
+   "end": 11.807
+  },
+  {
+   "text": "amount",
+   "start": 11.867,
+   "end": 12.167
+  },
+  {
+   "text": "you",
+   "start": 12.207,
+   "end": 12.267
+  },
+  {
+   "text": "can",
+   "start": 12.287,
+   "end": 12.507
+  },
+  {
+   "text": "actually",
+   "start": 12.627,
+   "end": 12.967
+  },
+  {
+   "text": "afford",
+   "start": 13.007,
+   "end": 13.327
+  },
+  {
+   "text": "to",
+   "start": 13.367,
+   "end": 13.467
+  },
+  {
+   "text": "save.",
+   "start": 13.527,
+   "end": 13.867
+  },
+  {
+   "text": "If",
+   "start": 14.307,
+   "end": 14.387
+  },
+  {
+   "text": "you",
+   "start": 14.427,
+   "end": 14.547
+  },
+  {
+   "text": "save",
+   "start": 14.567,
+   "end": 14.827
+  },
+  {
+   "text": "$100",
+   "start": 14.827,
+   "end": 15.287
+  },
+  {
+   "text": "a",
+   "start": 15.607,
+   "end": 15.627
+  },
+  {
+   "text": "week,",
+   "start": 15.706,
+   "end": 15.907
+  },
+  {
+   "text": "that's",
+   "start": 16.207,
+   "end": 16.467
+  },
+  {
+   "text": "$5,200",
+   "start": 16.467,
+   "end": 18.127
+  },
+  {
+   "text": "in",
+   "start": 18.147,
+   "end": 18.287
+  },
+  {
+   "text": "one",
+   "start": 18.427,
+   "end": 18.547
+  },
+  {
+   "text": "year.",
+   "start": 18.647,
+   "end": 18.887
+  },
+  {
+   "text": "Keep",
+   "start": 19.247,
+   "end": 19.427
+  },
+  {
+   "text": "that",
+   "start": 19.467,
+   "end": 19.587
+  },
+  {
+   "text": "up,",
+   "start": 19.667,
+   "end": 19.787
+  },
+  {
+   "text": "and",
+   "start": 20.027,
+   "end": 20.127
+  },
+  {
+   "text": "you'll",
+   "start": 20.167,
+   "end": 20.287
+  },
+  {
+   "text": "reach",
+   "start": 20.327,
+   "end": 20.587
+  },
+  {
+   "text": "$10,000",
+   "start": 20.607,
+   "end": 21.127
+  },
+  {
+   "text": "in",
+   "start": 21.627,
+   "end": 21.707
+  },
+  {
+   "text": "less",
+   "start": 21.767,
+   "end": 21.947
+  },
+  {
+   "text": "than",
+   "start": 21.967,
+   "end": 22.167
+  },
+  {
+   "text": "two",
+   "start": 22.247,
+   "end": 22.407
+  },
+  {
+   "text": "years.",
+   "start": 22.567,
+   "end": 22.927
+  },
+  {
+   "text": "Can't",
+   "start": 23.367,
+   "end": 23.507
+  },
+  {
+   "text": "afford",
+   "start": 23.527,
+   "end": 23.767
+  },
+  {
+   "text": "$100?",
+   "start": 23.807,
+   "end": 24.567
+  },
+  {
+   "text": "Start",
+   "start": 25.007,
+   "end": 25.187
+  },
+  {
+   "text": "with",
+   "start": 25.207,
+   "end": 25.347
+  },
+  {
+   "text": "$25.",
+   "start": 25.367,
+   "end": 25.927
+  },
+  {
+   "text": "The",
+   "start": 26.667,
+   "end": 26.727
+  },
+  {
+   "text": "important",
+   "start": 26.767,
+   "end": 27.187
+  },
+  {
+   "text": "thing",
+   "start": 27.227,
+   "end": 27.507
+  },
+  {
+   "text": "is",
+   "start": 27.547,
+   "end": 27.727
+  },
+  {
+   "text": "building",
+   "start": 27.767,
+   "end": 28.087
+  },
+  {
+   "text": "the",
+   "start": 28.107,
+   "end": 28.227
+  },
+  {
+   "text": "habit.",
+   "start": 28.267,
+   "end": 28.627
+  },
+  {
+   "text": "Number",
+   "start": 29.015,
+   "end": 29.175
+  },
+  {
+   "text": "two:",
+   "start": 29.275,
+   "end": 29.495
+  },
+  {
+   "text": "open",
+   "start": 29.896,
+   "end": 30.176
+  },
+  {
+   "text": "a",
+   "start": 30.256,
+   "end": 30.336
+  },
+  {
+   "text": "high-yield",
+   "start": 30.396,
+   "end": 30.896
+  },
+  {
+   "text": "savings",
+   "start": 30.996,
+   "end": 31.296
+  },
+  {
+   "text": "account.",
+   "start": 31.336,
+   "end": 31.656
+  },
+  {
+   "text": "Keep",
+   "start": 32.076,
+   "end": 32.236
+  },
+  {
+   "text": "your",
+   "start": 32.276,
+   "end": 32.396
+  },
+  {
+   "text": "savings",
+   "start": 32.416,
+   "end": 32.776
+  },
+  {
+   "text": "separate",
+   "start": 32.856,
+   "end": 33.156
+  },
+  {
+   "text": "from",
+   "start": 33.196,
+   "end": 33.316
+  },
+  {
+   "text": "your",
+   "start": 33.336,
+   "end": 33.436
+  },
+  {
+   "text": "spending",
+   "start": 33.516,
+   "end": 33.776
+  },
+  {
+   "text": "money",
+   "start": 33.816,
+   "end": 33.996
+  },
+  {
+   "text": "and",
+   "start": 34.216,
+   "end": 34.336
+  },
+  {
+   "text": "set",
+   "start": 34.376,
+   "end": 34.496
+  },
+  {
+   "text": "up",
+   "start": 34.536,
+   "end": 34.696
+  },
+  {
+   "text": "automatic",
+   "start": 34.756,
+   "end": 35.156
+  },
+  {
+   "text": "transfers",
+   "start": 35.196,
+   "end": 35.796
+  },
+  {
+   "text": "every",
+   "start": 35.856,
+   "end": 36.036
+  },
+  {
+   "text": "payday.",
+   "start": 36.136,
+   "end": 36.496
+  },
+  {
+   "text": "Number",
+   "start": 36.813,
+   "end": 37.033
+  },
+  {
+   "text": "three:",
+   "start": 37.073,
+   "end": 37.293
+  },
+  {
+   "text": "look",
+   "start": 37.69,
+   "end": 37.79
+  },
+  {
+   "text": "at",
+   "start": 37.83,
+   "end": 37.91
+  },
+  {
+   "text": "your",
+   "start": 37.93,
+   "end": 38.05
+  },
+  {
+   "text": "last",
+   "start": 38.11,
+   "end": 38.43
+  },
+  {
+   "text": "30",
+   "start": 38.59,
+   "end": 38.71
+  },
+  {
+   "text": "days",
+   "start": 38.79,
+   "end": 38.99
+  },
+  {
+   "text": "of",
+   "start": 39.01,
+   "end": 39.11
+  },
+  {
+   "text": "spending.",
+   "start": 39.19,
+   "end": 39.53
+  },
+  {
+   "text": "Find",
+   "start": 39.837,
+   "end": 40.097
+  },
+  {
+   "text": "two",
+   "start": 40.177,
+   "end": 40.297
+  },
+  {
+   "text": "or",
+   "start": 40.337,
+   "end": 40.437
+  },
+  {
+   "text": "three",
+   "start": 40.477,
+   "end": 40.617
+  },
+  {
+   "text": "things",
+   "start": 40.717,
+   "end": 40.977
+  },
+  {
+   "text": "you",
+   "start": 40.997,
+   "end": 41.057
+  },
+  {
+   "text": "can",
+   "start": 41.077,
+   "end": 41.197
+  },
+  {
+   "text": "cut",
+   "start": 41.237,
+   "end": 41.397
+  },
+  {
+   "text": "back",
+   "start": 41.437,
+   "end": 41.657
+  },
+  {
+   "text": "on.",
+   "start": 41.717,
+   "end": 41.877
+  },
+  {
+   "text": "You",
+   "start": 42.217,
+   "end": 42.257
+  },
+  {
+   "text": "don't",
+   "start": 42.277,
+   "end": 42.457
+  },
+  {
+   "text": "have",
+   "start": 42.597,
+   "end": 42.717
+  },
+  {
+   "text": "to",
+   "start": 42.737,
+   "end": 42.837
+  },
+  {
+   "text": "stop",
+   "start": 42.877,
+   "end": 43.077
+  },
+  {
+   "text": "enjoying",
+   "start": 43.097,
+   "end": 43.457
+  },
+  {
+   "text": "life",
+   "start": 43.517,
+   "end": 43.797
+  },
+  {
+   "text": "just",
+   "start": 43.917,
+   "end": 44.057
+  },
+  {
+   "text": "to",
+   "start": 44.077,
+   "end": 44.177
+  },
+  {
+   "text": "save",
+   "start": 44.217,
+   "end": 44.437
+  },
+  {
+   "text": "money.",
+   "start": 44.477,
+   "end": 44.717
+  },
+  {
+   "text": "Number",
+   "start": 44.996,
+   "end": 45.156
+  },
+  {
+   "text": "four:",
+   "start": 45.276,
+   "end": 45.496
+  },
+  {
+   "text": "give",
+   "start": 45.84,
+   "end": 46.02
+  },
+  {
+   "text": "your",
+   "start": 46.04,
+   "end": 46.22
+  },
+  {
+   "text": "extra",
+   "start": 46.28,
+   "end": 46.56
+  },
+  {
+   "text": "income",
+   "start": 46.62,
+   "end": 47.0
+  },
+  {
+   "text": "a",
+   "start": 47.06,
+   "end": 47.14
+  },
+  {
+   "text": "purpose.",
+   "start": 47.2,
+   "end": 47.64
+  },
+  {
+   "text": "Overtime,",
+   "start": 48.069,
+   "end": 48.569
+  },
+  {
+   "text": "side",
+   "start": 48.809,
+   "end": 49.029
+  },
+  {
+   "text": "hustles,",
+   "start": 49.069,
+   "end": 49.469
+  },
+  {
+   "text": "bonuses.",
+   "start": 49.669,
+   "end": 50.209
+  },
+  {
+   "text": "Before",
+   "start": 50.549,
+   "end": 50.829
+  },
+  {
+   "text": "you",
+   "start": 50.849,
+   "end": 50.949
+  },
+  {
+   "text": "spend",
+   "start": 51.029,
+   "end": 51.169
+  },
+  {
+   "text": "it",
+   "start": 51.209,
+   "end": 51.269
+  },
+  {
+   "text": "all,",
+   "start": 51.329,
+   "end": 51.449
+  },
+  {
+   "text": "put",
+   "start": 51.749,
+   "end": 51.909
+  },
+  {
+   "text": "some",
+   "start": 51.969,
+   "end": 52.149
+  },
+  {
+   "text": "toward",
+   "start": 52.189,
+   "end": 52.389
+  },
+  {
+   "text": "your",
+   "start": 52.429,
+   "end": 52.549
+  },
+  {
+   "text": "$10,000",
+   "start": 52.549,
+   "end": 53.129
+  },
+  {
+   "text": "goal.",
+   "start": 53.489,
+   "end": 53.689
+  },
+  {
+   "text": "And",
+   "start": 53.999,
+   "end": 54.079
+  },
+  {
+   "text": "remember,",
+   "start": 54.119,
+   "end": 54.479
+  },
+  {
+   "text": "your",
+   "start": 54.819,
+   "end": 54.979
+  },
+  {
+   "text": "first",
+   "start": 55.039,
+   "end": 55.299
+  },
+  {
+   "text": "$10,000",
+   "start": 55.299,
+   "end": 56.319
+  },
+  {
+   "text": "isn't",
+   "start": 56.359,
+   "end": 56.619
+  },
+  {
+   "text": "built",
+   "start": 56.639,
+   "end": 56.839
+  },
+  {
+   "text": "in",
+   "start": 56.879,
+   "end": 56.999
+  },
+  {
+   "text": "one",
+   "start": 57.079,
+   "end": 57.179
+  },
+  {
+   "text": "paycheck.",
+   "start": 57.279,
+   "end": 57.719
+  },
+  {
+   "text": "It's",
+   "start": 58.059,
+   "end": 58.219
+  },
+  {
+   "text": "built",
+   "start": 58.259,
+   "end": 58.439
+  },
+  {
+   "text": "by",
+   "start": 58.479,
+   "end": 58.599
+  },
+  {
+   "text": "what",
+   "start": 58.619,
+   "end": 58.739
+  },
+  {
+   "text": "you",
+   "start": 58.779,
+   "end": 58.859
+  },
+  {
+   "text": "consistently",
+   "start": 58.879,
+   "end": 59.659
+  },
+  {
+   "text": "do",
+   "start": 59.699,
+   "end": 59.899
+  },
+  {
+   "text": "with",
+   "start": 59.939,
+   "end": 60.179
+  },
+  {
+   "text": "every",
+   "start": 60.239,
+   "end": 60.459
+  },
+  {
+   "text": "paycheck.",
+   "start": 60.559,
+   "end": 60.979
+  },
+  {
+   "text": "Save",
+   "start": 61.39,
+   "end": 61.59
+  },
+  {
+   "text": "this",
+   "start": 61.63,
+   "end": 61.77
+  },
+  {
+   "text": "video",
+   "start": 61.81,
+   "end": 62.17
+  },
+  {
+   "text": "and",
+   "start": 62.189,
+   "end": 62.329
+  },
+  {
+   "text": "start",
+   "start": 62.41,
+   "end": 62.63
+  },
+  {
+   "text": "working",
+   "start": 62.67,
+   "end": 62.95
+  },
+  {
+   "text": "toward",
+   "start": 62.99,
+   "end": 63.17
+  },
+  {
+   "text": "your",
+   "start": 63.21,
+   "end": 63.389
+  },
+  {
+   "text": "first",
+   "start": 63.43,
+   "end": 63.65
+  },
+  {
+   "text": "$1,000.",
+   "start": 63.75,
+   "end": 64.39
+  }
+ ]
+}

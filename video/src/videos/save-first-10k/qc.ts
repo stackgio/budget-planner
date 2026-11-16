@@ -4,16 +4,21 @@
  */
 type F = (line: string, word?: string, offsetSec?: number) => number;
 export const qcBeats = (f: F): [string, number][] => [
+	['c_hook_split', f('L1', '$10,000?', 0.2)],
 	['c_hook_recede', f('L2', 'about', 0.3)],
+	['c_hook_dive', f('L3', 'first', 0.1)],
 	['c_hook_1k', f('L3', '$1,000', 0.8)],
 	['c_cards', f('L4', 'paycheck', 0.4)],
 	['c_slider', f('L5', 'save', 0.4)],
 	['c_5200', f('L6', 'year', 0.3)],
 	['c_10k_weeks', f('L7', 'two', 0.5)],
 	['c_25_habit', f('L10', 'habit', 0.3)],
-	['c_hysa_move', f('L12', 'money', 0.3)],
+	['c_hysa_open', f('L11', 'savings', 0.2)],
+	['c_hysa_move', f('L12', 'spending', 0.0)],
 	['c_auto_sheet', f('L12', 'payday', 0.35)],
-	['c_spend_cuts', f('L14', 'on', 0.2)],
+	['c_spend_trim', f('L14', 'things', 0.3)],
+	['c_spend_cuts', f('L14', 'on', 0.4)],
+	['c_spend_keep', f('L15', 'life', 0.1)],
 	['c_spend_text', f('L15', 'money', 0.2)],
 	['c_extra_sources', f('L17', 'bonuses', 0.4)],
 	['c_extra_split', f('L18', 'goal', 0.3)],

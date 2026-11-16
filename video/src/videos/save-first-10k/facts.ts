@@ -44,6 +44,7 @@ export const FACTS = {
 	exampleBalance: fact(2400, 'hypothetical', 'example balance for the goal bar (not the creator\'s)'),
 };
 
+export const SPEND_TOTAL = Object.values(FACTS.spend).reduce((a, f) => a + f.value, 0); // 905
 export const CUT_TOTAL = FACTS.cuts.shopping.value + FACTS.cuts.subscriptions.value + FACTS.cuts.food.value; // 120
 export const EXTRA_SPEND = FACTS.extra.value - FACTS.extraSave.value; // 100
 export const BAL_AFTER_EXTRA = FACTS.exampleBalance.value + FACTS.extraSave.value; // 2,500
@@ -53,3 +54,4 @@ if (FACTS.year1.value !== 5200) throw new Error('year1 must be 5200');
 if (FACTS.weeksToGoal.value !== 100 || FACTS.weeksToGoal.value >= 104) throw new Error('weeksToGoal must be 100 (< 2 years)');
 if (FACTS.smallYear1.value !== 1300) throw new Error('smallYear1 must be 1300');
 if (CUT_TOTAL !== 120) throw new Error('cut total');
+if (SPEND_TOTAL !== 905) throw new Error('spend total');

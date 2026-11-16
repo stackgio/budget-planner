@@ -67,8 +67,11 @@ export const matchCut = (): TransitionPresentation<Record<string, never>> => ({c
 const DepthComp: React.FC<TransitionPresentationComponentProps<Record<string, never>>> = ({children, presentationDirection, presentationProgress}) => {
 	const p = E.inOut(presentationProgress);
 	if (presentationDirection === 'exiting') {
-		return <AbsoluteFill style={{transform: `scale(${1 + 0.18 * p})`, opacity: 1 - p, filter: `blur(${6 * p}px)`}}>{children}</AbsoluteFill>;
+		// sequential, not a cross-dissolve: the old shot clears before the new one appears
+		const out = Math.min(1, p * 2);
+		return <AbsoluteFill style={{transform: `scale(${1 + 0.18 * out})`, opacity: 1 - out, filter: `blur(${6 * out}px)`}}>{children}</AbsoluteFill>;
 	}
-	return <AbsoluteFill style={{transform: `scale(${0.94 + 0.06 * p})`, opacity: p}}>{children}</AbsoluteFill>;
+	const inn = Math.max(0, p * 2 - 1);
+	return <AbsoluteFill style={{transform: `scale(${0.94 + 0.06 * inn})`, opacity: inn}}>{children}</AbsoluteFill>;
 };
 export const depthPush = (): TransitionPresentation<Record<string, never>> => ({component: DepthComp, props: {}});
