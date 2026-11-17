@@ -32,7 +32,7 @@ function routes() {
   return { pages, apis };
 }
 const PUBLIC_PAGES = ["/login", "/setup"];
-const PUBLIC_APIS = ["/api/setup/restore", "/api/health", "/api/cron/tick", "/api/auth/passkey/login/options", "/api/auth/passkey/login/verify"];
+const PUBLIC_APIS = ["/api/setup/check", "/api/setup/restore", "/api/health", "/api/cron/tick", "/api/auth/passkey/login/options", "/api/auth/passkey/login/verify"];
 
 test.describe.serial("Pre-launch security", () => {
   test("every private page and API requires sign-in", async ({ browser }) => {

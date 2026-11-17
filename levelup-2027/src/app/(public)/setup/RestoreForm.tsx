@@ -18,7 +18,7 @@ export function RestoreForm() {
     <details className="mt-6 rounded-2xl border border-ink-700 p-4" onToggle={(e) => setOpen((e.currentTarget as HTMLDetailsElement).open)}>
       <summary className="cursor-pointer text-sm font-semibold">Restoring after a problem? Restore from a backup</summary>
       {open && <form onSubmit={submit} className="mt-4 space-y-3" aria-busy={busy}>
-        <label className="block"><span className="label">Setup token (for restore)</span><input className="input" name="token" type="password" required autoComplete="off" /></label>
+        <label className="block"><span className="label">Setup token (for restore)</span><input className="input" name="restoreToken" type="password" required autoComplete="off" /></label>
         <label className="block"><span className="label">Backup passphrase (for restore)</span><input className="input" name="passphrase" type="password" required autoComplete="off" /></label>
         <label className="block"><span className="label">Backup file (optional)</span><input className="input" name="file" type="file" accept=".lubk,application/octet-stream" />
           <span className="mt-1 block text-xs text-mute-400">Pick the .lubk file you saved to iCloud Drive. Leave empty to use the newest backup in storage.</span></label>

@@ -31,6 +31,15 @@ test.describe.serial("LEVEL UP 2027 — Phase 1", () => {
     await page.getByRole("button", { name: "Generate" }).click();
     await expect(page.locator("[data-secret]")).toHaveCount(5);
     expect((await page.locator('[data-secret="DATA_ENCRYPTION_KEY"]').textContent())!.length).toBe(64);
+    // Launch check runs before any personal information and needs the setup token.
+    await page.getByText("Launch check (run before creating your account)").click();
+    await page.getByLabel("Setup token (for the check)").fill("wrong-token");
+    await page.getByRole("button", { name: "Run launch check" }).click();
+    await expect(page.getByText("Setup token is incorrect.")).toBeVisible();
+    await page.getByLabel("Setup token (for the check)").fill(process.env.SETUP_TOKEN!);
+    await page.getByRole("button", { name: "Run launch check" }).click();
+    await expect(page.locator('[data-check="migrations"][data-ok="true"]')).toBeVisible();
+    await expect(page.locator('[data-check="https"][data-ok="false"]')).toBeVisible(); // local http, as expected
     await page.locator("input[name=token]").fill("wrong");
     await page.getByLabel("Your name").fill("Gio");
     await page.getByLabel("Email").fill(EMAIL);

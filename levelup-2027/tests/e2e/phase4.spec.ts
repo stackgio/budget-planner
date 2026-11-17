@@ -144,7 +144,8 @@ test.describe.serial("Phase 4 — Assistant, reminders & notifications", () => {
     await d.getByRole("button", { name: "Add exercise" }).click();
     await d.getByLabel("Weight or resistance").last().fill("20 lb");
     await d.getByRole("button", { name: "Save workout" }).click();
-    await expect(page.getByText("Full Body B — garage")).toBeVisible();
+    await expect(page.locator("dialog[open]")).toHaveCount(0); // the sheet closes once saved
+    await expect(page.locator("li", { hasText: "Full Body B — garage" }).first()).toBeVisible();
     await page.locator("li", { hasText: "Full Body B — garage" }).first().getByRole("button", { name: "Duplicate" }).click();
     await expect(page.getByText("Full Body B — garage (copy)")).toBeVisible();
     await shot(page, "46-workout-editor");

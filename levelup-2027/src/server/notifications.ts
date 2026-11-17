@@ -348,3 +348,23 @@ export async function notificationDiagnostics(ownerId: string, now = new Date())
     pushFailures7d: recentFailures, unknownOutcomeSends: inFlight,
   };
 }
+
+/**
+ * ONE real test push to your own subscribed devices — only when you tap it and confirm.
+ * Generic lock-screen text, at most 3 per hour, recorded like any other delivery.
+ */
+export async function sendRealTestPush(ownerId: string, sender: PushSender = defaultPushSender(), now = new Date()) {
+  if (!sender.enabled) throw new UserError("Push isn't configured on this server.");
+  const devices = await prisma.pushSubscription.count({ where: { ownerId, revokedAt: null } });
+  if (!devices) throw new UserError("No device has push turned on. Tap “Enable on this device” first.");
+  const recent = await prisma.notification.count({ where: { ownerId, kind: "TEST_PUSH", createdAt: { gt: new Date(now.getTime() - 3_600_000) } } });
+  if (recent >= 3) throw new UserError("You've sent 3 test pushes in the last hour. Try again later.");
+  const n = await prisma.notification.create({
+    data: {
+      ownerId, kind: "TEST_PUSH", category: "TEST", priority: "NORMAL", title: "LEVEL UP", preview: "Test notification — push is working.", href: "/notifications",
+      dedupeKey: `test-push:${now.getTime()}`, scheduledFor: now, expiresAt: new Date(now.getTime() + 3_600_000), status: "DELIVERED", deliveredAt: now, reason: "real test push you requested",
+    },
+  });
+  const r = await pushDelivered([n.id], sender, now);
+  return { devices, sent: r.sent, failed: r.failed };
+}

@@ -5,7 +5,7 @@ import { requireUser } from "@/server/auth";
 import { UserError } from "@/server/payroll";
 import { dismissSuggestion, saveDailyReflection, type Answer } from "@/server/assistant";
 import { activeProvider } from "@/server/assistant-provider";
-import { dismissNotification, markRead, savePrefs, sendSimulatedTest, snoozeNotification } from "@/server/notifications";
+import { dismissNotification, markRead, savePrefs, sendRealTestPush, sendSimulatedTest, snoozeNotification } from "@/server/notifications";
 import { run, type ActionState } from "@/ui/actions";
 import { addDays, isLocalDate, isTime, todayLocal, zonedToInstant } from "@/domain/dates";
 import { ALL_CATEGORIES, BRIEFING_SECTIONS, type Category } from "@/domain/notify";
@@ -92,6 +92,17 @@ export async function testNotificationAction(_p: ActionState, _fd: FormData): Pr
   const r = await run(async () => {
     const t = await sendSimulatedTest(user.id);
     return `Simulated test added to your notification center. ${t.devices ? `${t.devices} device${t.devices === 1 ? "" : "s"} would receive a push` : "No devices have push turned on"} — nothing was sent.`;
+  });
+  revalidatePath("/", "layout");
+  return r;
+}
+
+export async function realTestPushAction(_p: ActionState, _fd: FormData): Promise<ActionState> {
+  const user = await requireUser();
+  const r = await run(async () => {
+    const t = await sendRealTestPush(user.id);
+    if (!t.sent) throw new UserError(`The push service didn't accept it (${t.failed} failed). Check Diagnostics, then try turning push off and on.`);
+    return `Real test push sent to ${t.sent} device${t.sent === 1 ? "" : "s"}. It should arrive within a few seconds.`;
   });
   revalidatePath("/", "layout");
   return r;

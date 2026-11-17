@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   if (Number(req.headers.get("content-length") ?? 0) > MAX_BYTES) return Response.json({ error: "That file is too large to be a LEVEL UP backup." }, { status: 413 });
   const form = await req.formData().catch(() => null);
   if (!form) return Response.json({ error: "Invalid request." }, { status: 400 });
-  if (!safeEqual(String(form.get("token") ?? ""), env.setupToken)) return Response.json({ error: "Setup token is incorrect." }, { status: 403 });
+  if (!safeEqual(String(form.get("restoreToken") ?? form.get("token") ?? ""), env.setupToken)) return Response.json({ error: "Setup token is incorrect." }, { status: 403 });
   const passphrase = String(form.get("passphrase") ?? "");
   const file = form.get("file");
   const upload = file instanceof File && file.size > 0 ? Buffer.from(await file.arrayBuffer()) : null;

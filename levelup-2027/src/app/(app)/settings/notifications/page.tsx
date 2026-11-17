@@ -10,7 +10,8 @@ import { prefsAction } from "../../assistant/actions";
 import { routineAction } from "../actions";
 import { PushControls } from "./PushControls";
 import { DeviceDiagnostics } from "./DeviceDiagnostics";
-import { testNotificationAction } from "../../assistant/actions";
+import { realTestPushAction, testNotificationAction } from "../../assistant/actions";
+import { ConfirmAction } from "@/ui/ConfirmAction";
 
 const SECTION_LABEL: Record<string, string> = { shift: "DOC shift", mode: "Work mode", priorities: "Top 3 priorities", calendar: "Calendar", workouts: "Workouts", tasks: "Tasks due", paydays: "Paydays", transfers: "Transfers to confirm", goals: "Goals & deadlines" };
 
@@ -102,6 +103,13 @@ export default async function NotificationSettings() {
       <Section title="Test">
         <p className="mb-3 text-xs text-mute-400">Puts a test notification in your notification center and shows how many devices would get a push. It&apos;s simulated: no push is ever sent from this button.</p>
         <ActionForm action={testNotificationAction}><SubmitButton className="btn-secondary btn-sm" pendingText="Sending…">Send a simulated test</SubmitButton></ActionForm>
+        {diag.pushConfigured && diag.devices.active > 0 && (
+          <div className="mt-3">
+            <ConfirmAction label="Send one real test push" triggerClassName="btn-primary btn-sm" danger={false} title="Send a real test push?" action={realTestPushAction} fields={{}} confirmLabel="Send it">
+              This sends one real notification through Apple&apos;s push service to your {diag.devices.active} device{diag.devices.active === 1 ? "" : "s"} with push on. The lock-screen text is generic: “Test notification — push is working.”
+            </ConfirmAction>
+          </div>
+        )}
       </Section>
 
       <section className="card" aria-labelledby="diag-h">

@@ -7,7 +7,7 @@ import { NextResponse, type NextRequest } from "next/server";
  * 2. Fast gate: requests without a session cookie are sent to /login.
  *    Real validation happens server-side (requireUser) on every page, action and API route.
  */
-const PUBLIC = ["/login", "/setup", "/api/auth/passkey/login", "/api/health", "/api/cron/tick", "/api/setup/restore", "/sw.js", "/manifest.webmanifest", "/icon.svg", "/apple-touch-icon.png", "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png", "/splash"];
+const PUBLIC = ["/login", "/setup", "/api/auth/passkey/login", "/api/health", "/api/cron/tick", "/api/setup/restore", "/api/setup/check", "/sw.js", "/manifest.webmanifest", "/icon.svg", "/apple-touch-icon.png", "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png", "/splash"];
 const COOKIES = ["lu_session", "__Host-lu_session"];
 
 export function buildCsp(nonce: string, opts: { dev: boolean; https: boolean }) {
