@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarPlus, CheckCircle2, Clock, Dices, ListPlus, Moon, Sparkles, Timer } from "lucide-react";
+import { Bot, CalendarPlus, CheckCircle2, Clock, Dices, ListPlus, Moon, Sparkles, Timer } from "lucide-react";
 import { appContext } from "@/server/context";
 import { prisma } from "@/server/db";
 import { loadOccurrences } from "@/server/calendar";
@@ -92,6 +92,8 @@ export default async function HomePage() {
         {mode !== "RECOVERY" && (
           <form action={quickModeAction} className="shrink-0"><input type="hidden" name="mode" value="RECOVERY" /><button className="btn-secondary"><Moon size={16} /> Start Recovery Mode</button></form>
         )}
+        <Link href="/assistant?tab=ask" className="btn-secondary shrink-0"><Bot size={16} /> Ask Assistant</Link>
+        <Link href="/assistant?tab=evening" className="btn-secondary shrink-0"><Moon size={16} /> Daily Review</Link>
         <Link href="/money/roulette" className="btn-secondary shrink-0"><Dices size={16} /> Spin My Overtime</Link>
         <Link href="/money/extra" className="btn-secondary shrink-0"><Sparkles size={16} /> Plan Extra Paycheck</Link>
         {waitingTransfers > 0 && <Link href="/money/roulette" className="btn-primary shrink-0"><CheckCircle2 size={16} /> Confirm Payment ({waitingTransfers})</Link>}
@@ -191,7 +193,7 @@ export default async function HomePage() {
           {headsUp.length ? (
             <ul className="space-y-2 text-sm">{headsUp.map((h) => <li key={h.text}><Link href={h.href} className="hover:text-go">• {h.text}</Link></li>)}</ul>
           ) : <Empty>Nothing needs your attention.</Empty>}
-          <p className="mt-3 text-xs text-mute-400">Simple rule-based notes from your data. The full assistant (briefings, check-ins, reflection) arrives in Phase 3.</p>
+          <p className="mt-3 text-xs text-mute-400">Rule-based notes from your data. <Link className="link" href="/assistant">Open the assistant</Link> for your briefing, check-in and evening reflection.</p>
         </Section>
       </div>
     </div>

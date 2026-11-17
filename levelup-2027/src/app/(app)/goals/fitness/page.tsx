@@ -7,7 +7,8 @@ import { weekOf } from "@/domain/growth";
 import { PageHeader, Section, Stat, Empty } from "@/ui/bits";
 import { Dialog } from "@/ui/dialog";
 import { ActionForm, Field, SubmitButton } from "@/ui/form";
-import { bodyMetricAction, growthSettingsAction, removeWorkoutAction } from "../actions";
+import { bodyMetricAction, exerciseAction, growthSettingsAction, removeWorkoutAction, templateOpAction } from "../actions";
+import { TemplateEditor } from "./TemplateEditor";
 import { ScheduleForm } from "../ScheduleForm";
 import { LogWorkoutForm, type TemplateView } from "./LogWorkoutForm";
 
@@ -17,12 +18,13 @@ export default async function FitnessPage() {
   const [fw, templatesRaw, exercises, metrics, settings, recentLogs] = await Promise.all([
     fitnessWeek(user.id, tz, week, today),
     prisma.workoutTemplate.findMany({ where: { ownerId: user.id, archived: false }, include: { items: { orderBy: { sortOrder: "asc" } } }, orderBy: { name: "asc" } }),
-    prisma.exercise.findMany({ where: { ownerId: user.id, archived: false }, orderBy: [{ category: "asc" }, { name: "asc" }] }),
+    prisma.exercise.findMany({ where: { ownerId: user.id }, orderBy: [{ archived: "asc" }, { category: "asc" }, { name: "asc" }] }),
     prisma.bodyMetric.findMany({ where: { ownerId: user.id }, orderBy: { measuredOn: "desc" }, take: 12 }),
     prisma.growthSettings.findUnique({ where: { ownerId: user.id } }),
     prisma.workoutLog.findMany({ where: { ownerId: user.id }, orderBy: [{ date: "desc" }, { createdAt: "desc" }], take: 10, include: { sets: true } }),
   ]);
   const exName = new Map(exercises.map((e) => [e.id, e.name]));
+  const archivedTemplates = await prisma.workoutTemplate.findMany({ where: { ownerId: user.id, archived: true }, orderBy: { name: "asc" } });
   const templates: TemplateView[] = templatesRaw.map((t) => ({ id: t.id, name: t.name, items: t.items.map((i) => ({ exerciseId: i.exerciseId, exercise: exName.get(i.exerciseId) ?? "Exercise", sets: i.sets, reps: i.reps })) }));
   const tplById = new Map(templates.map((t) => [t.id, t]));
   const evTemplate = new Map((await prisma.calendarEvent.findMany({ where: { ownerId: user.id, category: "WORKOUT" }, select: { id: true, workoutTemplateId: true } })).map((e) => [e.id, e.workoutTemplateId]));
@@ -131,8 +133,52 @@ export default async function FitnessPage() {
         {metrics.length ? <ul className="divide-line text-sm">{metrics.map((m) => <li key={m.id} className="flex justify-between py-2"><span>{m.kind.replace("_", " ").toLowerCase()} · {formatLocalDate(dateToLocal(m.measuredOn), "weekday")}</span><span className="num font-semibold">{m.valueX100 / 100} {m.unit}</span></li>)}</ul> : <Empty>Nothing recorded. Only numbers you enter are shown.</Empty>}
       </Section>
 
-      <Section title="Exercise library">
-        <ul className="grid gap-2 sm:grid-cols-2">{exercises.map((e) => <li key={e.id} className="rounded-xl border border-ink-700 p-3 text-sm"><p className="font-medium">{e.name} <span className="text-xs text-mute-400">· {e.category.toLowerCase()} · {e.equipment.toLowerCase()}</span></p>{e.cues && <p className="mt-1 text-xs text-mute-400">{e.cues}</p>}</li>)}</ul>
+      <Section title="Workouts" action={
+        <Dialog title="New workout" trigger="New" triggerClassName="btn-secondary btn-sm" wide><TemplateEditor exercises={exercises} /></Dialog>
+      }>
+        <ul className="space-y-2">
+          {templatesRaw.map((t) => (
+            <li key={t.id} className="rounded-xl border border-ink-700 p-3">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-semibold">{t.name} <span className="chip-mute ml-1">{t.kind.toLowerCase()}</span></p>
+                  <p className="mt-1 text-xs text-mute-400">{t.items.map((i) => `${exName.get(i.exerciseId)} ${i.sets}×${i.reps}${i.weightNote ? ` @ ${i.weightNote}` : ""}`).join(" · ")}</p>
+                  {t.notes && <p className="mt-1 text-xs text-mute-300">{t.notes}</p>}
+                </div>
+                <div className="flex gap-1">
+                  <Dialog title={`Edit: ${t.name}`} trigger="Edit" triggerClassName="btn-ghost btn-sm" wide>
+                    <TemplateEditor exercises={exercises} t={{ id: t.id, name: t.name, notes: t.notes, kind: t.kind, items: t.items.map((i) => ({ exerciseId: i.exerciseId, sets: i.sets, reps: i.reps, weightNote: i.weightNote, restSec: i.restSec })) }} />
+                  </Dialog>
+                  <ActionForm action={templateOpAction}><input type="hidden" name="id" value={t.id} /><input type="hidden" name="op" value="duplicate" /><SubmitButton className="btn-ghost btn-sm" pendingText="…">Duplicate</SubmitButton></ActionForm>
+                  <ActionForm action={templateOpAction}><input type="hidden" name="id" value={t.id} /><input type="hidden" name="op" value="archive" /><SubmitButton className="btn-ghost btn-sm" pendingText="…">Archive</SubmitButton></ActionForm>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+        {archivedTemplates.length > 0 && (
+          <div className="mt-3 border-t border-ink-700 pt-3">
+            <p className="eyebrow mb-2">Archived</p>
+            <ul className="space-y-1 text-sm">{archivedTemplates.map((t) => <li key={t.id} className="flex items-center justify-between"><span className="text-mute-400">{t.name}</span><ActionForm action={templateOpAction}><input type="hidden" name="id" value={t.id} /><input type="hidden" name="op" value="restore" /><SubmitButton className="btn-ghost btn-sm" pendingText="…">Restore</SubmitButton></ActionForm></li>)}</ul>
+          </div>
+        )}
+      </Section>
+
+      <Section title="Exercise library" action={
+        <Dialog title="Add an exercise" trigger="Add" triggerClassName="btn-secondary btn-sm"><ExerciseForm /></Dialog>
+      }>
+        <ul className="grid gap-2 sm:grid-cols-2">{exercises.map((e) => (
+          <li key={e.id} className={`rounded-xl border border-ink-700 p-3 text-sm ${e.archived ? "opacity-50" : ""}`}>
+            <div className="flex items-start justify-between gap-2">
+              <p className="font-medium">{e.name} <span className="text-xs text-mute-400">· {e.category.toLowerCase()} · {e.equipment.toLowerCase()}{e.archived ? " · archived" : ""}</span></p>
+              <span className="flex">
+                <Dialog title={`Edit: ${e.name}`} trigger="Edit" triggerClassName="btn-ghost btn-sm px-2"><ExerciseForm e={e} /></Dialog>
+                <ActionForm action={exerciseAction}><input type="hidden" name="id" value={e.id} /><input type="hidden" name="op" value={e.archived ? "restore" : "archive"} /><SubmitButton className="btn-ghost btn-sm px-2" pendingText="…">{e.archived ? "Restore" : "Archive"}</SubmitButton></ActionForm>
+              </span>
+            </div>
+            {e.cues && <p className="mt-1 text-xs text-mute-400">{e.cues}</p>}
+          </li>
+        ))}</ul>
         <p className="mt-3 text-xs text-mute-400">Beginner-friendly starting points. Go light, progress slowly, and stop if something hurts. Check with a clinician if you have injuries.</p>
       </Section>
 
@@ -143,5 +189,20 @@ export default async function FitnessPage() {
         </ActionForm>
       </Section>
     </div>
+  );
+}
+
+function ExerciseForm({ e }: { e?: { id: string; name: string; category: string; equipment: string; cues: string | null } }) {
+  return (
+    <ActionForm action={exerciseAction} className="space-y-3">
+      {e && <input type="hidden" name="id" value={e.id} />}
+      <Field label="Name"><input className="input" name="name" defaultValue={e?.name} required maxLength={60} /></Field>
+      <div className="grid grid-cols-2 gap-2">
+        <Field label="Category"><select className="input" name="category" defaultValue={e?.category ?? "FULL"}>{["UPPER", "LOWER", "CORE", "FULL", "CARDIO", "MOBILITY"].map((c) => <option key={c} value={c}>{c.toLowerCase()}</option>)}</select></Field>
+        <Field label="Equipment"><select className="input" name="equipment" defaultValue={e?.equipment ?? "BODYWEIGHT"}>{["BODYWEIGHT", "DUMBBELL", "BAND", "MACHINE", "BARBELL", "OTHER"].map((c) => <option key={c} value={c}>{c.toLowerCase()}</option>)}</select></Field>
+      </div>
+      <Field label="Form cues (optional)"><input className="input" name="cues" defaultValue={e?.cues ?? ""} maxLength={200} /></Field>
+      <SubmitButton className="btn-primary w-full">Save exercise</SubmitButton>
+    </ActionForm>
   );
 }

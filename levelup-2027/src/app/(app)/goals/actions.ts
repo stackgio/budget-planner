@@ -6,11 +6,12 @@ import { prisma } from "@/server/db";
 import { audit } from "@/server/audit";
 import { encrypt } from "@/server/crypto";
 import { UserError } from "@/server/payroll";
-import { addGoalProgress, addMilestone, createGoal, createValenciaChecklist, linkTaskToGoal, setGoalStatus, setMilestoneDone, updateGoal, type GoalInput } from "@/server/growth";
+import { addGoalProgress, addMilestone, createGoal, createValenciaChecklist, editMilestone, linkTaskToGoal, setGoalStatus, setMilestoneArchived, setMilestoneDone, updateGoal, type GoalInput } from "@/server/growth";
 import { addBodyMetric, addFaithEntry, changeDate, completeDate, logWorkout, planDate, removeWorkoutLog, saveReminderPreference, updateAlphabetEntry } from "@/server/life";
-import { COURSE_STATUSES, PROGRAM_STATUSES, logActivity, saveJob, upsertOwned } from "@/server/edu";
+import { COURSE_STATUSES, PROGRAM_STATUSES, logActivity, saveJob, setEduArchived, upsertOwned } from "@/server/edu";
 import { checkSession, createSession } from "@/server/schedule";
 import { saveReview } from "@/server/reviews";
+import { duplicateTemplate, saveExercise, saveTemplate, setExerciseArchived, setTemplateArchived } from "@/server/fitness";
 import { run, type ActionState } from "@/ui/actions";
 import { isLocalDate, isTime, todayLocal } from "@/domain/dates";
 import { parseDollarsToCents, parseHoursX100 } from "@/domain/money";
@@ -299,7 +300,7 @@ export async function eduItemAction(_p: ActionState, fd: FormData): Promise<Acti
     const op = z.enum(["program", "course", "tuition", "credential"]).parse(fd.get("op"));
     const id = opt(fd, "id");
     if (op === "program") await upsertOwned("eduProgram", user.id, id, { ...(id ? {} : { name: title(fd, "name"), institution: s(fd, "institution") || "Valencia College", credential: opt(fd, "credential") }), status: z.enum(PROGRAM_STATUSES).parse(fd.get("status")), notes: opt(fd, "notes") });
-    if (op === "course") await upsertOwned("eduCourse", user.id, id, { title: title(fd), code: opt(fd, "code"), credits: int(fd, "credits", 0, 12), term: opt(fd, "term"), status: z.enum(COURSE_STATUSES).parse(fd.get("status") ?? "PLANNED"), grade: opt(fd, "grade") });
+    if (op === "course") await upsertOwned("eduCourse", user.id, id, { title: title(fd), code: opt(fd, "code"), credits: int(fd, "credits", 0, 12), term: opt(fd, "term"), status: z.enum(COURSE_STATUSES).parse(fd.get("status") ?? "PLANNED"), grade: opt(fd, "grade"), notes: opt(fd, "notes") });
     if (op === "tuition") { const est = money(fd, "est"); if (est === null) throw new UserError("Enter an estimate."); await upsertOwned("tuitionItem", user.id, id, { label: title(fd, "label"), term: opt(fd, "term"), estCents: est, actualCents: money(fd, "actual"), notes: opt(fd, "notes") }); }
     if (op === "credential") await upsertOwned("careerCredential", user.id, id, { name: title(fd, "name"), kind: z.enum(["TRAINING", "CERTIFICATION"]).parse(fd.get("kind")), status: z.enum(["PLANNED", "IN_PROGRESS", "COMPLETED"]).parse(fd.get("status")), notes: opt(fd, "notes") });
     return "Saved.";
@@ -345,6 +346,71 @@ export async function saveReviewAction(_p: ActionState, fd: FormData): Promise<A
   const r = await run(async () => {
     await saveReview(user.id, z.enum(["WEEK", "MONTH"]).parse(fd.get("kind")), date(fd, "anyDay")!, opt(fd, "reflection"), [1, 2, 3].map((n) => s(fd, `priority${n}`)));
     return "Review saved. Your reflection is stored encrypted.";
+  });
+  done();
+  return r;
+}
+
+// ───────────── Phase 4 prep: editable workouts & education ─────────────
+
+export async function saveTemplateAction(_p: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await requireUser();
+  const r = await run(async () => {
+    const ex = fd.getAll("item_exerciseId").map(String), sets = fd.getAll("item_sets").map(String), reps = fd.getAll("item_reps").map(String);
+    const weights = fd.getAll("item_weight").map(String), rests = fd.getAll("item_rest").map(String);
+    const items = ex.map((exerciseId, n) => ({
+      exerciseId, sets: Number(sets[n]), reps: reps[n] ?? "", weightNote: weights[n] || null, restSec: rests[n] ? Number(rests[n]) : null,
+    }));
+    await saveTemplate(user.id, opt(fd, "id"), { name: title(fd, "name", 80), notes: opt(fd, "notes"), kind: z.enum(["HOME", "GYM", "RECOVERY"]).parse(fd.get("kind") ?? "HOME"), items });
+    return "Workout saved. Past logs are unchanged.";
+  });
+  done();
+  return r;
+}
+
+export async function templateOpAction(_p: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await requireUser();
+  const r = await run(async () => {
+    const id = z.string().min(1).parse(fd.get("id"));
+    const op = z.enum(["duplicate", "archive", "restore"]).parse(fd.get("op"));
+    if (op === "duplicate") await duplicateTemplate(user.id, id);
+    else await setTemplateArchived(user.id, id, op === "archive");
+    return op === "duplicate" ? "Copied." : op === "archive" ? "Archived. Past workouts still show it." : "Restored.";
+  });
+  done();
+  return r;
+}
+
+export async function exerciseAction(_p: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await requireUser();
+  const r = await run(async () => {
+    const op = s(fd, "op") || "save";
+    if (op === "archive" || op === "restore") await setExerciseArchived(user.id, z.string().parse(fd.get("id")), op === "archive");
+    else await saveExercise(user.id, opt(fd, "id"), { name: title(fd, "name", 60), category: s(fd, "category"), equipment: s(fd, "equipment"), cues: opt(fd, "cues") });
+    return "Saved.";
+  });
+  done();
+  return r;
+}
+
+export async function eduArchiveAction(_p: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await requireUser();
+  const r = await run(async () => {
+    await setEduArchived(user.id, z.enum(["eduCourse", "tuitionItem"]).parse(fd.get("model")), z.string().parse(fd.get("id")), fd.get("op") !== "restore");
+    return fd.get("op") === "restore" ? "Restored." : "Archived. Nothing was deleted.";
+  });
+  done();
+  return r;
+}
+
+export async function milestoneEditAction(_p: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await requireUser();
+  const r = await run(async () => {
+    const id = z.string().parse(fd.get("id"));
+    const op = s(fd, "op") || "edit";
+    if (op === "archive" || op === "restore") await setMilestoneArchived(user.id, id, op === "archive");
+    else await editMilestone(user.id, id, title(fd), date(fd, "dueDate", false));
+    return "Saved.";
   });
   done();
   return r;

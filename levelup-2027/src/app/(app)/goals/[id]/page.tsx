@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Check, ChevronLeft } from "lucide-react";
 import { appContext } from "@/server/context";
 import { prisma } from "@/server/db";
-import { decrypt } from "@/server/crypto";
+import { readPrivate } from "@/server/crypto";
 import { loadGoals } from "@/server/growth";
 import { formatLocalDate } from "@/domain/dates";
 import { PageHeader, Section, Empty } from "@/ui/bits";
@@ -11,7 +11,7 @@ import { Dialog } from "@/ui/dialog";
 import { ActionForm, Field, SubmitButton } from "@/ui/form";
 import { IdemKey } from "@/ui/IdemKey";
 import { cn } from "@/ui/cn";
-import { goalProgressAction, goalStatusAction, linkTaskAction, milestoneAction } from "../actions";
+import { goalProgressAction, goalStatusAction, linkTaskAction, milestoneAction, milestoneEditAction } from "../actions";
 import { CATEGORY_LABEL, GoalForm } from "../GoalForm";
 import { ScheduleForm } from "../ScheduleForm";
 
@@ -28,7 +28,8 @@ export default async function GoalDetail({ params }: { params: Promise<{ id: str
     prisma.task.findMany({ where: { ownerId: user.id, status: "OPEN", parentId: null, goalId: null }, select: { id: true, title: true }, take: 50, orderBy: { createdAt: "desc" } }),
     prisma.calendarEvent.findMany({ where: { ownerId: user.id, goalId: g.id }, orderBy: { startAt: "asc" }, take: 10 }),
   ]);
-  const notes = decrypt(g.notesCipher);
+  const notes = readPrivate(g.notesCipher);
+  const archivedMs = await prisma.goalMilestone.findMany({ where: { goalId: g.id, archivedAt: { not: null } }, orderBy: { archivedAt: "desc" } });
   const statusBtn = (status: string, label: string, cls = "btn-secondary btn-sm") => (
     <ActionForm action={goalStatusAction}><input type="hidden" name="id" value={g.id} /><input type="hidden" name="status" value={status} /><SubmitButton className={cls} pendingText="…">{label}</SubmitButton></ActionForm>
   );
@@ -95,10 +96,23 @@ export default async function GoalDetail({ params }: { params: Promise<{ id: str
                 </ActionForm>
                 <span className={cn("min-w-0 flex-1 text-sm", m.completedAt && "text-mute-400 line-through")}>{m.title}</span>
                 {m.dueDate && <span className={cn("text-xs", !m.completedAt && m.dueDate < today ? "text-warn" : "text-mute-400")}>{formatLocalDate(m.dueDate, "weekday")}</span>}
+                <Dialog title="Edit milestone" trigger="Edit" triggerClassName="btn-ghost btn-sm px-2">
+                  <ActionForm action={milestoneEditAction} className="space-y-3">
+                    <input type="hidden" name="id" value={m.id} />
+                    <Field label="Milestone"><input className="input" name="title" defaultValue={m.title} required maxLength={120} /></Field>
+                    <Field label="Due date"><input className="input" type="date" name="dueDate" defaultValue={m.dueDate ?? ""} /></Field>
+                    <SubmitButton className="btn-primary w-full">Save</SubmitButton>
+                  </ActionForm>
+                  <ActionForm action={milestoneEditAction} className="mt-3">
+                    <input type="hidden" name="id" value={m.id} /><input type="hidden" name="op" value="archive" />
+                    <SubmitButton className="btn-ghost w-full">Archive milestone (kept in history)</SubmitButton>
+                  </ActionForm>
+                </Dialog>
               </li>
             ))}
           </ul>
         ) : <Empty>No milestones yet.</Empty>}
+        {archivedMs.length > 0 && <ul className="mt-2 space-y-1 text-xs text-mute-400">{archivedMs.map((m) => <li key={m.id} className="flex items-center justify-between">Archived · {m.title}<ActionForm action={milestoneEditAction}><input type="hidden" name="id" value={m.id} /><input type="hidden" name="op" value="restore" /><SubmitButton className="btn-ghost btn-sm" pendingText="…">Restore</SubmitButton></ActionForm></li>)}</ul>}
         <ActionForm action={milestoneAction} className="mt-3 grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[1fr_160px_auto]" resetOnSuccess>
           <input type="hidden" name="op" value="add" /><input type="hidden" name="goalId" value={g.id} />
           <input className="input" name="title" placeholder="Add a milestone" required maxLength={120} aria-label="Milestone" />

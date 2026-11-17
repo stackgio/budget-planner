@@ -654,6 +654,7 @@ model GoalMilestone {
   title       String
   dueDate     DateTime? @db.Date
   completedAt DateTime? @db.Timestamptz
+  archivedAt  DateTime? @db.Timestamptz
   sortOrder   Int       @default(0)
   createdAt   DateTime  @default(now()) @db.Timestamptz
 }
@@ -706,12 +707,14 @@ model Exercise {
 }
 
 model WorkoutTemplate {
-  id       String                @id @default(cuid())
-  ownerId  String
-  name     String
-  notes    String?
-  archived Boolean               @default(false)
-  items    WorkoutTemplateItem[]
+  id        String                @id @default(cuid())
+  ownerId   String
+  name      String
+  notes     String?
+  kind      String                @default("HOME") // HOME | GYM | RECOVERY
+  archived  Boolean               @default(false)
+  updatedAt DateTime              @default(now()) @updatedAt @db.Timestamptz
+  items     WorkoutTemplateItem[]
 
   @@unique([ownerId, name])
 }
@@ -723,6 +726,7 @@ model WorkoutTemplateItem {
   exerciseId String
   sets       Int
   reps       String // e.g. "8–12" or "30 s"
+  weightNote String? // e.g. "15 lb dumbbells" or "light band"
   restSec    Int?
   sortOrder  Int             @default(0)
 }
@@ -890,25 +894,28 @@ model EduProgram {
 }
 
 model EduCourse {
-  id        String  @id @default(cuid())
-  ownerId   String
-  programId String?
-  code      String?
-  title     String
-  credits   Int?
-  term      String?
-  status    String  @default("PLANNED") // PLANNED | REGISTERED | IN_PROGRESS | COMPLETED | DROPPED
-  grade     String?
+  id         String    @id @default(cuid())
+  ownerId    String
+  programId  String?
+  code       String?
+  title      String
+  credits    Int?
+  term       String?
+  status     String    @default("PLANNED") // PLANNED | REGISTERED | IN_PROGRESS | COMPLETED | DROPPED
+  grade      String?
+  notes      String?
+  archivedAt DateTime? @db.Timestamptz
 }
 
 model TuitionItem {
-  id          String  @id @default(cuid())
+  id          String    @id @default(cuid())
   ownerId     String
   term        String?
   label       String
   estCents    Int
   actualCents Int?
   notes       String?
+  archivedAt  DateTime? @db.Timestamptz
 }
 
 model CareerProfile {
@@ -980,4 +987,144 @@ model Review {
   updatedAt        DateTime @updatedAt @db.Timestamptz
 
   @@unique([ownerId, kind, periodStart])
+}
+
+// ═════════════════════════ Phase 4 — Assistant, reminders & notifications ═════════════════════════
+
+/// Encrypted known value used to detect a missing or wrong DATA_ENCRYPTION_KEY. Reveals nothing about the key.
+model EncryptionKeyCheck {
+  id          String   @id
+  checkCipher String
+  createdAt   DateTime @default(now()) @db.Timestamptz
+}
+
+model NotificationPreference {
+  ownerId           String   @id
+  quietStart        String   @default("21:45")
+  quietEnd          String   @default("05:45")
+  categories        Json // { CATEGORY: boolean }
+  modeRules         Json // { OVERTIME | ACTIVATION | RECOVERY: "ALL" | "IMPORTANT_ONLY" | "NONE" }
+  briefingSections  String[]
+  previewDetail     Boolean  @default(false) // lock-screen / push text stays generic unless you opt in
+  briefingEnabled   Boolean  @default(true)
+  checkInEnabled    Boolean  @default(true)
+  reflectionEnabled Boolean  @default(true)
+  updatedAt         DateTime @default(now()) @updatedAt @db.Timestamptz
+}
+
+enum NotificationStatus {
+  SCHEDULED
+  DELIVERED
+  DEFERRED // waiting for quiet hours to end
+  SUPPRESSED // dropped by a work mode or disabled category — never delivered later
+  SNOOZED
+  DISMISSED
+  FAILED
+  EXPIRED // too late to be useful — no catch-up flood
+}
+
+enum NotificationPriority {
+  IMPORTANT
+  NORMAL
+  LOW
+}
+
+model Notification {
+  id           String               @id @default(cuid())
+  ownerId      String
+  kind         String // BRIEFING | CHECKIN | REFLECTION | REMINDER | REVIEW
+  category     String
+  priority     NotificationPriority
+  title        String // generic, safe for a lock screen
+  preview      String // safe preview; detailed only if you opt in
+  detailCipher String? // private in-app detail, encrypted
+  href         String
+  dedupeKey    String
+  scheduledFor DateTime             @db.Timestamptz
+  expiresAt    DateTime             @db.Timestamptz
+  status       NotificationStatus   @default(SCHEDULED)
+  reason       String?
+  deliveredAt  DateTime?            @db.Timestamptz
+  readAt       DateTime?            @db.Timestamptz
+  dismissedAt  DateTime?            @db.Timestamptz
+  snoozedUntil DateTime?            @db.Timestamptz
+  snoozeCount  Int                  @default(0)
+  createdAt    DateTime             @default(now()) @db.Timestamptz
+  updatedAt    DateTime             @default(now()) @updatedAt @db.Timestamptz
+  deliveries   PushDelivery[]
+
+  @@unique([ownerId, dedupeKey])
+  @@index([status, scheduledFor])
+  @@index([ownerId, createdAt])
+}
+
+model PushSubscription {
+  id            String         @id @default(cuid())
+  ownerId       String
+  endpoint      String         @unique
+  p256dh        String
+  auth          String
+  label         String?
+  userAgent     String?
+  failureCount  Int            @default(0)
+  lastSuccessAt DateTime?      @db.Timestamptz
+  revokedAt     DateTime?      @db.Timestamptz
+  createdAt     DateTime       @default(now()) @db.Timestamptz
+  deliveries    PushDelivery[]
+
+  @@index([ownerId])
+}
+
+/// One row per (notification, device, delivery round). The unique key makes retries and concurrent workers safe.
+model PushDelivery {
+  id             String           @id @default(cuid())
+  notificationId String
+  notification   Notification     @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  subscriptionId String
+  subscription   PushSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  round          Int              @default(0)
+  status         String // SENT | FAILED | GONE
+  attempts       Int              @default(0)
+  lastError      String?
+  createdAt      DateTime         @default(now()) @db.Timestamptz
+  updatedAt      DateTime         @default(now()) @updatedAt @db.Timestamptz
+
+  @@unique([notificationId, subscriptionId, round])
+}
+
+model SchedulerRun {
+  id         String    @id @default(cuid())
+  worker     String
+  startedAt  DateTime  @default(now()) @db.Timestamptz
+  finishedAt DateTime? @db.Timestamptz
+  created    Int       @default(0)
+  delivered  Int       @default(0)
+  deferred   Int       @default(0)
+  suppressed Int       @default(0)
+  expired    Int       @default(0)
+  failed     Int       @default(0)
+  error      String?
+}
+
+model DailyReflection {
+  id            String   @id @default(cuid())
+  ownerId       String
+  date          DateTime @db.Date
+  bodyCipher    String?
+  answersCipher String?
+  createdAt     DateTime @default(now()) @db.Timestamptz
+  updatedAt     DateTime @default(now()) @updatedAt @db.Timestamptz
+
+  @@unique([ownerId, date])
+}
+
+/// "Not now" on an assistant suggestion. Hides that suggestion for the day; changes nothing else.
+model AssistantDismissal {
+  id        String   @id @default(cuid())
+  ownerId   String
+  date      DateTime @db.Date
+  itemKey   String
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  @@unique([ownerId, date, itemKey])
 }

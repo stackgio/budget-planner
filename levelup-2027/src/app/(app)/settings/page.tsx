@@ -2,6 +2,7 @@ import { Download, LogOut } from "lucide-react";
 import { appContext } from "@/server/context";
 import { prisma } from "@/server/db";
 import { env } from "@/server/env";
+import { verifyKey } from "@/server/crypto";
 import { PageHeader, Section, Empty } from "@/ui/bits";
 import { ActionForm, Field, SubmitButton } from "@/ui/form";
 import { Dialog } from "@/ui/dialog";
@@ -13,6 +14,7 @@ export default async function SettingsPage() {
   const { user } = await appContext();
   const settings = await prisma.userSettings.findUnique({ where: { userId: user.id } });
   const passkeys = await prisma.passkey.findMany({ where: { userId: user.id }, orderBy: { createdAt: "asc" } });
+  const keyStatus = await verifyKey(prisma);
   const sessions = await prisma.session.count({ where: { userId: user.id, expiresAt: { gt: new Date() } } });
 
   return (
@@ -50,6 +52,16 @@ export default async function SettingsPage() {
         ) : <Empty>No passkeys yet.</Empty>}
         <AddPasskey />
         <p className="mt-3 text-xs text-mute-400">Passkeys are bound to this site&apos;s address ({env.rpId}). On iPhone they need the HTTPS address you deploy to; a passkey created on localhost will not work on the deployed site.</p>
+      </Section>
+
+      <Section title="Notifications & assistant">
+        <p className="mb-3 text-sm text-mute-300">Briefing times, quiet hours, work-mode behavior, reminder types, lock-screen privacy and push on this device.</p>
+        <a href="/settings/notifications" className="btn-secondary btn-sm">Notification settings</a>
+      </Section>
+
+      <Section title="Encryption key">
+        <p className="text-sm">{keyStatus === "OK" ? <span className="text-go">✓ Your encryption key matches your private notes.</span> : <span className="text-bad">⚠ {keyStatus === "MISSING" ? "No encryption key is configured." : keyStatus === "INVALID_FORMAT" ? "The configured key has the wrong format." : "The configured key doesn't match the one your notes were encrypted with."} Private notes show as unavailable until the right key is restored.</span>}</p>
+        <p className="mt-2 text-xs text-mute-400">The key itself is never shown here, logged, or exported. Keep a recovery copy in your password manager — see docs/ENCRYPTION-KEY-RECOVERY.md.</p>
       </Section>
 
       <Section title="Daily rhythm">

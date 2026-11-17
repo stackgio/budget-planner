@@ -1,6 +1,6 @@
 import "server-only";
 import { prisma } from "./db";
-import { decrypt, encrypt } from "./crypto";
+import { encrypt, readPrivate } from "./crypto";
 import { UserError } from "./payroll";
 import { challengeTotals } from "./ledger";
 import { fitnessWeek } from "./life";
@@ -104,7 +104,7 @@ export async function reviewData(ownerId: string, tz: string, kind: ReviewKind, 
       dates: upcomingDates.map((d) => ({ title: d.title, date: dateToLocal(d.date) })),
     },
     attention,
-    saved: saved ? { reflection: decrypt(saved.reflectionCipher), priorities: saved.priorities, updatedAt: saved.updatedAt } : null,
+    saved: saved ? { reflection: readPrivate(saved.reflectionCipher), priorities: saved.priorities, updatedAt: saved.updatedAt } : null,
   };
 }
 

@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/server/auth";
 import { prisma } from "@/server/db";
-import { decrypt } from "@/server/crypto";
+import { readPrivate } from "@/server/crypto";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +18,7 @@ export async function GET() {
     settings, events, modeSessions, tasks, habits, schedules, paydays, deposits, payRates, overtimeShifts, challenges, auditLog, plans, payments, rothYears, rouletteSettings,
     goals, growthSettings, reminderPreferences, exercises, workoutTemplates, workouts, bodyMetrics, faithEntries, datePlans, dateIdeas, importantDates, relationshipNotes,
     alphabet, eduPrograms, eduCourses, tuition, careerProfile, careerCredentials, jobs, activityLogs, reviews,
+    notificationPreferences, notifications, pushDevices, dailyReflections, assistantDismissals,
   ] = await Promise.all([
     prisma.userSettings.findUnique({ where: { userId: ownerId } }),
     prisma.calendarEvent.findMany({ ...o, include: { exceptions: true } }),
@@ -56,17 +57,23 @@ export async function GET() {
     prisma.jobOpportunity.findMany(o),
     prisma.activityLog.findMany(o),
     prisma.review.findMany(o),
+    prisma.notificationPreference.findUnique({ where: { ownerId } }),
+    prisma.notification.findMany({ ...o, orderBy: { scheduledFor: "asc" } }),
+    // Devices: label and dates only. Push endpoints and keys are credentials and are never exported.
+    prisma.pushSubscription.findMany({ ...o, select: { id: true, label: true, createdAt: true, lastSuccessAt: true, revokedAt: true } }),
+    prisma.dailyReflection.findMany(o),
+    prisma.assistantDismissal.findMany(o),
   ]);
   const plain = <T extends Record<string, unknown>>(rows: T[], fields: [string, string][]) =>
     rows.map((r) => {
       const out: Record<string, unknown> = { ...r };
-      for (const [cipherField, name] of fields) { out[name] = decrypt(r[cipherField] as string | null); delete out[cipherField]; }
+      for (const [cipherField, name] of fields) { out[name] = readPrivate(r[cipherField] as string | null); delete out[cipherField]; }
       return out;
     });
 
   const body = JSON.stringify(
     {
-      format: "levelup-2027-export", version: 3, exportedAt: new Date().toISOString(), moneyUnits: "integer cents", hoursUnits: "hundredths of an hour",
+      format: "levelup-2027-export", version: 4, exportedAt: new Date().toISOString(), moneyUnits: "integer cents", hoursUnits: "hundredths of an hour",
       note: "Contains your private notes in plain text. Store this file securely.",
       account: { email: user.email, displayName: user.displayName },
       settings, events, modeSessions, tasks, habits, schedules, paydays, deposits, payRates, overtimeShifts, challenges, plans, payments, rothYears, rouletteSettings,
@@ -78,6 +85,9 @@ export async function GET() {
       eduPrograms, eduCourses, tuition, careerProfile, careerCredentials,
       jobs: plain(jobs, [["notesCipher", "notes"], ["prepNotesCipher", "prepNotes"]]),
       activityLogs, reviews: plain(reviews, [["reflectionCipher", "reflection"]]),
+      notificationPreferences, notifications: plain(notifications, [["detailCipher", "detail"]]), pushDevices,
+      dailyReflections: plain(dailyReflections, [["bodyCipher", "body"], ["answersCipher", "answers"]]), assistantDismissals,
+      assistantConversations: "not stored — questions and answers are never saved",
       auditLog,
     },
     (_k, v) => (typeof v === "bigint" ? v.toString() : v),

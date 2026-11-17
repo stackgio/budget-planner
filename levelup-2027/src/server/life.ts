@@ -2,7 +2,7 @@ import "server-only";
 import { prisma } from "./db";
 import { audit } from "./audit";
 import { UserError } from "./payroll";
-import { decrypt, encrypt } from "./crypto";
+import { encrypt, readPrivate } from "./crypto";
 import { IDEMPOTENCY_KEY_RE, isUniqueViolation } from "./idempotency";
 import { loadOccurrences } from "./calendar";
 import { type LocalDate, addDays, dateToLocal, instantToLocalDate, localToDbDate, zonedToInstant } from "@/domain/dates";
@@ -126,7 +126,7 @@ export async function addFaithEntry(ownerId: string, i: { kind: string; date: Lo
 
 export async function listFaith(ownerId: string, from: LocalDate, to: LocalDate) {
   const rows = await prisma.faithEntry.findMany({ where: { ownerId, date: { gte: localToDbDate(from), lte: localToDbDate(to) } }, orderBy: [{ date: "desc" }, { createdAt: "desc" }] });
-  return rows.map((r) => ({ id: r.id, kind: r.kind, date: dateToLocal(r.date), minutes: r.minutes, passage: r.passage, body: decrypt(r.bodyCipher) }));
+  return rows.map((r) => ({ id: r.id, kind: r.kind, date: dateToLocal(r.date), minutes: r.minutes, passage: r.passage, body: readPrivate(r.bodyCipher) }));
 }
 
 export async function saveReminderPreference(ownerId: string, key: string, time: string, days: number[], enabled: boolean) {
@@ -241,7 +241,7 @@ export async function relationshipOverview(ownerId: string, today: LocalDate) {
   ]);
   const view = plans.map((p) => ({
     id: p.id, title: p.title, date: dateToLocal(p.date), startTime: p.startTime, status: p.status, budgetCents: p.budgetCents,
-    actualCostCents: p.actualCostCents, linkedPaymentCents: p.payment ? p.payment.amountCents : null, letter: p.letter, notes: decrypt(p.notesCipher), completedAt: p.completedAt,
+    actualCostCents: p.actualCostCents, linkedPaymentCents: p.payment ? p.payment.amountCents : null, letter: p.letter, notes: readPrivate(p.notesCipher), completedAt: p.completedAt,
   }));
   return {
     settings,
@@ -250,7 +250,7 @@ export async function relationshipOverview(ownerId: string, today: LocalDate) {
     alphabet, alphabetProgress: alphabetProgress(alphabet),
     importantDates: important.map((d) => ({ ...d, next: nextAnniversary(d.month, d.day, today) })).sort((a, b) => a.next.localeCompare(b.next)),
     ideas,
-    notes: notes.map((n) => ({ id: n.id, createdAt: n.createdAt, body: decrypt(n.bodyCipher) })),
+    notes: notes.map((n) => ({ id: n.id, createdAt: n.createdAt, body: readPrivate(n.bodyCipher) })),
     spending: dateSpending(view),
   };
 }

@@ -2,7 +2,7 @@ import "server-only";
 import { prisma } from "./db";
 import { audit } from "./audit";
 import { UserError } from "./payroll";
-import { decrypt, encrypt } from "./crypto";
+import { encrypt, readPrivate } from "./crypto";
 import { IDEMPOTENCY_KEY_RE, isUniqueViolation } from "./idempotency";
 import { currentPayRate } from "./payroll";
 import { type LocalDate, dateToLocal, localToDbDate } from "@/domain/dates";
@@ -45,8 +45,8 @@ export async function upsertOwned<T extends "eduProgram" | "eduCourse" | "tuitio
 export async function educationOverview(ownerId: string) {
   const [programs, courses, tuition, study] = await Promise.all([
     prisma.eduProgram.findMany({ where: { ownerId }, orderBy: { createdAt: "asc" } }),
-    prisma.eduCourse.findMany({ where: { ownerId }, orderBy: [{ term: "asc" }, { title: "asc" }] }),
-    prisma.tuitionItem.findMany({ where: { ownerId }, orderBy: { term: "asc" } }),
+    prisma.eduCourse.findMany({ where: { ownerId, archivedAt: null }, orderBy: [{ term: "asc" }, { title: "asc" }] }),
+    prisma.tuitionItem.findMany({ where: { ownerId, archivedAt: null }, orderBy: { term: "asc" } }),
     prisma.activityLog.findMany({ where: { ownerId, kind: "STUDY" }, orderBy: { date: "desc" }, take: 20 }),
   ]);
   const credits = (s: string) => courses.filter((c) => c.status === s).reduce((a, c) => a + (c.credits ?? 0), 0);
@@ -100,8 +100,23 @@ export async function careerOverview(ownerId: string) {
     profile, credentials, hourlyCents: hourly, rateProvisional: rate?.provisional ?? true,
     jobs: jobs.map((j) => ({
       ...j, deadline: j.deadline ? dateToLocal(j.deadline) : null, appliedOn: j.appliedOn ? dateToLocal(j.appliedOn) : null,
-      interviewOn: j.interviewOn ? dateToLocal(j.interviewOn) : null, notes: decrypt(j.notesCipher), prepNotes: decrypt(j.prepNotesCipher),
+      interviewOn: j.interviewOn ? dateToLocal(j.interviewOn) : null, notes: readPrivate(j.notesCipher), prepNotes: readPrivate(j.prepNotesCipher),
       compare: hourly !== null && (j.payMinCents !== null || j.payMaxCents !== null) ? comparePay(hourly, { minCents: j.payMinCents, maxCents: j.payMaxCents, period: j.payPeriod as "HOURLY" | "ANNUAL" }) : null,
     })),
   };
+}
+
+/** Archive (or restore) a course or tuition item. Nothing is deleted; history and logs stay intact. */
+export async function setEduArchived(ownerId: string, model: "eduCourse" | "tuitionItem", id: string, archived: boolean) {
+  const d = (prisma as unknown as Record<string, { updateMany: (a: unknown) => Promise<{ count: number }> }>)[model]!;
+  const r = await d.updateMany({ where: { id, ownerId }, data: { archivedAt: archived ? new Date() : null } });
+  if (!r.count) throw new UserError("Not found.");
+}
+
+export async function archivedEducation(ownerId: string) {
+  const [courses, tuition] = await Promise.all([
+    prisma.eduCourse.findMany({ where: { ownerId, archivedAt: { not: null } }, orderBy: { archivedAt: "desc" } }),
+    prisma.tuitionItem.findMany({ where: { ownerId, archivedAt: { not: null } }, orderBy: { archivedAt: "desc" } }),
+  ]);
+  return { courses, tuition };
 }

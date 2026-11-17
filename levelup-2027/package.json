@@ -2,7 +2,7 @@
   "name": "levelup-2027",
   "version": "0.1.0",
   "private": true,
-  "description": "LEVEL UP 2027 \u2014 private personal Life Operating System",
+  "description": "LEVEL UP 2027 — private personal Life Operating System",
   "scripts": {
     "dev": "next dev -p 3100",
     "build": "next build",
@@ -14,7 +14,10 @@
     "test:e2e": "dotenv -e .env.test -- sh -c 'prisma migrate deploy && playwright test --trace off'",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
-    "owner:create": "tsx --conditions=react-server scripts/create-owner.ts"
+    "owner:create": "tsx --conditions=react-server scripts/create-owner.ts",
+    "key:check": "tsx --conditions=react-server scripts/key-check.ts",
+    "key:drill": "./scripts/key-recovery-drill.sh",
+    "worker": "tsx --conditions=react-server scripts/worker.ts"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.0.2",
@@ -27,6 +30,7 @@
     "react": "^19.2.9",
     "react-dom": "^19.2.9",
     "server-only": "^0.0.1",
+    "web-push": "^3.6.7",
     "zod": "^4.6.7"
   },
   "devDependencies": {
@@ -34,6 +38,7 @@
     "@types/node": "^22.18.0",
     "@types/react": "19.2",
     "@types/react-dom": "19.2",
+    "@types/web-push": "^3.6.4",
     "autoprefixer": "^10.4.21",
     "dotenv-cli": "^8.0.0",
     "postcss": "^8.5.33",

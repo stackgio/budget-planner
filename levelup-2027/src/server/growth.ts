@@ -200,7 +200,7 @@ export async function linkTaskToGoal(ownerId: string, taskId: string, goalId: st
 export async function loadGoals(ownerId: string, today: LocalDate, where: Prisma.GoalWhereInput = {}) {
   const goals = await prisma.goal.findMany({
     where: { ownerId, ...where },
-    include: { milestones: { orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }] }, progress: { orderBy: { recordedOn: "asc" } }, tasks: { select: { id: true, title: true, status: true, dueDate: true } } },
+    include: { milestones: { where: { archivedAt: null }, orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }] }, progress: { orderBy: { recordedOn: "asc" } }, tasks: { select: { id: true, title: true, status: true, dueDate: true } } },
     orderBy: [{ status: "asc" }, { targetDate: "asc" }, { createdAt: "asc" }],
   });
   const needChallenges = goals.some((g) => g.source === "CHALLENGE");
@@ -243,4 +243,25 @@ export async function createValenciaChecklist(ownerId: string, today: LocalDate)
     "Check returning-student / readmission requirements", "Request transcripts from previous attendance", "Request a degree audit of existing credits",
     "Ask about credit for DOC training (evaluation)", "Book an advisor appointment", "Complete FAFSA / financial aid tasks", "Choose first class and register",
   ].map((title) => ({ title, dueDate: null })).map((m, i) => ({ ...m, dueDate: i === 4 ? addDays(today, 30) : null })));
+}
+
+/** Edit a milestone's title/due date. Completion history is kept as-is. */
+export async function editMilestone(ownerId: string, milestoneId: string, title: string, dueDate: LocalDate | null) {
+  return prisma.$transaction(async (tx) => {
+    const m = await tx.goalMilestone.findFirst({ where: { id: milestoneId, goal: { ownerId } } });
+    if (!m) throw new UserError("Milestone not found.");
+    const after = await tx.goalMilestone.update({ where: { id: m.id }, data: { title: title.slice(0, 120), dueDate: dueDate ? localToDbDate(dueDate) : null } });
+    await audit(tx, ownerId, "GoalMilestone", m.id, "edit", { title: m.title, dueDate: m.dueDate }, { title: after.title, dueDate: after.dueDate });
+    return after;
+  });
+}
+
+/** Archive hides a milestone from progress and lists without deleting it; restore brings it back. */
+export async function setMilestoneArchived(ownerId: string, milestoneId: string, archived: boolean) {
+  return prisma.$transaction(async (tx) => {
+    const m = await tx.goalMilestone.findFirst({ where: { id: milestoneId, goal: { ownerId } } });
+    if (!m) throw new UserError("Milestone not found.");
+    await tx.goalMilestone.update({ where: { id: m.id }, data: { archivedAt: archived ? new Date() : null } });
+    await audit(tx, ownerId, "GoalMilestone", m.id, archived ? "archive" : "restore", undefined, undefined);
+  });
 }
