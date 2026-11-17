@@ -475,6 +475,7 @@ model AllocationLine {
   tile        ChallengeTile? @relation(fields: [tileId], references: [id], onDelete: Restrict)
   amountCents Int
   paidCents   Int?
+  taxYear     Int? // required for ROTH lines (DB CHECK); intended contribution year
   status      LineStatus     @default(PLANNED)
   sortOrder   Int            @default(0)
   createdAt   DateTime       @default(now()) @db.Timestamptz

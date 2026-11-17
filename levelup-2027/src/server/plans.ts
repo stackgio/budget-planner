@@ -7,7 +7,7 @@ import type { LineTarget } from "@/app/(app)/money/parts";
 
 export interface PlanLineView {
   id: string; target: LineTarget; label: string | null; tileId: string | null; tileNumber: number | null;
-  amountCents: number; paidCents: number | null; status: "PLANNED" | "RESERVED" | "COMPLETED" | "CANCELLED";
+  amountCents: number; paidCents: number | null; taxYear: number | null; status: "PLANNED" | "RESERVED" | "COMPLETED" | "CANCELLED";
   payment: { id: string; paidOn: string; amountCents: number; taxYear: number | null; reversed: boolean } | null;
   reversal: { paidOn: string; note: string | null } | null;
 }
@@ -29,7 +29,7 @@ function view(p: Loaded) {
     const rev = l.payments.find((x) => x.reversalOfId);
     return {
       id: l.id, target: l.target, label: l.label, tileId: l.tileId, tileNumber: l.tile?.number ?? null,
-      amountCents: l.amountCents, paidCents: l.paidCents, status: l.status,
+      amountCents: l.amountCents, paidCents: l.paidCents, taxYear: l.taxYear, status: l.status,
       payment: orig ? { id: orig.id, paidOn: dateToLocal(orig.paidOn), amountCents: orig.amountCents, taxYear: orig.taxYear, reversed: !!orig.reversedAt } : null,
       reversal: rev ? { paidOn: dateToLocal(rev.createdAt), note: rev.note } : null,
     };

@@ -10,7 +10,7 @@ import { formatCents } from "@/domain/money";
 import { Dialog } from "@/ui/dialog";
 import { ActionForm, Field, SubmitButton } from "@/ui/form";
 import { IdemKey } from "@/ui/IdemKey";
-import { cancelLineAction, cancelPlanAction, completeLineAction, reverseAction } from "../../ledger-actions";
+import { cancelLineAction, cancelPlanAction, completeLineAction, reverseAction, rothLineTaxYearAction } from "../../ledger-actions";
 import { LineIcon, MoneyFigure, Progress, StatusPill, lineTitle } from "../../parts";
 
 export default async function PlanPage({ params }: { params: Promise<{ id: string }> }) {
@@ -19,7 +19,7 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
   const plan = await loadPlan(user.id, id);
   if (!plan) notFound();
   const year = Number(today.slice(0, 4));
-  const room = await rothRoom(prisma, user.id, year);
+  const room = await rothRoom(prisma, user.id, year); // shown for the current year; each Roth line carries its own tax year
   const live = plan.lines.filter((l) => l.status !== "PLANNED");
   const done = live.filter((l) => l.status === "COMPLETED").length;
   const waiting = live.filter((l) => l.status === "RESERVED");
@@ -51,6 +51,7 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
                 <p className="truncate font-semibold">{lineTitle(l)}</p>
                 <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-mute-400">
                   <StatusPill status={l.status} />
+                  {l.target === "ROTH" && l.taxYear && <span>Tax year {l.taxYear}</span>}
                   {l.payment && <span>{l.payment.reversed ? "Corrected" : `Paid ${formatLocalDate(l.payment.paidOn, "weekday")}`}{l.payment.taxYear ? ` · tax year ${l.payment.taxYear}` : ""}</span>}
                   {l.reversal && <span className="text-warn">{l.reversal.note}</span>}
                 </div>
@@ -73,7 +74,7 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
                     {l.target === "ROTH" && (
                       <>
                         <Field label="Tax year" hint={room.limitCents !== null ? `${year}: ${formatCents(room.confirmedCents)} contributed of your ${formatCents(room.limitCents)} limit` : "No limit configured — set one on the Roth IRA page"}>
-                          <select className="input" name="taxYear" defaultValue={String(year)}><option value={year}>{year}</option><option value={year - 1}>{year - 1} (prior-year contribution)</option></select>
+                          <select className="input" name="taxYear" defaultValue={String(l.taxYear ?? year)}>{[year + 1, year, year - 1].map((y) => <option key={y} value={y}>{y}{y === year - 1 ? " (prior-year contribution)" : ""}</option>)}</select>
                         </Field>
                         <label className="flex min-h-[44px] items-center gap-3 text-xs text-mute-300"><input type="checkbox" name="ack" className="h-5 w-5 accent-[#2bea7a]" /> Record anyway if this exceeds my configured limit</label>
                       </>
@@ -82,6 +83,16 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
                     <SubmitButton className="btn-primary w-full" pendingText="Confirming…">Confirm transfer</SubmitButton>
                   </ActionForm>
                 </Dialog>
+                {l.target === "ROTH" && (
+                  <Dialog title="Intended tax year" trigger="Tax year" triggerClassName="btn-ghost btn-sm">
+                    <ActionForm action={rothLineTaxYearAction} className="space-y-4">
+                      <input type="hidden" name="lineId" value={l.id} />
+                      <p className="text-sm text-mute-300">Which tax year this planned contribution counts toward. It only affects planning until you confirm the transfer.</p>
+                      <Field label="Tax year"><select className="input" name="taxYear" defaultValue={String(l.taxYear ?? year)}>{[year + 1, year, year - 1].map((y) => <option key={y} value={y}>{y}</option>)}</select></Field>
+                      <SubmitButton className="btn-primary w-full">Save</SubmitButton>
+                    </ActionForm>
+                  </Dialog>
+                )}
                 <ActionForm action={cancelLineAction}>
                   <input type="hidden" name="lineId" value={l.id} />
                   <SubmitButton className="btn-ghost btn-sm" pendingText="…">Release</SubmitButton>

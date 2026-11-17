@@ -25,7 +25,7 @@ export default async function RothPage({ searchParams }: { searchParams: Promise
       </PageHeader>
       <section className="card grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Stat label={`Confirmed ${year}`} value={formatCents(room.confirmedCents)} tone="go" sub="contributions you made" />
-        <Stat label="Planned (reserved)" value={formatCents(room.plannedCents)} sub="not contributed yet" />
+        <Stat label={`Planned for ${year}`} value={formatCents(room.plannedCents)} sub="approved, not contributed yet" />
         <Stat label="Your configured limit" value={room.limitCents === null ? "Not set" : formatCents(room.limitCents)} tone="mute" />
         <Stat label="Room left" value={room.remainingCents === null ? "—" : formatCents(room.remainingCents)} tone={room.remainingCents === 0 ? "warn" : "mute"} sub="after confirmed + planned" />
         {room.limitCents !== null && <div className="col-span-2 sm:col-span-4"><Progress label="Roth contributions vs configured limit" value={room.confirmedCents} max={room.limitCents} /></div>}

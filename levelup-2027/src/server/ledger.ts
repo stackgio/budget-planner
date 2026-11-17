@@ -75,7 +75,8 @@ export async function rothRoom(db: Db, ownerId: string, taxYear: number) {
   const y = await db.rothYear.findUnique({ where: { ownerId_taxYear: { ownerId, taxYear } } });
   const payments = await db.payment.aggregate({ where: { ownerId, kind: "ROTH_CONTRIBUTION", taxYear }, _sum: { amountCents: true } });
   const confirmed = payments._sum.amountCents ?? 0; // reversals are negative, so this nets out
-  const reserved = await db.allocationLine.aggregate({ where: { target: "ROTH", status: "RESERVED", plan: { ownerId } }, _sum: { amountCents: true } });
+  // Planned = approved Roth lines for THIS tax year that aren't confirmed yet. Drafts don't count.
+  const reserved = await db.allocationLine.aggregate({ where: { target: "ROTH", status: "RESERVED", taxYear, plan: { ownerId } }, _sum: { amountCents: true } });
   const plannedCents = reserved._sum.amountCents ?? 0;
   const limit = y?.limitCents ?? null;
   return { taxYear, limitCents: limit, confirmedCents: confirmed, plannedCents, remainingCents: limit === null ? null : Math.max(0, limit - confirmed - plannedCents) };
@@ -94,8 +95,10 @@ export async function challengeInputs(db: Db, ownerId: string): Promise<Challeng
     const free = c.tiles.filter((t) => t.status === "OPEN" && t.lines.length === 0);
     const base = { kind, eligible: c.status === "ACTIVE", openTiles: [] as { id: string; number: number; amountCents: number }[] };
     if (kind === "SCHD") {
-      const start = c.nextNumber ?? 1;
-      return [{ ...base, rule: "SEQUENTIAL" as const, openTiles: free.filter((t) => t.number >= start).map((t) => ({ id: t.id, number: t.number, amountCents: t.amountCents })) }];
+      // Sequential: the next day is always the lowest day that is OPEN and not reserved/completed.
+      // Unverified history (PROVISIONAL) counts as done for ordering but never as money; a day marked
+      // "not done" becomes OPEN and is therefore next automatically — no manual reset needed.
+      return [{ ...base, rule: "SEQUENTIAL" as const, openTiles: free.map((t) => ({ id: t.id, number: t.number, amountCents: t.amountCents })) }];
     }
     let capCents: number | undefined;
     if (kind === "DEBT" && c.targetCents !== null) {
@@ -150,7 +153,9 @@ export async function spin(ownerId: string, o: SpinOptions): Promise<{ planId: s
       if (!Number.isSafeInteger(budget) || budget < 0) throw new UserError("Budget must be zero or more.");
       if (budget > budgetCap) throw new UserError(`Only ${formatCents(budgetCap)} is available to plan from this deposit.`);
 
-      const year = new Date().getFullYear();
+      let year = new Date().getFullYear();
+      if (o.depositId) year = (await tx.incomeDeposit.findUniqueOrThrow({ where: { id: o.depositId } })).actualDepositDate.getUTCFullYear();
+      else if (o.forecastMonth) year = Number(o.forecastMonth.slice(0, 4));
       const room = await rothRoom(tx, ownerId, year);
       let rothTarget = o.rothCents ?? settings.rothCents;
       const notes: string[] = [];
@@ -206,7 +211,7 @@ export async function spin(ownerId: string, o: SpinOptions): Promise<{ planId: s
         });
       }
       await tx.allocationLine.createMany({
-        data: proposal.lines.map((l, i) => ({ planId: plan!.id, target: l.target, tileId: l.tileId ?? null, amountCents: l.amountCents, sortOrder: l.tileId ? 100 + i : i })),
+        data: proposal.lines.map((l, i) => ({ planId: plan!.id, target: l.target, tileId: l.tileId ?? null, amountCents: l.amountCents, taxYear: l.target === "ROTH" ? year : null, sortOrder: l.tileId ? 100 + i : i })),
       });
       return { planId: plan.id, proposal };
     }, TX_OPTS);
@@ -248,7 +253,10 @@ export async function editDraft(ownerId: string, planId: string, edit: DraftEdit
       if (others + edit.amountCents > plan.budgetCents) throw new UserError(`That would exceed this plan's budget of ${formatCents(plan.budgetCents)}. ${formatCents(Math.max(0, plan.budgetCents - others))} is left.`);
       if (existing && edit.amountCents === 0) await tx.allocationLine.delete({ where: { id: existing.id } });
       else if (existing) await tx.allocationLine.update({ where: { id: existing.id }, data: { amountCents: edit.amountCents } });
-      else if (edit.amountCents > 0) await tx.allocationLine.create({ data: { planId, target: edit.target, amountCents: edit.amountCents, label: edit.label ?? null, sortOrder: edit.target === "ROTH" ? 0 : edit.target === "FUN" ? 1 : 50 } });
+      else if (edit.amountCents > 0) {
+        const taxYear = edit.target === "ROTH" ? (plan.depositId ? (await tx.incomeDeposit.findUniqueOrThrow({ where: { id: plan.depositId } })).actualDepositDate.getUTCFullYear() : plan.forecastMonth ? Number(plan.forecastMonth.slice(0, 4)) : new Date().getFullYear()) : null;
+        await tx.allocationLine.create({ data: { planId, target: edit.target, amountCents: edit.amountCents, label: edit.label ?? null, taxYear, sortOrder: edit.target === "ROTH" ? 0 : edit.target === "FUN" ? 1 : 50 } });
+      }
     } else {
       const tile = await tx.challengeTile.findFirst({
         where: { id: edit.tileId, challenge: { ownerId } },
@@ -371,7 +379,7 @@ export async function completeLine(ownerId: string, lineId: string, input: Compl
       if (!Number.isSafeInteger(input.paidCents) || input.paidCents <= 0) throw new UserError("Enter the amount you actually transferred.");
       if (line.tileId && input.paidCents !== line.amountCents) throw new UserError(`Tile #${line.tile!.number} is exactly ${formatCents(line.amountCents)}. Cancel it instead if you paid a different amount.`);
       if (input.paidCents > line.amountCents) throw new UserError(`You can confirm at most the approved ${formatCents(line.amountCents)}.`);
-      const taxYear = line.target === "ROTH" ? (input.taxYear ?? Number(input.paidOn.slice(0, 4))) : null;
+      const taxYear = line.target === "ROTH" ? (input.taxYear ?? line.taxYear ?? Number(input.paidOn.slice(0, 4))) : null;
       if (line.target === "ROTH") await rothGuard(tx, ownerId, taxYear!, input.paidCents, line.amountCents, input.acknowledgeOverLimit);
       const payment = await tx.payment.create({
         data: {
@@ -380,7 +388,7 @@ export async function completeLine(ownerId: string, lineId: string, input: Compl
           label: line.label, note: input.note || null, idempotencyKey: input.idempotencyKey, requestHash: hash,
         },
       });
-      await tx.allocationLine.update({ where: { id: line.id }, data: { status: "COMPLETED", paidCents: input.paidCents, settledAt: new Date() } });
+      await tx.allocationLine.update({ where: { id: line.id }, data: { status: "COMPLETED", paidCents: input.paidCents, settledAt: new Date(), ...(taxYear !== null ? { taxYear } : {}) } });
       if (line.tileId) await tx.challengeTile.update({ where: { id: line.tileId }, data: { status: "COMPLETED" } });
       await maybeClosePlan(tx, line.planId);
       await audit(tx, ownerId, "Payment", payment.id, "confirm", undefined, payment);
@@ -703,7 +711,7 @@ export async function challengeTotals(ownerId: string) {
     const reserved = c.tiles.filter((t) => t.lines.some((l) => l.status === "RESERVED")).reduce((a, t) => a + t.amountCents, 0);
     const provisional = c.tiles.filter((t) => t.status === "PROVISIONAL").reduce((a, t) => a + t.amountCents, 0);
     const completedTiles = c.tiles.filter((t) => t.status === "COMPLETED").length;
-    const openSeq = c.tiles.filter((t) => t.status === "OPEN" && !t.lines.some((l) => l.status === "RESERVED") && t.number >= (c.nextNumber ?? 1));
+    const openSeq = c.tiles.filter((t) => t.status === "OPEN" && !t.lines.some((l) => l.status === "RESERVED"));
     return {
       id: c.id, kind: c.kind, name: c.name, status: c.status, targetCents: c.targetCents, nextNumber: c.nextNumber,
       confirmedCents: confirmed, verifiedHistoricalCents: verifiedHistorical, reservedCents: reserved, provisionalCents: provisional,
@@ -719,5 +727,40 @@ export async function challengeTotals(ownerId: string) {
         payment: t.payments[0] ? { id: t.payments[0].id, paidOn: dateToLocal(t.payments[0].paidOn), source: t.payments[0].source } : null,
       })),
     };
+  });
+}
+
+// ───────────────────────── Roth tax year & SCHD corrections (Phase 3 fixes) ─────────────────────────
+
+/** Change the intended tax year of a Roth line before it is confirmed. */
+export async function setRothLineTaxYear(ownerId: string, lineId: string, taxYear: number) {
+  if (!Number.isInteger(taxYear) || taxYear < 2000 || taxYear > 2100) throw new UserError("Choose a valid tax year.");
+  return prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM "AllocationLine" WHERE id = ${lineId} FOR UPDATE`;
+    const line = await tx.allocationLine.findFirst({ where: { id: lineId, plan: { ownerId } } });
+    if (!line) throw new UserError("Allocation not found.");
+    if (line.target !== "ROTH") throw new UserError("Only Roth IRA allocations have a tax year.");
+    if (line.status === "COMPLETED") throw new UserError("Already confirmed. Correct the contribution to change its tax year.");
+    if (line.status === "CANCELLED") throw new UserError("This allocation was released.");
+    await tx.allocationLine.update({ where: { id: lineId }, data: { taxYear } });
+    await audit(tx, ownerId, "AllocationLine", lineId, `roth-tax-year:${taxYear}`, { taxYear: line.taxYear }, { taxYear });
+  });
+}
+
+/**
+ * Mark an unverified historical SCHD day as NOT done. It becomes OPEN, so it is automatically
+ * the next sequential day. Only PROVISIONAL days qualify — confirmed contributions are never undone
+ * here (use a correction instead).
+ */
+export async function markSchdDayNotDone(ownerId: string, day: number) {
+  return prisma.$transaction(async (tx) => {
+    const t = await tx.challengeTile.findFirst({ where: { number: day, challenge: { ownerId, kind: "SCHD" } } });
+    if (!t) throw new UserError(`Day ${day} not found.`);
+    await tx.$queryRaw`SELECT id FROM "ChallengeTile" WHERE id = ${t.id} FOR UPDATE`;
+    const fresh = await tx.challengeTile.findUniqueOrThrow({ where: { id: t.id } });
+    if (fresh.status === "COMPLETED") throw new UserError(`Day ${day} is a confirmed contribution. Use “Correct” if it didn't happen.`);
+    if (fresh.status === "OPEN") return;
+    await tx.challengeTile.update({ where: { id: t.id }, data: { status: "OPEN" } });
+    await audit(tx, ownerId, "ChallengeTile", t.id, `schd-day-not-done:${day}`, { status: fresh.status }, { status: "OPEN" });
   });
 }

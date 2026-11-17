@@ -8,7 +8,7 @@ import { audit } from "@/server/audit";
 import { UserError } from "@/server/payroll";
 import {
   approvePlan, cancelLine, cancelPlan, completeLine, configureDebt, correctDebtBalance, editDraft, importSchdHistory,
-  recordManualPayment, reversePayment, spin, validateDebtMapping,
+  recordManualPayment, reversePayment, spin, validateDebtMapping, setRothLineTaxYear, markSchdDayNotDone,
 } from "@/server/ledger";
 import { run, type ActionState } from "@/ui/actions";
 import { isLocalDate, todayLocal } from "@/domain/dates";
@@ -222,6 +222,27 @@ export async function rouletteSettingsAction(_p: ActionState, fd: FormData): Pro
     const data = { rothCents: cents(fd.get("roth"), "a Roth amount")!, funCents: cents(fd.get("fun"), "a fun amount")!, leftoverToFun: fd.get("leftoverMode") === "fun" };
     await prisma.rouletteSettings.upsert({ where: { ownerId_kind: { ownerId: user.id, kind } }, create: { ownerId: user.id, kind, ...data }, update: data });
     return "Defaults saved.";
+  });
+  done();
+  return r;
+}
+
+export async function rothLineTaxYearAction(_p: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await requireUser();
+  const r = await run(async () => {
+    await setRothLineTaxYear(user.id, z.string().min(1).parse(fd.get("lineId")), z.coerce.number().int().parse(fd.get("taxYear")));
+    return "Tax year updated.";
+  });
+  done();
+  return r;
+}
+
+export async function schdNotDoneAction(_p: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await requireUser();
+  const r = await run(async () => {
+    const day = z.coerce.number().int().min(1).max(100).parse(fd.get("day"));
+    await markSchdDayNotDone(user.id, day);
+    return `Day ${day} is open again and is now part of the sequence.`;
   });
   done();
   return r;

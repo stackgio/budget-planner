@@ -2,7 +2,7 @@
   "name": "levelup-2027",
   "version": "0.1.0",
   "private": true,
-  "description": "LEVEL UP 2027 — private personal Life Operating System",
+  "description": "LEVEL UP 2027 \u2014 private personal Life Operating System",
   "scripts": {
     "dev": "next dev -p 3100",
     "build": "next build",
@@ -42,5 +42,10 @@
     "tsx": "^4.20.5",
     "typescript": "^5.6.3",
     "vitest": "^5.1.0"
+  },
+  "overrides": {
+    "@prisma/config": {
+      "deepmerge-ts": "8.0.2"
+    }
   }
 }
