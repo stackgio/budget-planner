@@ -100,25 +100,28 @@ enum EventCategory {
 }
 
 model CalendarEvent {
-  id          String           @id @default(cuid())
-  ownerId     String
-  title       String
-  description String?
-  location    String?
-  category    EventCategory
-  startAt     DateTime         @db.Timestamptz // first occurrence start
-  endAt       DateTime         @db.Timestamptz // first occurrence end
-  allDay      Boolean          @default(false)
-  timezone    String           @default("America/New_York")
-  rrule       String? // RFC 5545 subset, e.g. FREQ=WEEKLY;BYDAY=SA,SU,MO,TU,WE
-  reminderMin Int?
-  important   Boolean          @default(false) // never suggested for rescheduling
-  optional    Boolean          @default(false) // may be suggested for postponing in OT/activation
-  sourceType  String? // generated events: OVERTIME_SHIFT | MODE_SESSION | DOC_SCHEDULE
-  sourceId    String?
-  createdAt   DateTime         @default(now()) @db.Timestamptz
-  updatedAt   DateTime         @updatedAt @db.Timestamptz
-  exceptions  EventException[]
+  id                String           @id @default(cuid())
+  ownerId           String
+  title             String
+  description       String?
+  location          String?
+  category          EventCategory
+  startAt           DateTime         @db.Timestamptz // first occurrence start
+  endAt             DateTime         @db.Timestamptz // first occurrence end
+  allDay            Boolean          @default(false)
+  timezone          String           @default("America/New_York")
+  rrule             String? // RFC 5545 subset, e.g. FREQ=WEEKLY;BYDAY=SA,SU,MO,TU,WE
+  reminderMin       Int?
+  important         Boolean          @default(false) // never suggested for rescheduling
+  optional          Boolean          @default(false) // may be suggested for postponing in OT/activation
+  sourceType        String? // generated events: OVERTIME_SHIFT | MODE_SESSION | DOC_SCHEDULE | DATE_PLAN
+  sourceId          String?
+  createdAt         DateTime         @default(now()) @db.Timestamptz
+  updatedAt         DateTime         @updatedAt @db.Timestamptz
+  exceptions        EventException[]
+  goal              Goal?            @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  goalId            String?
+  workoutTemplateId String? // fitness: which template this scheduled workout uses
 
   @@unique([ownerId, sourceType, sourceId])
   @@index([ownerId, startAt])
@@ -192,6 +195,8 @@ model Task {
   reminderMin Int?
   optional    Boolean    @default(false)
   isTopThree  Boolean    @default(false)
+  goalId      String?
+  goal        Goal?      @relation(fields: [goalId], references: [id], onDelete: SetNull)
   status      TaskStatus @default(OPEN)
   completedAt DateTime?  @db.Timestamptz
   createdAt   DateTime   @default(now()) @db.Timestamptz
@@ -523,6 +528,7 @@ model Payment {
   reversalOfId   String?         @unique
   reversalOf     Payment?        @relation("Reversal", fields: [reversalOfId], references: [id], onDelete: Restrict)
   reversal       Payment?        @relation("Reversal")
+  datePlan       DatePlan?
   reversedAt     DateTime?       @db.Timestamptz
   createdAt      DateTime        @default(now()) @db.Timestamptz
 
@@ -565,4 +571,413 @@ model AuditLog {
   at       DateTime @default(now()) @db.Timestamptz
 
   @@index([ownerId, entity, entityId])
+}
+
+// ═════════════════════════ Phase 3 — Goals & Personal Growth ═════════════════════════
+// Private free-text fields ending in "Cipher" are AES-256-GCM encrypted by the app before storage.
+
+enum GoalCategory {
+  FINANCE
+  FITNESS
+  FAITH
+  RELATIONSHIP
+  EDUCATION
+  CAREER
+  COMMUNICATION
+  READING
+  LEARNING
+  DISCIPLINE
+  TIME_MANAGEMENT
+  PROJECT
+  PERSONAL
+}
+
+enum GoalHorizon {
+  YEAR
+  QUARTER
+  MONTH
+  WEEK
+}
+
+enum GoalStatus {
+  NOT_STARTED
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ARCHIVED
+}
+
+/// Where a goal's progress comes from. Progress is never invented: it is read from records or manual entries.
+enum ProgressSource {
+  MANUAL
+  MILESTONES
+  TASKS
+  HABIT
+  CHALLENGE
+  WORKOUTS
+  ACTIVITY
+}
+
+model Goal {
+  id           String          @id @default(cuid())
+  ownerId      String
+  title        String
+  description  String?
+  category     GoalCategory
+  horizon      GoalHorizon
+  priority     Priority        @default(MEDIUM)
+  status       GoalStatus      @default(NOT_STARTED)
+  startDate    DateTime        @db.Date
+  targetDate   DateTime?       @db.Date
+  unit         String?
+  targetX100   Int? // measurable target × 100
+  source       ProgressSource  @default(MANUAL)
+  challengeId  String? // FINANCE: reads confirmed Phase 2 payments — never duplicates them
+  habitId      String?
+  activityKind String? // ACTIVITY source: ActivityKind to sum minutes of
+  notesCipher  String?
+  completedAt  DateTime?       @db.Timestamptz
+  createdAt    DateTime        @default(now()) @db.Timestamptz
+  updatedAt    DateTime        @updatedAt @db.Timestamptz
+  milestones   GoalMilestone[]
+  progress     GoalProgress[]
+  tasks        Task[]
+  events       CalendarEvent[]
+
+  @@index([ownerId, status])
+}
+
+model GoalMilestone {
+  id          String    @id @default(cuid())
+  goalId      String
+  goal        Goal      @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  title       String
+  dueDate     DateTime? @db.Date
+  completedAt DateTime? @db.Timestamptz
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now()) @db.Timestamptz
+}
+
+/// Manual progress updates — append-only history; the latest entry is the current value.
+model GoalProgress {
+  id             String   @id @default(cuid())
+  goalId         String
+  goal           Goal     @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  valueX100      Int
+  recordedOn     DateTime @db.Date
+  note           String?
+  idempotencyKey String   @unique
+  createdAt      DateTime @default(now()) @db.Timestamptz
+}
+
+model GrowthSettings {
+  ownerId          String @id
+  workoutsPerWeek  Int    @default(3)
+  weightUnit       String @default("lb")
+  dateNightWeekday Int    @default(5) // 0=Sun … 5=Fri
+  dateNightTime    String @default("18:30")
+  faithDaysPerWeek Int    @default(5)
+}
+
+/// Reminder choices saved for Phase 4 notifications. Nothing is delivered yet.
+model ReminderPreference {
+  id      String  @id @default(cuid())
+  ownerId String
+  key     String
+  time    String
+  days    Int[]
+  enabled Boolean @default(false)
+
+  @@unique([ownerId, key])
+}
+
+// ───────────── Fitness ─────────────
+
+model Exercise {
+  id        String  @id @default(cuid())
+  ownerId   String
+  name      String
+  category  String // UPPER | LOWER | CORE | FULL | CARDIO | MOBILITY
+  equipment String // BODYWEIGHT | DUMBBELL | BAND | OTHER
+  cues      String?
+  archived  Boolean @default(false)
+
+  @@unique([ownerId, name])
+}
+
+model WorkoutTemplate {
+  id       String                @id @default(cuid())
+  ownerId  String
+  name     String
+  notes    String?
+  archived Boolean               @default(false)
+  items    WorkoutTemplateItem[]
+
+  @@unique([ownerId, name])
+}
+
+model WorkoutTemplateItem {
+  id         String          @id @default(cuid())
+  templateId String
+  template   WorkoutTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  exerciseId String
+  sets       Int
+  reps       String // e.g. "8–12" or "30 s"
+  restSec    Int?
+  sortOrder  Int             @default(0)
+}
+
+enum WorkoutStatus {
+  COMPLETED
+  PARTIAL
+}
+
+/// A workout you say you did. Scheduling a workout never creates one of these.
+model WorkoutLog {
+  id             String        @id @default(cuid())
+  ownerId        String
+  date           DateTime      @db.Date
+  templateId     String?
+  title          String
+  eventId        String? // the calendar occurrence it fulfils, if any
+  originalStart  DateTime?     @db.Timestamptz
+  durationMin    Int?
+  effort         Int? // 1–10, optional
+  status         WorkoutStatus @default(COMPLETED)
+  notes          String?
+  idempotencyKey String        @unique
+  createdAt      DateTime      @default(now()) @db.Timestamptz
+  sets           WorkoutSet[]
+
+  @@unique([ownerId, eventId, originalStart])
+  @@index([ownerId, date])
+}
+
+model WorkoutSet {
+  id          String     @id @default(cuid())
+  logId       String
+  log         WorkoutLog @relation(fields: [logId], references: [id], onDelete: Cascade)
+  exerciseId  String
+  setNumber   Int
+  reps        Int?
+  weightX100  Int?
+  durationSec Int?
+}
+
+model BodyMetric {
+  id         String   @id @default(cuid())
+  ownerId    String
+  kind       String // WEIGHT | WAIST | CHEST | HIPS | ARMS | BODY_FAT
+  valueX100  Int
+  unit       String
+  measuredOn DateTime @db.Date
+  note       String?
+  createdAt  DateTime @default(now()) @db.Timestamptz
+
+  @@index([ownerId, kind, measuredOn])
+}
+
+// ───────────── Faith ─────────────
+
+model FaithEntry {
+  id             String   @id @default(cuid())
+  ownerId        String
+  kind           String // PRAYER | BIBLE_READING | REFLECTION | GRATITUDE
+  date           DateTime @db.Date
+  minutes        Int?
+  passage        String?
+  bodyCipher     String?
+  idempotencyKey String   @unique
+  createdAt      DateTime @default(now()) @db.Timestamptz
+
+  @@index([ownerId, date])
+}
+
+// ───────────── Relationship ─────────────
+
+enum DateStatus {
+  PLANNED
+  COMPLETED
+  POSTPONED
+  CANCELLED
+}
+
+model DatePlan {
+  id              String     @id @default(cuid())
+  ownerId         String
+  title           String
+  date            DateTime   @db.Date
+  startTime       String?
+  endTime         String?
+  eventId         String?
+  status          DateStatus @default(PLANNED)
+  budgetCents     Int?
+  actualCostCents Int? // manual record — or link paymentId, never both (no double counting)
+  paymentId       String?    @unique
+  payment         Payment?   @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+  letter          String? // Alphabet Dating letter, if this date is for one
+  notesCipher     String?
+  completedAt     DateTime?  @db.Timestamptz
+  createdAt       DateTime   @default(now()) @db.Timestamptz
+  updatedAt       DateTime   @updatedAt @db.Timestamptz
+
+  @@index([ownerId, date])
+}
+
+model DateIdea {
+  id           String  @id @default(cuid())
+  ownerId      String
+  title        String
+  category     String?
+  estCostCents Int?
+  letter       String?
+  notes        String?
+  archived     Boolean @default(false)
+}
+
+model ImportantDate {
+  id      String  @id @default(cuid())
+  ownerId String
+  title   String
+  kind    String // ANNIVERSARY | BIRTHDAY | OTHER
+  month   Int
+  day     Int
+  year    Int?
+  notes   String?
+}
+
+model RelationshipNote {
+  id         String   @id @default(cuid())
+  ownerId    String
+  bodyCipher String
+  createdAt  DateTime @default(now()) @db.Timestamptz
+}
+
+enum AlphabetStatus {
+  OPEN
+  PLANNED
+  COMPLETED
+  SKIPPED
+}
+
+/// One row per letter A–Z. A letter is completed only when its date is explicitly marked complete.
+model AlphabetEntry {
+  id             String         @id @default(cuid())
+  ownerId        String
+  letter         String
+  activity       String?
+  estBudgetCents Int?
+  status         AlphabetStatus @default(OPEN)
+  datePlanId     String?        @unique
+  notes          String?
+  completedAt    DateTime?      @db.Timestamptz
+  updatedAt      DateTime       @updatedAt @db.Timestamptz
+
+  @@unique([ownerId, letter])
+}
+
+// ───────────── Education & career ─────────────
+
+model EduProgram {
+  id          String   @id @default(cuid())
+  ownerId     String
+  name        String
+  institution String
+  credential  String?
+  status      String   @default("RESEARCHING") // RESEARCHING | PLANNING | APPLYING | ADMITTED | ENROLLED | PAUSED | NOT_PURSUING
+  notes       String?
+  createdAt   DateTime @default(now()) @db.Timestamptz
+}
+
+model EduCourse {
+  id        String  @id @default(cuid())
+  ownerId   String
+  programId String?
+  code      String?
+  title     String
+  credits   Int?
+  term      String?
+  status    String  @default("PLANNED") // PLANNED | REGISTERED | IN_PROGRESS | COMPLETED | DROPPED
+  grade     String?
+}
+
+model TuitionItem {
+  id          String  @id @default(cuid())
+  ownerId     String
+  term        String?
+  label       String
+  estCents    Int
+  actualCents Int?
+  notes       String?
+}
+
+model CareerProfile {
+  ownerId  String    @id
+  employer String
+  title    String
+  hireDate DateTime? @db.Date
+  notes    String?
+}
+
+model CareerCredential {
+  id          String    @id @default(cuid())
+  ownerId     String
+  name        String
+  kind        String // TRAINING | CERTIFICATION
+  status      String    @default("PLANNED") // PLANNED | IN_PROGRESS | COMPLETED
+  completedOn DateTime? @db.Date
+  expiresOn   DateTime? @db.Date
+  notes       String?
+}
+
+model JobOpportunity {
+  id              String    @id @default(cuid())
+  ownerId         String
+  title           String
+  agency          String
+  level           String // PROMOTION | STATE | COUNTY | FEDERAL | OTHER
+  location        String?
+  payMinCents     Int? // entered by you from the posting — never invented
+  payMaxCents     Int?
+  payPeriod       String    @default("HOURLY") // HOURLY | ANNUAL
+  deadline        DateTime? @db.Date
+  status          String    @default("RESEARCHING") // RESEARCHING | PREPARING | APPLIED | INTERVIEW | OFFER | CLOSED | NOT_PURSUING
+  appliedOn       DateTime? @db.Date
+  interviewOn     DateTime? @db.Date
+  notesCipher     String?
+  prepNotesCipher String?
+  createdAt       DateTime  @default(now()) @db.Timestamptz
+  updatedAt       DateTime  @updatedAt @db.Timestamptz
+}
+
+// ───────────── Personal development & reviews ─────────────
+
+/// Time you spent on something (study, speaking practice, reading…). Logged by you only.
+model ActivityLog {
+  id             String   @id @default(cuid())
+  ownerId        String
+  kind           String // STUDY | SPEAKING | READING | LEARNING | PROJECT | DISCIPLINE | CAREER_PREP | OTHER
+  date           DateTime @db.Date
+  minutes        Int
+  title          String?
+  note           String?
+  goalId         String?
+  courseId       String?
+  idempotencyKey String   @unique
+  createdAt      DateTime @default(now()) @db.Timestamptz
+
+  @@index([ownerId, date])
+}
+
+model Review {
+  id               String   @id @default(cuid())
+  ownerId          String
+  kind             String // WEEK | MONTH
+  periodStart      DateTime @db.Date
+  reflectionCipher String?
+  priorities       String[]
+  createdAt        DateTime @default(now()) @db.Timestamptz
+  updatedAt        DateTime @updatedAt @db.Timestamptz
+
+  @@unique([ownerId, kind, periodStart])
 }

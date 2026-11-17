@@ -260,6 +260,8 @@ export async function shiftOccurrence(ownerId: string, id: string, originalStart
     const curStart = ex?.startAt ?? (ev.rrule ? originalStart : ev.startAt);
     const curEnd = ex?.endAt ?? new Date(curStart.getTime() + (ev.endAt.getTime() - ev.startAt.getTime()));
     const move = (d: Date) => zonedToInstant(addDays(instantToLocalDate(d, ev.timezone), days), instantToLocalTime(d, ev.timezone), ev.timezone);
+    // Postponing keeps history: the move is recorded in the audit log, nothing is erased.
+    await tx.auditLog.create({ data: { ownerId, entity: "CalendarEvent", entityId: id, action: `postpone:${days}d`, before: { start: curStart.toISOString() }, after: { start: move(curStart).toISOString() } } });
     if (!ev.rrule) {
       await tx.calendarEvent.update({ where: { id }, data: { startAt: move(curStart), endAt: move(curEnd) } });
       return;

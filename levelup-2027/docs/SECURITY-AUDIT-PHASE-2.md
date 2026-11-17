@@ -44,3 +44,13 @@ Current state: **0 known vulnerabilities in packages the running application loa
 2. No real-device testing of passkeys yet (requires a deployed HTTPS origin).
 3. Rate limiting is per-IP + global in the database — adequate for one user; a deployment behind a proxy must forward the real client IP.
 4. Backups are not set up (Phase 0 plan: nightly `pg_dump` once deployed).
+
+---
+
+## Phase 3 update (2026-11-17)
+
+- **Prisma CLI `deepmerge-ts` (GHSA-ggr8-5vv4-36mx): resolved** via npm `overrides` → `deepmerge-ts` 8.0.2 under `@prisma/config`, staying on Prisma 6.19.3. Reachability: CLI config loading only. Verified CLI commands and the config path. `npm audit`: 0 vulnerabilities.
+- **New private data** (faith, relationship, reflections, career notes) is encrypted at the application layer (AES-256-GCM, random IV, auth tag). The key lives only in `.env` (git-ignored). Losing the key makes those notes unreadable — keep a backup of it.
+- **Authorization**: every Phase 3 service is owner-scoped; cross-account tests cover goals, milestones, dates, workouts and activity logs.
+- **Duplicates**: workouts, faith entries, activity logs and goal progress use idempotency keys; one workout log per scheduled occurrence (DB unique).
+- **Remaining risks**: no real-device testing; no backups yet (planned at deployment); encryption key management is manual.

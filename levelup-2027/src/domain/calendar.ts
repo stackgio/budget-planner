@@ -121,6 +121,6 @@ export function findConflicts(
   ignoreEventId?: string,
 ): Occurrence[] {
   return occurrences
-    .filter((o) => !o.allDay && !o.readOnly && o.eventId !== ignoreEventId && overlaps(window, o))
+    .filter((o) => !o.allDay && !o.readOnly && o.end.getTime() - o.start.getTime() >= 60_000 && o.eventId !== ignoreEventId && overlaps(window, o))
     .sort((a, b) => a.start.getTime() - b.start.getTime());
 }

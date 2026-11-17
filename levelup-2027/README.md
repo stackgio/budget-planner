@@ -2,8 +2,8 @@
 
 A private, mobile-first Life Operating System: calendar, tasks, DOC schedule and payroll, extra-paycheck detection, work modes, and (in later phases) Money Roulette, the assistant, and push notifications.
 
-**Status: Phase 2 (Money System) complete — local only, not deployed.**
-Docs: [Phase 0 architecture](docs/PHASE-0-ARCHITECTURE.md) · [Phase 2 report](docs/PHASE-2-REPORT.md) · [Security audit](docs/SECURITY-AUDIT-PHASE-2.md).
+**Status: Phase 3 (Goals & Personal Growth) complete — local only, not deployed.**
+Docs: [Phase 0 architecture](docs/PHASE-0-ARCHITECTURE.md) · [Phase 2 report](docs/PHASE-2-REPORT.md) · [Phase 3 report](docs/PHASE-3-REPORT.md) · [Security audit](docs/SECURITY-AUDIT-PHASE-2.md).
 
 Fully separate from `../moneyflow` and `../video`: no shared code, database, or credentials.
 
@@ -27,6 +27,7 @@ sudo -u postgres createdb -O levelup levelup_test     # for automated tests
 # 2. Configure
 cp .env.example .env
 # set SETUP_TOKEN to a random value: openssl rand -hex 24
+# set DATA_ENCRYPTION_KEY: openssl rand -base64 32   (back it up — private notes need it)
 
 # 3. Apply migrations (non-destructive) and start
 npx prisma migrate deploy
@@ -71,6 +72,10 @@ Integration and E2E tests truncate **only** the `levelup_test` database and refu
 5. **Roth IRA:** set your own annual limit per tax year; LEVEL UP never hardcodes IRS figures.
 
 LEVEL UP never moves money. Every "confirm" records a transfer you made yourself.
+
+## Goals & growth (Phase 3)
+
+Goals tab → Goals, Fitness, Faith, Relationship (incl. Alphabet Dating), Education, Career, Growth. Reviews tab → weekly (Sat–Fri) and monthly reviews. Progress only moves from things you log or confirm. Sessions you schedule are checked against your DOC shifts; conflicts show free alternatives and nothing is moved for you.
 
 ## Data export
 

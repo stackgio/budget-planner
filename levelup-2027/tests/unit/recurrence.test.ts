@@ -85,5 +85,8 @@ describe("DOC recurring shifts", () => {
     const c = findConflicts({ start: zonedToInstant("2027-03-08", "15:00", TZ), end: zonedToInstant("2027-03-08", "17:00", TZ) }, occ);
     expect(c).toHaveLength(1);
     expect(findConflicts({ start: zonedToInstant("2027-03-08", "16:00", TZ), end: zonedToInstant("2027-03-08", "17:00", TZ) }, occ)).toHaveLength(0);
+    // A record shorter than a minute (e.g. an activation started and ended at once) never blocks scheduling.
+    const blip = { ...occ[0]!, eventId: "blip", key: "blip", start: zonedToInstant("2027-03-08", "18:00", TZ), end: zonedToInstant("2027-03-08", "18:00", TZ) };
+    expect(findConflicts({ start: zonedToInstant("2027-03-08", "17:30", TZ), end: zonedToInstant("2027-03-08", "19:00", TZ) }, [blip])).toHaveLength(0);
   });
 });

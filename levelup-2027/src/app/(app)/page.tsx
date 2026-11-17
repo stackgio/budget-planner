@@ -7,10 +7,13 @@ import { loadHabits, loadTasks } from "@/server/queries";
 import { loadPayroll } from "@/server/money-queries";
 import { loadExtraMonths, nextExtraMonth } from "@/server/extra";
 import { CATEGORY_META } from "@/domain/calendar";
-import { addDays, diffDays, formatInstantTime, formatLocalDate, instantToLocalDate, zonedToInstant } from "@/domain/dates";
+import { addDays, dateToLocal, diffDays, formatInstantTime, formatLocalDate, instantToLocalDate, localToDbDate, zonedToInstant } from "@/domain/dates";
 import { formatCents } from "@/domain/money";
 import { MODE_META, suppressOptional } from "@/domain/modes";
 import { inView } from "@/domain/tasks";
+import { weekOf } from "@/domain/growth";
+import { ensureGrowthDefaults } from "@/server/growth";
+import { fitnessWeek, relationshipOverview } from "@/server/life";
 import { Section, Empty } from "@/ui/bits";
 import { cn } from "@/ui/cn";
 import { TaskList } from "./tasks/TaskList";
@@ -31,7 +34,24 @@ export default async function HomePage() {
   const tasks = await loadTasks(user.id);
   const top = tasks.filter((t) => t.isTopThree && t.status === "OPEN").slice(0, 3);
   const todo = tasks.filter((t) => inView(t, "today", today) && !t.isTopThree).slice(0, 6);
-  const deadlines = tasks.filter((t) => t.status === "OPEN" && t.dueDate && t.dueDate > today && t.dueDate <= addDays(today, 7)).slice(0, 5);
+  const deadlines = tasks.filter((t) => t.status === "OPEN" && t.dueDate && t.dueDate > today && t.dueDate <= addDays(today, 14)).slice(0, 4);
+  await ensureGrowthDefaults(user.id);
+  const week = weekOf(today);
+  const [fit, faithRows, activeGoals, milestones, rel] = await Promise.all([
+    fitnessWeek(user.id, tz, week, today),
+    prisma.faithEntry.findMany({ where: { ownerId: user.id, date: { gte: localToDbDate(week.start), lte: localToDbDate(week.end) } }, select: { date: true } }),
+    prisma.goal.count({ where: { ownerId: user.id, status: "ACTIVE" } }),
+    prisma.goalMilestone.findMany({ where: { goal: { ownerId: user.id, status: { in: ["ACTIVE", "NOT_STARTED"] } }, completedAt: null, dueDate: { gte: localToDbDate(today), lte: localToDbDate(addDays(today, 14)) } }, include: { goal: { select: { id: true } } }, take: 4 }),
+    relationshipOverview(user.id, today),
+  ]);
+  const faithDays = new Set(faithRows.map((f) => dateToLocal(f.date))).size;
+  const nextWorkout = fit.scheduled.find((s) => s.day >= today && !s.logged);
+  const comingUp = [
+    ...deadlines.map((t) => ({ icon: "☐", title: t.title, date: t.dueDate!, href: "/tasks?view=upcoming" })),
+    ...milestones.map((m) => ({ icon: "🎯", title: m.title, date: dateToLocal(m.dueDate!), href: `/goals/${m.goal.id}` })),
+    ...rel.upcoming.slice(0, 2).filter((d) => d.date <= addDays(today, 14)).map((d) => ({ icon: "💚", title: d.title, date: d.date, href: "/goals/relationship" })),
+    ...rel.importantDates.filter((d) => d.next <= addDays(today, 21)).map((d) => ({ icon: "🎂", title: d.title, date: d.next, href: "/goals/relationship" })),
+  ].sort((a, b) => a.date.localeCompare(b.date)).slice(0, 7);
   const habits = (await loadHabits(user.id, today)).filter((h) => !h.archived);
 
   const reg = await loadPayroll(user.id, "REGULAR");
@@ -130,14 +150,23 @@ export default async function HomePage() {
           <HabitGrid habits={habits} today={today} paused={paused} />
         </Section>
 
-        <Section title="Upcoming deadlines">
-          {deadlines.length ? (
+        <Section title="This week" action={<Link href="/reviews" className="link text-xs">Weekly review</Link>}>
+          <div className="grid grid-cols-3 gap-3">
+            <div><p className="eyebrow">Workouts</p><p className="mt-1 num text-xl font-bold">{fit.completedCount}<span className="text-sm text-mute-400"> / {fit.target}</span></p>{fit.reducedBy > 0 && <p className="text-[11px] text-mute-400">eased for work</p>}</div>
+            <div><p className="eyebrow">Faith days</p><p className="mt-1 num text-xl font-bold">{faithDays}</p></div>
+            <div><p className="eyebrow">Goals</p><p className="mt-1 num text-xl font-bold">{activeGoals}</p><p className="text-[11px] text-mute-400">active</p></div>
+          </div>
+          <p className="mt-3 text-sm text-mute-300">Next workout: {nextWorkout ? `${formatLocalDate(nextWorkout.day, "weekday")} ${formatInstantTime(nextWorkout.start, tz)}` : <Link href="/goals/fitness" className="link">schedule one</Link>}</p>
+        </Section>
+
+        <Section title="Coming up">
+          {comingUp.length ? (
             <ul className="space-y-2 text-sm">
-              {deadlines.map((t) => (
-                <li key={t.id} className="flex items-center justify-between gap-2"><span className="truncate">{t.title}</span><span className="flex shrink-0 items-center gap-1 text-xs text-mute-400"><Clock size={12} />{formatLocalDate(t.dueDate!, "weekday")}</span></li>
+              {comingUp.map((c, i) => (
+                <li key={i}><Link href={c.href} className="flex items-center justify-between gap-2 hover:text-go"><span className="truncate">{c.icon} {c.title}</span><span className="flex shrink-0 items-center gap-1 text-xs text-mute-400"><Clock size={12} />{formatLocalDate(c.date, "weekday")}</span></Link></li>
               ))}
             </ul>
-          ) : <Empty>No deadlines in the next 7 days.</Empty>}
+          ) : <Empty>Nothing due in the next two weeks.</Empty>}
         </Section>
 
         <Section title="Financial challenges" action={<Link href="/money/challenges" className="link text-xs">Details</Link>}>

@@ -1,33 +1,85 @@
 import { getCurrentUser } from "@/server/auth";
 import { prisma } from "@/server/db";
+import { decrypt } from "@/server/crypto";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Everything LEVEL UP stores for the signed-in owner, as JSON.
+ * Private notes are decrypted for the owner. Never included: password hash, passkeys,
+ * sessions, sign-in challenges, login attempts, or any other credential material.
+ */
 export async function GET() {
   const user = await getCurrentUser();
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
   const ownerId = user.id;
-  const [settings, events, modeSessions, tasks, habits, schedules, paydays, deposits, payRates, overtimeShifts, challenges, auditLog, plans, payments, rothYears, rouletteSettings] = await Promise.all([
+  const o = { where: { ownerId } };
+  const [
+    settings, events, modeSessions, tasks, habits, schedules, paydays, deposits, payRates, overtimeShifts, challenges, auditLog, plans, payments, rothYears, rouletteSettings,
+    goals, growthSettings, reminderPreferences, exercises, workoutTemplates, workouts, bodyMetrics, faithEntries, datePlans, dateIdeas, importantDates, relationshipNotes,
+    alphabet, eduPrograms, eduCourses, tuition, careerProfile, careerCredentials, jobs, activityLogs, reviews,
+  ] = await Promise.all([
     prisma.userSettings.findUnique({ where: { userId: ownerId } }),
-    prisma.calendarEvent.findMany({ where: { ownerId }, include: { exceptions: true } }),
-    prisma.modeSession.findMany({ where: { ownerId } }),
-    prisma.task.findMany({ where: { ownerId } }),
-    prisma.habit.findMany({ where: { ownerId }, include: { checkIns: true } }),
-    prisma.paySchedule.findMany({ where: { ownerId } }),
-    prisma.payday.findMany({ where: { ownerId } }),
-    prisma.incomeDeposit.findMany({ where: { ownerId } }),
-    prisma.payRate.findMany({ where: { ownerId } }),
-    prisma.overtimeShift.findMany({ where: { ownerId } }),
-    prisma.challenge.findMany({ where: { ownerId }, include: { tiles: true, balances: true } }),
-    prisma.auditLog.findMany({ where: { ownerId } }),
-    prisma.allocationPlan.findMany({ where: { ownerId }, include: { lines: true } }),
-    prisma.payment.findMany({ where: { ownerId } }),
-    prisma.rothYear.findMany({ where: { ownerId } }),
-    prisma.rouletteSettings.findMany({ where: { ownerId } }),
+    prisma.calendarEvent.findMany({ ...o, include: { exceptions: true } }),
+    prisma.modeSession.findMany(o),
+    prisma.task.findMany(o),
+    prisma.habit.findMany({ ...o, include: { checkIns: true } }),
+    prisma.paySchedule.findMany(o),
+    prisma.payday.findMany(o),
+    prisma.incomeDeposit.findMany(o),
+    prisma.payRate.findMany(o),
+    prisma.overtimeShift.findMany(o),
+    prisma.challenge.findMany({ ...o, include: { tiles: true, balances: true } }),
+    prisma.auditLog.findMany(o),
+    prisma.allocationPlan.findMany({ ...o, include: { lines: true } }),
+    prisma.payment.findMany(o),
+    prisma.rothYear.findMany(o),
+    prisma.rouletteSettings.findMany(o),
+    prisma.goal.findMany({ ...o, include: { milestones: true, progress: true } }),
+    prisma.growthSettings.findUnique({ where: { ownerId } }),
+    prisma.reminderPreference.findMany(o),
+    prisma.exercise.findMany(o),
+    prisma.workoutTemplate.findMany({ ...o, include: { items: true } }),
+    prisma.workoutLog.findMany({ ...o, include: { sets: true } }),
+    prisma.bodyMetric.findMany(o),
+    prisma.faithEntry.findMany(o),
+    prisma.datePlan.findMany(o),
+    prisma.dateIdea.findMany(o),
+    prisma.importantDate.findMany(o),
+    prisma.relationshipNote.findMany(o),
+    prisma.alphabetEntry.findMany(o),
+    prisma.eduProgram.findMany(o),
+    prisma.eduCourse.findMany(o),
+    prisma.tuitionItem.findMany(o),
+    prisma.careerProfile.findUnique({ where: { ownerId } }),
+    prisma.careerCredential.findMany(o),
+    prisma.jobOpportunity.findMany(o),
+    prisma.activityLog.findMany(o),
+    prisma.review.findMany(o),
   ]);
+  const plain = <T extends Record<string, unknown>>(rows: T[], fields: [string, string][]) =>
+    rows.map((r) => {
+      const out: Record<string, unknown> = { ...r };
+      for (const [cipherField, name] of fields) { out[name] = decrypt(r[cipherField] as string | null); delete out[cipherField]; }
+      return out;
+    });
+
   const body = JSON.stringify(
-    { format: "levelup-2027-export", version: 2, exportedAt: new Date().toISOString(), moneyUnits: "integer cents", hoursUnits: "hundredths of an hour",
-      account: { email: user.email, displayName: user.displayName }, settings, events, modeSessions, tasks, habits, schedules, paydays, deposits, payRates, overtimeShifts, challenges, plans, payments, rothYears, rouletteSettings, auditLog },
+    {
+      format: "levelup-2027-export", version: 3, exportedAt: new Date().toISOString(), moneyUnits: "integer cents", hoursUnits: "hundredths of an hour",
+      note: "Contains your private notes in plain text. Store this file securely.",
+      account: { email: user.email, displayName: user.displayName },
+      settings, events, modeSessions, tasks, habits, schedules, paydays, deposits, payRates, overtimeShifts, challenges, plans, payments, rothYears, rouletteSettings,
+      goals: plain(goals, [["notesCipher", "notes"]]),
+      growthSettings, reminderPreferences, exercises, workoutTemplates, workouts, bodyMetrics,
+      faithEntries: plain(faithEntries, [["bodyCipher", "body"]]),
+      datePlans: plain(datePlans, [["notesCipher", "notes"]]), dateIdeas, importantDates,
+      relationshipNotes: plain(relationshipNotes, [["bodyCipher", "body"]]), alphabet,
+      eduPrograms, eduCourses, tuition, careerProfile, careerCredentials,
+      jobs: plain(jobs, [["notesCipher", "notes"], ["prepNotesCipher", "prepNotes"]]),
+      activityLogs, reviews: plain(reviews, [["reflectionCipher", "reflection"]]),
+      auditLog,
+    },
     (_k, v) => (typeof v === "bigint" ? v.toString() : v),
     2,
   );
