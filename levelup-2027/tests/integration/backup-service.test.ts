@@ -109,7 +109,13 @@ describe("off-site storage (S3-compatible) against a local mock bucket", () => {
       const chunks: Buffer[] = [];
       req.on("data", (c) => chunks.push(c));
       req.on("end", () => {
-        if (req.method === "PUT") { objects.set(u.pathname, Buffer.concat(chunks)); res.end(); return; }
+        if (req.method === "PUT") {
+          // Like Railway Buckets / S3: uploads must declare their size.
+          if (!req.headers["content-length"] || req.headers["transfer-encoding"]) { res.statusCode = 411; res.end(); return; }
+          const body = Buffer.concat(chunks);
+          if (Number(req.headers["content-length"]) !== body.length) { res.statusCode = 400; res.end(); return; }
+          objects.set(u.pathname, body); res.end(); return;
+        }
         if (req.method === "DELETE") { objects.delete(u.pathname); res.statusCode = 204; res.end(); return; }
         if (u.searchParams.get("list-type") === "2") {
           const prefix = u.searchParams.get("prefix")!;

@@ -7,7 +7,7 @@
  */
 import { mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { AwsClient } from "aws4fetch";
+import { AwsV4Signer } from "aws4fetch";
 import { BACKUP_NAME_RE } from "./backup";
 
 export interface StoredBackup { key: string; bytes: number; modifiedAt: Date }
@@ -45,17 +45,27 @@ export class LocalStore implements BackupStore {
 export class S3Store implements BackupStore {
   readonly kind = "s3" as const;
   readonly label: string;
-  private client: AwsClient;
   constructor(private cfg: { endpoint: string; bucket: string; accessKeyId: string; secretAccessKey: string; region: string; prefix?: string }) {
-    this.client = new AwsClient({ accessKeyId: cfg.accessKeyId, secretAccessKey: cfg.secretAccessKey, region: cfg.region || "auto", service: "s3" });
     this.label = "Private storage bucket (separate from the database)";
   }
   private url(key = "", query = "") {
     const base = this.cfg.endpoint.replace(/\/$/, "");
     return `${base}/${encodeURIComponent(this.cfg.bucket)}/${key ? `${this.cfg.prefix ?? "levelup-backups/"}${encodeURIComponent(key)}` : ""}${query}`;
   }
-  private async call(url: string, init: RequestInit = {}) {
-    const r = await this.client.fetch(url, init);
+  /**
+   * Sign with AWS SigV4, then send with a plain fetch and a byte array body, so Content-Length is always
+   * set. (Wrapping the body in a Request turns it into a stream sent without a length, which S3-compatible
+   * stores such as Railway Buckets reject with 411 Length Required.)
+   */
+  private async call(url: string, init: { method?: string; body?: Uint8Array; headers?: Record<string, string> } = {}) {
+    const signer = new AwsV4Signer({
+      url, method: init.method ?? "GET", headers: init.headers ?? {}, body: init.body,
+      accessKeyId: this.cfg.accessKeyId, secretAccessKey: this.cfg.secretAccessKey, region: this.cfg.region || "auto", service: "s3",
+    });
+    const signed = await signer.sign();
+    const headers = new Headers(signed.headers);
+    if (init.body) headers.set("content-length", String(init.body.byteLength));
+    const r = await fetch(signed.url.toString(), { method: signed.method, headers, body: init.body as BodyInit | undefined });
     if (!r.ok) throw new Error(`Backup storage request failed (${r.status}).`);
     return r;
   }
