@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
  * Fast gate: requests without a session cookie are sent to /login.
  * Real validation happens server-side (requireUser) on every page, action and API route.
  */
-const PUBLIC = ["/login", "/setup", "/api/auth/passkey/login", "/api/health", "/api/cron/tick", "/sw.js", "/manifest.webmanifest", "/icon.svg", "/apple-touch-icon.png", "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png"];
+const PUBLIC = ["/login", "/setup", "/api/auth/passkey/login", "/api/health", "/api/cron/tick", "/sw.js", "/manifest.webmanifest", "/icon.svg", "/apple-touch-icon.png", "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png", "/splash"];
 
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;

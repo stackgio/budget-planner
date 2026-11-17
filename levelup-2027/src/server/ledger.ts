@@ -141,8 +141,9 @@ export async function spin(ownerId: string, o: SpinOptions): Promise<{ planId: s
       if (o.depositId) {
         const bal = await depositBalance(tx, ownerId, o.depositId);
         if (bal.deposit.voidedAt) throw new UserError("This deposit was voided.");
-        const wantKind = o.kind === "OVERTIME_ROULETTE" ? "OVERTIME" : "REGULAR";
-        if (bal.deposit.kind !== wantKind) throw new UserError(o.kind === "OVERTIME_ROULETTE" ? "Overtime Roulette can only use an overtime deposit." : "The Extra Paycheck Planner can only use a regular paycheck deposit.");
+        // Roulette: overtime deposits, or a gig payout you explicitly chose to spin. Never regular pay.
+        const allowed: string[] = o.kind === "OVERTIME_ROULETTE" ? ["OVERTIME", "GIG"] : ["REGULAR"];
+        if (!allowed.includes(bal.deposit.kind)) throw new UserError(o.kind === "OVERTIME_ROULETTE" ? "Overtime Roulette can only use an overtime deposit or a gig payout you choose." : "The Extra Paycheck Planner can only use a regular paycheck deposit.");
         budgetCap = bal.availableCents;
       } else {
         if (o.kind !== "EXTRA_PAYCHECK" || !o.forecastMonth || !/^\d{4}-\d{2}$/.test(o.forecastMonth)) throw new UserError("Choose a confirmed deposit.");
@@ -301,8 +302,8 @@ export async function approvePlan(ownerId: string, planId: string, opts: { depos
       await lockDeposit(tx, depositId);
       const bal = await depositBalance(tx, ownerId, depositId, planId);
       if (bal.deposit.voidedAt) throw new UserError("That deposit was voided.");
-      const wantKind = plan.kind === "OVERTIME_ROULETTE" ? "OVERTIME" : "REGULAR";
-      if (bal.deposit.kind !== wantKind) throw new UserError(plan.kind === "OVERTIME_ROULETTE" ? "Overtime Roulette must be funded by an overtime deposit." : "Extra-paycheck plans must be funded by a regular paycheck deposit.");
+      const allowedKinds: string[] = plan.kind === "OVERTIME_ROULETTE" ? ["OVERTIME", "GIG"] : ["REGULAR"];
+      if (!allowedKinds.includes(bal.deposit.kind)) throw new UserError(plan.kind === "OVERTIME_ROULETTE" ? "Overtime Roulette must be funded by an overtime deposit." : "Extra-paycheck plans must be funded by a regular paycheck deposit.");
 
       const lines = plan.lines.filter((l) => l.status === "PLANNED");
       if (!lines.length) throw new UserError("This plan has nothing to approve.");
@@ -657,6 +658,7 @@ export async function ledgerOverview(ownerId: string, year?: number) {
   return {
     regularCents: sum((d) => d.kind === "REGULAR" && inYear(d.actualDepositDate)),
     overtimeCents: sum((d) => d.kind === "OVERTIME" && inYear(d.actualDepositDate)),
+    gigCents: sum((d) => d.kind === "GIG" && inYear(d.actualDepositDate)),
     totalIncomeCents: totalIncome,
     reservedCents: reserved,
     allocatedCompletedCents: completed,
@@ -691,6 +693,14 @@ export async function reconcile(ownerId: string, db: Db = prisma): Promise<Recon
     if ((t.status === "COMPLETED") !== (active.length === 1)) issues.push({ code: "TILE_STATUS_MISMATCH", detail: `Tile ${t.id} status ${t.status} with ${active.length} active payments` });
     if (active[0] && active[0].amountCents !== t.amountCents) issues.push({ code: "TILE_AMOUNT_MISMATCH", detail: `Tile ${t.id}` });
   }
+  // Gig: every GIG deposit has exactly one payout, both active or both voided; sessions marked paid point at an active payout.
+  const gigDeposits = await db.incomeDeposit.findMany({ where: { ownerId, kind: "GIG" }, include: { gigPayout: true } });
+  for (const d of gigDeposits) {
+    if (!d.gigPayout) issues.push({ code: "GIG_DEPOSIT_NO_PAYOUT", detail: `Gig deposit ${d.id} has no payout` });
+    else if (!!d.gigPayout.voidedAt !== !!d.voidedAt) issues.push({ code: "GIG_VOID_MISMATCH", detail: `Payout ${d.gigPayout.id}` });
+  }
+  const paidOnVoided = await db.gigSession.count({ where: { ownerId, status: "PAID", payout: { voidedAt: { not: null } } } });
+  if (paidOnVoided) issues.push({ code: "GIG_SESSION_ON_VOIDED_PAYOUT", detail: `${paidOnVoided} session(s)` });
   const payments = await db.payment.findMany({ where: { ownerId, reversalOfId: { not: null } }, include: { reversalOf: true } });
   for (const r of payments) if (!r.reversalOf || r.reversalOf.amountCents !== -r.amountCents || !r.reversalOf.reversedAt) issues.push({ code: "BAD_REVERSAL", detail: `Reversal ${r.id}` });
   return issues;

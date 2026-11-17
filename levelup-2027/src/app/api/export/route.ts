@@ -19,6 +19,7 @@ export async function GET() {
     goals, growthSettings, reminderPreferences, exercises, workoutTemplates, workouts, bodyMetrics, faithEntries, datePlans, dateIdeas, importantDates, relationshipNotes,
     alphabet, eduPrograms, eduCourses, tuition, careerProfile, careerCredentials, jobs, activityLogs, reviews,
     notificationPreferences, notifications, pushDevices, dailyReflections, assistantDismissals,
+    gigPlatforms, gigSettings, gigSessions, gigMileage, gigPayouts,
   ] = await Promise.all([
     prisma.userSettings.findUnique({ where: { userId: ownerId } }),
     prisma.calendarEvent.findMany({ ...o, include: { exceptions: true } }),
@@ -63,6 +64,11 @@ export async function GET() {
     prisma.pushSubscription.findMany({ ...o, select: { id: true, label: true, createdAt: true, lastSuccessAt: true, revokedAt: true } }),
     prisma.dailyReflection.findMany(o),
     prisma.assistantDismissal.findMany(o),
+    prisma.gigPlatform.findMany(o),
+    prisma.gigSettings.findUnique({ where: { ownerId } }),
+    prisma.gigSession.findMany({ ...o, orderBy: { workDate: "asc" } }),
+    prisma.gigMileage.findMany({ ...o, orderBy: { tripDate: "asc" } }),
+    prisma.gigPayout.findMany({ ...o, orderBy: { createdAt: "asc" } }),
   ]);
   const plain = <T extends Record<string, unknown>>(rows: T[], fields: [string, string][]) =>
     rows.map((r) => {
@@ -73,7 +79,7 @@ export async function GET() {
 
   const body = JSON.stringify(
     {
-      format: "levelup-2027-export", version: 4, exportedAt: new Date().toISOString(), moneyUnits: "integer cents", hoursUnits: "hundredths of an hour",
+      format: "levelup-2027-export", version: 5, mileageUnits: "hundredths of a mile", exportedAt: new Date().toISOString(), moneyUnits: "integer cents", hoursUnits: "hundredths of an hour",
       note: "Contains your private notes in plain text. Store this file securely.",
       account: { email: user.email, displayName: user.displayName },
       settings, events, modeSessions, tasks, habits, schedules, paydays, deposits, payRates, overtimeShifts, challenges, plans, payments, rothYears, rouletteSettings,
@@ -87,6 +93,7 @@ export async function GET() {
       activityLogs, reviews: plain(reviews, [["reflectionCipher", "reflection"]]),
       notificationPreferences, notifications: plain(notifications, [["detailCipher", "detail"]]), pushDevices,
       dailyReflections: plain(dailyReflections, [["bodyCipher", "body"], ["answersCipher", "answers"]]), assistantDismissals,
+      gig: { platforms: gigPlatforms, settings: gigSettings, workSessions: plain(gigSessions, [["notesCipher", "notes"]]), mileage: gigMileage, payouts: gigPayouts },
       assistantConversations: "not stored — questions and answers are never saved",
       auditLog,
     },

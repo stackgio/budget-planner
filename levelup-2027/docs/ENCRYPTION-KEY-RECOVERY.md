@@ -44,3 +44,7 @@ Last run: passed (see Phase 4 report).
 ## Not implemented on purpose
 
 No “forgot key” reset, no key escrow on a server, no weaker fallback key, no automatic rotation. Each would either break the encryption or risk silently losing your notes. Key rotation can be added later as an explicit, tested, re-encrypt-everything operation if you ever want it.
+
+## Backups (Phase 5)
+
+Encrypted database backups are covered in `BACKUP-AND-RESTORE.md`. They never contain this key. Keep the key and the backup passphrase as **two separate** password-manager entries. `npm run backup:drill` proves that a restored database decrypts with the right key and fails safely with a wrong or missing one.

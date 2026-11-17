@@ -2,7 +2,7 @@
   "name": "levelup-2027",
   "version": "0.1.0",
   "private": true,
-  "description": "LEVEL UP 2027 — private personal Life Operating System",
+  "description": "LEVEL UP 2027 \u2014 private personal Life Operating System",
   "scripts": {
     "dev": "next dev -p 3100",
     "build": "next build",
@@ -17,7 +17,13 @@
     "owner:create": "tsx --conditions=react-server scripts/create-owner.ts",
     "key:check": "tsx --conditions=react-server scripts/key-check.ts",
     "key:drill": "./scripts/key-recovery-drill.sh",
-    "worker": "tsx --conditions=react-server scripts/worker.ts"
+    "worker": "tsx --conditions=react-server scripts/worker.ts",
+    "backup:create": "tsx --conditions=react-server scripts/backup.ts create",
+    "backup:verify": "tsx --conditions=react-server scripts/backup.ts verify",
+    "backup:restore-test": "tsx --conditions=react-server scripts/backup.ts restore-test",
+    "backup:drill": "tsx --conditions=react-server scripts/backup-drill.ts",
+    "splash:generate": "tsx scripts/generate-splash.ts",
+    "perf:probe": "tsx --conditions=react-server scripts/perf-probe.ts"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.0.2",

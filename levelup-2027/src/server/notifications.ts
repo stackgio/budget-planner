@@ -13,7 +13,7 @@ import {
   ALL_CATEGORIES, BRIEFING_SECTIONS, DEFAULT_PREFS, decide, planDay, publicText,
   type Category, type DayFacts, type ModeRule, type Prefs, type Priority, type WorkMode,
 } from "@/domain/notify";
-import { type PushSender, defaultPushSender } from "./push";
+import { type PushSender, defaultPushSender, vapidPublicKey } from "./push";
 
 const TZ_DEFAULT = "America/New_York";
 const MAX_PUSH_ATTEMPTS = 3;
@@ -179,13 +179,20 @@ export async function runScheduler(opts: { now?: Date; worker?: string; push?: P
   }
 }
 
+const IN_FLIGHT = "in-flight";
+
 /** Push newly delivered notifications, plus bounded retries of earlier failed attempts. */
 async function pushDelivered(ids: string[], sender: PushSender, now: Date) {
   let sent = 0, failed = 0;
   if (!sender.enabled) return { sent, failed };
   const fresh = ids.length ? await prisma.notification.findMany({ where: { id: { in: ids } } }) : [];
   const retries = await prisma.pushDelivery.findMany({
-    where: { status: "FAILED", attempts: { lt: MAX_PUSH_ATTEMPTS }, notification: { status: "DELIVERED", expiresAt: { gt: now } }, subscription: { revokedAt: null } },
+    where: {
+      status: "FAILED", attempts: { lt: MAX_PUSH_ATTEMPTS }, notification: { status: "DELIVERED", expiresAt: { gt: now } }, subscription: { revokedAt: null },
+      // A send whose outcome is unknown (worker stopped mid-send) waits 10 minutes before a retry, which the
+      // device then collapses into the same notification via its tag. See docs: rare duplicate delivery.
+      OR: [{ lastError: { not: IN_FLIGHT } }, { updatedAt: { lt: new Date(now.getTime() - 10 * 60_000) } }],
+    },
     include: { notification: true, subscription: true }, take: 200,
   });
   const jobs: { n: (typeof fresh)[number]; subId: string; round: number }[] = [];
@@ -207,7 +214,7 @@ async function pushDelivered(ids: string[], sender: PushSender, now: Date) {
       }
     }
     if (delivery.status !== "FAILED" || delivery.attempts >= MAX_PUSH_ATTEMPTS) continue;
-    const claimed = await prisma.pushDelivery.updateMany({ where: { id: delivery.id, attempts: delivery.attempts, status: "FAILED" }, data: { attempts: { increment: 1 } } });
+    const claimed = await prisma.pushDelivery.updateMany({ where: { id: delivery.id, attempts: delivery.attempts, status: "FAILED" }, data: { attempts: { increment: 1 }, lastError: IN_FLIGHT } });
     if (!claimed.count) continue; // another worker is sending this one
     const sub = await prisma.pushSubscription.findUniqueOrThrow({ where: { id: j.subId } });
     const r = await sender.send({ endpoint: sub.endpoint, p256dh: sub.p256dh, auth: sub.auth }, { title: j.n.title, body: j.n.preview, url: j.n.href, tag: j.n.dedupeKey });
@@ -297,4 +304,47 @@ export async function saveSubscription(ownerId: string, s: { endpoint: string; p
 export async function removeSubscription(ownerId: string, idOrEndpoint: string) {
   const r = await prisma.pushSubscription.updateMany({ where: { ownerId, OR: [{ id: idOrEndpoint }, { endpoint: idOrEndpoint }], revokedAt: null }, data: { revokedAt: new Date() } });
   return r.count;
+}
+
+// ───────────────────────── Test & diagnostics (Phase 5) ─────────────────────────
+
+/**
+ * A simulated test: puts a test notification in your notification center and reports how many devices
+ * WOULD receive a push. It never calls a push service, even when push keys are configured.
+ */
+export async function sendSimulatedTest(ownerId: string, now = new Date()) {
+  const devices = await prisma.pushSubscription.count({ where: { ownerId, revokedAt: null } });
+  const n = await prisma.notification.create({
+    data: {
+      ownerId, kind: "TEST", category: "TEST", priority: "NORMAL", title: "LEVEL UP",
+      preview: "This is a test notification. In-app notifications are working.", href: "/settings/notifications",
+      dedupeKey: `test:${now.getTime()}:${Math.random().toString(36).slice(2, 8)}`, scheduledFor: now, expiresAt: new Date(now.getTime() + 3_600_000),
+      status: "DELIVERED", deliveredAt: now, reason: "simulated test — no push sent",
+    },
+  });
+  return { notificationId: n.id, devices, pushConfigured: !!vapidPublicKey(), pushSent: false as const };
+}
+
+export async function notificationDiagnostics(ownerId: string, now = new Date()) {
+  const since = new Date(now.getTime() - 7 * 86_400_000);
+  const [lastRun, lastError, subs, byStatus, recentFailures, inFlight] = await Promise.all([
+    prisma.schedulerRun.findFirst({ orderBy: { startedAt: "desc" } }),
+    prisma.schedulerRun.findFirst({ where: { error: { not: null } }, orderBy: { startedAt: "desc" } }),
+    prisma.pushSubscription.findMany({ where: { ownerId }, select: { id: true, label: true, createdAt: true, lastSuccessAt: true, revokedAt: true, failureCount: true } }),
+    prisma.notification.groupBy({ by: ["status"], where: { ownerId, createdAt: { gte: since } }, _count: true }),
+    prisma.pushDelivery.count({ where: { notification: { ownerId }, status: { in: ["FAILED", "GONE"] }, updatedAt: { gte: since } } }),
+    prisma.pushDelivery.count({ where: { notification: { ownerId }, lastError: IN_FLIGHT } }),
+  ]);
+  const minutesSinceRun = lastRun ? Math.floor((now.getTime() - lastRun.startedAt.getTime()) / 60_000) : null;
+  return {
+    pushConfigured: !!vapidPublicKey(),
+    worker: { lastRunAt: lastRun?.startedAt ?? null, finished: !!lastRun?.finishedAt, minutesSinceRun, healthy: minutesSinceRun !== null && minutesSinceRun <= 5, lastErrorAt: lastError?.startedAt ?? null },
+    devices: {
+      active: subs.filter((s) => !s.revokedAt).length, revoked: subs.filter((s) => s.revokedAt).length,
+      failing: subs.filter((s) => !s.revokedAt && s.failureCount > 0).length,
+      list: subs.filter((s) => !s.revokedAt).map((s) => ({ id: s.id, label: s.label, createdAt: s.createdAt, lastSuccessAt: s.lastSuccessAt, failureCount: s.failureCount })),
+    },
+    last7Days: Object.fromEntries(byStatus.map((b) => [b.status, b._count])) as Record<string, number>,
+    pushFailures7d: recentFailures, unknownOutcomeSends: inFlight,
+  };
 }

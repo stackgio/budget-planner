@@ -299,8 +299,10 @@ model IncomeDeposit {
   voidReason        String?
   createdAt         DateTime         @default(now()) @db.Timestamptz
   plans             AllocationPlan[]
+  gigPayout         GigPayout?
 
   @@index([ownerId, kind])
+  @@index([ownerId, actualDepositDate])
 }
 
 model PayRate {
@@ -1127,4 +1129,111 @@ model AssistantDismissal {
   createdAt DateTime @default(now()) @db.Timestamptz
 
   @@unique([ownerId, date, itemKey])
+}
+
+// ───────────────────────── Gig income (Phase 5) ─────────────────────────
+// Logged gig work is a record of effort and gross earnings. It is NEVER spendable money.
+// Only a confirmed GigPayout creates an IncomeDeposit (kind GIG) in the ledger.
+
+model GigPlatform {
+  id         String       @id @default(cuid())
+  ownerId    String
+  name       String
+  custom     Boolean      @default(false) // true for sources you added yourself
+  sortOrder  Int          @default(0)
+  archivedAt DateTime?    @db.Timestamptz
+  createdAt  DateTime     @default(now()) @db.Timestamptz
+  sessions   GigSession[]
+  payouts    GigPayout[]
+  mileage    GigMileage[]
+
+  @@unique([ownerId, name])
+}
+
+model GigSettings {
+  ownerId            String   @id
+  monthlyTargetCents Int      @default(50000) // gross-income target, editable
+  /// Planning estimate you choose (basis points of estimated profit). Null = not set. Never a tax calculation.
+  taxReserveBps      Int?
+  /// Your own vehicle cost per mile for planning, in thousandths of a dollar. Null = not set. Not a deduction rate.
+  costPerMileMills   Int?
+  updatedAt          DateTime @default(now()) @updatedAt @db.Timestamptz
+}
+
+enum GigPayStatus {
+  PENDING // earned, payout not confirmed yet
+  PAID // included in a confirmed payout
+  DISPUTED // you flagged a problem with the platform
+}
+
+model GigSession {
+  id                String       @id @default(cuid())
+  ownerId           String
+  platformId        String
+  platform          GigPlatform  @relation(fields: [platformId], references: [id], onDelete: Restrict)
+  workDate          DateTime     @db.Date
+  startAt           DateTime?    @db.Timestamptz
+  endAt             DateTime?    @db.Timestamptz
+  minutes           Int // actual recorded time worked
+  grossCents        Int // what the platform reported as earnings
+  tipsCents         Int          @default(0)
+  tipsInGross       Boolean      @default(true) // true = tips are already part of grossCents
+  bonusCents        Int          @default(0)
+  bonusInGross      Boolean      @default(true)
+  parkingTollsCents Int          @default(0)
+  otherExpenseCents Int          @default(0)
+  notesCipher       String?
+  status            GigPayStatus @default(PENDING)
+  payoutId          String?
+  payout            GigPayout?   @relation(fields: [payoutId], references: [id], onDelete: Restrict)
+  plannedEventId    String? // the planned calendar shift this session fulfils (optional)
+  version           Int          @default(1)
+  archivedAt        DateTime?    @db.Timestamptz // removed by you; kept as history
+  createdAt         DateTime     @default(now()) @db.Timestamptz
+  updatedAt         DateTime     @default(now()) @updatedAt @db.Timestamptz
+  mileage           GigMileage?
+
+  @@index([ownerId, workDate])
+  @@index([payoutId])
+}
+
+model GigMileage {
+  id                  String       @id @default(cuid())
+  ownerId             String
+  platformId          String?
+  platform            GigPlatform? @relation(fields: [platformId], references: [id], onDelete: Restrict)
+  tripDate            DateTime     @db.Date
+  milesHundredths     Int
+  purpose             String
+  odometerStartTenths Int?
+  odometerEndTenths   Int?
+  sessionId           String?      @unique
+  session             GigSession?  @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  notes               String?
+  archivedAt          DateTime?    @db.Timestamptz
+  createdAt           DateTime     @default(now()) @db.Timestamptz
+  updatedAt           DateTime     @default(now()) @updatedAt @db.Timestamptz
+
+  @@index([ownerId, tripDate])
+}
+
+/// A payout you confirmed actually reached your account. Exactly one ledger deposit (kind GIG) per payout.
+/// The amount lives only on the deposit, so it can never be counted twice.
+model GigPayout {
+  id             String        @id @default(cuid())
+  ownerId        String
+  platformId     String
+  platform       GigPlatform   @relation(fields: [platformId], references: [id], onDelete: Restrict)
+  depositId      String        @unique
+  deposit        IncomeDeposit @relation(fields: [depositId], references: [id], onDelete: Restrict)
+  externalRef    String? // optional payout ID from the platform, used for duplicate detection
+  notes          String?
+  idempotencyKey String        @unique
+  requestHash    String
+  voidedAt       DateTime?     @db.Timestamptz
+  voidReason     String?
+  createdAt      DateTime      @default(now()) @db.Timestamptz
+  sessions       GigSession[]
+
+  @@index([ownerId, createdAt])
 }

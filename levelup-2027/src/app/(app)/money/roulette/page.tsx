@@ -18,6 +18,7 @@ export default async function RoulettePage() {
   const settings = await getRouletteSettings(prisma, user.id, "OVERTIME_ROULETTE");
   const plans = await listPlans(user.id, { kind: "OVERTIME_ROULETTE" });
   const ready = deposits.filter((d) => d.availableCents > 0);
+  const gigReady = (await depositsWithBalance(user.id, "GIG")).filter((d) => d.availableCents > 0);
 
   return (
     <div className="space-y-4">
@@ -66,6 +67,22 @@ export default async function RoulettePage() {
           </Empty>
         )}
       </Section>
+
+      {gigReady.length > 0 && (
+        <Section title="Gig payouts (only if you choose)">
+          <p className="mb-3 text-xs text-mute-400">Gig money is never spun automatically. Open one only if you want Roulette to plan it.</p>
+          <ul className="space-y-2">
+            {gigReady.map((d) => (
+              <li key={d.id}>
+                <Link href={`/money/roulette/${d.id}`} className="flex items-center justify-between gap-3 rounded-2xl border border-ink-700 bg-ink-900 p-4">
+                  <span><span className="block font-semibold">Gig payout · {formatLocalDate(d.date, "weekday")}</span><span className="text-xs text-mute-400">{formatCents(d.netCents)} confirmed</span></span>
+                  <span className="text-right"><span className="block text-[10px] uppercase tracking-wider text-mute-400">Unallocated</span><MoneyFigure cents={d.availableCents} className="text-lg" /></span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
 
       <Section title="Plans">
         {plans.length ? (

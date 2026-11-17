@@ -17,7 +17,7 @@ const dollars = (c: number | null | undefined) => (c === null || c === undefined
 export default async function RouletteSpinPage({ params }: { params: Promise<{ depositId: string }> }) {
   const { user } = await appContext();
   const { depositId } = await params;
-  const dep = await prisma.incomeDeposit.findFirst({ where: { id: depositId, ownerId: user.id, kind: "OVERTIME" }, include: { payday: true } });
+  const dep = await prisma.incomeDeposit.findFirst({ where: { id: depositId, ownerId: user.id, kind: { in: ["OVERTIME", "GIG"] } }, include: { payday: true, gigPayout: { include: { platform: true } } } });
   if (!dep) notFound();
   const bal = await depositBalance(prisma, user.id, dep.id);
   const settings = await getRouletteSettings(prisma, user.id, "OVERTIME_ROULETTE");
@@ -49,7 +49,7 @@ export default async function RouletteSpinPage({ params }: { params: Promise<{ d
     <div className="space-y-4">
       <Link href="/money/roulette" className="btn-ghost btn-sm -ml-2"><ChevronLeft size={16} /> Roulette</Link>
       <header className="rounded-3xl border border-ink-700 bg-gradient-to-br from-ink-850 to-ink-900 p-5">
-        <p className="eyebrow">Overtime deposit · {formatLocalDate(bal.deposit.actualDepositDate.toISOString().slice(0, 10), "weekday")}</p>
+        <p className="eyebrow">{dep.kind === "GIG" ? `${dep.gigPayout?.platform.name ?? "Gig"} payout (you chose to spin it)` : "Overtime deposit"} · {formatLocalDate(bal.deposit.actualDepositDate.toISOString().slice(0, 10), "weekday")}</p>
         <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="text-xs text-mute-400">Unallocated</p>

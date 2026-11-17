@@ -1,4 +1,5 @@
 import "server-only";
+import { createHash } from "node:crypto";
 
 /**
  * Push delivery abstraction. LEVEL UP never needs a paid service for this:
@@ -19,6 +20,14 @@ export class NoopPushSender implements PushSender {
   }
 }
 
+/**
+ * Web Push "Topic": the push service keeps only the newest undelivered message per topic, so a retry of
+ * the same notification replaces a pending copy instead of queuing a second one. ≤32 URL-safe chars.
+ */
+export function pushTopic(tag: string): string {
+  return createHash("sha256").update(tag).digest("base64url").slice(0, 32);
+}
+
 export function vapidPublicKey(): string | null {
   return process.env.VAPID_PUBLIC_KEY || null;
 }
@@ -33,7 +42,7 @@ export class WebPushSender implements PushSender {
       await webpush.sendNotification(
         { endpoint: target.endpoint, keys: { p256dh: target.p256dh, auth: target.auth } },
         JSON.stringify(payload),
-        { vapidDetails: { subject: this.subject, publicKey: this.publicKey, privateKey: this.privateKey }, TTL: 60 * 60, urgency: "normal" },
+        { vapidDetails: { subject: this.subject, publicKey: this.publicKey, privateKey: this.privateKey }, TTL: 60 * 60, urgency: "normal", topic: pushTopic(payload.tag) },
       );
       return { ok: true };
     } catch (e) {

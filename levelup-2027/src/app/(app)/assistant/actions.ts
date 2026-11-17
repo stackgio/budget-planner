@@ -5,7 +5,7 @@ import { requireUser } from "@/server/auth";
 import { UserError } from "@/server/payroll";
 import { dismissSuggestion, saveDailyReflection, type Answer } from "@/server/assistant";
 import { activeProvider } from "@/server/assistant-provider";
-import { dismissNotification, markRead, savePrefs, snoozeNotification } from "@/server/notifications";
+import { dismissNotification, markRead, savePrefs, sendSimulatedTest, snoozeNotification } from "@/server/notifications";
 import { run, type ActionState } from "@/ui/actions";
 import { addDays, isLocalDate, isTime, todayLocal, zonedToInstant } from "@/domain/dates";
 import { ALL_CATEGORIES, BRIEFING_SECTIONS, type Category } from "@/domain/notify";
@@ -84,5 +84,15 @@ export async function prefsAction(_p: ActionState, fd: FormData): Promise<Action
     return "Saved. Changes apply to reminders not yet delivered.";
   });
   done();
+  return r;
+}
+
+export async function testNotificationAction(_p: ActionState, _fd: FormData): Promise<ActionState> {
+  const user = await requireUser();
+  const r = await run(async () => {
+    const t = await sendSimulatedTest(user.id);
+    return `Simulated test added to your notification center. ${t.devices ? `${t.devices} device${t.devices === 1 ? "" : "s"} would receive a push` : "No devices have push turned on"} — nothing was sent.`;
+  });
+  revalidatePath("/", "layout");
   return r;
 }

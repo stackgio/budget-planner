@@ -2,13 +2,15 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { appContext } from "@/server/context";
 import { prisma } from "@/server/db";
-import { getPrefs } from "@/server/notifications";
+import { getPrefs, notificationDiagnostics } from "@/server/notifications";
 import { ALL_CATEGORIES, BRIEFING_SECTIONS, CATEGORY_META } from "@/domain/notify";
 import { PageHeader, Section } from "@/ui/bits";
 import { ActionForm, Field, SubmitButton } from "@/ui/form";
 import { prefsAction } from "../../assistant/actions";
 import { routineAction } from "../actions";
 import { PushControls } from "./PushControls";
+import { DeviceDiagnostics } from "./DeviceDiagnostics";
+import { testNotificationAction } from "../../assistant/actions";
 
 const SECTION_LABEL: Record<string, string> = { shift: "DOC shift", mode: "Work mode", priorities: "Top 3 priorities", calendar: "Calendar", workouts: "Workouts", tasks: "Tasks due", paydays: "Paydays", transfers: "Transfers to confirm", goals: "Goals & deadlines" };
 
@@ -20,6 +22,8 @@ export default async function NotificationSettings() {
     prisma.pushSubscription.findMany({ where: { ownerId: user.id, revokedAt: null }, orderBy: { createdAt: "asc" } }),
   ]);
   const groups = ["Daily", "Financial", "Personal"] as const;
+  const diag = await notificationDiagnostics(user.id);
+  const ago = (d: Date | null) => (d ? d.toLocaleString("en-US", { timeZone: user.timezone, month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "Never");
 
   return (
     <div className="space-y-4">
@@ -94,6 +98,35 @@ export default async function NotificationSettings() {
           </ul>
         </details>
       </Section>
+
+      <Section title="Test">
+        <p className="mb-3 text-xs text-mute-400">Puts a test notification in your notification center and shows how many devices would get a push. It&apos;s simulated: no push is ever sent from this button.</p>
+        <ActionForm action={testNotificationAction}><SubmitButton className="btn-secondary btn-sm" pendingText="Sending…">Send a simulated test</SubmitButton></ActionForm>
+      </Section>
+
+      <section className="card" aria-labelledby="diag-h">
+        <h2 id="diag-h" className="eyebrow mb-3">Diagnostics</h2>
+        <dl className="divide-line text-sm">
+          <div className="flex justify-between gap-3 py-2"><dt className="text-mute-300">Push keys (VAPID)</dt><dd className={diag.pushConfigured ? "text-go" : "text-mute-400"}>{diag.pushConfigured ? "Configured" : "Not configured"}</dd></div>
+          <div className="flex justify-between gap-3 py-2"><dt className="text-mute-300">Reminder worker last ran</dt><dd className={diag.worker.healthy ? "text-go" : "text-warn"}>{ago(diag.worker.lastRunAt)}{diag.worker.minutesSinceRun !== null && !diag.worker.healthy ? " · not running now" : ""}</dd></div>
+          <div className="flex justify-between gap-3 py-2"><dt className="text-mute-300">Devices</dt><dd className="text-mute-300">{diag.devices.active} active{diag.devices.failing ? ` · ${diag.devices.failing} failing` : ""}{diag.devices.revoked ? ` · ${diag.devices.revoked} removed` : ""}</dd></div>
+          <div className="flex justify-between gap-3 py-2"><dt className="text-mute-300">Last 7 days</dt><dd className="text-right text-mute-300">{Object.keys(diag.last7Days).length ? Object.entries(diag.last7Days).map(([k, v]) => `${v} ${k.toLowerCase()}`).join(" · ") : "No notifications"}</dd></div>
+          <div className="flex justify-between gap-3 py-2"><dt className="text-mute-300">Push failures (7 days)</dt><dd className={diag.pushFailures7d ? "text-warn" : "text-mute-300"}>{diag.pushFailures7d}{diag.unknownOutcomeSends ? ` · ${diag.unknownOutcomeSends} unconfirmed` : ""}</dd></div>
+        </dl>
+        <h3 className="eyebrow mb-1 mt-5">This device</h3>
+        <DeviceDiagnostics />
+        <details className="mt-4 text-xs text-mute-400">
+          <summary className="cursor-pointer text-mute-300">Troubleshooting</summary>
+          <ul className="mt-2 list-disc space-y-1.5 pl-5">
+            <li><strong className="text-mute-300">Worker not running:</strong> reminders are created by <code>npm run worker</code> (locally) or the deployed worker. In-app items appear once it runs.</li>
+            <li><strong className="text-mute-300">Permission “denied”:</strong> iPhone Settings → Notifications → LEVEL UP → Allow. On desktop, use the site settings in the address bar.</li>
+            <li><strong className="text-mute-300">No subscription on iPhone:</strong> open LEVEL UP from the Home Screen icon (not Safari), then tap “Enable on this device”.</li>
+            <li><strong className="text-mute-300">Device shows failing:</strong> turn push off and on again on that device. Devices the push service reports as gone are removed automatically.</li>
+            <li><strong className="text-mute-300">Got the same alert twice:</strong> rare — if the worker stops mid-send it retries. Alerts share a tag, so iOS normally replaces the first copy instead of showing two.</li>
+            <li><strong className="text-mute-300">Nothing during quiet hours or a heavy work mode:</strong> that&apos;s by design; check the settings above.</li>
+          </ul>
+        </details>
+      </section>
     </div>
   );
 }

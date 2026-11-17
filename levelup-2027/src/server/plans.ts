@@ -71,7 +71,7 @@ export async function listPlans(ownerId: string, where: { kind?: PlanKind; depos
 }
 
 /** Confirmed deposits of a kind with what's still unallocated. */
-export async function depositsWithBalance(ownerId: string, kind: "OVERTIME" | "REGULAR") {
+export async function depositsWithBalance(ownerId: string, kind: "OVERTIME" | "REGULAR" | "GIG") {
   const ds = await prisma.incomeDeposit.findMany({ where: { ownerId, kind, voidedAt: null }, include: { payday: true }, orderBy: { actualDepositDate: "desc" } });
   return Promise.all(ds.map(async (d) => ({
     id: d.id, date: dateToLocal(d.actualDepositDate), official: d.payday ? dateToLocal(d.payday.officialDate) : null,

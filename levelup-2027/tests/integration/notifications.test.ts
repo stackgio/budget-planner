@@ -3,8 +3,8 @@ import { prisma } from "@/server/db";
 import { seedOwnerConfig } from "@/server/bootstrap";
 import { switchMode } from "@/server/modes";
 import { planDate } from "@/server/life";
-import { dismissNotification, getPrefs, listNotifications, markRead, removeSubscription, runScheduler, runSchedulerExclusive, saveSubscription, savePrefs, snoozeNotification, unreadCount } from "@/server/notifications";
-import { NoopPushSender, type PushResult, type PushSender, type PushTarget } from "@/server/push";
+import { dismissNotification, getPrefs, listNotifications, markRead, notificationDiagnostics, removeSubscription, runScheduler, runSchedulerExclusive, saveSubscription, savePrefs, sendSimulatedTest, snoozeNotification, unreadCount } from "@/server/notifications";
+import { NoopPushSender, pushTopic, type PushResult, type PushSender, type PushTarget } from "@/server/push";
 import { encrypt } from "@/server/crypto";
 import { zonedToInstant } from "@/domain/dates";
 import { freshOwner } from "./helpers";
@@ -206,5 +206,57 @@ describe("authorization", () => {
     await expect(saveSubscription(other, { endpoint: "https://push.example.test/sub/1", p256dh: "BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTpQtUbVlUls0VJXg7A8u", auth: "tBHItJI5svbpez7KI4CCXg" })).rejects.toThrow(/another account/);
     expect(await removeSubscription(other, "https://push.example.test/sub/1")).toBe(0);
     expect((await getPrefs(other)).quietStart).toBe("21:45");
+  });
+});
+
+describe("Phase 5: simulated test, diagnostics, duplicate mitigation", () => {
+  it("the simulated test lands in the notification center and never sends a push", async () => {
+    await sub(1); await sub(2);
+    const r = await sendSimulatedTest(ownerId);
+    expect(r).toMatchObject({ devices: 2, pushSent: false });
+    expect(await prisma.pushDelivery.count()).toBe(0);
+    expect((await listNotifications(ownerId)).some((n) => n.category === "TEST")).toBe(true);
+    // Even a later scheduler run with a live sender doesn't push the test item (it was never "newly delivered").
+    const push = new MockPush();
+    await runScheduler({ now: new Date(), push });
+    expect(push.sent.filter((x) => x.tag.startsWith("test:"))).toHaveLength(0);
+  });
+
+  it("diagnostics report worker health, devices and failures without secrets", async () => {
+    let d = await notificationDiagnostics(ownerId);
+    expect(d.pushConfigured).toBe(false);
+    expect(d.worker.lastRunAt).toBeNull();
+    await sub(1);
+    await runScheduler({ now: new Date(), push: new NoopPushSender() });
+    d = await notificationDiagnostics(ownerId);
+    expect(d.worker.healthy).toBe(true);
+    expect(d.devices.active).toBe(1);
+    expect(JSON.stringify(d)).not.toMatch(/endpoint|p256dh|auth"/);
+    expect(d.worker.healthy).toBe(true);
+    const stale = await notificationDiagnostics(ownerId, new Date(Date.now() + 30 * 60_000));
+    expect(stale.worker.healthy).toBe(false);
+  });
+
+  it("a send with unknown outcome is not retried for 10 minutes, then retried with the same tag", async () => {
+    await sub(1);
+    await runScheduler({ now: t("2027-01-12", "05:00"), push: new NoopPushSender() });
+    // Simulate a worker that crashed mid-send: claimed (in-flight) but never recorded.
+    await runScheduler({ now: t("2027-01-12", "06:01"), push: new NoopPushSender() });
+    const n = await byKey("briefing:2027-01-12");
+    const s1 = await prisma.pushSubscription.findFirstOrThrow({ where: { ownerId } });
+    await prisma.pushDelivery.create({ data: { notificationId: n.id, subscriptionId: s1.id, round: 0, status: "FAILED", attempts: 1, lastError: "in-flight" } });
+    await prisma.$executeRaw`UPDATE "PushDelivery" SET "updatedAt" = ${t("2027-01-12", "06:02")}`;
+    const push = new MockPush();
+    await runScheduler({ now: t("2027-01-12", "06:05"), push });
+    expect(push.sent).toHaveLength(0);
+    await runScheduler({ now: t("2027-01-12", "06:20"), push });
+    expect(push.sent).toHaveLength(1);
+    expect(push.sent[0]!.tag).toBe("briefing:2027-01-12"); // same tag → the device replaces, not duplicates
+  });
+
+  it("push topics are stable, short and URL-safe", () => {
+    expect(pushTopic("briefing:2027-01-12")).toBe(pushTopic("briefing:2027-01-12"));
+    expect(pushTopic("briefing:2027-01-12")).not.toBe(pushTopic("briefing:2027-01-13"));
+    expect(pushTopic("x")).toMatch(/^[A-Za-z0-9_-]{32}$/);
   });
 });

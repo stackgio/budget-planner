@@ -11,6 +11,7 @@ const TABS = [
   { href: "/money/roth", label: "Roth IRA" },
   { href: "/money/payroll", label: "Regular Payroll" },
   { href: "/money/overtime", label: "Overtime Payroll" },
+  { href: "/money/gig", label: "Gig Income" },
 ];
 
 export function MoneyTabs() {

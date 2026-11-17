@@ -37,7 +37,7 @@ test.describe.serial("Phase 2 — Money System", () => {
     await page.getByRole("button", { name: "Record deposit" }).first().click();
     await page.getByLabel("Net amount deposited").fill("612.40");
     await page.getByRole("button", { name: "Confirm deposit" }).click();
-    await expect(page.getByText("$612.40 on Mon, Nov 16").first()).toBeVisible();
+    await expect(page.getByText(/\$612\.40 on \w{3}, \w{3} \d{1,2}/).first()).toBeVisible(); // deposit date defaults to today
 
     await page.goto("/money/roulette");
     await page.getByRole("link", { name: /Overtime deposit/ }).first().click();

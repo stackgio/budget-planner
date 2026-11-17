@@ -1,11 +1,15 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { SPLASH_SCREENS, splashMedia } from "@/domain/splash";
 
 export const metadata: Metadata = {
   title: "LEVEL UP 2027",
   description: "Private personal Life Operating System",
   applicationName: "LEVEL UP",
-  appleWebApp: { capable: true, title: "LEVEL UP", statusBarStyle: "black-translucent" },
+  appleWebApp: {
+    capable: true, title: "LEVEL UP", statusBarStyle: "black-translucent",
+    startupImage: SPLASH_SCREENS.map((s) => ({ url: `/splash/${s.name}-portrait.png`, media: splashMedia(s) })),
+  },
   robots: { index: false, follow: false },
   icons: { icon: "/icon.svg", apple: "/apple-touch-icon.png" },
 };

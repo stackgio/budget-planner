@@ -6,3 +6,8 @@ next-env.d.ts
 test-results/
 playwright-report/
 /screenshots-tmp/
+
+# Backups are never committed (encrypted or not)
+/backups/
+*.lubk
+*.dump

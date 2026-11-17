@@ -86,6 +86,22 @@ Goals tab → Goals, Fitness, Faith, Relationship (incl. Alphabet Dating), Educa
 - **Encryption key:** `npm run key:check` (does this key match my data?) and `npm run key:drill` (recovery drill on temporary databases with synthetic data). See `docs/ENCRYPTION-KEY-RECOVERY.md`.
 - Deployment plan (not executed): `docs/DEPLOYMENT-PROPOSAL.md`.
 
+## Gig income, analytics & backups (Phase 5)
+
+- **Money → Gig Income:** log sessions (DoorDash, Veho, Instacart, Shipt, or your own sources), plan shifts (DOC-shift conflicts are blocked unless you override), track mileage, and confirm payouts.
+  - Logged work is **never** spendable money. Only a payout you confirm adds one gig deposit to the ledger.
+  - Gig deposits are not used by Roulette unless you open one there yourself.
+  - The tax reserve and cost per mile are your own planning settings. LEVEL UP never assumes a mileage rate or tells you what's deductible.
+  - CSV export for tax preparation is under Gig Income → Mileage & tax records.
+- **Analytics** (More → Analytics): week (Sat–Fri), month, quarter, year or a custom range, in your time zone. It shows confirmed income only; projected paydays are counted separately and labelled. Growth sections have no streaks or scores.
+- **Backups:**
+  - `npm run backup:create`, `backup:verify`, `backup:restore-test` and `backup:drill`. See `docs/BACKUP-AND-RESTORE.md`.
+  - Backups are encrypted with `BACKUP_PASSPHRASE` and never committed.
+  - Keep `DATA_ENCRYPTION_KEY` separately.
+- **Notifications:** Settings → Notifications has a simulated test (it never sends a push), diagnostics and troubleshooting. See `docs/NOTIFICATIONS-DEVICE-SETUP.md`.
+- **Integrations:** Settings → Integrations lists future options. None are connected.
+- **Docs:** `docs/SECURITY-REVIEW-PHASE-5.md`, `docs/DEPLOYMENT-READINESS.md` (proposal only) and `docs/PHASE-5-REPORT.md`.
+
 ## Data export
 
 Settings → **Export all data (JSON)** (`/api/export`, authenticated). Money is in integer cents, hours in hundredths.

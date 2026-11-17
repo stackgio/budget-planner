@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { BarChart3, Bot, CalendarDays, CheckSquare, Home, MoreHorizontal, Settings, Target, Wallet, X } from "lucide-react";
+import { BarChart3, Bot, LineChart, CalendarDays, CheckSquare, Home, MoreHorizontal, Settings, Target, Wallet, X } from "lucide-react";
 import { cn } from "@/ui/cn";
 
 const ITEMS = [
@@ -12,6 +12,7 @@ const ITEMS = [
   { href: "/assistant", label: "Assistant", icon: Bot },
   { href: "/money", label: "Money", icon: Wallet },
   { href: "/goals", label: "Goals", icon: Target },
+  { href: "/analytics", label: "Analytics", icon: LineChart },
   { href: "/reviews", label: "Reviews", icon: BarChart3 },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

@@ -1,3 +1,4 @@
+import { ConfirmAction } from "@/ui/ConfirmAction";
 import { Download, LogOut } from "lucide-react";
 import { appContext } from "@/server/context";
 import { prisma } from "@/server/db";
@@ -45,7 +46,7 @@ export default async function SettingsPage() {
             {passkeys.map((p) => (
               <li key={p.id} className="flex items-center justify-between gap-2 py-2 text-sm">
                 <span>{p.label} <span className="text-xs text-mute-400">· added {p.createdAt.toISOString().slice(0, 10)}{p.lastUsedAt ? ` · last used ${p.lastUsedAt.toISOString().slice(0, 10)}` : ""}{p.backedUp ? " · synced" : ""}</span></span>
-                <ActionForm action={deletePasskeyAction}><input type="hidden" name="id" value={p.id} /><SubmitButton className="btn-ghost btn-sm" pendingText="…">Remove</SubmitButton></ActionForm>
+                <ConfirmAction label="Remove" title="Remove this passkey?" action={deletePasskeyAction} fields={{ id: p.id }} confirmLabel="Remove passkey">You won&apos;t be able to sign in with {p.label} any more. Your password still works. This can&apos;t be undone — you&apos;d add the passkey again.</ConfirmAction>
               </li>
             ))}
           </ul>
@@ -57,6 +58,11 @@ export default async function SettingsPage() {
       <Section title="Notifications & assistant">
         <p className="mb-3 text-sm text-mute-300">Briefing times, quiet hours, work-mode behavior, reminder types, lock-screen privacy and push on this device.</p>
         <a href="/settings/notifications" className="btn-secondary btn-sm">Notification settings</a>
+      </Section>
+
+      <Section title="Integrations">
+        <p className="mb-3 text-sm text-mute-300">Optional connections such as Google Calendar. None are connected; each needs your approval and consent.</p>
+        <a href="/settings/integrations" className="btn-secondary btn-sm">View integrations</a>
       </Section>
 
       <Section title="Encryption key">

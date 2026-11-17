@@ -17,7 +17,7 @@ function Op({ id, op, label, className = "btn-ghost btn-sm" }: { id?: string; op
 export default async function NotificationsPage({ searchParams }: { searchParams: Promise<{ category?: string; history?: string }> }) {
   const { user, tz } = await appContext();
   const sp = await searchParams;
-  const category = sp.category && sp.category in CATEGORY_META ? sp.category : undefined;
+  const category = sp.category && (sp.category in CATEGORY_META || sp.category === "TEST") ? sp.category : undefined;
   const history = sp.history === "1";
   const [items, unread] = await Promise.all([listNotifications(user.id, { category, includeHistory: history }), unreadCount(user.id)]);
   const cats = [...new Set(items.map((n) => n.category))] as Category[];
@@ -30,7 +30,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
       </PageHeader>
       <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0" aria-label="Filter">
         <Link href={`/notifications${history ? "?history=1" : ""}`} aria-current={!category ? "page" : undefined} className={cn("inline-flex min-h-[36px] shrink-0 items-center rounded-full border px-3 text-[13px] font-semibold", !category ? "border-go bg-go/10 text-go" : "border-ink-700 text-mute-300")}>All{unread ? ` · ${unread} unread` : ""}</Link>
-        {cats.map((c) => <Link key={c} href={`/notifications?category=${c}${history ? "&history=1" : ""}`} aria-current={category === c ? "page" : undefined} className={cn("inline-flex min-h-[36px] shrink-0 items-center rounded-full border px-3 text-[13px] font-semibold", category === c ? "border-go bg-go/10 text-go" : "border-ink-700 text-mute-300")}>{CATEGORY_META[c].label}</Link>)}
+        {cats.map((c) => <Link key={c} href={`/notifications?category=${c}${history ? "&history=1" : ""}`} aria-current={category === c ? "page" : undefined} className={cn("inline-flex min-h-[36px] shrink-0 items-center rounded-full border px-3 text-[13px] font-semibold", category === c ? "border-go bg-go/10 text-go" : "border-ink-700 text-mute-300")}>{CATEGORY_META[c]?.label ?? ((c as string) === "TEST" ? "Test" : c)}</Link>)}
         <Link href={`/notifications?history=${history ? "0" : "1"}${category ? `&category=${category}` : ""}`} className="inline-flex min-h-[36px] shrink-0 items-center rounded-full border border-ink-700 px-3 text-[13px] text-mute-400">{history ? "Hide history" : "Show history"}</Link>
       </nav>
 

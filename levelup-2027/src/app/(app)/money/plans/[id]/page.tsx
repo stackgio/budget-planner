@@ -10,6 +10,7 @@ import { formatCents } from "@/domain/money";
 import { Dialog } from "@/ui/dialog";
 import { ActionForm, Field, SubmitButton } from "@/ui/form";
 import { IdemKey } from "@/ui/IdemKey";
+import { ConfirmAction } from "@/ui/ConfirmAction";
 import { cancelLineAction, cancelPlanAction, completeLineAction, reverseAction, rothLineTaxYearAction } from "../../ledger-actions";
 import { LineIcon, MoneyFigure, Progress, StatusPill, lineTitle } from "../../parts";
 
@@ -117,11 +118,12 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
       </ul>
 
       {waiting.length > 0 && (
-        <ActionForm action={cancelPlanAction} className="card">
-          <input type="hidden" name="planId" value={plan.id} />
-          <p className="mb-3 text-sm text-mute-300">Cancel the {waiting.length} remaining reservation{waiting.length > 1 ? "s" : ""}? {formatCents(plan.totals.reservedCents)} goes back to unallocated. Confirmed transfers stay.</p>
-          <SubmitButton className="btn-danger btn-sm">Cancel remaining</SubmitButton>
-        </ActionForm>
+        <section className="card">
+          <p className="mb-3 text-sm text-mute-300">{waiting.length} reservation{waiting.length > 1 ? "s" : ""} still waiting ({formatCents(plan.totals.reservedCents)}).</p>
+          <ConfirmAction label="Cancel remaining" triggerClassName="btn-danger btn-sm" title="Cancel the remaining reservations?" action={cancelPlanAction} fields={{ planId: plan.id }} confirmLabel="Cancel reservations">
+            {formatCents(plan.totals.reservedCents)} goes back to unallocated. Transfers you already confirmed stay exactly as they are.
+          </ConfirmAction>
+        </section>
       )}
     </div>
   );

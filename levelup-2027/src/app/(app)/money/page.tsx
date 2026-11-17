@@ -32,7 +32,7 @@ export default async function MoneyDashboard() {
   ]);
   const activity = [
     ...payments.map((p) => ({ at: p.createdAt, title: p.reversalOfId ? `Correction · ${KIND_LABEL[p.kind]}` : KIND_LABEL[p.kind]!, sub: `${formatLocalDate(dateToLocal(p.paidOn), "weekday")} · ${p.source === "HISTORICAL_IMPORT" ? "verified history" : p.source.toLowerCase().replace("_", " ")}`, cents: p.amountCents, tone: p.amountCents < 0 ? "bad" : "" })),
-    ...deposits.map((d) => ({ at: d.createdAt, title: `${d.kind === "REGULAR" ? "Regular" : d.kind === "OVERTIME" ? "Overtime" : "Other"} deposit${d.voidedAt ? " (voided)" : ""}`, sub: formatLocalDate(dateToLocal(d.actualDepositDate), "weekday"), cents: d.netCents, tone: d.voidedAt ? "mute" : "go" })),
+    ...deposits.map((d) => ({ at: d.createdAt, title: `${d.kind === "REGULAR" ? "Regular" : d.kind === "OVERTIME" ? "Overtime" : d.kind === "GIG" ? "Gig payout" : "Other"} deposit${d.voidedAt ? " (voided)" : ""}`, sub: formatLocalDate(dateToLocal(d.actualDepositDate), "weekday"), cents: d.netCents, tone: d.voidedAt ? "mute" : "go" })),
   ].sort((a, b) => b.at.getTime() - a.at.getTime()).slice(0, 8);
 
   return (
@@ -44,10 +44,11 @@ export default async function MoneyDashboard() {
         <p className="eyebrow">Confirmed money not yet allocated</p>
         <MoneyFigure cents={ov.availableCents} className="mt-1 block text-[44px] leading-none text-white" />
         <p className="mt-2 text-xs text-mute-400">From deposits you confirmed. Estimates and scheduled paydays are never included.</p>
-        <dl className="mt-5 grid grid-cols-3 gap-3 border-t border-ink-700 pt-4">
+        <dl className="mt-5 grid grid-cols-2 gap-3 border-t border-ink-700 pt-4 sm:grid-cols-4">
           <div><dt className="text-[11px] uppercase tracking-wider text-mute-400">Reserved</dt><dd className="num text-lg font-semibold">{formatCents(ov.reservedCents)}</dd><dd className="text-[11px] text-mute-400">approved, not paid</dd></div>
           <div><dt className="text-[11px] uppercase tracking-wider text-mute-400">Regular {year}</dt><dd className="num text-lg font-semibold">{formatCents(ov.regularCents)}</dd><dd className="text-[11px] text-mute-400">confirmed</dd></div>
           <div><dt className="text-[11px] uppercase tracking-wider text-mute-400">Overtime {year}</dt><dd className="num text-lg font-semibold">{formatCents(ov.overtimeCents)}</dd><dd className="text-[11px] text-mute-400">confirmed</dd></div>
+          <div><dt className="text-[11px] uppercase tracking-wider text-mute-400">Gig {year}</dt><dd className="num text-lg font-semibold">{formatCents(ov.gigCents)}</dd><dd className="text-[11px] text-mute-400">confirmed payouts</dd></div>
         </dl>
       </section>
 
