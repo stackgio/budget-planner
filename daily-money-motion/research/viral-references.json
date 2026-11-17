@@ -400,6 +400,35 @@
         "DMM-004"
       ],
       "our_post_performance": null
+    },
+    {
+      "id": "REF-0013",
+      "creator": "@rachelcruze",
+      "platform": "Instagram Reels",
+      "url": "https://www.instagram.com/reel/DcjLjmnPw_V/",
+      "published": "2026-08-27",
+      "researched": "2026-11-17",
+      "views": 186415,
+      "creator_median_views": null,
+      "outlier_multiple": null,
+      "followers": null,
+      "duration_sec": 20.5,
+      "topic": "$770 a month for a car payment, or invested for your future",
+      "evidence": {
+        "VERIFIED_COUNTS": "influencers-club via Firecrawl, 2026-11-17: 186,415 plays, 3,507 likes, 1,396 comments; duration 20.5 s.",
+        "VERIFIED_CAPTION": "'$770 a month for a car payment... or $770 a month invested for your future? … from age 25 to 65 … around $4.8 million.'",
+        "baseline": "No creator median available (vidIQ not used), so no outlier multiple is claimed.",
+        "VERIFIED_FRAME": "none",
+        "AI_DESCRIPTION": "none",
+        "ASSUMPTION": "Topic demand is also shown by @daveramsey reel DPWdAGBjwas (20,850 likes, 842 comments; plays not returned) on the same idea."
+      },
+      "how_studied": "Counts and caption only. We did not view the video.",
+      "reproducibility": "High for the idea (pure maths). The reel's own visuals and identity-driven delivery are unknown and were not used.",
+      "licensing": "Analysed only.",
+      "used_in": [
+        "DMM-005"
+      ],
+      "our_post_performance": null
     }
   ],
   "screened_not_selected": [

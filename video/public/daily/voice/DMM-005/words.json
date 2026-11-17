@@ -1,0 +1,163 @@
+{
+ "cache_key": "f59783e95dc643802800",
+ "voice_id": "xwJCF4OpyrvnHPQlIyZD",
+ "model_id": "eleven_multilingual_v2",
+ "text": "Everyone sees your car payment. Nobody sees what you invest. Seven hundred a month for ten years could grow to about a hundred twenty thousand. That's the part under the surface.",
+ "words": [
+  {
+   "text": "Everyone",
+   "start": 0.035,
+   "end": 0.476
+  },
+  {
+   "text": "sees",
+   "start": 0.511,
+   "end": 0.708
+  },
+  {
+   "text": "your",
+   "start": 0.743,
+   "end": 0.848
+  },
+  {
+   "text": "car",
+   "start": 0.906,
+   "end": 1.045
+  },
+  {
+   "text": "payment.",
+   "start": 1.103,
+   "end": 1.474
+  },
+  {
+   "text": "Nobody",
+   "start": 1.567,
+   "end": 1.95
+  },
+  {
+   "text": "sees",
+   "start": 2.009,
+   "end": 2.194
+  },
+  {
+   "text": "what",
+   "start": 2.229,
+   "end": 2.334
+  },
+  {
+   "text": "you",
+   "start": 2.368,
+   "end": 2.45
+  },
+  {
+   "text": "invest.",
+   "start": 2.508,
+   "end": 3.007
+  },
+  {
+   "text": "Seven",
+   "start": 3.123,
+   "end": 3.413
+  },
+  {
+   "text": "hundred",
+   "start": 3.448,
+   "end": 3.68
+  },
+  {
+   "text": "a",
+   "start": 3.715,
+   "end": 3.738
+  },
+  {
+   "text": "month",
+   "start": 3.796,
+   "end": 3.982
+  },
+  {
+   "text": "for",
+   "start": 4.017,
+   "end": 4.122
+  },
+  {
+   "text": "ten",
+   "start": 4.18,
+   "end": 4.354
+  },
+  {
+   "text": "years",
+   "start": 4.412,
+   "end": 4.656
+  },
+  {
+   "text": "could",
+   "start": 4.714,
+   "end": 4.853
+  },
+  {
+   "text": "grow",
+   "start": 4.876,
+   "end": 5.039
+  },
+  {
+   "text": "to",
+   "start": 5.085,
+   "end": 5.132
+  },
+  {
+   "text": "about",
+   "start": 5.201,
+   "end": 5.422
+  },
+  {
+   "text": "a",
+   "start": 5.457,
+   "end": 5.48
+  },
+  {
+   "text": "hundred",
+   "start": 5.538,
+   "end": 5.817
+  },
+  {
+   "text": "twenty",
+   "start": 5.851,
+   "end": 6.118
+  },
+  {
+   "text": "thousand.",
+   "start": 6.165,
+   "end": 6.676
+  },
+  {
+   "text": "That's",
+   "start": 6.722,
+   "end": 6.978
+  },
+  {
+   "text": "the",
+   "start": 7.024,
+   "end": 7.094
+  },
+  {
+   "text": "part",
+   "start": 7.129,
+   "end": 7.303
+  },
+  {
+   "text": "under",
+   "start": 7.338,
+   "end": 7.477
+  },
+  {
+   "text": "the",
+   "start": 7.523,
+   "end": 7.593
+  },
+  {
+   "text": "surface.",
+   "start": 7.628,
+   "end": 8.139
+  }
+ ]
+}

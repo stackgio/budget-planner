@@ -5,6 +5,7 @@ import {DMM001} from './episodes/dmm001/Episode';
 import {DMM002} from './episodes/dmm002/Episode';
 import {DMM003} from './episodes/dmm003/Episode';
 import {DMM004} from './episodes/dmm004/Episode';
+import {DMM005} from './episodes/dmm005/Episode';
 // @dmm-imports (add new episode imports above this line)
 
 /**
@@ -17,6 +18,7 @@ export const DailyCompositions: React.FC = () => (
 		<Composition id="DMM002" component={DMM002} width={dmm.width} height={dmm.height} fps={dmm.fps} durationInFrames={dmm.durationInFrames} defaultProps={{showSafeZones: false, audio: true}} />
 		<Composition id="DMM003" component={DMM003} width={dmm.width} height={dmm.height} fps={dmm.fps} durationInFrames={dmm.durationInFrames} defaultProps={{showSafeZones: false, audio: true}} />
 		<Composition id="DMM004" component={DMM004} width={dmm.width} height={dmm.height} fps={dmm.fps} durationInFrames={dmm.durationInFrames} defaultProps={{showSafeZones: false, audio: true}} />
+		<Composition id="DMM005" component={DMM005} width={dmm.width} height={dmm.height} fps={dmm.fps} durationInFrames={dmm.durationInFrames} defaultProps={{showSafeZones: false, audio: true}} />
 		{/* @dmm-compositions (add new episodes above this line) */}
 	</>
 );

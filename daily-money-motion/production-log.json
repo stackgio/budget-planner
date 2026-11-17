@@ -227,6 +227,49 @@
       "final_render": "video/renders/daily/DMM-004/DMM-004_v03.mp4",
       "cover": "daily-money-motion/episodes/DMM-004/cover.png",
       "qc_score": 8.75
+    },
+    {
+      "id": "DMM-005",
+      "date": "2026-11-17",
+      "composition": "DMM005",
+      "pillar": "building-wealth",
+      "topic": "What people see (a car payment) vs what builds wealth (money invested quietly)",
+      "status": "NEEDS_FIXING",
+      "history": [
+        {
+          "at": "2026-11-17T09:50:05.717Z",
+          "status": "RESEARCHING"
+        },
+        {
+          "at": "2026-11-17T09:53:22.060Z",
+          "status": "BUILDING",
+          "note": "iceberg concept; narration generated; still round 1"
+        },
+        {
+          "at": "2026-11-17T10:03:08.003Z",
+          "status": "NEEDS_FIXING",
+          "note": "creative score 8.8 < 9"
+        }
+      ],
+      "published": [],
+      "hook": "EVERYONE SEES YOUR CAR PAYMENT.",
+      "layout": "waterline-depth-reveal",
+      "metaphor": "iceberg: the visible tip carries the car payment; the invested money is the mass below the waterline",
+      "visual_tags": [
+        "iceberg",
+        "waterline",
+        "underwater",
+        "facets",
+        "car-icon"
+      ],
+      "engine": "B-narrated",
+      "hook_pattern": "seen vs unseen contrast + word-synced captions",
+      "reference_ids": [
+        "REF-0013"
+      ],
+      "final_render": "video/renders/daily/DMM-005/DMM-005_v03.mp4",
+      "cover": "daily-money-motion/episodes/DMM-005/cover.png",
+      "qc_score": 8.8
     }
   ]
 }

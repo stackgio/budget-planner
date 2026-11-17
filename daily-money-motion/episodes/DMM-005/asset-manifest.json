@@ -1,0 +1,11 @@
+{
+  "episode": "DMM-005",
+  "assets": [
+    {"asset": "video/public/daily/voice/DMM-005/voice.mp3", "type": "narration", "source": "ElevenLabs TTS (eleven_multilingual_v2), the creator's own saved voice 'Stack voice ' (xwJCF4OpyrvnHPQlIyZD), generated 2026-11-17; cache key f59783e95dc643802800. No voice was created or cloned.", "license": "Governed by the creator's ElevenLabs plan. CONFIRM the plan allows commercial use before posting.", "verified": false},
+    {"asset": "video/public/daily/audio/dmm005-sfx-v01.wav", "type": "sfx only (no music)", "source": "Synthesized by video/scripts/daily/make_dmm005_sfx.py from the episode timing", "license": "Original work owned by Stack With Gio", "verified": true},
+    {"asset": "@fontsource/inter", "type": "font", "license": "SIL Open Font License 1.1", "verified": true},
+    {"asset": "Iceberg, car icon, water, captions, stats", "type": "vector/motion", "source": "Drawn in code (video/src/daily/components/Iceberg.tsx, WordCaptions.tsx; episodes/dmm005/Episode.tsx). The car is a generic line drawing, no brand.", "license": "Original", "verified": true}
+  ],
+  "music": "none (creator adds music per platform)",
+  "third_party_footage": "none"
+}
