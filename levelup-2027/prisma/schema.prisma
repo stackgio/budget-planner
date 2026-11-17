@@ -1237,3 +1237,24 @@ model GigPayout {
 
   @@index([ownerId, createdAt])
 }
+
+// ───────────────────────── Automatic backups (pre-launch) ─────────────────────────
+
+/// One backup / restore-test / download event. Never stores passphrases, keys or file contents.
+model BackupRun {
+  id              String    @id @default(cuid())
+  kind            String // SCHEDULED | MANUAL | RESTORE_TEST | DOWNLOAD
+  localDate       DateTime  @db.Date // New York date the run belongs to (one scheduled backup per day)
+  status          String // RUNNING | SUCCEEDED | FAILED
+  objectKey       String?
+  bytes           Int?
+  tables          Int?
+  latestMigration String?
+  counts          Json? // row counts at backup time, compared during restore tests
+  error           String?
+  startedAt       DateTime  @default(now()) @db.Timestamptz
+  finishedAt      DateTime? @db.Timestamptz
+
+  @@index([kind, localDate])
+  @@index([startedAt])
+}

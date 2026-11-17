@@ -2,7 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { requireUser, hashPassword, passwordProblem, verifyPassword, createSession } from "@/server/auth";
+import { requireUser, hashPassword, passwordProblem, verifyPassword, createSession, beginAttempt, finishAttempt } from "@/server/auth";
 import { prisma } from "@/server/db";
 import { UserError } from "@/server/payroll";
 import { run, type ActionState } from "@/ui/actions";
@@ -13,7 +13,12 @@ export async function changePasswordAction(_p: ActionState, fd: FormData): Promi
   return run(async () => {
     const i = z.object({ current: z.string(), next: z.string(), confirm: z.string() }).parse(Object.fromEntries(fd));
     const u = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
-    if (!(await verifyPassword(u.passwordHash, i.current))) throw new UserError("Current password is incorrect.");
+    const key = `password-change:${user.id}`;
+    const attempt = await beginAttempt(key, { global: false });
+    if (attempt.blocked) throw new UserError("Too many attempts. Wait 15 minutes and try again.");
+    const currentOk = await verifyPassword(u.passwordHash, i.current);
+    await finishAttempt(attempt.id, key, currentOk);
+    if (!currentOk) throw new UserError("Current password is incorrect.");
     const problem = passwordProblem(i.next);
     if (problem) throw new UserError(problem);
     if (i.next !== i.confirm) throw new UserError("New passwords do not match.");

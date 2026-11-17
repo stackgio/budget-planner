@@ -53,6 +53,7 @@ export class WebPushSender implements PushSender {
 }
 
 export function defaultPushSender(): PushSender {
-  const pub = process.env.VAPID_PUBLIC_KEY, priv = process.env.VAPID_PRIVATE_KEY, subject = process.env.VAPID_SUBJECT;
+  // The subject identifies the sender to Apple/Google; the app's own HTTPS address is enough.
+  const pub = process.env.VAPID_PUBLIC_KEY, priv = process.env.VAPID_PRIVATE_KEY, subject = process.env.VAPID_SUBJECT || (process.env.APP_ORIGIN?.startsWith("https://") ? process.env.APP_ORIGIN : undefined);
   return pub && priv && subject ? new WebPushSender(subject, pub, priv) : new NoopPushSender();
 }

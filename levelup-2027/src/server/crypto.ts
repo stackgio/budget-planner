@@ -1,15 +1,35 @@
 import "server-only";
-import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
+import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from "node:crypto";
 
 /**
  * Application-level encryption for private free text (faith reflections, relationship notes,
  * review reflections, job notes). AES-256-GCM with a random 96-bit IV per value.
  * Format: "v1:<iv b64>:<tag b64>:<ciphertext b64>". Fails closed if the key is missing.
  */
+/**
+ * Two accepted formats (existing data keeps working, nothing is rotated):
+ *  - 32 random bytes, base64-encoded (openssl rand -base64 32) — used as-is;
+ *  - a random string of 40+ characters (e.g. Railway's ${{secret(64)}}, made on your phone) — turned into
+ *    a 32-byte key with scrypt. An unexpanded "${{…}}" template is rejected so a typo can't become a key.
+ */
+const derived = new Map<string, Buffer>();
+export function keyFromSecret(raw: string): Buffer | null {
+  if (!raw || raw.includes("${{")) return null;
+  const b = Buffer.from(raw, "base64");
+  if (b.length === 32 && /^[A-Za-z0-9+/]{43}=$/.test(raw)) return b;
+  if (raw.length < 40) return null;
+  let k = derived.get(raw);
+  if (!k) {
+    k = scryptSync(raw, "levelup-2027:data-encryption-key:v1", 32, { N: 1 << 15, r: 8, p: 1, maxmem: 64 * 1024 * 1024 });
+    derived.clear();
+    derived.set(raw, k);
+  }
+  return k;
+}
+
 function key(): Buffer {
-  const raw = process.env.DATA_ENCRYPTION_KEY ?? "";
-  const k = Buffer.from(raw, "base64");
-  if (k.length !== 32) throw new Error("DATA_ENCRYPTION_KEY must be 32 random bytes, base64-encoded (openssl rand -base64 32).");
+  const k = keyFromSecret(process.env.DATA_ENCRYPTION_KEY ?? "");
+  if (!k) throw new Error("DATA_ENCRYPTION_KEY must be 32 random bytes in base64, or a random string of at least 40 characters.");
   return k;
 }
 
@@ -50,7 +70,7 @@ const CHECK_PLAINTEXT = "levelup-2027:key-check:v1";
 export function keyFormatStatus(): "OK" | "MISSING" | "INVALID_FORMAT" {
   const raw = process.env.DATA_ENCRYPTION_KEY ?? "";
   if (!raw) return "MISSING";
-  return Buffer.from(raw, "base64").length === 32 ? "OK" : "INVALID_FORMAT";
+  return keyFromSecret(raw) ? "OK" : "INVALID_FORMAT";
 }
 
 /**

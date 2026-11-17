@@ -48,7 +48,7 @@ describe("Encrypted backups", () => {
     const file = path.join(dir, f!);
     const v = await verifyBackup(file, PASS);
     expect(v.tables).toBeGreaterThan(40);
-    expect(v.latestMigration).toBe("20261120000000_phase5_gig");
+    expect(v.latestMigration).toMatch(/^\d{14}_/); // the newest applied migration is recorded in the header
     await expect(verifyBackup(file, "wrong passphrase 123456")).rejects.toThrow(/wrong passphrase/);
     const raw = await readFile(file);
     const t = Buffer.from(raw); const at = t.length - 100; t.writeUInt8(t.readUInt8(at) ^ 1, at);

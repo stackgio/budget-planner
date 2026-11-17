@@ -33,6 +33,7 @@ export function readPassphrase(env: Record<string, string | undefined> = process
   return (async () => {
     let p = env.BACKUP_PASSPHRASE ?? "";
     if (!p && env.BACKUP_PASSPHRASE_FILE) p = (await readFile(env.BACKUP_PASSPHRASE_FILE, "utf8")).trim();
+    if (p.includes("${{")) throw new Error("BACKUP_PASSPHRASE looks like an unexpanded template. Set a real passphrase.");
     if (p.length < 16) throw new Error("Set BACKUP_PASSPHRASE (or BACKUP_PASSPHRASE_FILE) to a passphrase of at least 16 characters. It is never stored by LEVEL UP.");
     return p;
   })();
@@ -200,4 +201,11 @@ export async function applyRetention(dir: string, keepDaily: number, keepWeekly:
     if (s.isFile()) await rm(path.join(dir, n));
   }
   return { kept: keep.length, removed: remove };
+}
+
+/** Retention for any store (bucket or folder). Returns the names removed. */
+export async function applyRetentionTo(store: { list(): Promise<{ key: string }[]>; remove(key: string): Promise<void> }, keepDaily: number, keepWeekly: number) {
+  const { remove } = selectRetention((await store.list()).map((x) => x.key), keepDaily, keepWeekly);
+  for (const n of remove) await store.remove(n);
+  return remove;
 }

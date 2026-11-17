@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import "./globals.css";
 import { SPLASH_SCREENS, splashMedia } from "@/domain/splash";
 
@@ -21,7 +22,9 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Reading the request headers renders every page per request, so each one gets the CSP nonce.
+  await headers();
   return (
     <html lang="en" className="bg-ink-950">
       <body className="min-h-dvh bg-ink-950 font-sans text-white">{children}</body>

@@ -6,11 +6,15 @@
  */
 import { runSchedulerExclusive } from "../src/server/notifications";
 import { prisma } from "../src/server/db";
+import { pruneAuthRecords } from "../src/server/auth-maintenance";
+import { runScheduledBackup } from "../src/server/backup-service";
 
 const once = process.argv.includes("--once");
 let stopping = false;
-process.on("SIGINT", () => { stopping = true; });
-process.on("SIGTERM", () => { stopping = true; });
+let wake: (() => void) | null = null;
+const stop = () => { stopping = true; wake?.(); }; // finish the current tick, then exit promptly
+process.on("SIGINT", stop);
+process.on("SIGTERM", stop);
 
 async function tick() {
   try {
@@ -20,12 +24,19 @@ async function tick() {
   } catch (e) {
     console.error(new Date().toISOString(), "tick failed:", e instanceof Error ? e.name : "error");
   }
+  await pruneAuthRecords().catch(() => {}); // old login attempts + expired sessions
+  try {
+    const b = await runScheduledBackup();
+    if (b === "done") console.log(new Date().toISOString(), "daily encrypted backup saved and verified");
+  } catch (e) {
+    console.error(new Date().toISOString(), "daily backup failed (recorded; retried within the hour):", e instanceof Error ? e.name : "error");
+  }
 }
 
 async function main() {
   await tick();
   while (!once && !stopping) {
-    await new Promise((r) => setTimeout(r, 60_000));
+    await new Promise<void>((r) => { const t = setTimeout(r, 60_000); wake = () => { clearTimeout(t); r(); }; });
     if (!stopping) await tick();
   }
   await prisma.$disconnect();

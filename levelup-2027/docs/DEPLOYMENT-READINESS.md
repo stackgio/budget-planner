@@ -1,5 +1,7 @@
 # LEVEL UP 2027 — Deployment Readiness (proposal only — NOT executed)
 
+> **Superseded by `PRE-LAUNCH-REVIEW.md`.** That review has verified Railway prices (Hobby $5/month including $5 of usage), the hosting comparison, automatic backups, and the iPhone steps.
+
 Nothing has been deployed, provisioned or purchased. This document supersedes the Phase 4 `DEPLOYMENT-PROPOSAL.md` cost section.
 
 ## 1. Pricing — verified vs estimated

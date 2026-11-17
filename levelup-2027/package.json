@@ -2,7 +2,7 @@
   "name": "levelup-2027",
   "version": "0.1.0",
   "private": true,
-  "description": "LEVEL UP 2027 \u2014 private personal Life Operating System",
+  "description": "LEVEL UP 2027 — private personal Life Operating System",
   "scripts": {
     "dev": "next dev -p 3100",
     "build": "next build",
@@ -30,6 +30,7 @@
     "@prisma/client": "^6.19.3",
     "@simplewebauthn/browser": "^13.2.2",
     "@simplewebauthn/server": "^13.2.2",
+    "aws4fetch": "1.0.20",
     "clsx": "^2.1.1",
     "lucide-react": "^0.544.0",
     "next": "^16.4.6",

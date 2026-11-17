@@ -26,6 +26,11 @@ test.describe.serial("LEVEL UP 2027 — Phase 1", () => {
     expect((await request.get("/api/export", { maxRedirects: 0 })).status()).toBe(401);
     await page.goto("/calendar");
     await expect(page).toHaveURL(/\/setup$/);
+    // On-phone secret generator (values made in the browser, never sent to the server).
+    await page.getByText("First time? Generate your secrets").click();
+    await page.getByRole("button", { name: "Generate" }).click();
+    await expect(page.locator("[data-secret]")).toHaveCount(5);
+    expect((await page.locator('[data-secret="DATA_ENCRYPTION_KEY"]').textContent())!.length).toBe(64);
     await page.locator("input[name=token]").fill("wrong");
     await page.getByLabel("Your name").fill("Gio");
     await page.getByLabel("Email").fill(EMAIL);

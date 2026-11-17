@@ -60,6 +60,11 @@ export default async function SettingsPage() {
         <a href="/settings/notifications" className="btn-secondary btn-sm">Notification settings</a>
       </Section>
 
+      <Section title="Backups & recovery">
+        <p className="mb-3 text-sm text-mute-300">Automatic daily encrypted backups, saving a copy to your iPhone, restore tests, and how to keep your encryption key and backup passphrase safe.</p>
+        <a href="/settings/backups" className="btn-secondary btn-sm">Backups</a>
+      </Section>
+
       <Section title="Integrations">
         <p className="mb-3 text-sm text-mute-300">Optional connections such as Google Calendar. None are connected; each needs your approval and consent.</p>
         <a href="/settings/integrations" className="btn-secondary btn-sm">View integrations</a>

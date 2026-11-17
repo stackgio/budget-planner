@@ -31,8 +31,8 @@ Scope: the whole app, with emphasis on what Phase 5 added (gig income, payouts, 
 | 1 | Low | Concurrent first-time gig setup could race on a unique key (seen in E2E as a page error) | **Fixed**: race-free `createMany … skipDuplicates` |
 | 2 | Low | Removing a passkey and cancelling remaining reservations each happened on one tap | **Fixed**: confirmation sheets |
 | 3 | Low | No HSTS header | **Fixed** |
-| 4 | Medium (before launch) | No Content-Security-Policy. Next.js inline scripts need a nonce-based CSP | Open: add a nonce CSP in the deployment phase and test it on device |
-| 5 | Low | Login rate limiting is in-memory per process. Fine for one instance; it would not be shared across replicas | Open: keep 1 replica, or move the limiter to Postgres if scaling |
+| 4 | Medium (before launch) | No Content-Security-Policy | **Fixed in the pre-launch review**: nonce-based CSP, tested |
+| 5 | Low | ~~Login rate limiting is in-memory~~ **Correction (pre-launch review):** it was already database-backed. The real gaps were a spoofable client IP, parallel guesses, and a global lockout that could block the owner | **Fixed in the pre-launch review**, see PRE-LAUNCH-REVIEW.md §5 |
 | 6 | Low | Next.js prints server render errors to the server log (Prisma error text can include field names). No amounts or notes were observed | Accepted. Keep logs private (Railway logs are private to the project) |
 | 7 | Info | Backups are local until you copy them off the machine | Documented in BACKUP-AND-RESTORE.md. Automate after deployment approval |
 | 8 | Info | Push delivery is at-least-once per round. The new mitigations make duplicates rare and invisible on the device, but exactly-once can't be guaranteed through Apple/Google push services | Documented |

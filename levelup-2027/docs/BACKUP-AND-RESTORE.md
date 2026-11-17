@@ -64,3 +64,20 @@ Retention is set with `BACKUP_KEEP_DAILY` (default 14) and `BACKUP_KEEP_WEEKLY` 
 - **Daily** backup at about 03:30 ET.
 - **Restore test** monthly with `backup:restore-test`, plus after every migration.
 - **Off-machine copy:** weekly, kept in a different place from the server.
+
+## Automatic backups and iPhone tools (pre-launch review)
+
+- **Automatic daily backup:** the worker runs it at 3:30 AM New York time.
+  - It is encrypted and verified twice: once locally, and again by reading it back from storage.
+  - In production it is stored in a private **Railway bucket** (`BACKUP_S3_*` variables), separate from the database.
+  - Retention is 14 daily + 8 weekly copies. There is one scheduled backup per day even with several workers, enforced by a lock plus a unique index.
+- **Settings → Backups & recovery** shows:
+  - status: encryption key, passphrase set, storage, last backup, last restore test, and when you last saved a copy to your iPhone;
+  - buttons: **Back up now** and **Test restore**;
+  - **Save**, which downloads the encrypted file so you can store it in iCloud Drive.
+- **Disaster restore from the iPhone:**
+  1. On a new, empty installation, open the setup screen and choose **Restore from a backup**.
+  2. Enter the setup token and the backup passphrase.
+  3. Pick a file from iCloud Drive, or use the newest backup in the bucket.
+  4. It restores into a new `levelup_restore_…` database. Set `LEVELUP_DATABASE_NAME` to that name in Railway, then redeploy.
+- **Railway volume snapshots** (daily/weekly/monthly) are an extra layer. Turn them on in the Postgres service's Backups tab.

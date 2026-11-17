@@ -102,6 +102,21 @@ Goals tab → Goals, Fitness, Faith, Relationship (incl. Alphabet Dating), Educa
 - **Integrations:** Settings → Integrations lists future options. None are connected.
 - **Docs:** `docs/SECURITY-REVIEW-PHASE-5.md`, `docs/DEPLOYMENT-READINESS.md` (proposal only) and `docs/PHASE-5-REPORT.md`.
 
+## Pre-launch (hosting, security, backups)
+
+See `docs/PRE-LAUNCH-REVIEW.md` for the hosting comparison, verified costs, remaining risks, and the step-by-step iPhone setup.
+
+- **Production files:** `Dockerfile`, `railway.json` and `scripts/start.sh`. The start script runs migrations, then the web app and the worker together.
+- **New production variables:**
+  - `TRUSTED_PROXY_HOPS=1`
+  - `BACKUP_PASSPHRASE`
+  - `BACKUP_S3_*`
+  - `LEVELUP_DATABASE_NAME` (only after a disaster restore)
+- **Pre-launch security:**
+  - nonce-based Content-Security-Policy;
+  - database-backed login limiting with trusted-proxy IP parsing;
+  - `__Host-` session cookie over HTTPS.
+
 ## Data export
 
 Settings → **Export all data (JSON)** (`/api/export`, authenticated). Money is in integer cents, hours in hundredths.

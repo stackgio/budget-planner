@@ -8,6 +8,8 @@ import { prisma } from "./db";
 import { env } from "./env";
 
 export const SESSION_COOKIE = "lu_session";
+/** Over HTTPS the cookie uses the __Host- prefix: Secure, path=/, no Domain — no other subdomain can set or overwrite it. */
+export const sessionCookieName = () => (env.secureCookies ? `__Host-${SESSION_COOKIE}` : SESSION_COOKIE);
 const SESSION_DAYS = 30;
 const ARGON = { memoryCost: 19_456, timeCost: 2, parallelism: 1 } as const; // OWASP argon2id baseline
 
@@ -47,7 +49,7 @@ export async function createSession(userId: string, method: "password" | "passke
     data: { id: sha256(token), userId, expiresAt, method, userAgent: h.get("user-agent")?.slice(0, 200) },
   });
   const jar = await cookies();
-  jar.set(SESSION_COOKIE, token, {
+  jar.set(sessionCookieName(), token, {
     httpOnly: true,
     secure: env.secureCookies,
     sameSite: "lax",
@@ -58,9 +60,9 @@ export async function createSession(userId: string, method: "password" | "passke
 
 export async function destroySession() {
   const jar = await cookies();
-  const token = jar.get(SESSION_COOKIE)?.value;
+  const token = jar.get(sessionCookieName())?.value;
   if (token) await prisma.session.deleteMany({ where: { id: sha256(token) } });
-  jar.delete(SESSION_COOKIE);
+  jar.delete(sessionCookieName());
 }
 
 export interface CurrentUser {
@@ -74,7 +76,7 @@ export interface CurrentUser {
 /** Validates the session against the database. Cached per request. */
 export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const jar = await cookies();
-  const token = jar.get(SESSION_COOKIE)?.value;
+  const token = jar.get(sessionCookieName())?.value;
   if (!token) return null;
   const session = await prisma.session.findUnique({
     where: { id: sha256(token) },
@@ -96,29 +98,53 @@ export async function requireUser(): Promise<CurrentUser> {
   return u;
 }
 
-// ───────────── Brute-force protection ─────────────
+// ───────────── Brute-force protection (database-backed, shared by every instance) ─────────────
 
 const WINDOW_MS = 15 * 60_000;
-const PER_CLIENT_LIMIT = 5;
-const GLOBAL_LIMIT = 30;
+export const PER_CLIENT_LIMIT = 5;
+export const GLOBAL_LIMIT = 30;
+
+/**
+ * The client's IP as seen by the LAST trusted proxy. A client can put anything in X-Forwarded-For, so
+ * we never trust the leftmost value: with TRUSTED_PROXY_HOPS=1 (Railway's edge appends the real IP)
+ * we take the rightmost entry. With 0 hops (local), every request is "direct".
+ */
+export function clientKeyFrom(xff: string | null, hops: number): string {
+  if (!hops || hops < 1) return "direct";
+  const parts = (xff ?? "").split(",").map((p) => p.trim()).filter(Boolean);
+  const ip = parts[parts.length - hops];
+  return (ip && /^[0-9a-fA-F:.]{2,45}$/.test(ip) ? ip : "unknown").slice(0, 64);
+}
 
 export async function clientKey(): Promise<string> {
   const h = await headers();
-  return (h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "local").slice(0, 64);
+  return clientKeyFrom(h.get("x-forwarded-for"), Number(process.env.TRUSTED_PROXY_HOPS ?? 0));
 }
 
-export async function loginBlocked(key: string): Promise<boolean> {
+/**
+ * Atomically check the limits and reserve an attempt BEFORE verifying a password, so parallel guesses
+ * are all counted. The reservation is a failure until finishAttempt(id, true).
+ * `global: false` (passkeys) ignores the account-wide limit: a passkey can't be guessed, and this keeps
+ * Face ID working even while someone is hammering the password form.
+ */
+export async function beginAttempt(key: string, opts: { global: boolean } = { global: true }): Promise<{ blocked: true } | { blocked: false; id: string }> {
   const since = new Date(Date.now() - WINDOW_MS);
-  const [mine, all] = await Promise.all([
-    prisma.loginAttempt.count({ where: { key, success: false, createdAt: { gte: since } } }),
-    prisma.loginAttempt.count({ where: { success: false, createdAt: { gte: since } } }),
-  ]);
-  return mine >= PER_CLIENT_LIMIT || all >= GLOBAL_LIMIT;
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext('levelup:login-limit'))`;
+    const [mine, all] = await Promise.all([
+      tx.loginAttempt.count({ where: { key, success: false, createdAt: { gte: since } } }),
+      opts.global ? tx.loginAttempt.count({ where: { success: false, createdAt: { gte: since } } }) : Promise.resolve(0),
+    ]);
+    if (mine >= PER_CLIENT_LIMIT || all >= GLOBAL_LIMIT) return { blocked: true as const };
+    const a = await tx.loginAttempt.create({ data: { key, success: false } });
+    return { blocked: false as const, id: a.id };
+  });
 }
 
-export async function recordAttempt(key: string, success: boolean) {
-  await prisma.loginAttempt.create({ data: { key, success } });
-  if (success) await prisma.loginAttempt.deleteMany({ where: { key, success: false } });
+export async function finishAttempt(id: string, key: string, success: boolean) {
+  if (!success) return; // the reservation already counts as a failure
+  await prisma.loginAttempt.update({ where: { id }, data: { success: true } });
+  await prisma.loginAttempt.deleteMany({ where: { key, success: false } });
 }
 
 /** Same-origin check for JSON route handlers (server actions get this from Next.js). */

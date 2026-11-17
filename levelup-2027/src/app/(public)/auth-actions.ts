@@ -2,7 +2,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/server/db";
-import { clientKey, createSession, destroySession, hashPassword, loginBlocked, passwordProblem, recordAttempt, safeEqual, verifyPassword } from "@/server/auth";
+import { beginAttempt, clientKey, createSession, destroySession, finishAttempt, hashPassword, passwordProblem, safeEqual, verifyPassword } from "@/server/auth";
 import { createOwner } from "@/server/bootstrap";
 import { env } from "@/server/env";
 
@@ -14,12 +14,13 @@ const dummy = () => (dummyHash ??= hashPassword(crypto.randomUUID()));
 
 export async function loginAction(_prev: S, fd: FormData): Promise<S> {
   const key = await clientKey();
-  if (await loginBlocked(key)) return { error: "Too many attempts. Wait 15 minutes and try again." };
-  const email = String(fd.get("email") ?? "").toLowerCase().trim();
-  const password = String(fd.get("password") ?? "");
+  const attempt = await beginAttempt(key);
+  if (attempt.blocked) return { error: "Too many attempts. Wait 15 minutes, or sign in with Face ID." };
+  const email = String(fd.get("email") ?? "").toLowerCase().trim().slice(0, 254);
+  const password = String(fd.get("password") ?? "").slice(0, 256);
   const user = await prisma.user.findUnique({ where: { email } });
   const ok = await verifyPassword(user?.passwordHash ?? (await dummy()), password);
-  await recordAttempt(key, ok && !!user);
+  await finishAttempt(attempt.id, key, ok && !!user);
   if (!ok || !user) return { error: "Email or password is incorrect." };
   await createSession(user.id, "password");
   redirect("/");
@@ -37,13 +38,14 @@ export async function setupAction(_prev: S, fd: FormData): Promise<S> {
   const parsed = setupSchema.safeParse(Object.fromEntries(fd));
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
   const { token, email, name, password, confirm } = parsed.data;
-  const key = await clientKey();
-  if (await loginBlocked(key)) return { error: "Too many attempts. Wait 15 minutes and try again." };
+  // Once the owner exists, setup is closed for good — before the token is even checked.
+  if ((await prisma.user.count()) > 0) return { error: "LEVEL UP is already set up. Sign in instead." };
   if (!env.setupToken) return { error: "SETUP_TOKEN is not configured on the server." };
-  if (!safeEqual(token, env.setupToken)) {
-    await recordAttempt(key, false);
-    return { error: "Setup token is incorrect." };
-  }
+  const key = await clientKey();
+  const attempt = await beginAttempt(key);
+  if (attempt.blocked) return { error: "Too many attempts. Wait 15 minutes and try again." };
+  if (!safeEqual(token, env.setupToken)) return { error: "Setup token is incorrect." };
+  await finishAttempt(attempt.id, key, true);
   const problem = passwordProblem(password);
   if (problem) return { error: problem };
   if (password !== confirm) return { error: "Passwords do not match." };
@@ -51,7 +53,8 @@ export async function setupAction(_prev: S, fd: FormData): Promise<S> {
     const user = await createOwner(prisma, email, await hashPassword(password), name);
     await createSession(user.id, "password");
   } catch (e) {
-    return { error: e instanceof Error ? e.message : "Could not create the account." };
+    const msg = e instanceof Error && e.message.includes("single-user") ? "LEVEL UP is already set up. Sign in instead." : "Could not create the account.";
+    return { error: msg };
   }
   redirect("/");
 }
