@@ -77,6 +77,15 @@ LEVEL UP never moves money. Every "confirm" records a transfer you made yourself
 
 Goals tab → Goals, Fitness, Faith, Relationship (incl. Alphabet Dating), Education, Career, Growth. Reviews tab → weekly (Sat–Fri) and monthly reviews. Progress only moves from things you log or confirm. Sessions you schedule are checked against your DOC shifts; conflicts show free alternatives and nothing is moved for you.
 
+## Assistant, reminders & notifications (Phase 4)
+
+- **Assistant tab:** Morning briefing (6 AM), Check-in (5 PM), Evening reflection (9 PM), and **Ask** — a rule-based assistant that answers only from your records, labels projections, and never changes anything without a tap. Questions are not stored. No external AI is connected.
+- **Notification center** (bell in the header): unread/read, categories, priority, snooze, dismiss, history. Settings → Notifications: reminder types, briefing sections, quiet hours, work-mode rules, lock-screen detail (off by default).
+- **Reminder worker** (local, free): `npm run worker` (every 60 s) or `npm run worker -- --once`. Idempotent, DST-safe, respects quiet hours and work modes, and skips stale reminders instead of flooding.
+- **Push:** off until `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` / `VAPID_SUBJECT` are set. iPhone web push needs iOS 16.4+, HTTPS, and the app added to the Home Screen; it has **not** been tested on a real device yet.
+- **Encryption key:** `npm run key:check` (does this key match my data?) and `npm run key:drill` (recovery drill on temporary databases with synthetic data). See `docs/ENCRYPTION-KEY-RECOVERY.md`.
+- Deployment plan (not executed): `docs/DEPLOYMENT-PROPOSAL.md`.
+
 ## Data export
 
 Settings → **Export all data (JSON)** (`/api/export`, authenticated). Money is in integer cents, hours in hundredths.

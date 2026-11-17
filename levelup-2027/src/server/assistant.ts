@@ -18,7 +18,9 @@ import { inView } from "@/domain/tasks";
 // Everything here only READS stored records. Nothing is created, completed or moved by the assistant.
 
 async function dayOccurrences(ownerId: string, tz: string, day: LocalDate) {
-  return loadOccurrences(ownerId, tz, zonedToInstant(day, "00:00", tz), zonedToInstant(addDays(day, 1), "00:00", tz), { includePaydays: false, includeTasks: false });
+  const occ = await loadOccurrences(ownerId, tz, zonedToInstant(day, "00:00", tz), zonedToInstant(addDays(day, 1), "00:00", tz), { includePaydays: false, includeTasks: false });
+  // Ignore sub-minute records (e.g. an activation started and ended at once) — they aren't commitments.
+  return occ.filter((o) => o.allDay || o.end.getTime() - o.start.getTime() >= 60_000);
 }
 
 async function upcomingPaydays(ownerId: string, from: LocalDate, days: number) {
@@ -48,7 +50,7 @@ export async function morningBriefing(ownerId: string, tz: string, day: LocalDat
     dayOccurrences(ownerId, tz, day), currentMode(ownerId), loadTasks(ownerId), upcomingPaydays(ownerId, day, 7), waitingTransfers(ownerId),
     loadGoals(ownerId, day, { status: { in: ["ACTIVE", "NOT_STARTED"] } }),
   ]);
-  const shift = occ.find((o) => o.category === "DOC_SHIFT" || o.category === "OVERTIME_SHIFT" || o.category === "ACTIVATION");
+  const shift = occ.find((o) => o.category === "DOC_SHIFT") ?? occ.find((o) => o.category === "OVERTIME_SHIFT" || o.category === "ACTIVATION");
   const top = tasks.filter((t) => t.status === "OPEN" && t.isTopThree).slice(0, 3);
   const dueToday = tasks.filter((t) => inView(t, "today", day) && !t.isTopThree);
   return {
