@@ -44,12 +44,12 @@ export const CashStack: React.FC<{w?: number; count?: number; style?: React.CSSP
 );
 
 /** Wallet that opens (`open` 0..1) to reveal bills. */
-export const Wallet: React.FC<{w?: number; open?: number; bills?: number; style?: React.CSSProperties}> = ({w = 300, open = 0, bills = 3, style}) => {
+export const Wallet: React.FC<{w?: number; open?: number; bills?: number; billValue?: string; style?: React.CSSProperties}> = ({w = 300, open = 0, bills = 3, billValue, style}) => {
 	const h = w * 0.68;
 	return (
 		<div style={{position: 'absolute', width: w, height: h, transform: 'translate(-50%,-50%)', ...style}}>
 			{Array.from({length: bills}).map((_, i) => (
-				<Bill key={i} w={w * 0.8} rot={-4 + i * 4} style={{left: w * 0.5 + (i - 1) * 14, top: h * 0.42 - open * (60 + i * 18), opacity: open > 0.02 ? 1 : 0}} />
+				<Bill key={i} w={w * 0.8} value={billValue} rot={-4 + i * 4} style={{left: w * 0.5 + (i - 1) * 14, top: h * 0.42 - open * (60 + i * 18), opacity: open > 0.02 ? 1 : 0}} />
 			))}
 			<svg width={w} height={h} viewBox="0 0 300 204" style={{position: 'absolute', inset: 0, filter: 'drop-shadow(0 12px 18px rgba(0,0,0,0.25))'}}>
 				<rect x={4} y={40} width={292} height={160} rx={22} fill="#2A2522" />
