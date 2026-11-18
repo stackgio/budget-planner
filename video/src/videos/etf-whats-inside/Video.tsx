@@ -13,8 +13,8 @@ const DEF: VideoDef<Id> = {
 	tailSec: TAIL_SEC,
 	components: {main: MainScene},
 	looks: {main: cinematic},
-	// phrase-by-phrase, up to two lines, kept left of the platform buttons; green is reserved for the graphics
-	captionOptions: {maxChars: 26, maxWords: 6, fontSize: 56, left: 80, right: RIGHT_INSET, top: 1432, speaking: 'ink', keepAcronymPlural: true},
+	// short phrases, large, high contrast, fixed position, kept left of the platform buttons; green is reserved for the graphics
+	captionOptions: {maxChars: 18, maxWords: 4, fontSize: 70, left: 80, right: RIGHT_INSET, top: 1440, speaking: 'ink', upcomingAlpha: 0.72, shadow: true, keepAcronymPlural: true},
 };
 
 export const EtfWhatsInsideSchema = narratedSchema;

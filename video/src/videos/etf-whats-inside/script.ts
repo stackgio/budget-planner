@@ -10,9 +10,10 @@ export const META: VideoMeta = {
 	looks: ['cinematic'],
 	hookStyle: 'creator-point (this is X, this is Y, what is the difference?)',
 	signatureMoves: [
+		'WHAT\'S THE DIFFERENCE? above the cards on frame 0; baskets open in the first second',
 		'two equal ETF cards that light green only when named (point left / point right)',
 		'cards open into baskets that persist and refill for every fund',
-		'cards flip in place VOO→QQQM, SCHD→VGT',
+		'both cards flip together on "Now,": VOO/SCHD → QQQM/VGT',
 		'COSTCO tile pops between the baskets, then snaps into QQQM',
 		'2x2 takeaway grid of all four baskets',
 	],
@@ -45,5 +46,5 @@ export const SCRIPT: ScriptLine[] = [
 /** One continuous, transforming scene: the two baskets persist from the hook to the takeaway. */
 export const SCENES: SceneDef<'main'>[] = [{id: 'main', firstLine: 'L1'}];
 
-/** Seconds held after the last word — enough to read the 4-card takeaway. */
-export const TAIL_SEC = 2.2;
+/** Seconds held after the last word — a brief readable hold on the 4-card recap. */
+export const TAIL_SEC = 1.2;

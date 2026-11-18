@@ -82,6 +82,14 @@ export const MainScene: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const {cue} = useCues();
+	/** cue that may be absent from a re-recorded take: missing → never fires */
+	const opt = (line: string, word?: string | number, off = 0) => {
+		try {
+			return cue(line, word, off);
+		} catch {
+			return 1e9;
+		}
+	};
 	const S = (t: number, cfg: Parameters<typeof sp>[3] = 'snappy') => sp(frame, fps, t, cfg);
 
 	// ---- cues (all from the voiceover's word timestamps) -------------------
@@ -104,24 +112,26 @@ export const MainScene: React.FC = () => {
 	const tHistory = cue('L8', 'history', -0.05);
 	const tCash = cue('L9', 'cash', -0.1);
 	const tPay = cue('L9', 'pay', -0.05);
-	const tNow = cue('L10');
+	const tNow = cue('L10', 0, -0.12); // QQQM + VGT replace VOO + SCHD together on "Now,"
 	const tQQQM = cue('L10', 'QQQM');
 	const tVGT = cue('L11', 'VGT');
 	const tBoth = cue('L12');
 	const tLeanTech = cue('L12', 'tech', -0.12);
-	const tCostco = cue('L13', 'Costco', -0.08);
+	const tCostco = opt('L13', 'Costco', -0.08);
 	const tAns = cue('L14', 'QQQM', -0.05);
+	const tList = cue('L14', 'list', -0.05);
+	const tBigCo = cue('L14', 'big', -0.05);
 	const tNasdaq = cue('L14', 'Nasdaq', -0.05);
 	const tIncludes = cue('L15', 'includes', -0.05);
-	const tCostco2 = cue('L15', 'Costco', -0.05);
+	const tCostco2 = opt('L15', 'Costco', -0.05);
 	const tVGT2 = cue('L16', 'VGT', -0.1);
 	const tInfo = cue('L16', 'information', -0.05);
 	const tSoft = cue('L17', 'software', -0.12);
 	const tChips = cue('L17', 'computer', -0.12);
-	const tCostco3 = cue('L18', 'Costco', -0.05);
-	const tOut = cue('L18', 'out', -0.05);
+	const tCostco3 = opt('L18', 'Costco', -0.05);
+	const tOut = opt('L18', 'out', -0.05);
 	const tTwo = cue('L19');
-	const tEnd = cue('L20', undefined, -0.25);
+	const tEnd = cue('L20', 'difference', -0.1); // recap lands inside the final sentence
 
 	// ---- focus (green is reserved for the fund being explained) -----------
 	const level = (events: [number, number][]) => {
@@ -143,7 +153,7 @@ export const MainScene: React.FC = () => {
 		[tSCHD, 1],
 		[tWhat, 0],
 		[tSCHD2, 1],
-		[tNow, 0],
+		[tNow - 10, 0],
 		[tVGT - 3, 1],
 		[tBoth, 0],
 		[tVGT2, 1],
@@ -154,12 +164,14 @@ export const MainScene: React.FC = () => {
 	const punchR = pulse(tSCHD) + pulse(tSCHD2) + pulse(tVGT) + pulse(tVGT2);
 
 	// ---- card morphs -------------------------------------------------------
-	const basket = prog(frame, tBasket - 4, 16, E.inOut);
-	const flipL = prog(frame, tQQQM - 7, 14, E.inOut);
-	const flipR = prog(frame, tVGT - 7, 14, E.inOut);
-	const tickerL = flipL < 0.5 ? 'VOO' : 'QQQM';
-	const tickerR = flipR < 0.5 ? 'SCHD' : 'VGT';
-	const endP = prog(frame, tEnd, 20, E.inOut);
+	const basket = prog(frame, 10, 22, E.inOut); // opens in the first second
+	// one beat: both cards flip together, no QQQM/SCHD in-between state
+	const flip = prog(frame, tNow - 6, 12, E.inOut);
+	const flipL = flip;
+	const flipR = flip;
+	const tickerL = flip < 0.5 ? 'VOO' : 'QQQM';
+	const tickerR = flip < 0.5 ? 'SCHD' : 'VGT';
+	const endP = prog(frame, tEnd, 15, E.inOut);
 	const cardY = mix(CARD_Y, GRID_Y[1], endP);
 	const cardH = mix(CARD_H, GRID_H, endP);
 	const bTop = mix(BASKET_TOP, GRID_BASKET_TOP, endP);
@@ -215,12 +227,12 @@ export const MainScene: React.FC = () => {
 	};
 
 	// ---- left card contents -------------------------------------------------
-	const vooOut = prog(frame, tNow, 8, E.in);
+	const vooOut = prog(frame, tNow - 10, 8, E.in);
 	const fiveS = S(tFive, 'bouncy');
 	const leftContent = (
 		<>
 			{frame < tVOO2 + 2 && genericTiles(0)}
-			{frame < tNow + 10 && (
+			{frame < tNow && (
 				<>
 					<Txt y={174} size={34} ls={8} weight={800} color={P.body} o={prog(frame, tAbout, 5) * (1 - vooOut)}>
 						ABOUT
@@ -231,22 +243,25 @@ export const MainScene: React.FC = () => {
 					<Txt y={370} size={27} ls={1.5} weight={800} color={P.body} o={prog(frame, tBig, 5) * (1 - vooOut)}>
 						BIG U.S. COMPANIES
 					</Txt>
-					{drop(tTech, 0, 'TECH', tNow)}
-					{drop(tBank, 1, 'BANKING', tNow + 2)}
-					{drop(tHealth, 2, 'HEALTHCARE', tNow + 4)}
+					{drop(tTech, 0, 'TECH', tNow - 10)}
+					{drop(tBank, 1, 'BANKING', tNow - 9)}
+					{drop(tHealth, 2, 'HEALTHCARE', tNow - 8)}
 				</>
 			)}
 			{frame >= tNow && (
 				<>
 					{drop(tLeanTech, 0, 'TECH', 99999)}
-					<Txt y={176} size={50} ls={-1} o={prog(frame, tNasdaq, 5)} s={mix(0.8, 1, S(tNasdaq, 'bouncy'))}>
-						NASDAQ-100
+					<Txt y={170} size={116} ls={-4} o={Math.min(1, S(tList, 'bouncy') * 1.5)} s={mix(0.6, 1, S(tList, 'bouncy'))}>
+						{FACTS.nasdaq100.value}
 					</Txt>
-					<Txt y={248} size={28} ls={2} weight={800} color={P.body} o={prog(frame, tIncludes, 5)}>
-						TECH +
+					<Txt y={292} size={27} ls={1} weight={800} color={P.body} o={prog(frame, tBigCo, 5)}>
+						LARGE NONFINANCIAL
 					</Txt>
-					<Txt y={286} size={28} ls={1} weight={800} color={P.body} o={prog(frame, tIncludes + 4, 5)}>
-						OTHER INDUSTRIES
+					<Txt y={326} size={27} ls={1} weight={800} color={P.body} o={prog(frame, tNasdaq, 5)}>
+						NASDAQ-LISTED
+					</Txt>
+					<Txt y={360} size={27} ls={1} weight={800} color={P.body} o={prog(frame, tNasdaq + 4, 5)}>
+						COMPANIES
 					</Txt>
 				</>
 			)}
@@ -254,7 +269,7 @@ export const MainScene: React.FC = () => {
 	);
 
 	// ---- right card contents ------------------------------------------------
-	const schdOut = prog(frame, tNow, 8, E.in);
+	const schdOut = prog(frame, tNow - 10, 8, E.in);
 	const coS = S(tCash - 8, 'bouncy');
 	const ghostIn = S(tCostco3, 'snappy');
 	const strike = prog(frame, tOut, 6);
@@ -262,7 +277,7 @@ export const MainScene: React.FC = () => {
 	const rightContent = (
 		<>
 			{frame < tVOO2 + 2 && genericTiles(1)}
-			{frame < tNow + 10 && (
+			{frame < tNow && (
 				<>
 					{[0, 1].map((i) => (
 						<Txt key={i} y={174 + i * 62} size={60} ls={-2} o={prog(frame, tHistory + i * 3, 5) * (1 - schdOut)} s={mix(0.8, 1, S(tHistory + i * 3, 'bouncy'))}>
@@ -291,11 +306,15 @@ export const MainScene: React.FC = () => {
 			{frame >= tNow && (
 				<>
 					{drop(tLeanTech + 3, 0, 'TECH', 99999)}
-					{[0, 1].map((i) => (
-						<Txt key={i} y={176 + i * 64} size={60} ls={-2} o={prog(frame, tInfo + i * 3, 5)} s={mix(0.8, 1, S(tInfo + i * 3, 'bouncy'))}>
-							{i === 0 ? 'TECH' : 'SECTOR'}
-						</Txt>
-					))}
+					<Txt y={170} size={116} ls={-4} o={Math.min(1, S(tInfo - 4, 'bouncy') * 1.5)} s={mix(0.6, 1, S(tInfo - 4, 'bouncy'))}>
+						U.S.
+					</Txt>
+					<Txt y={309} size={27} ls={1} weight={800} color={P.body} o={prog(frame, tInfo, 5)}>
+						INFORMATION
+					</Txt>
+					<Txt y={343} size={27} ls={1} weight={800} color={P.body} o={prog(frame, tInfo + 5, 5)}>
+						TECHNOLOGY
+					</Txt>
 					{drop(tSoft, 1, 'SOFTWARE', 99999)}
 					{drop(tChips, 2, 'COMPUTER CHIPS', 99999, {fontSize: 29, accent: 0})}
 					{frame >= tCostco3 - 2 && (
@@ -303,16 +322,16 @@ export const MainScene: React.FC = () => {
 							style={{
 								position: 'absolute',
 								left: (CARD_W - 270) / 2,
-								top: 324,
+								top: 424,
 								width: 270,
-								height: 66,
+								height: 52,
 								opacity: Math.min(1, ghostIn * 1.4) * (1 - ghostOut),
 								transform: `translate(${shake(frame, tOut, 10, 10).x}px, ${ghostOut * 90}px) rotate(${ghostOut * 9}deg) scale(${mix(0.7, 1, ghostIn)})`,
 							}}
 						>
-							<StockTile x={0} y={0} w={270} h={66} tone="ghost" label="COSTCO" fontSize={32} palette={P} />
-							<svg width={270} height={66} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
-								<line x1={-10} y1={33} x2={-10 + 290 * strike} y2={33} stroke={P.ink} strokeWidth={6} strokeLinecap="round" />
+							<StockTile x={0} y={0} w={270} h={52} tone="ghost" label="COSTCO" fontSize={28} palette={P} />
+							<svg width={270} height={52} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
+								<line x1={-10} y1={26} x2={-10 + 290 * strike} y2={26} stroke={P.ink} strokeWidth={6} strokeLinecap="round" />
 							</svg>
 						</div>
 					)}
@@ -346,7 +365,7 @@ export const MainScene: React.FC = () => {
 
 	// SCHD: cash from the company to an investor icon (illustrative, no amounts)
 	const youX = COL_X[1] + CARD_W / 2;
-	const youY = 1196;
+	const youY = 1180;
 	const youIn = S(tCash, 'bouncy');
 	const youOut = schdOut;
 	const [compX, compY] = toStage(1, CARD_W / 2, 600, activeR, punchR);
@@ -364,7 +383,8 @@ export const MainScene: React.FC = () => {
 
 	// "WHAT'S THE DIFFERENCE?" directly below the cards, word by word
 	const qOut = prog(frame, tBasket - 6, 10, E.in);
-	const word = (t: number) => ({o: prog(frame, t, 4), s: mix(0.7, 1, S(t, 'bouncy'))});
+	const qPulse = pulse(tDiff, 16);
+	const word = (t: number) => ({o: 1, s: 1 + 0.06 * pulse(t, 12)});
 	const w1 = word(tWhat);
 	const w2 = word(tThe);
 	const w3 = word(tDiff);
@@ -417,7 +437,7 @@ export const MainScene: React.FC = () => {
 			<AbsoluteFill style={{background: `radial-gradient(ellipse 80% 45% at 50% 42%, ${P.bg2} 0%, ${P.bg} 70%)`}} />
 			<Camera keys={cam} shakeX={sh.x} shakeY={sh.y}>
 				{/* pointer */}
-				<svg width={60} height={40} style={{position: 'absolute', left: ptrX - 30, top: CARD_Y - 70 + ptrBob, opacity: ptrO}}>
+				<svg width={60} height={40} style={{position: 'absolute', left: ptrX - 30, top: CARD_Y - 58 + ptrBob, opacity: ptrO}}>
 					<path d="M6 6 L54 6 L30 34 Z" fill={P.accent} stroke={P.accent} strokeWidth={6} strokeLinejoin="round" />
 				</svg>
 
@@ -429,7 +449,7 @@ export const MainScene: React.FC = () => {
 							<BasketCard
 								key={`top${i}`}
 								x={COL_X[i]}
-								y={mix(-520, GRID_Y[0], p)}
+								y={mix(GRID_Y[0] - 140, GRID_Y[0], p)}
 								w={CARD_W}
 								h={GRID_H}
 								ticker={i === 0 ? 'VOO' : 'SCHD'}
@@ -438,7 +458,7 @@ export const MainScene: React.FC = () => {
 								basket={1}
 								active={0}
 								palette={P}
-								opacity={Math.min(1, p * 2)}
+								opacity={Math.min(1, p * 1.6)}
 							>
 								{endText(i)}
 							</BasketCard>
@@ -532,12 +552,12 @@ export const MainScene: React.FC = () => {
 
 				{/* question below the cards */}
 				{frame < tBasket + 6 && (
-					<div style={{position: 'absolute', left: COL_X[0] - 20, width: CARD_W * 2 + 84, top: 1196, textAlign: 'center', fontFamily: font, fontWeight: 900, color: P.ink, lineHeight: 1.02, opacity: 1 - qOut, transform: `translateY(${qOut * 40}px)`}}>
-						<div style={{fontSize: 78, letterSpacing: -2}}>
+					<div style={{position: 'absolute', left: COL_X[0] - 20, width: CARD_W * 2 + 84, top: 180, textAlign: 'center', fontFamily: font, fontWeight: 900, color: P.ink, lineHeight: 1.0, opacity: 1 - qOut, transform: `translateY(${-qOut * 40}px) scale(${1 + 0.03 * qPulse})`}}>
+						<div style={{fontSize: 74, letterSpacing: -2}}>
 							<span style={{display: 'inline-block', opacity: w1.o, transform: `scale(${w1.s})`}}>WHAT&apos;S</span>{' '}
 							<span style={{display: 'inline-block', opacity: w2.o, transform: `scale(${w2.s})`}}>THE</span>
 						</div>
-						<div style={{fontSize: 96, letterSpacing: -3, opacity: w3.o, transform: `scale(${w3.s})`}}>DIFFERENCE?</div>
+						<div style={{fontSize: 92, letterSpacing: -3, opacity: w3.o, transform: `scale(${w3.s})`}}>DIFFERENCE?</div>
 					</div>
 				)}
 
@@ -548,7 +568,7 @@ export const MainScene: React.FC = () => {
 							position: 'absolute',
 							left: COL_X[0] - 20,
 							width: CARD_W * 2 + 84,
-							top: 290,
+							top: 196,
 							textAlign: 'center',
 							fontFamily: font,
 							fontWeight: 900,
@@ -571,8 +591,7 @@ export const MainScene: React.FC = () => {
 			<Sfx at={tBasket} name="whoosh-soft" volume={0.18} />
 			<Sfx at={tStocks + 6} name="tick" volume={0.2} />
 			<Sfx at={tPay + 15} name="coin" volume={0.22} />
-			<Sfx at={tQQQM - 7} name="card" volume={0.22} />
-			<Sfx at={tVGT - 7} name="card" volume={0.22} />
+			<Sfx at={tNow - 6} name="card" volume={0.26} />
 			<Sfx at={tCostco} name="thud" volume={0.38} />
 			<Sfx at={tCostco + 1} name="pop" volume={0.3} />
 			<Sfx at={tAns + 6} name="click" volume={0.32} />

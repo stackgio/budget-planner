@@ -41,6 +41,10 @@ export type CaptionOptions = {
 	top?: number;
 	/** colour of the word being spoken (default: palette accent). Pass `'ink'` to reserve green for the graphics. */
 	speaking?: 'accent' | 'ink';
+	/** opacity of words not yet spoken on the current page (default 0.45). Raise for higher contrast. */
+	upcomingAlpha?: number;
+	/** soft dark shadow behind the words for legibility over graphics */
+	shadow?: boolean;
 	/** keep acronym plurals readable when uppercasing ("ETFs" stays "ETFs", not "ETFS") */
 	keepAcronymPlural?: boolean;
 };
@@ -95,11 +99,12 @@ export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number
 					<span
 						key={i}
 						style={{
-							color: speaking ? (opts.speaking === 'ink' ? pal.ink : pal.accent) : active ? pal.ink : pal.name === 'cinematic' ? 'rgba(245,242,234,0.45)' : 'rgba(18,19,22,0.35)',
+							color: speaking ? (opts.speaking === 'ink' ? pal.ink : pal.accent) : active ? pal.ink : pal.name === 'cinematic' ? `rgba(245,242,234,${opts.upcomingAlpha ?? 0.45})` : `rgba(18,19,22,${opts.upcomingAlpha ?? 0.35})`,
 							transform: `scale(${speaking ? 1.06 : 1})`,
 							display: 'inline-block',
 							transformOrigin: '50% 60%',
 							textTransform: f.upper ? 'uppercase' : 'none',
+							textShadow: opts.shadow ? '0 3px 14px rgba(0,0,0,0.85)' : undefined,
 						}}
 					>
 						{f.text}

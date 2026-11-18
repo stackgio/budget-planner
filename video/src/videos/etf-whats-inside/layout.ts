@@ -5,8 +5,8 @@ export const GAP = 44;
 export const CARD_W = (1080 - LEFT - RIGHT_INSET - GAP) / 2; // 408
 export const COL_X = [LEFT, LEFT + CARD_W + GAP] as const; // 80, 532
 export const MID_X = LEFT + CARD_W + GAP / 2; // 510
-export const CARD_Y = 390;
-export const CARD_H = 780;
+export const CARD_Y = 420;
+export const CARD_H = 740;
 export const BASKET_TOP = 420;
 /** tile slots inside a big basket, bottom-up */
 export const TILE_W = 320;
