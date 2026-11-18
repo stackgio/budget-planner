@@ -51,6 +51,22 @@ test.describe.serial("Pre-launch: backups & recovery on iPhone", () => {
     await anon.close();
   });
 
+  test("challenges: record tiles paid from a regular paycheck; they're marked done", async ({ page }) => {
+    await login(page);
+    await page.goto("/money/challenges");
+    await page.getByRole("button", { name: "I paid tiles myself" }).first().click();
+    const d = page.locator("dialog[open]").last();
+    const tiles = d.getByRole("list", { name: "Open tiles" }).getByRole("button");
+    await tiles.nth(0).click();
+    await tiles.nth(1).click();
+    await expect(d.locator("p[role=status]")).toContainText("2 ·");
+    await d.getByLabel("Note (optional)").fill("from regular paycheck");
+    await d.getByRole("button", { name: /Record 2 as paid/ }).click();
+    await expect(page.getByText(/Recorded 2 as paid .* Roulette will skip them\./)).toBeVisible();
+    if (SHOTS) await page.screenshot({ path: `${SHOTS}/61-tiles-paid.png`, fullPage: false, animations: "disabled" });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  });
+
   test("Home Screen app: manifest, icon, full-screen, splash", async ({ page, request }) => {
     const m = await (await request.get("/manifest.webmanifest")).json();
     expect(m).toMatchObject({ display: "standalone", start_url: "/" });

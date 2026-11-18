@@ -157,7 +157,7 @@ test.describe.serial("LEVEL UP 2027 — Phase 1", () => {
     await page.getByLabel(/Hours at 1.5× rate/).fill("8");
     await expect(page.getByText("$290.40")).toBeVisible();
     await page.getByRole("button", { name: "Log shift" }).click();
-    await page.keyboard.press("Escape");
+    await expect(page.locator("dialog[open]")).toHaveCount(0, { timeout: 15_000 }); // the form closes itself once saved
     await page.reload();
     await expect(page.getByText(/8 h OT · est. gross \$290.40/)).toBeVisible();
     await shot(page, "10-overtime");

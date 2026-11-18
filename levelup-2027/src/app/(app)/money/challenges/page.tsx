@@ -9,8 +9,9 @@ import { ActionForm, Field, SubmitButton } from "@/ui/form";
 import { Dialog } from "@/ui/dialog";
 import { IdemKey } from "@/ui/IdemKey";
 import { schdNextDayAction } from "../actions";
-import { manualPaymentAction, reverseAction } from "../ledger-actions";
+import { reverseAction } from "../ledger-actions";
 import { Progress, TileGrid } from "../parts";
+import { TilesPaidForm } from "./TilesPaidForm";
 
 export default async function ChallengesPage() {
   const { user, today } = await appContext();
@@ -23,22 +24,10 @@ export default async function ChallengesPage() {
 
   const recordForm = (kind: "MOVING_OUT" | "SCHD" | "DEBT", label: string) => {
     const c = by[kind]!;
-    const open = c.tiles.filter((t) => t.status !== "COMPLETED" && !t.reserved && (kind !== "SCHD" || t.number >= (c.nextNumber ?? 1)));
+    const open = c.tiles.filter((t) => t.status === "OPEN" && !t.reserved && (kind !== "SCHD" || t.number >= (c.nextNumber ?? 1)));
     return (
-      <Dialog title={`Record a ${label} transfer`} trigger="Record transfer made outside Roulette" triggerClassName="btn-ghost btn-sm">
-        <ActionForm action={manualPaymentAction} className="space-y-4">
-          <input type="hidden" name="kind" value="TILE" /><IdemKey />
-          <p className="text-sm text-mute-300">Only record a transfer you actually made. The tile completes at its exact amount.</p>
-          <Field label={kind === "SCHD" ? "Day" : "Tile"}>
-            <select className="input" name="tileId" required defaultValue="">
-              <option value="" disabled>Choose…</option>
-              {(kind === "SCHD" ? open.slice(0, 1) : [...open].reverse()).map((t) => <option key={t.id} value={t.id}>#{t.number} · {formatCents(t.amountCents)}</option>)}
-            </select>
-          </Field>
-          <Field label="Date"><input className="input" type="date" name="date" defaultValue={today} max={today} required /></Field>
-          <Field label="Note (optional)"><input className="input" name="note" maxLength={300} /></Field>
-          <SubmitButton className="btn-primary w-full">Record transfer</SubmitButton>
-        </ActionForm>
+      <Dialog title={`${label}: paid outside Roulette`} trigger="I paid tiles myself" triggerClassName="btn-secondary btn-sm">
+        {open.length ? <TilesPaidForm tiles={open.map((t) => ({ id: t.id, number: t.number, amountCents: t.amountCents }))} sequential={kind === "SCHD"} today={today} unit={kind === "SCHD" ? "Day" : "Tile"} /> : <p className="text-sm text-mute-300">No open {kind === "SCHD" ? "days" : "tiles"} left.</p>}
       </Dialog>
     );
   };

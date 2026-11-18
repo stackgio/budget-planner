@@ -533,12 +533,72 @@ export async function recordManualPayment(ownerId: string, i: ManualPaymentInput
       const payment = await tx.payment.create({
         data: { ownerId, kind, source: "MANUAL", tileId, amountCents: amount, paidOn: localToDbDate(i.paidOn), taxYear, label: i.label || null, note: i.note || null, idempotencyKey: i.idempotencyKey, requestHash: hash },
       });
-      if (tileId) await tx.challengeTile.update({ where: { id: tileId }, data: { status: "COMPLETED" } });
+      if (tileId) {
+        await tx.challengeTile.update({ where: { id: tileId }, data: { status: "COMPLETED" } });
+        // A not-yet-approved Roulette proposal that picked this tile drops it, so it's never offered twice.
+        await tx.allocationLine.deleteMany({ where: { tileId, status: "PLANNED" } });
+      }
       await audit(tx, ownerId, "Payment", payment.id, "manual", undefined, payment);
       return payment;
     }, TX_OPTS);
   } catch (e) {
     if (isUniqueViolation(e)) throw new UserError("That tile was just completed or this record already exists.");
+    throw e;
+  }
+}
+
+/**
+ * "I paid these from my paycheck": record several challenge tiles you already transferred yourself, in one
+ * all-or-nothing step. Each tile completes at its exact amount, so Roulette never proposes it again, and any
+ * not-yet-approved proposal that had picked it drops it. SCHD must be the next days in order.
+ */
+export async function recordTilesPaidOutside(ownerId: string, i: { tileIds: string[]; paidOn: LocalDate; note?: string | null; idempotencyKey: string }) {
+  if (!IDEMPOTENCY_KEY_RE.test(i.idempotencyKey)) throw new UserError("Missing request key. Refresh and try again.");
+  const ids = [...new Set(i.tileIds)];
+  if (!ids.length) throw new UserError("Choose at least one tile.");
+  if (ids.length > 60) throw new UserError("Record at most 60 tiles at a time.");
+  const hash = requestHash({ op: "tiles-outside", ownerId, ids: [...ids].sort(), paidOn: i.paidOn, note: i.note || null });
+  const key = (n: number) => `${i.idempotencyKey}-${n}`.slice(0, 80);
+  const prior = await prisma.payment.findMany({ where: { idempotencyKey: { startsWith: `${i.idempotencyKey}-` } } });
+  if (prior.length) {
+    if (prior.some((p) => p.ownerId !== ownerId || p.requestHash !== hash)) throw new UserError("This record was already used for different data.");
+    return { recorded: prior.length, totalCents: prior.reduce((a, p) => a + p.amountCents, 0), replay: true };
+  }
+  try {
+    return await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "ChallengeTile" WHERE id IN (${Prisma.join(ids)}) FOR UPDATE`;
+      const tiles = await tx.challengeTile.findMany({ where: { id: { in: ids }, challenge: { ownerId } }, include: { challenge: true, lines: { where: { status: { in: ["RESERVED", "COMPLETED"] } } } }, orderBy: { number: "asc" } });
+      if (tiles.length !== ids.length) throw new UserError("Some tiles weren't found.");
+      const kinds = new Set(tiles.map((t) => t.challenge.kind));
+      if (kinds.size > 1) throw new UserError("Record one challenge at a time.");
+      const ch = tiles[0]!.challenge;
+      if (ch.status === "SETUP_REQUIRED") throw new UserError("Finish setting up this challenge first.");
+      for (const t of tiles) {
+        if (t.status === "COMPLETED") throw new UserError(`#${t.number} is already completed.`);
+        if (t.lines.length) throw new UserError(`#${t.number} is reserved in an approved plan. Confirm it there instead.`);
+      }
+      if (ch.kind === "SCHD") {
+        const nextOpen = await tx.challengeTile.findMany({
+          where: { challengeId: ch.id, status: "OPEN", lines: { none: { status: { in: ["RESERVED", "COMPLETED"] } } } },
+          orderBy: { number: "asc" }, take: tiles.length, select: { id: true },
+        });
+        if (nextOpen.map((t) => t.id).join() !== tiles.map((t) => t.id).join()) throw new UserError("SCHD days must be the next days in order.");
+      }
+      const kind = TARGET_TO_PAYMENT[TARGET_FOR_CHALLENGE[ch.kind]];
+      let total = 0;
+      for (const [n, t] of tiles.entries()) {
+        const p = await tx.payment.create({
+          data: { ownerId, kind, source: "MANUAL", tileId: t.id, amountCents: t.amountCents, paidOn: localToDbDate(i.paidOn), note: i.note || null, label: "Paid outside Roulette", idempotencyKey: key(n), requestHash: hash },
+        });
+        await tx.challengeTile.update({ where: { id: t.id }, data: { status: "COMPLETED" } });
+        await audit(tx, ownerId, "Payment", p.id, "manual-tiles", undefined, p);
+        total += t.amountCents;
+      }
+      await tx.allocationLine.deleteMany({ where: { tileId: { in: ids }, status: "PLANNED" } });
+      return { recorded: tiles.length, totalCents: total, replay: false };
+    }, TX_OPTS);
+  } catch (e) {
+    if (isUniqueViolation(e)) throw new UserError("One of those tiles was just completed. Refresh and try again.");
     throw e;
   }
 }

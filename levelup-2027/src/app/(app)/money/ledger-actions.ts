@@ -8,11 +8,11 @@ import { audit } from "@/server/audit";
 import { UserError } from "@/server/payroll";
 import {
   approvePlan, cancelLine, cancelPlan, completeLine, configureDebt, correctDebtBalance, editDraft, importSchdHistory,
-  recordManualPayment, reversePayment, spin, validateDebtMapping, setRothLineTaxYear, markSchdDayNotDone,
+  recordManualPayment, recordTilesPaidOutside, reversePayment, spin, validateDebtMapping, setRothLineTaxYear, markSchdDayNotDone,
 } from "@/server/ledger";
 import { run, type ActionState } from "@/ui/actions";
 import { isLocalDate, todayLocal } from "@/domain/dates";
-import { parseDollarsToCents } from "@/domain/money";
+import { formatCents, parseDollarsToCents } from "@/domain/money";
 import { splitByPercent } from "@/domain/roulette";
 import { buildDebtTiles } from "@/domain/debt";
 
@@ -152,6 +152,17 @@ export async function manualPaymentAction(_p: ActionState, fd: FormData): Promis
       taxYear: i.taxYear ? Number(i.taxYear) : null, acknowledgeOverLimit: bool(fd.get("ack")),
     });
     return "Recorded.";
+  });
+  done();
+  return r;
+}
+
+export async function recordTilesAction(_p: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await requireUser();
+  const r = await run(async () => {
+    const tileIds = fd.getAll("tileIds").map(String).filter(Boolean);
+    const res = await recordTilesPaidOutside(user.id, { tileIds, paidOn: date.parse(fd.get("date")), note: String(fd.get("note") ?? "") || null, idempotencyKey: String(fd.get("idempotencyKey") ?? "") });
+    return res.replay ? "Already recorded." : `Recorded ${res.recorded} as paid (${formatCents(res.totalCents)}). Roulette will skip ${res.recorded === 1 ? "it" : "them"}.`;
   });
   done();
   return r;
