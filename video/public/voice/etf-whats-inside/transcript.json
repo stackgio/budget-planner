@@ -1,0 +1,666 @@
+{
+ "engine": "elevenlabs:scribe_v1",
+ "text": "This is VOO. This is SCHD. What's the difference? Think of an ETF like a basket of stocks. The difference is what goes in the basket. VOO gives you a little piece of about five hundred big US companies across industries like tech, banking, and healthcare. SCHD focuses on companies with a history of paying dividends. That's cash a company can pay you for owning its stock. Now, this is QQQM. This is VGT. Both lean into tech. So why is Costco in this one? QQQM follows a list of big companies on the Nasdaq stock exchange. That list includes tech companies and retailers like Costco. VGT focuses on information technology. Think software and computer chips. Costco sells groceries, so it's out. Two ETFs can sound similar. The difference is what's inside.",
+ "words": [
+  {
+   "text": "This",
+   "start": 0.12,
+   "end": 0.38
+  },
+  {
+   "text": "is",
+   "start": 0.44,
+   "end": 0.58
+  },
+  {
+   "text": "VOO.",
+   "start": 0.66,
+   "end": 1.4
+  },
+  {
+   "text": "This",
+   "start": 1.96,
+   "end": 2.06
+  },
+  {
+   "text": "is",
+   "start": 2.1,
+   "end": 2.28
+  },
+  {
+   "text": "SCHD.",
+   "start": 2.38,
+   "end": 3.28
+  },
+  {
+   "text": "What's",
+   "start": 3.78,
+   "end": 3.94
+  },
+  {
+   "text": "the",
+   "start": 3.98,
+   "end": 4.04
+  },
+  {
+   "text": "difference?",
+   "start": 4.059,
+   "end": 4.44
+  },
+  {
+   "text": "Think",
+   "start": 5.0,
+   "end": 5.14
+  },
+  {
+   "text": "of",
+   "start": 5.16,
+   "end": 5.22
+  },
+  {
+   "text": "an",
+   "start": 5.26,
+   "end": 5.4
+  },
+  {
+   "text": "ETF",
+   "start": 5.46,
+   "end": 6.02
+  },
+  {
+   "text": "like",
+   "start": 6.08,
+   "end": 6.18
+  },
+  {
+   "text": "a",
+   "start": 6.22,
+   "end": 6.32
+  },
+  {
+   "text": "basket",
+   "start": 6.36,
+   "end": 6.68
+  },
+  {
+   "text": "of",
+   "start": 6.7,
+   "end": 6.76
+  },
+  {
+   "text": "stocks.",
+   "start": 6.88,
+   "end": 7.26
+  },
+  {
+   "text": "The",
+   "start": 7.68,
+   "end": 7.82
+  },
+  {
+   "text": "difference",
+   "start": 7.86,
+   "end": 8.32
+  },
+  {
+   "text": "is",
+   "start": 8.36,
+   "end": 8.46
+  },
+  {
+   "text": "what",
+   "start": 8.5,
+   "end": 8.62
+  },
+  {
+   "text": "goes",
+   "start": 8.66,
+   "end": 8.96
+  },
+  {
+   "text": "in",
+   "start": 9.02,
+   "end": 9.12
+  },
+  {
+   "text": "the",
+   "start": 9.16,
+   "end": 9.22
+  },
+  {
+   "text": "basket.",
+   "start": 9.26,
+   "end": 9.64
+  },
+  {
+   "text": "VOO",
+   "start": 10.14,
+   "end": 10.78
+  },
+  {
+   "text": "gives",
+   "start": 10.82,
+   "end": 10.96
+  },
+  {
+   "text": "you",
+   "start": 11.0,
+   "end": 11.04
+  },
+  {
+   "text": "a",
+   "start": 11.1,
+   "end": 11.16
+  },
+  {
+   "text": "little",
+   "start": 11.22,
+   "end": 11.44
+  },
+  {
+   "text": "piece",
+   "start": 11.48,
+   "end": 11.7
+  },
+  {
+   "text": "of",
+   "start": 11.74,
+   "end": 11.8
+  },
+  {
+   "text": "about",
+   "start": 11.88,
+   "end": 12.2
+  },
+  {
+   "text": "five",
+   "start": 12.24,
+   "end": 12.46
+  },
+  {
+   "text": "hundred",
+   "start": 12.52,
+   "end": 12.96
+  },
+  {
+   "text": "big",
+   "start": 12.98,
+   "end": 13.18
+  },
+  {
+   "text": "US",
+   "start": 13.26,
+   "end": 13.52
+  },
+  {
+   "text": "companies",
+   "start": 13.56,
+   "end": 14.02
+  },
+  {
+   "text": "across",
+   "start": 14.18,
+   "end": 14.5
+  },
+  {
+   "text": "industries",
+   "start": 14.54,
+   "end": 15.02
+  },
+  {
+   "text": "like",
+   "start": 15.06,
+   "end": 15.22
+  },
+  {
+   "text": "tech,",
+   "start": 15.3,
+   "end": 15.52
+  },
+  {
+   "text": "banking,",
+   "start": 15.82,
+   "end": 16.16
+  },
+  {
+   "text": "and",
+   "start": 16.3,
+   "end": 16.379
+  },
+  {
+   "text": "healthcare.",
+   "start": 16.42,
+   "end": 16.82
+  },
+  {
+   "text": "SCHD",
+   "start": 17.32,
+   "end": 18.16
+  },
+  {
+   "text": "focuses",
+   "start": 18.2,
+   "end": 18.58
+  },
+  {
+   "text": "on",
+   "start": 18.62,
+   "end": 18.76
+  },
+  {
+   "text": "companies",
+   "start": 18.8,
+   "end": 19.18
+  },
+  {
+   "text": "with",
+   "start": 19.22,
+   "end": 19.3
+  },
+  {
+   "text": "a",
+   "start": 19.32,
+   "end": 19.42
+  },
+  {
+   "text": "history",
+   "start": 19.48,
+   "end": 19.86
+  },
+  {
+   "text": "of",
+   "start": 19.9,
+   "end": 19.98
+  },
+  {
+   "text": "paying",
+   "start": 20.02,
+   "end": 20.26
+  },
+  {
+   "text": "dividends.",
+   "start": 20.3,
+   "end": 20.76
+  },
+  {
+   "text": "That's",
+   "start": 21.18,
+   "end": 21.38
+  },
+  {
+   "text": "cash",
+   "start": 21.46,
+   "end": 21.74
+  },
+  {
+   "text": "a",
+   "start": 21.8,
+   "end": 21.84
+  },
+  {
+   "text": "company",
+   "start": 21.88,
+   "end": 22.14
+  },
+  {
+   "text": "can",
+   "start": 22.2,
+   "end": 22.34
+  },
+  {
+   "text": "pay",
+   "start": 22.4,
+   "end": 22.6
+  },
+  {
+   "text": "you",
+   "start": 22.66,
+   "end": 22.8
+  },
+  {
+   "text": "for",
+   "start": 22.84,
+   "end": 22.96
+  },
+  {
+   "text": "owning",
+   "start": 23.02,
+   "end": 23.2
+  },
+  {
+   "text": "its",
+   "start": 23.24,
+   "end": 23.36
+  },
+  {
+   "text": "stock.",
+   "start": 23.44,
+   "end": 23.74
+  },
+  {
+   "text": "Now,",
+   "start": 24.28,
+   "end": 24.46
+  },
+  {
+   "text": "this",
+   "start": 24.72,
+   "end": 25.1
+  },
+  {
+   "text": "is",
+   "start": 25.14,
+   "end": 25.32
+  },
+  {
+   "text": "QQQM.",
+   "start": 25.52,
+   "end": 26.5
+  },
+  {
+   "text": "This",
+   "start": 27.08,
+   "end": 27.38
+  },
+  {
+   "text": "is",
+   "start": 27.44,
+   "end": 27.6
+  },
+  {
+   "text": "VGT.",
+   "start": 27.68,
+   "end": 28.4
+  },
+  {
+   "text": "Both",
+   "start": 28.9,
+   "end": 29.14
+  },
+  {
+   "text": "lean",
+   "start": 29.22,
+   "end": 29.38
+  },
+  {
+   "text": "into",
+   "start": 29.42,
+   "end": 29.62
+  },
+  {
+   "text": "tech.",
+   "start": 29.68,
+   "end": 29.94
+  },
+  {
+   "text": "So",
+   "start": 30.36,
+   "end": 30.72
+  },
+  {
+   "text": "why",
+   "start": 30.76,
+   "end": 30.9
+  },
+  {
+   "text": "is",
+   "start": 30.94,
+   "end": 31.06
+  },
+  {
+   "text": "Costco",
+   "start": 31.12,
+   "end": 31.48
+  },
+  {
+   "text": "in",
+   "start": 31.52,
+   "end": 31.58
+  },
+  {
+   "text": "this",
+   "start": 31.62,
+   "end": 31.74
+  },
+  {
+   "text": "one?",
+   "start": 31.78,
+   "end": 31.92
+  },
+  {
+   "text": "QQQM",
+   "start": 32.38,
+   "end": 33.34
+  },
+  {
+   "text": "follows",
+   "start": 33.38,
+   "end": 33.64
+  },
+  {
+   "text": "a",
+   "start": 33.68,
+   "end": 33.72
+  },
+  {
+   "text": "list",
+   "start": 33.76,
+   "end": 33.94
+  },
+  {
+   "text": "of",
+   "start": 33.98,
+   "end": 34.16
+  },
+  {
+   "text": "big",
+   "start": 34.2,
+   "end": 34.38
+  },
+  {
+   "text": "companies",
+   "start": 34.42,
+   "end": 34.9
+  },
+  {
+   "text": "on",
+   "start": 34.92,
+   "end": 34.98
+  },
+  {
+   "text": "the",
+   "start": 35.02,
+   "end": 35.1
+  },
+  {
+   "text": "Nasdaq",
+   "start": 35.14,
+   "end": 35.58
+  },
+  {
+   "text": "stock",
+   "start": 35.66,
+   "end": 35.88
+  },
+  {
+   "text": "exchange.",
+   "start": 35.92,
+   "end": 36.36
+  },
+  {
+   "text": "That",
+   "start": 36.86,
+   "end": 37.0
+  },
+  {
+   "text": "list",
+   "start": 37.04,
+   "end": 37.22
+  },
+  {
+   "text": "includes",
+   "start": 37.26,
+   "end": 37.62
+  },
+  {
+   "text": "tech",
+   "start": 37.68,
+   "end": 37.82
+  },
+  {
+   "text": "companies",
+   "start": 37.88,
+   "end": 38.3
+  },
+  {
+   "text": "and",
+   "start": 38.32,
+   "end": 38.4
+  },
+  {
+   "text": "retailers",
+   "start": 38.5,
+   "end": 39.0
+  },
+  {
+   "text": "like",
+   "start": 39.04,
+   "end": 39.16
+  },
+  {
+   "text": "Costco.",
+   "start": 39.2,
+   "end": 39.64
+  },
+  {
+   "text": "VGT",
+   "start": 40.14,
+   "end": 40.86
+  },
+  {
+   "text": "focuses",
+   "start": 40.9,
+   "end": 41.3
+  },
+  {
+   "text": "on",
+   "start": 41.34,
+   "end": 41.5
+  },
+  {
+   "text": "information",
+   "start": 41.54,
+   "end": 42.08
+  },
+  {
+   "text": "technology.",
+   "start": 42.12,
+   "end": 42.64
+  },
+  {
+   "text": "Think",
+   "start": 43.06,
+   "end": 43.26
+  },
+  {
+   "text": "software",
+   "start": 43.32,
+   "end": 43.82
+  },
+  {
+   "text": "and",
+   "start": 43.84,
+   "end": 43.9
+  },
+  {
+   "text": "computer",
+   "start": 43.96,
+   "end": 44.32
+  },
+  {
+   "text": "chips.",
+   "start": 44.4,
+   "end": 44.68
+  },
+  {
+   "text": "Costco",
+   "start": 45.16,
+   "end": 45.48
+  },
+  {
+   "text": "sells",
+   "start": 45.56,
+   "end": 45.78
+  },
+  {
+   "text": "groceries,",
+   "start": 45.82,
+   "end": 46.3
+  },
+  {
+   "text": "so",
+   "start": 46.54,
+   "end": 46.84
+  },
+  {
+   "text": "it's",
+   "start": 46.88,
+   "end": 47.0
+  },
+  {
+   "text": "out.",
+   "start": 47.06,
+   "end": 47.18
+  },
+  {
+   "text": "Two",
+   "start": 47.72,
+   "end": 47.86
+  },
+  {
+   "text": "ETFs",
+   "start": 47.92,
+   "end": 48.42
+  },
+  {
+   "text": "can",
+   "start": 48.44,
+   "end": 48.6
+  },
+  {
+   "text": "sound",
+   "start": 48.64,
+   "end": 48.8
+  },
+  {
+   "text": "similar.",
+   "start": 48.94,
+   "end": 49.26
+  },
+  {
+   "text": "The",
+   "start": 49.64,
+   "end": 49.76
+  },
+  {
+   "text": "difference",
+   "start": 49.8,
+   "end": 50.26
+  },
+  {
+   "text": "is",
+   "start": 50.3,
+   "end": 50.4
+  },
+  {
+   "text": "what's",
+   "start": 50.44,
+   "end": 50.6
+  },
+  {
+   "text": "inside.",
+   "start": 50.64,
+   "end": 51.14
+  }
+ ]
+}
