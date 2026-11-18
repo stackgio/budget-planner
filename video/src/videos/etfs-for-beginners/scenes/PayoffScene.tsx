@@ -2,21 +2,14 @@ import React from 'react';
 import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
 import {CinematicBg} from '../../../story/components/Backgrounds';
 import {Sfx} from '../../../story/components/Chrome';
-import {FundCard, StockTile, TickerChip, TickerWord} from '../../../story/components/FundCards';
+import {TickerChip} from '../../../story/components/FundCards';
+import {MINI, MINIS, MiniFundCard, RowLine} from './MiniCards';
 import {useCues} from '../../../story/lib/cues';
 import {E, kf, prog, sp} from '../../../story/lib/motion';
 import {TICKERS} from './HookScene';
 import {C, Desc, FONT} from './common';
 
-const CARD = {y: 440, w: 260, h: 740, xs: [120, 410, 700]};
-const TILE_Y = [CARD.y + 230, CARD.y + 330]; // Apple, Microsoft rows (same in all three)
-
-type Mini = {ticker: string; desc: string; small: number; intl: number};
-const MINIS: Mini[] = [
-	{ticker: 'VOO', desc: 'Large U.S.', small: 0, intl: 0},
-	{ticker: 'VTI', desc: 'Broad U.S.', small: 10, intl: 0},
-	{ticker: 'VT', desc: 'U.S. + intl.', small: 5, intl: 5},
-];
+const CARD = {y: 440};
 
 /** PAYOFF — VOO, VTI and VT side by side; Apple + Microsoft light up in all three. Then VT = one fund for U.S. + international. */
 export const PayoffScene: React.FC = () => {
@@ -55,44 +48,25 @@ export const PayoffScene: React.FC = () => {
 				<Desc text="Different ETFs can hold the same stocks." hl={['same', 'stocks.']} fontSize={66} style={{letterSpacing: -1.5, lineHeight: 1.08}} />
 			</div>
 			{/* connecting lines through Apple + Microsoft (behind tiles) */}
-			<svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
-				{TILE_Y.map((y) => (
-					<line key={y} x1={140} y1={y + 40} x2={140 + 800 * line} y2={y + 40} stroke={C.accent} strokeWidth={6} strokeLinecap="round" opacity={0.85} />
-				))}
-			</svg>
+			<RowLine y={CARD.y + MINI.appleDy} draw={line} />
+			<RowLine y={CARD.y + MINI.msftDy} draw={line} />
 			{MINIS.map((m, i) => {
 				const e = sp(frame, fps, tCards[i], 'bouncy');
 				if (e < 0.01) return null;
-				const x = CARD.xs[i];
 				const isVt = m.ticker === 'VT';
 				const dim = isVt ? 0 : vt * 0.55;
-				const glow = isVt ? Math.max(vt, vtPop) : 0;
-				const fx = x + 22;
-				const fw = CARD.w - 44;
 				return (
-					<div
+					<MiniFundCard
 						key={m.ticker}
-						style={{position: 'absolute', inset: 0, opacity: Math.min(1, e * 1.4) * (1 - dim), transform: `translateY(${(1 - e) * 100}px)`}}
-					>
-						<FundCard x={x} y={CARD.y} w={CARD.w} h={CARD.h} radius={30} glow={glow}>
-							<div style={{position: 'absolute', left: 22, top: 24}}>
-								<TickerWord text={m.ticker} fontSize={88} />
-								<div style={{fontSize: 32, fontWeight: 800, color: C.body, marginTop: 12, whiteSpace: 'nowrap'}}>{m.desc}</div>
-							</div>
-						</FundCard>
-						<StockTile x={fx} y={TILE_Y[0]} w={fw} h={80} label="Apple" fontSize={38} focus={overlap} />
-						<StockTile x={fx} y={TILE_Y[1]} w={fw} h={80} label="Microsoft" fontSize={36} focus={overlap} />
-						{/* other holdings, unlabeled: medium (large U.S.), small (smaller U.S.), warm (international) */}
-						{[0, 1, 2, 3].map((k) => (
-							<StockTile key={`m${k}`} x={fx + (k % 2) * (fw / 2 + 4)} y={CARD.y + 430 + Math.floor(k / 2) * 84} w={fw / 2 - 4} h={72} radius={14} dim={0.3} />
-						))}
-						{Array.from({length: m.small}).map((_, k) => (
-							<StockTile key={`s${k}`} x={fx + (k % 5) * (fw / 5)} y={CARD.y + 610 + Math.floor(k / 5) * 52} w={fw / 5 - 8} h={36} radius={8} dim={0.3} />
-						))}
-						{Array.from({length: m.intl}).map((_, k) => (
-							<StockTile key={`i${k}`} x={fx + (k % 5) * (fw / 5)} y={CARD.y + 662} w={fw / 5 - 8} h={36} radius={8} tint="#3B3527" />
-						))}
-					</div>
+						m={m}
+						x={MINI.xs[i]}
+						y={CARD.y}
+						apple={overlap}
+						msft={overlap}
+						glow={isVt ? Math.max(vt, vtPop) : 0}
+						opacity={Math.min(1, e * 1.4) * (1 - dim)}
+						dy={(1 - e) * 100}
+					/>
 				);
 			})}
 			{/* L22: the hypothetical one-fund pick */}

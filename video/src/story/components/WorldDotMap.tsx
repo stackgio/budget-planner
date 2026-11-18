@@ -27,9 +27,11 @@ export const WorldDotMap: React.FC<{
 	litColor?: string;
 	usColor?: string;
 	offColor?: string;
+	/** colour of U.S. dots when `us` is 0 (default offColor) — use a visible grey to show the U.S. dimmed rather than gone */
+	usOffColor?: string;
 	dotScale?: number;
 	opacity?: number;
-}> = ({x, y, w, us, intl, ripple = false, litColor = '#2CD47A', usColor, offColor = '#2B3038', dotScale = 1, opacity = 1}) => {
+}> = ({x, y, w, us, intl, ripple = false, litColor = '#2CD47A', usColor, offColor = '#2B3038', usOffColor, dotScale = 1, opacity = 1}) => {
 	const h = mapHeight(w);
 	const step = w / 139; // dot pitch in px (2.6° grid over 360°)
 	const r = step * 0.36 * dotScale;
@@ -39,6 +41,7 @@ export const WorldDotMap: React.FC<{
 	const off = hex(offColor);
 	const lit = hex(litColor);
 	const usLit = hex(usColor ?? litColor);
+	const usOff = hex(usOffColor ?? offColor);
 	return (
 		<svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{position: 'absolute', left: x, top: y, overflow: 'visible', opacity}}>
 			{D.dots.map(([u, v, isUS], i) => {
@@ -48,7 +51,7 @@ export const WorldDotMap: React.FC<{
 					const dist = Math.hypot((u - US_U) * D.aspect, v - US_V) / 2.2; // 0..~1
 					t = Math.max(0, Math.min(1, (intl * 1.6 - dist) * 4));
 				} else t = intl;
-				return <circle key={i} cx={u * w} cy={v * h} r={r * (1 + 0.15 * t)} fill={lerp(t, off, isUS ? usLit : lit)} />;
+				return <circle key={i} cx={u * w} cy={v * h} r={r * (1 + 0.15 * t)} fill={lerp(t, isUS ? usOff : off, isUS ? usLit : lit)} />;
 			})}
 		</svg>
 	);

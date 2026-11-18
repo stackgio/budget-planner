@@ -17,7 +17,7 @@ export const META: VideoMeta = {
 	],
 };
 
-/** Narration exactly as spoken in the ElevenLabs voiceover (voice.py transcribe). */
+/** LOCKED approved script, word for word (U.S. spelling, punctuation). Split into lines at the voiceover's sentence timing; alignment matches every word to the ElevenLabs audio. */
 export const SCRIPT: ScriptLine[] = [
 	{id: 'L1', text: 'New to investing?'},
 	{id: 'L2', text: "Here are five ETFs to know and what you're actually buying with each one."},
@@ -26,21 +26,21 @@ export const SCRIPT: ScriptLine[] = [
 	{id: 'L5', text: "Here's what's inside each one."},
 	{id: 'L6', text: 'First, VOO.'},
 	{id: 'L7', text: 'This is one I own.'},
-	{id: 'L8', text: 'It holds about five hundred big US companies.'},
-	{id: 'L9', text: 'So you get a piece of companies like Apple and Microsoft in one purchase.'},
+	{id: 'L8', text: 'It holds about five hundred big U.S. companies,'},
+	{id: 'L9', text: 'so you get a piece of companies like Apple and Microsoft in one purchase.'},
 	{id: 'L10', text: "Then there's VTI."},
 	{id: 'L11', text: 'You still get Apple and Microsoft, plus a bunch of smaller companies.'},
-	{id: 'L12', text: 'It covers almost the entire US stock market.'},
+	{id: 'L12', text: 'It covers almost the entire U.S. stock market.'},
 	{id: 'L13', text: 'VT takes it worldwide.'},
-	{id: 'L14', text: 'It has US companies and companies from other countries all in one fund.'},
+	{id: 'L14', text: 'It has U.S. companies and companies from other countries, all in one fund.'},
 	{id: 'L15', text: 'VXUS is the overseas part.'},
-	{id: 'L16', text: "If you already own VOO and want to add companies outside the US, that's what VXUS can do."},
-	{id: 'L17', text: 'And SCHD focuses on US companies that pay dividends.'},
+	{id: 'L16', text: "If you already own VOO and want to add companies outside the U.S., that's what VXUS can do."},
+	{id: 'L17', text: 'And SCHD focuses on U.S. companies that pay dividends.'},
 	{id: 'L18', text: 'A dividend is a cash payment you can receive for owning shares.'},
 	{id: 'L19', text: 'The amount can change.'},
 	{id: 'L20', text: 'So do you need all five?'},
-	{id: 'L21', text: 'VOO, VTI, and VT already hold a lot of the same big US companies.'},
-	{id: 'L22', text: "If I wanted one fund for US and international stocks, I'd look at VT first."},
+	{id: 'L21', text: 'VOO, VTI, and VT already hold a lot of the same big U.S. companies.'},
+	{id: 'L22', text: "If I wanted one fund for U.S. and international stocks, I'd look at VT first."},
 	{id: 'L23', text: "This is for education only and isn't financial advice."},
 	{id: 'L24', text: "Save this for when you're comparing your first ETF."},
 ];
@@ -58,5 +58,5 @@ export const SCENES: SceneDef<SceneId>[] = [
 	{id: 'end', firstLine: 'L23', transitionFrames: 12}, // slide up to the end card
 ];
 
-/** Seconds held after the last word so the five-fund recap can be read. */
-export const TAIL_SEC = 4.6;
+/** Silent tail after the last spoken word: the cheat sheet holds ~2 s. */
+export const TAIL_SEC = 2.0;

@@ -18,6 +18,9 @@ const DEF: VideoDef<SceneId> = {
 	tailSec: TAIL_SEC,
 	components: {hook: HookScene, basket: BasketScene, us: UsScene, world: WorldScene, schd: SchdScene, payoff: PayoffScene, end: EndScene},
 	looks: {hook: cinematic, basket: cinematic, us: cinematic, world: cinematic, schd: cinematic, payoff: cinematic, end: cinematic},
+	// verbatim captions (approved script spelling + punctuation), whole phrases on 1–2 lines,
+	// short fragments grouped with their neighbours, high-contrast upcoming words, clear of the right-side buttons
+	captionOptions: {mode: 'phrase', maxChars: 30, maxWords: 7, maxGap: 0.6, minChars: 14, upcomingOpacity: 0.8, keepPunctuation: true, fontSize: 56, left: 96, right: 156, shadow: true},
 	transitions: {
 		basket: {presentation: slide({direction: 'from-bottom'}), timing: 'spring'},
 		us: {presentation: matchCut()},

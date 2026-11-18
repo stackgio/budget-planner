@@ -1,0 +1,10 @@
+{
+ "file": "renders/etfs-for-beginners/etfs-for-beginners_v06_final-voice.mp4",
+ "composition": "FiveEtfsForBeginners",
+ "mode": "education",
+ "title": "5 ETFs for Beginners",
+ "narration": "aligned",
+ "durationSec": 75.767,
+ "props": "public/voice/etfs-for-beginners/props.json",
+ "renderedAt": "2026-11-18T00:07:17.307Z"
+}

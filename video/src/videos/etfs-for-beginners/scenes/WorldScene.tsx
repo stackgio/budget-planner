@@ -40,7 +40,7 @@ export const WorldScene: React.FC = () => {
 	// camera: start tight on the U.S., pull out to the world on "takes it worldwide"
 	const [ux, uy] = usPoint(MAP.x, MAP.y, MAP.w);
 	const ripple = prog(frame, tWorld - 4, Math.max(20, tOther - tWorld + 10), E.soft);
-	const usDim = prog(frame, tOverseas, 14);
+	const usDim = prog(frame, tVxus, 16); // the U.S. dims the moment VXUS appears
 	const shrink = sp(frame, fps, tVoo - 4, 'smooth');
 	const m = {x: mix(MAP.x, MAP_SMALL.x, shrink), y: mix(MAP.y, MAP_SMALL.y, shrink), w: mix(MAP.w, MAP_SMALL.w, shrink)};
 	const legend = 1 - prog(frame, tVoo - 6, 10);
@@ -71,7 +71,7 @@ export const WorldScene: React.FC = () => {
 					{at: tWorld + 26, zoom: 1, x: 540, y: 960, ease: E.inOut},
 				]}
 			>
-				<WorldDotMap x={m.x} y={m.y} w={m.w} us={1 - 0.85 * usDim} intl={ripple} ripple usColor={C.accent} />
+				<WorldDotMap x={m.x} y={m.y} w={m.w} us={1 - usDim} intl={ripple} ripple usColor={C.accent} usOffColor="#4C525C" />
 			</Camera>
 			<div style={{position: 'absolute', left: 120, right: 120, top: MAP.y + mapHeight(MAP.w) + 40, display: 'flex', justifyContent: 'center', gap: 60, opacity: legend * prog(frame, tWorld + 10, 12)}}>
 				<Legend color={C.accent} lit={1 - usDim} label="U.S." strike={usDim} />
