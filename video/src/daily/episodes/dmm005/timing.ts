@@ -1,5 +1,5 @@
-// DMM-005 timing — derived from the narration's word timestamps (voice.words.json,
-// ElevenLabs alignment). Pure data so the SFX script uses the same events.
+// DMM-005 (v2, clarity rework) timing — derived from the narration's word timestamps
+// (voice.words.json, ElevenLabs alignment). Pure data so the SFX script uses the same events.
 import voice from './voice.words.json';
 
 export const FPS = 30;
@@ -9,43 +9,41 @@ export const ws = (i: number) => Math.round(WORDS[i].start * FPS) + VO_OFFSET;
 export const we = (i: number) => Math.round(WORDS[i].end * FPS) + VO_OFFSET;
 
 // word indices (checked against voice.words.json)
-const W = {car: 3, payment: 4, nobody: 5, invest: 9, seven: 10, ten: 15, could: 17, twenty: 23, thousand: 24, thats: 25, under: 28, surface: 30};
-const expect: Record<keyof typeof W, string> = {car: 'car', payment: 'payment.', nobody: 'Nobody', invest: 'invest.', seven: 'Seven', ten: 'ten', could: 'could', twenty: 'twenty', thousand: 'thousand.', thats: "That's", under: 'under', surface: 'surface.'};
+const W = {two: 0, same: 2, seven: 3, one: 7, spends: 8, car: 12, payment: 13, everyone: 15, other: 19, invests: 20, instead: 22, nobody: 24, ten: 27, investor: 31, hundred: 36, twenty: 37, thousand: 38};
+const expect: Record<keyof typeof W, string> = {two: 'Two', same: 'same', seven: 'seven', one: 'One', spends: 'spends', car: 'car', payment: 'payment,', everyone: 'everyone', other: 'other', invests: 'invests', instead: 'instead,', nobody: 'nobody', ten: 'Ten', investor: 'investor', hundred: 'hundred', twenty: 'twenty', thousand: 'thousand.'};
 for (const k of Object.keys(W) as (keyof typeof W)[]) if (WORDS[W[k]].text !== expect[k]) throw new Error(`word ${k}: expected ${expect[k]} got ${WORDS[W[k]].text}`);
 
 const voEnd = we(WORDS.length - 1);
 export const T = {
-	payment: ws(W.payment),
-	nobody: ws(W.nobody), // the camera dives under the waterline
-	invest: ws(W.invest),
-	seven: ws(W.seven), // monthly deposits start building the hidden mass
+	same: ws(W.same), // "$700/MO" appears over both people
+	one: ws(W.one), // person A's role pill
+	car: ws(W.car), // the car lands on A's floe
+	everyone: ws(W.everyone), // A's car is "seen" (glow rays)
+	other: ws(W.other), // person B's role pill
+	invests: ws(W.invests), // B's hidden mass starts growing, month 0
+	nobody: ws(W.nobody), // "NOBODY SEES IT" tag under water
 	ten: ws(W.ten),
-	could: ws(W.could),
-	thousand: ws(W.thousand),
 	growDone: we(W.thousand), // month 120 lands with "thousand."
-	thats: ws(W.thats), // camera pulls out: tiny visible tip, huge hidden mass
-	under: ws(W.under),
+	thousand: ws(W.thousand),
 	voEnd,
-	totals: voEnd + 6,
-	headline: voEnd + 22,
-	glint: voEnd + 80, // light sweeps up through the hidden mass
-	sign: voEnd + 96,
+	headline: voEnd + 10,
+	glint: voEnd + 40,
+	sign: voEnd + 60,
 };
 
 /** Caption pages: break after these word indices; key words in accent. */
-export const PAGE_BREAKS = [4, 9, 13, 16, 19, 24, 30];
-export const KEY_WORDS = [W.car, W.payment, W.nobody, W.invest, W.twenty, W.thousand, W.surface];
+export const PAGE_BREAKS = [1, 6, 13, 17, 22, 26, 29, 33, 38]; // short pages: never more than 2 lines (clarity rule)
+export const KEY_WORDS = [W.spends, W.invests, W.instead, W.investor, W.hundred, W.twenty, W.thousand];
 
 export const QC_BEATS: [string, number][] = [
 	['a_frame0', 0],
 	['a_1s', 30],
 	['a_2s', 60],
-	['b_dive', T.invest + 6],
-	['b_grow_mid', Math.round((T.seven + T.growDone) / 2)],
-	['b_grow_done', T.growDone + 4],
-	['c_pullout', T.under + 6],
-	['d_totals', T.totals + 24],
-	['d_headline', T.headline + 24],
+	['b_car', T.everyone + 8],
+	['b_invests', T.nobody + 8],
+	['c_grow_mid', Math.round((T.invests + T.growDone) / 2)],
+	['c_grow_done', T.growDone + 4],
+	['d_headline', T.headline + 26],
 	['e_glint', T.glint + 30],
 	['z_last', 449],
 ];

@@ -120,9 +120,11 @@
     "requires": [
       "qc_auto.json with 0 FAIL",
       "human-judgment scores written in qc-report.md",
-      "no unresolved important issue"
+      "no unresolved important issue",
+      "clarity score >= 9 in qc-report.md (anybody gets the message)"
     ],
-    "never": "POST READY / auto-publish: the creator approves every episode"
+    "never": "POST READY / auto-publish: the creator approves every episode",
+    "min_clarity_score": 9.0
   },
   "production_limits": {
     "max_render_rounds": 4,

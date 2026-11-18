@@ -22,6 +22,19 @@
         "SFX at least 20 dB below the voice, ducked",
         "Fixed gain; never peak-normalise SFX"
       ]
+    },
+    {
+      "episode": "DMM-005",
+      "date": "2026-11-18",
+      "from": "creator",
+      "notes": "Confusing: is it saying everyone pays $700 and won't invest? Wants every video clear and understandable for anybody.",
+      "lessons": [
+        "Every video must be understandable by anybody, from narration alone and from pictures alone",
+        "Say the comparison word (instead / or / two people) and show alternatives side by side, labelled",
+        "Never merge two alternatives into one object",
+        "Label every symbol; state the takeaway in words on screen",
+        "Clarity score < 9 means NEEDS FIXING"
+      ]
     }
   ],
   "analytics": []

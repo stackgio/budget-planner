@@ -9,7 +9,7 @@
 //   node daily-money-motion/scripts/dmm.mjs render <DMM-NNN>                      → versioned render + QC (never overwrites)
 //   node daily-money-motion/scripts/dmm.mjs due [YYYY-MM-DD]                      → exit 0 if an episode is due (rolling 72 h cadence), 3 if not
 //   node daily-money-motion/scripts/dmm.mjs search <words…>                       → search episode history (topic, hook, metaphor, tags, notes)
-//   node daily-money-motion/scripts/dmm.mjs gate <DMM-NNN> <score> <qc_auto.json> → READY_FOR_REVIEW only if auto-QC has 0 FAIL and score ≥ gate; else NEEDS_FIXING
+//   node daily-money-motion/scripts/dmm.mjs gate <DMM-NNN> <score> <qc_auto.json> <clarity> → READY_FOR_REVIEW only if auto-QC has 0 FAIL, score ≥ gate and clarity ≥ min_clarity_score; else NEEDS_FIXING
 //   node daily-money-motion/scripts/dmm.mjs list
 import {readFileSync, writeFileSync, mkdirSync, existsSync, renameSync, appendFileSync} from 'fs';
 import {spawnSync} from 'child_process';
@@ -132,15 +132,19 @@ switch (cmd) {
 		break;
 	}
 	case 'gate': {
-		const [id, score, qcPath] = a; const e = find(d, id); const G = CFG.gate;
-		if (!score || !qcPath) die('usage: gate <ID> <creative score> <qc_auto.json>');
+		const [id, score, qcPath, clarityRaw] = a; const e = find(d, id); const G = CFG.gate;
+		if (!score || !qcPath) die('usage: gate <ID> <creative score> <qc_auto.json> <clarity score>');
 		const qc = JSON.parse(readFileSync(qcPath, 'utf8'));
 		const sc = Number(score); const reasons = [];
 		if (qc.episode !== id) reasons.push(`qc file is for ${qc.episode}`);
 		if (qc.fails > 0) reasons.push(`${qc.fails} automated FAIL(s)`);
 		if (!(sc >= G.min_creative_score)) reasons.push(`creative score ${sc} < ${G.min_creative_score}`);
+		const cl = Number(clarityRaw); const minCl = G.min_clarity_score ?? 9;
+		if (clarityRaw === undefined) reasons.push('clarity score missing (creator rule: anybody must get the message)');
+		else if (!(cl >= minCl)) reasons.push(`clarity ${cl} < ${minCl}`);
+		if (clarityRaw !== undefined) e.clarity_score = cl;
 		const st = reasons.length ? 'NEEDS_FIXING' : 'READY_FOR_REVIEW';
-		e.status = st; e.qc_score = sc; e.history.push({at: new Date().toISOString(), status: st, note: reasons.length ? reasons.join('; ') : `auto-QC 0 FAIL (${qc.warns} WARN), score ${sc}`});
+		e.status = st; e.qc_score = sc; e.history.push({at: new Date().toISOString(), status: st, note: reasons.length ? reasons.join('; ') : `auto-QC 0 FAIL (${qc.warns} WARN), score ${sc}, clarity ${cl}`});
 		save(d); log(`${id} gate → ${st}`);
 		console.log(st === 'READY_FOR_REVIEW' ? `${id}: ${G.ready_label}` : `${id}: ${G.fail_label} — ${reasons.join('; ')}`);
 		process.exitCode = reasons.length ? 2 : 0;

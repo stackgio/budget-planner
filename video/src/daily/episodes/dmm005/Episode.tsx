@@ -1,145 +1,163 @@
-// DMM-005 · "Everyone sees your car payment. Nobody sees what you invest." (narrated: creator's "Stack voice")
-// An iceberg cut by a waterline. Above water, a small floe carries a car: the
-// payment everyone sees. The camera dives under the surface, where the same
-// $700 a month, invested, builds a faceted mass month by month (area ∝ balance).
-// It pulls out to show the tiny visible tip against the hidden mass. Every beat is
-// keyed to the narration's word timestamps (timing.ts ← voice.words.json).
+// DMM-005 v2 (clarity rework) · "Two people, same seven hundred a month."
+// Two people side by side, each on their own iceberg, labelled PERSON A / PERSON B.
+// A spends $700/mo on a car payment: the car sits on top, everyone sees it, and
+// nothing grows under the water. B invests the same $700 instead: nothing shows on
+// top, but a hidden mass grows month by month under the water (area ∝ balance).
+// Ends on the takeaway in words: SAME $700 A MONTH. / SPEND IT, OR GROW IT.
+// Every beat is keyed to the narration's word timestamps (timing.ts ← voice.words.json).
 import React from 'react';
 import {AbsoluteFill, Html5Audio, random, Sequence, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import '../../../fonts';
 import {E, prog, sp} from '../../../story/lib/motion';
-import {Camera2D} from '../../components/Camera2D';
 import {SafeZoneOverlay, Signature} from '../../components/Chrome';
 import {FilmFinish, Stage} from '../../components/FilmLook';
 import {Headline} from '../../components/Headline';
 import {CarIcon, Iceberg} from '../../components/Iceberg';
 import {buildPages, WordCaptions} from '../../components/WordCaptions';
 import {dmm, usd} from '../../theme';
-import {B_FINAL, balance, k, MONTHLY, MONTHS, PUT_IN, RATE, YEARS} from './facts';
+import {B_FINAL, balance, MONTHLY, MONTHS, RATE, YEARS} from './facts';
 import {FPS, KEY_WORDS, PAGE_BREAKS, T, VO_OFFSET, WORDS} from './timing';
 
 export {QC_BEATS} from './timing';
 
 const C = dmm.color;
-const CX = 540;
-const WATER = 640;
-const FLOE_H = 110;
+const WATER = 760;
+const AX = 300; // person A (spends)
+const BX = 770; // person B (invests)
+const FLOE_W = 110;
+const FLOE_H = 80;
 const PAGES = buildPages(WORDS, FPS, VO_OFFSET, PAGE_BREAKS, KEY_WORDS);
-const BUBBLES = Array.from({length: 18}, (_, i) => ({x: 220 + random(`bx${i}`) * 640, off: random(`bo${i}`) * 700, v: 1.2 + random(`bv${i}`) * 1.6, r: 3 + random(`br${i}`) * 5}));
+const BUBBLES = Array.from({length: 16}, (_, i) => ({x: 90 + random(`bx${i}`) * 860, off: random(`bo${i}`) * 600, v: 1.1 + random(`bv${i}`) * 1.5, r: 3 + random(`br${i}`) * 4}));
 
-const win = (f: number, a: number, b: number, fade = 8) => Math.min(prog(f, a, fade, E.out), 1 - prog(f, b, fade, E.in));
+const fadeIn = (f: number, at: number, d = 10) => prog(f, at, d, E.out);
+const fadeOut = (f: number, at: number, d = 10) => 1 - prog(f, at, d, E.in);
 
 export const DMM005: React.FC<{showSafeZones?: boolean; audio?: boolean}> = ({showSafeZones = false, audio = true}) => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 
-	// ---- the hidden mass: month 0 → 120 from "Seven" to the end of "thousand."
-	const months = MONTHS * prog(frame, T.seven - 4, T.growDone - T.seven + 4, (t) => t);
+	// ---- B's hidden mass: month 0 → 120 from "invests" to the end of "thousand."
+	const months = MONTHS * prog(frame, T.invests, T.growDone - T.invests, (t) => t);
 	const s = Math.sqrt(balance(months) / B_FINAL.value);
-	const bob = Math.sin(frame / 22) * 4;
+	const bob = Math.sin(frame / 22) * 3;
 	const glint = frame >= T.glint ? prog(frame, T.glint, 54, E.inOut) : -1;
 
-	// ---- camera: on the visible tip → dive under the surface → pull out to the whole berg
-	const camKeys = [
-		{at: 0, zoom: 1.45, fx: CX, fy: 560},
-		{at: T.payment, zoom: 1.4, fx: CX, fy: 572},
-		{at: T.invest + 6, zoom: 1.15, fx: CX, fy: 860},
-		{at: T.seven, zoom: 1.15, fx: CX, fy: 880},
-		{at: T.growDone, zoom: 0.96, fx: CX, fy: 930},
-		{at: T.under + 6, zoom: 0.88, fx: CX, fy: 960},
-		{at: T.voEnd + 34, zoom: 0.89, fx: CX, fy: 957},
-		{at: 449, zoom: 0.9, fx: CX, fy: 955},
-	];
+	// ---- A's car lands on "car"; glow rays on "everyone sees it"
+	const carIn = sp(frame, fps, T.car - 6, 'bouncy');
+	const seen = frame >= T.everyone ? 0.5 + 0.5 * Math.sin((frame - T.everyone) / 4) : 0;
+	const seenIn = fadeIn(frame, T.everyone - 2, 8);
 
-	// payoff push: CONSTANT speed (an eased push stalls and reads as a static hold),
-	// anchored at the berg's base so the bottom never reaches the stats
-	const push = 1 + 0.12 * prog(frame, T.voEnd + 20, 449 - T.voEnd - 20, (t) => t);
+	// ---- intro: constant-speed pull-back over the first 2 s (hook motion; the scene stays readable)
+	const intro = 1.25 - 0.25 * prog(frame, 0, 62, (t) => t);
+	// ---- payoff: constant-speed vertical drift down the water column. NOT a scale push:
+	// scaling about the centre pushed B's iceberg into the right-side platform UI band (v04 FAIL).
+	const drift = -110 * prog(frame, T.headline, 449 - T.headline, (t) => t);
+	const topOut = fadeOut(frame, T.headline - 8, 10); // names/roles leave before the headline
 
-	// ---- water surface
-	const wave = (x: number) => WATER + Math.sin(x / 70 + frame / 9) * 5 + Math.sin(x / 31 - frame / 6) * 2.2;
+	// ---- water
+	const wave = (x: number) => WATER + Math.sin(x / 70 + frame / 9) * 4 + Math.sin(x / 31 - frame / 6) * 2;
 	let surface = '';
-	for (let x = -300; x <= 1380; x += 20) surface += `${x === -300 ? 'M' : 'L'}${x} ${wave(x).toFixed(1)}`;
-	const waterBody = `${surface}L1380 2600L-300 2600Z`;
+	for (let x = -100; x <= 1180; x += 20) surface += `${x === -100 ? 'M' : 'L'}${x} ${wave(x).toFixed(1)}`;
 
-	// ---- readouts
-	const growRead = win(frame, T.nobody, T.growDone + 6, 8);
-	const totalsIn = sp(frame, fps, T.totals, 'smooth');
-	const totals2In = sp(frame, fps, T.totals + 12, 'smooth');
-	const pillIn = sp(frame, fps, -6, 'smooth') * (1 - prog(frame, T.headline - 6, 14));
-	const pillPulse = 1 + 0.06 * Math.max(0, 1 - Math.abs(frame - T.payment - 4) / 8);
-	const signIn = prog(frame, T.sign, 16);
 	const shownMonths = Math.floor(months + 1e-6);
+	const nameStyle: React.CSSProperties = {fontSize: 34, fontWeight: 900, letterSpacing: 4, color: C.ink};
+	const pill = (bg: string, fg: string, border: string): React.CSSProperties => ({display: 'inline-block', padding: '8px 18px', borderRadius: 999, border: `2px solid ${border}`, background: bg, color: fg, fontSize: 27, fontWeight: 900, letterSpacing: 1.5, whiteSpace: 'nowrap'});
+
+	const people = [
+		{x: AX, name: 'PERSON A', role: 'SPENDS IT · CAR PAYMENT', roleAt: T.one, roleStyle: pill(C.bg, C.ink, C.ink), tag: 'EVERYONE SEES IT', tagAt: T.everyone, tagY: WATER + 40, tagColor: C.ink},
+		{x: BX, name: 'PERSON B', role: 'INVESTS IT INSTEAD', roleAt: T.other, roleStyle: pill(C.accent, C.bg, C.accent), tag: 'NOBODY SEES IT', tagAt: T.nobody, tagY: WATER + 40, tagColor: C.accent},
+	];
 
 	return (
 		<AbsoluteFill style={{fontFamily: dmm.font}}>
-			<Stage lightX={CX} lightY={frame < T.nobody ? 420 : 1100} light={1 + 0.5 * s} />
-			<AbsoluteFill style={{transform: `scale(${push})`, transformOrigin: '540px 1290px'}}>
-			<Camera2D keys={camKeys} anchor={[540, 960]} drift={0.7}>
+			<Stage lightX={540} lightY={WATER + 200} light={1 + 0.5 * s} />
+			<AbsoluteFill style={{transform: `translateY(${drift}px) scale(${intro})`, transformOrigin: '540px 900px'}}>
 				<svg width={1080} height={1920} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
 					<defs>
 						<linearGradient id="dmm5water" x1="0" y1="0" x2="0" y2="1">
-							<stop offset="0%" stopColor="rgba(54,217,121,0.2)" />
-							<stop offset="40%" stopColor="rgba(54,217,121,0.1)" />
-							<stop offset="100%" stopColor="rgba(54,217,121,0.03)" />
+							<stop offset="0%" stopColor="rgba(54,217,121,0.18)" />
+							<stop offset="45%" stopColor="rgba(54,217,121,0.08)" />
+							<stop offset="100%" stopColor="rgba(54,217,121,0.02)" />
 						</linearGradient>
 					</defs>
+					{/* divider between the two people */}
+					<line x1={540} y1={400} x2={540} y2={1300} stroke="rgba(255,255,255,0.12)" strokeWidth={2} strokeDasharray="6 10" />
 					<g transform={`translate(0 ${bob})`}>
-						<Iceberg cx={CX} waterY={WATER} s={s} floeH={FLOE_H} glint={glint} />
-						<CarIcon cx={CX - 10} ground={WATER - FLOE_H * 0.83} />
+						{/* A: floe only, nothing grows below */}
+						<Iceberg cx={AX} waterY={WATER} s={0} floeW={FLOE_W} floeH={FLOE_H} />
+						{/* B: same floe, a hidden mass that grows */}
+						<Iceberg cx={BX} waterY={WATER} s={s} halfW={190} depth={520} floeW={FLOE_W} floeH={FLOE_H} glint={glint} />
+						{/* A's car, with "seen" rays */}
+						<g opacity={Math.min(1, carIn * 1.3)} transform={`translate(0 ${(1 - carIn) * -60})`}>
+							<CarIcon cx={AX} ground={WATER - FLOE_H * 0.83} w={150} />
+						</g>
+						{Array.from({length: 9}, (_, i) => {
+							const a = Math.PI * (1.08 + (i / 8) * 0.84);
+							const r0 = 98;
+							const r1 = r0 + 22 + 10 * seen;
+							const cy = WATER - FLOE_H * 0.83 - 28;
+							return <line key={i} x1={AX + Math.cos(a) * r0} y1={cy + Math.sin(a) * r0} x2={AX + Math.cos(a) * r1} y2={cy + Math.sin(a) * r1} stroke={C.ink} strokeWidth={4} strokeLinecap="round" opacity={seenIn * (0.45 + 0.55 * seen) * topOut} />;
+						})}
 					</g>
-					{/* water drawn over the mass so the surface reads as a surface */}
-					<path d={waterBody} fill="url(#dmm5water)" />
-					{/* light shafts from the surface, swaying (continuous motion + a look of its own) */}
-					{[-120, 120, 360, 600, 840, 1080].map((x0, i) => {
-						const sway = Math.sin(frame / (28 + i * 5) + i * 1.7) * 60;
-						const top = x0 + sway;
-						const w0 = 70 + (i % 3) * 30;
-						return <path key={i} d={`M${top} ${WATER + 6}L${top + w0} ${WATER + 6}L${top + w0 + 260} ${WATER + 900}L${top + 140} ${WATER + 900}Z`} fill={`rgba(54,217,121,${0.05 + 0.03 * Math.sin(frame / 17 + i)})`} />;
+					{/* water over the masses so the surface reads as a surface */}
+					<path d={`${surface}L1180 2400L-100 2400Z`} fill="url(#dmm5water)" />
+					{[-80, 180, 440, 700, 960].map((x0, i) => {
+						const sway = Math.sin(frame / (28 + i * 5) + i * 1.7) * 50;
+						return <path key={i} d={`M${x0 + sway} ${WATER + 6}L${x0 + sway + 80} ${WATER + 6}L${x0 + sway + 300} ${WATER + 700}L${x0 + sway + 160} ${WATER + 700}Z`} fill={`rgba(54,217,121,${0.045 + 0.025 * Math.sin(frame / 17 + i)})`} />;
 					})}
 					<path d={surface} fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth={2.5} />
 					{BUBBLES.map((b, i) => {
-						const y = WATER + 760 - ((frame * b.v + b.off) % 720);
-						return y > WATER + 14 ? <circle key={i} cx={b.x + Math.sin(frame / 12 + i) * 6} cy={y} r={b.r} fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth={1.5} /> : null;
+						const y = WATER + 560 - ((frame * b.v + b.off) % 560);
+						return y > WATER + 14 ? <circle key={i} cx={b.x + Math.sin(frame / 12 + i) * 5} cy={y} r={b.r} fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth={1.5} /> : null;
 					})}
 				</svg>
-				{/* what everyone sees: the payment rides on the car */}
-				<div style={{position: 'absolute', left: CX - 260, width: 520, top: WATER - FLOE_H - 150 + bob, textAlign: 'center', opacity: Math.min(1, pillIn * 1.4), transform: `scale(${pillPulse})`}}>
-					<div style={{display: 'inline-block', padding: '8px 22px', borderRadius: 999, border: `2px solid ${C.ink}`, background: C.bg, color: C.ink, fontSize: 30, fontWeight: 900, letterSpacing: 2, whiteSpace: 'nowrap'}}>
-						CAR PAYMENT · {usd(MONTHLY.value)}/MO
-					</div>
-				</div>
-			</Camera2D>
+
+				{/* names + roles (what each person does with the same $700) */}
+				{people.map((p) => (
+					<React.Fragment key={p.name}>
+						<div style={{position: 'absolute', left: p.x - 230, width: 460, top: 418, textAlign: 'center', opacity: topOut}}>
+							<div style={nameStyle}>{p.name}</div>
+							<div style={{fontSize: 30, fontWeight: 800, color: C.muted, marginTop: 4, opacity: fadeIn(frame, T.same - 4)}}>{usd(MONTHLY.value)}/MO</div>
+						</div>
+						<div style={{position: 'absolute', left: p.x - 230, width: 460, top: 522, textAlign: 'center', opacity: fadeIn(frame, p.roleAt - 3, 8) * topOut, transform: `scale(${0.85 + 0.15 * sp(frame, fps, p.roleAt - 3, 'bouncy')})`}}>
+							<span style={p.roleStyle}>{p.role}</span>
+						</div>
+						<div style={{position: 'absolute', left: p.x - 230, width: 460, top: p.tagY, textAlign: 'center', fontSize: 24, fontWeight: 900, letterSpacing: 3, color: p.tagColor, opacity: fadeIn(frame, p.tagAt - 2, 8) * topOut}}>
+							{p.tag}
+						</div>
+					</React.Fragment>
+				))}
 			</AbsoluteFill>
 
 			{/* legibility band behind captions */}
-			<AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(8,13,10,0.92) 0%, rgba(8,13,10,0.6) 18%, rgba(8,13,10,0) 26%, rgba(8,13,10,0) 66%, rgba(8,13,10,0.88) 72%)'}} />
+			<AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(8,13,10,0.92) 0%, rgba(8,13,10,0.6) 17%, rgba(8,13,10,0) 21%, rgba(8,13,10,0) 67%, rgba(8,13,10,0.88) 70%)'}} />
 
-			<WordCaptions pages={PAGES} y={196} size={76} />
+			<WordCaptions pages={PAGES} y={196} size={72} />
 			<Headline
 				y={196}
 				at={T.headline}
 				stagger={6}
 				align="center"
 				lines={[
-					{text: 'BUILD WHAT', size: 88},
-					{text: 'NOBODY SEES.', size: 88, color: C.accent},
+					{text: `SAME ${usd(MONTHLY.value)} A MONTH.`, size: 76},
+					{text: 'SPEND IT, OR GROW IT.', size: 70, color: C.accent},
 				]}
 			/>
 
-			{/* readouts */}
-			<div style={{position: 'absolute', left: dmm.safe.left, width: 888, top: 1318, height: 150, fontVariantNumeric: 'tabular-nums'}}>
-				<div style={{position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'baseline', gap: 28, opacity: growRead}}>
-					<span style={{fontSize: 38, fontWeight: 800, letterSpacing: 3, color: C.muted}}>INVESTED · MONTH {shownMonths}</span>
-					<span style={{fontSize: 62, fontWeight: 900, color: C.accent}}>{usd(Math.round(balance(shownMonths) / 10) * 10)}</span>
-				</div>
-				<div style={{position: 'absolute', inset: 0, display: 'flex', justifyContent: 'space-around', opacity: frame >= T.totals ? 1 : 0}}>
-					<Stat label={`PUT IN · ${YEARS.value} YRS`} value={usd(PUT_IN.value)} color={C.muted} opacity={Math.min(1, totalsIn * 1.3)} shift={(1 - totalsIn) * 20} />
-					<div style={{width: 2, height: 110, background: 'rgba(255,255,255,0.14)', opacity: totals2In}} />
-					<Stat label="COULD GROW TO" value={k(B_FINAL.value)} color={C.accent} opacity={Math.min(1, totals2In * 1.3)} shift={(1 - totals2In) * 20} />
-				</div>
+			{/* what each person has invested */}
+			<div style={{position: 'absolute', left: 0, width: 1080, top: 1338, fontVariantNumeric: 'tabular-nums'}}>
+				{[
+					{x: AX, label: 'A · INVESTED', value: usd(0), color: C.muted},
+					{x: BX, label: frame >= T.growDone ? `B · AFTER ${YEARS.value} YEARS` : `B · MONTH ${shownMonths}`, value: usd(Math.round(balance(shownMonths) / 10) * 10), color: C.accent},
+				].map((c) => (
+					<div key={c.x} style={{position: 'absolute', left: c.x - 220, width: 440, textAlign: 'center', opacity: fadeIn(frame, T.invests - 4)}}>
+						<div style={{fontSize: 26, fontWeight: 800, letterSpacing: 3, color: C.muted}}>{c.label}</div>
+						<div style={{fontSize: 68, fontWeight: 900, color: c.color, letterSpacing: -1}}>{c.value}</div>
+					</div>
+				))}
 			</div>
 
-			<div style={{opacity: signIn}}>
+			<div style={{opacity: prog(frame, T.sign, 16)}}>
 				<Signature y={1462} />
 			</div>
 			<div style={{position: 'absolute', left: dmm.safe.left, top: 1506, width: 888, fontSize: 23, lineHeight: 1.3, fontWeight: 600, color: C.muted}}>
@@ -150,7 +168,7 @@ export const DMM005: React.FC<{showSafeZones?: boolean; audio?: boolean}> = ({sh
 			{showSafeZones && <SafeZoneOverlay />}
 			{audio && (
 				<>
-					<Html5Audio src={staticFile('daily/audio/dmm005-sfx-v01.wav')} />
+					<Html5Audio src={staticFile('daily/audio/dmm005-sfx-v02.wav')} />
 					<Sequence from={VO_OFFSET} layout="none" name="voice: Stack voice">
 						<Html5Audio src={staticFile('daily/voice/DMM-005/voice.mp3')} />
 					</Sequence>
@@ -159,11 +177,3 @@ export const DMM005: React.FC<{showSafeZones?: boolean; audio?: boolean}> = ({sh
 		</AbsoluteFill>
 	);
 };
-
-/** Stacked stat: small label over a big number (two side by side under the berg). */
-const Stat: React.FC<{label: string; value: string; color: string; opacity?: number; shift?: number}> = ({label, value, color, opacity = 1, shift = 0}) => (
-	<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, opacity, transform: `translateY(${shift}px)`}}>
-		<span style={{fontSize: 28, fontWeight: 800, letterSpacing: 3, color: dmm.color.muted}}>{label}</span>
-		<span style={{fontSize: 76, fontWeight: 900, color, letterSpacing: -1}}>{value}</span>
-	</div>
-);

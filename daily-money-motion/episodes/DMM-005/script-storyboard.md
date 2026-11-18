@@ -1,17 +1,19 @@
-# DMM-005 — script and storyboard
+# DMM-005 — script and storyboard (v2, clarity rework)
+
+**One-sentence message (clarity rule):** Two people have the same $700 a month; the one who spends it on a car has something everyone can see, the one who invests it instead quietly builds about $121K.
 
 **Pillar:** building-wealth · **Engine:** B (narrated motion graphics) · **Composition:** `DMM005` (450 frames, 1080×1920, 30 fps)
-**Narration (Stack voice, 8.14 s, starts at 0.2 s):**
-> Everyone sees your car payment. Nobody sees what you invest. Seven hundred a month for ten years could grow to about a hundred twenty thousand. That's the part under the surface.
+**Narration (Stack voice, 10.07 s, starts at 0.2 s):**
+> Two people, same seven hundred a month. One spends it on a car payment, and everyone sees it. The other invests it instead, and nobody sees it. Ten years later, the investor could have about a hundred twenty thousand.
 
-**Metaphor:** an iceberg cut by a waterline. The small floe above water carries a car and the pill "CAR PAYMENT · $700/MO" (what everyone sees). Below the surface, a faceted mass grows month by month as the same $700 is invested; its area ∝ the balance (both axes scale by √balance).
+**Picture:** two icebergs side by side, divided by a dashed line, labelled PERSON A (left) and PERSON B (right), each "$700/MO". A's car lands on A's floe; nothing grows under A. B's hidden mass grows under the water month by month (area ∝ balance).
 
 | Frames | Words | Picture | Sound |
 |---|---|---|---|
-| 0–53 | "Everyone sees your car payment." | Hook caption readable on frame 0; car on the floe, pill pulses on "payment"; waves move | soft water lap |
-| 53–100 | "Nobody sees what you invest." | Camera dives under the surface; INVESTED · MONTH 0 $0 | slow underwater air sweep |
-| 100–206 | "Seven hundred a month for ten years could grow to about a hundred twenty thousand." | Faceted mass builds month 0 → 120 with a live counter to $121,160 | very soft rising swell |
-| 208–250 | "That's the part under the surface." | Pull-out: small visible tip vs huge hidden mass | soft low chime at month 120 |
-| 256–449 | (after voice) | PUT IN · 10 YRS $84,000 \| COULD GROW TO $121K; headline BUILD WHAT / NOBODY SEES.; light shafts sway; constant slow push; glint sweeps up through the mass; signature | soft tink (headline), soft chime (glint) |
+| 0–62 | "Two people, same seven hundred a month." | Pull-back from 1.25×; PERSON A / PERSON B; "$700/MO" under both | soft water lap |
+| 65–140 | "One spends it on a car payment, and everyone sees it." | A: "SPENDS IT · CAR PAYMENT"; the car lands on A's floe; glow rays + "EVERYONE SEES IT" | soft low tink |
+| 141–216 | "The other invests it instead, and nobody sees it." | B: "INVESTS IT INSTEAD"; B's mass starts growing under water; "NOBODY SEES IT"; bottom: A · INVESTED $0 \| B · MONTH n | dark underwater air |
+| 217–308 | "Ten years later, the investor could have about a hundred twenty thousand." | B's mass reaches month 120 → B · AFTER 10 YEARS $121,160 | very soft rising swell, chime |
+| 318–449 | (after voice) | Headline: SAME $700 A MONTH. / SPEND IT, OR GROW IT.; slow vertical drift; glint through B's mass; signature | soft tink, soft chime |
 
 Every number is computed in `video/src/daily/episodes/dmm005/facts.ts`. EXAMPLE footnote on screen for the full 15 s.

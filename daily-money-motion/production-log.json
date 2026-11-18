@@ -249,27 +249,33 @@
           "at": "2026-11-17T10:03:08.003Z",
           "status": "NEEDS_FIXING",
           "note": "creative score 8.8 < 9"
+        },
+        {
+          "at": "2026-11-18T20:50:56.150Z",
+          "status": "NEEDS_FIXING",
+          "note": "creative score 8.8 < 9"
         }
       ],
       "published": [],
-      "hook": "EVERYONE SEES YOUR CAR PAYMENT.",
-      "layout": "waterline-depth-reveal",
-      "metaphor": "iceberg: the visible tip carries the car payment; the invested money is the mass below the waterline",
+      "hook": "TWO PEOPLE, SAME $700 A MONTH.",
+      "layout": "two-icebergs-side-by-side",
+      "metaphor": "two icebergs: person A's car sits on top (seen), person B's invested money grows below the waterline (unseen)",
       "visual_tags": [
         "iceberg",
         "waterline",
-        "underwater",
-        "facets",
+        "two-people",
+        "side-by-side",
         "car-icon"
       ],
       "engine": "B-narrated",
-      "hook_pattern": "seen vs unseen contrast + word-synced captions",
+      "hook_pattern": "two-people comparison (spend vs invest) + word-synced captions",
       "reference_ids": [
         "REF-0013"
       ],
-      "final_render": "video/renders/daily/DMM-005/DMM-005_v03.mp4",
+      "final_render": "video/renders/daily/DMM-005/DMM-005_v06.mp4",
       "cover": "daily-money-motion/episodes/DMM-005/cover.png",
-      "qc_score": 8.8
+      "qc_score": 8.8,
+      "clarity_score": 9
     }
   ]
 }

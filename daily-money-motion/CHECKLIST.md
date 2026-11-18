@@ -13,6 +13,14 @@ Every episode follows this list. **When a problem shows up twice, it gets a line
 - [ ] The hook is readable on frame 0 **and** there's meaningful motion in the first second.
 - [ ] Every number lives in `facts.ts`, computed in code. Hypotheticals are labelled EXAMPLE. Returns are never guaranteed.
 
+## B2. Clarity: anybody can get it (creator rule, 2026-11-18)
+- [ ] **The 5-second test:** someone who knows nothing about money gets the point from the narration ALONE, and again from the pictures ALONE (sound off). Write the one-sentence message in `script-storyboard.md` before building.
+- [ ] **Plain words.** Short sentences (≤ 10 words each), everyday words, no jargon ("compound", "index fund", "net worth") unless it's explained on screen in the same breath.
+- [ ] **Comparisons are explicit.** If two options are compared, SAY the comparison word ("instead", "or", "versus", "two people") and SHOW them as two separate things side by side, labelled. Never merge two alternatives into one object (DMM-005 v03 lesson: the car payment and the investing were drawn as one iceberg and read as one person doing both).
+- [ ] **Every symbol is labelled** the first time it appears (what is the iceberg/ring/tray?). No unexplained metaphor.
+- [ ] **The ending states the takeaway in words** on screen (a 2-line headline), not only as a picture.
+- [ ] Score **Clarity** in qc-report.md; below 9 means NEEDS FIXING, whatever the average.
+
 ## C. Voice and audio (permanent default)
 - [ ] Stack voice from `config.json → narrator`, via `voice_tts.py` (cached; never regenerate just to fix a mix).
 - [ ] **No music.** SFX only, fixed gain, at least 20 dB below the voice during speech, ducked 6 dB. No impacts, no repetitive ticks.
@@ -41,3 +49,4 @@ Every episode follows this list. **When a problem shows up twice, it gets a line
 | Claimed to have "watched" a reference | DMM-001/002 research | Evidence levels in the library; wording rule above |
 | Music and SFX competing with the voice | DMM-003 v02 | **Auto: SFX-under-voice ratio, no-music residual test, voice-untouched test** |
 | A 3-line caption hits the hero object | DMM-003 v01 | Caption page breaks are set by hand; review at the narrowest moment |
+| Two alternatives drawn as one object; viewer confused ("is everyone paying $700 but not investing?") | DMM-005 v03 (creator feedback) | Section B2: say the comparison word, show the options side by side, labelled; Clarity score ≥ 9 |

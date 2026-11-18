@@ -36,6 +36,7 @@ Work from the repo root. Never publish or queue anything. The creator approves e
 - **The idea:** one clear message with educational or emotional value. No generic quotes, no filler.
 - **Rotation:** saving · investing · discipline · wealth · spending habits · meaningful messages.
 - **The script:** natural and conversational, in the creator's voice. About 25–35 words, narration ≤ 12 s. Hook in 0–2 s. Every number goes in `facts.ts`; never imply guaranteed returns.
+- **Clarity first (creator rule):** anybody, with no money knowledge, must get the message from the narration alone AND from the pictures alone. Plain words, short sentences, explicit comparison words ("instead", "or", "two people"), alternatives shown side by side and labelled, every symbol labelled, takeaway written on screen at the end. Follow CHECKLIST.md section B2 line by line.
 - **The treatment:** pick a NEW metaphor and visual treatment. Run `dmm.mjs search <metaphor words>` and `dmm.mjs check <ID>` (after `set metaphor` / `set visual_tags` / `set hook` / `set layout`). Fix every duplicate risk. No reused trays, columns, split dashboards or pipes as the hero.
 
 ## 4 · Narration (before any timing)
@@ -60,10 +61,10 @@ Work from the repo root. Never publish or queue anything. The creator approves e
 ## 7 · Gate (honest)
 - Write `episodes/<ID>/qc-report.md` with:
   - the automated table (copy `QC_AUTO.md`)
-  - human-judgment scores 1–10 for: hook, script and accuracy, voice clarity and timing, SFX levels, captions, visual quality, transitions and camera, layout and safe zones, payoff, technical, originality, likely retention
+  - human-judgment scores 1–10 for: **clarity (anybody gets the message; < 9 = NEEDS FIXING)**, hook, script and accuracy, voice clarity and timing, SFX levels, captions, visual quality, transitions and camera, layout and safe zones, payoff, technical, originality, likely retention
   - the corrections made (with root causes)
   - remaining concerns and what was NOT verified, in particular: **"audio measured, not listened to"**
-- `dmm.mjs gate <ID> <avg score> <qc_auto.json>` → **READY FOR MY REVIEW** (≥ 9 and 0 FAIL) or **NEEDS FIXING**. Never claim more than the gate gives.
+- `dmm.mjs gate <ID> <avg score> <qc_auto.json> <clarity score>` → **READY FOR MY REVIEW** (avg ≥ 9, clarity ≥ 9 and 0 FAIL) or **NEEDS FIXING**. Never claim more than the gate gives.
 
 ## 8 · Deliver (always, even when it isn't finished)
 - `cover.png`, `caption.md`, `metadata.json`, `script-storyboard.md`, `adaptation-notes.md`, `asset-manifest.json` in `episodes/<ID>/`.

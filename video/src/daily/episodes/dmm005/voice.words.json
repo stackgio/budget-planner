@@ -1,163 +1,203 @@
 {
- "cache_key": "f59783e95dc643802800",
+ "cache_key": "0a1955c8e4f08b885eb7",
  "voice_id": "xwJCF4OpyrvnHPQlIyZD",
  "model_id": "eleven_multilingual_v2",
- "text": "Everyone sees your car payment. Nobody sees what you invest. Seven hundred a month for ten years could grow to about a hundred twenty thousand. That's the part under the surface.",
+ "text": "Two people, same seven hundred a month. One spends it on a car payment, and everyone sees it. The other invests it instead, and nobody sees it. Ten years later, the investor could have about a hundred twenty thousand.",
  "words": [
   {
-   "text": "Everyone",
-   "start": 0.035,
-   "end": 0.476
+   "text": "Two",
+   "start": 0.046,
+   "end": 0.209
   },
   {
-   "text": "sees",
-   "start": 0.511,
-   "end": 0.708
+   "text": "people,",
+   "start": 0.267,
+   "end": 0.639
   },
   {
-   "text": "your",
-   "start": 0.743,
-   "end": 0.848
+   "text": "same",
+   "start": 0.755,
+   "end": 1.022
+  },
+  {
+   "text": "seven",
+   "start": 1.068,
+   "end": 1.277
+  },
+  {
+   "text": "hundred",
+   "start": 1.312,
+   "end": 1.521
+  },
+  {
+   "text": "a",
+   "start": 1.544,
+   "end": 1.567
+  },
+  {
+   "text": "month.",
+   "start": 1.614,
+   "end": 1.892
+  },
+  {
+   "text": "One",
+   "start": 1.974,
+   "end": 2.148
+  },
+  {
+   "text": "spends",
+   "start": 2.183,
+   "end": 2.438
+  },
+  {
+   "text": "it",
+   "start": 2.461,
+   "end": 2.519
+  },
+  {
+   "text": "on",
+   "start": 2.554,
+   "end": 2.612
+  },
+  {
+   "text": "a",
+   "start": 2.647,
+   "end": 2.67
   },
   {
    "text": "car",
-   "start": 0.906,
-   "end": 1.045
+   "start": 2.728,
+   "end": 2.891
   },
   {
-   "text": "payment.",
-   "start": 1.103,
-   "end": 1.474
+   "text": "payment,",
+   "start": 2.949,
+   "end": 3.251
   },
   {
-   "text": "Nobody",
-   "start": 1.567,
-   "end": 1.95
+   "text": "and",
+   "start": 3.274,
+   "end": 3.367
+  },
+  {
+   "text": "everyone",
+   "start": 3.448,
+   "end": 3.843
   },
   {
    "text": "sees",
-   "start": 2.009,
-   "end": 2.194
+   "start": 3.878,
+   "end": 4.098
   },
   {
-   "text": "what",
-   "start": 2.229,
-   "end": 2.334
+   "text": "it.",
+   "start": 4.145,
+   "end": 4.284
   },
   {
-   "text": "you",
-   "start": 2.368,
-   "end": 2.45
+   "text": "The",
+   "start": 4.342,
+   "end": 4.458
   },
   {
-   "text": "invest.",
-   "start": 2.508,
-   "end": 3.007
+   "text": "other",
+   "start": 4.516,
+   "end": 4.69
   },
   {
-   "text": "Seven",
-   "start": 3.123,
-   "end": 3.413
-  },
-  {
-   "text": "hundred",
-   "start": 3.448,
-   "end": 3.68
-  },
-  {
-   "text": "a",
-   "start": 3.715,
-   "end": 3.738
-  },
-  {
-   "text": "month",
-   "start": 3.796,
-   "end": 3.982
-  },
-  {
-   "text": "for",
-   "start": 4.017,
-   "end": 4.122
-  },
-  {
-   "text": "ten",
-   "start": 4.18,
-   "end": 4.354
-  },
-  {
-   "text": "years",
-   "start": 4.412,
-   "end": 4.656
-  },
-  {
-   "text": "could",
-   "start": 4.714,
-   "end": 4.853
-  },
-  {
-   "text": "grow",
-   "start": 4.876,
-   "end": 5.039
-  },
-  {
-   "text": "to",
-   "start": 5.085,
+   "text": "invests",
+   "start": 4.748,
    "end": 5.132
   },
   {
+   "text": "it",
+   "start": 5.178,
+   "end": 5.248
+  },
+  {
+   "text": "instead,",
+   "start": 5.294,
+   "end": 5.759
+  },
+  {
+   "text": "and",
+   "start": 5.817,
+   "end": 5.979
+  },
+  {
+   "text": "nobody",
+   "start": 6.06,
+   "end": 6.432
+  },
+  {
+   "text": "sees",
+   "start": 6.49,
+   "end": 6.722
+  },
+  {
+   "text": "it.",
+   "start": 6.78,
+   "end": 6.954
+  },
+  {
+   "text": "Ten",
+   "start": 7.036,
+   "end": 7.233
+  },
+  {
+   "text": "years",
+   "start": 7.279,
+   "end": 7.454
+  },
+  {
+   "text": "later,",
+   "start": 7.512,
+   "end": 7.802
+  },
+  {
+   "text": "the",
+   "start": 7.837,
+   "end": 7.918
+  },
+  {
+   "text": "investor",
+   "start": 7.976,
+   "end": 8.313
+  },
+  {
+   "text": "could",
+   "start": 8.348,
+   "end": 8.464
+  },
+  {
+   "text": "have",
+   "start": 8.487,
+   "end": 8.603
+  },
+  {
    "text": "about",
-   "start": 5.201,
-   "end": 5.422
+   "start": 8.626,
+   "end": 8.812
   },
   {
    "text": "a",
-   "start": 5.457,
-   "end": 5.48
+   "start": 8.847,
+   "end": 8.87
   },
   {
    "text": "hundred",
-   "start": 5.538,
-   "end": 5.817
+   "start": 8.94,
+   "end": 9.207
   },
   {
    "text": "twenty",
-   "start": 5.851,
-   "end": 6.118
+   "start": 9.242,
+   "end": 9.485
   },
   {
    "text": "thousand.",
-   "start": 6.165,
-   "end": 6.676
-  },
-  {
-   "text": "That's",
-   "start": 6.722,
-   "end": 6.978
-  },
-  {
-   "text": "the",
-   "start": 7.024,
-   "end": 7.094
-  },
-  {
-   "text": "part",
-   "start": 7.129,
-   "end": 7.303
-  },
-  {
-   "text": "under",
-   "start": 7.338,
-   "end": 7.477
-  },
-  {
-   "text": "the",
-   "start": 7.523,
-   "end": 7.593
-  },
-  {
-   "text": "surface.",
-   "start": 7.628,
-   "end": 8.139
+   "start": 9.543,
+   "end": 10.066
   }
  ]
 }

@@ -1,17 +1,19 @@
-# DMM-005 — captions
+# DMM-005 — captions (v2)
 
 ## Instagram / Facebook Reels
-Everyone sees your car payment. Nobody sees what you invest. 🧊
+Two people. Same $700 a month. 🧊
 
-What people see is what you spend. What builds wealth is usually under the surface. Example: $700/month invested for 10 years at an assumed 7%/yr average return, compounded monthly, could grow to about $121K (you put in $84,000). Returns are not guaranteed. Not financial advice.
+Person A spends it on a car payment, and everyone sees it. Person B invests it instead, and nobody sees it. Ten years later, Person B could have about $121K.
 
-What would you rather build? 👇
+Example: $700/month invested for 10 years at an assumed 7%/yr average return, compounded monthly ($84,000 put in). Returns are not guaranteed. Not financial advice.
+
+Which one are you? 👇
 
 #buildingwealth #investing #personalfinance #moneyhabits #carpayment #stackwithgio
 
 ## TikTok
-Everyone sees the car payment. Nobody sees the investing 🧊 Example: $700/mo for 10 yrs ≈ $121K at an assumed 7% (not guaranteed). Not advice. #investing #buildingwealth #moneytok #personalfinance
+Same $700 a month: one spends it on a car, one invests it 🧊 10 yrs later ≈ $121K (example, 7%/yr assumed, not guaranteed). Not advice. #investing #buildingwealth #moneytok #personalfinance
 
 ## YouTube Shorts
-Title: Everyone sees your car payment. Nobody sees what you invest. #shorts
-Description: The wealth that matters is usually under the surface. Example: $700/mo invested for 10 years at an assumed 7%/yr, compounded monthly: about $121K ($84,000 put in). Not guaranteed. Not financial advice. #investing #buildingwealth #shorts
+Title: Same $700 a month. One spends it, one invests it. #shorts
+Description: Person A spends $700/mo on a car payment. Person B invests it instead. Example: 10 years at an assumed 7%/yr, compounded monthly ≈ $121K ($84,000 put in). Not guaranteed. Not financial advice. #investing #buildingwealth #shorts

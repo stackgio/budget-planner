@@ -150,12 +150,42 @@ if STT:
         r = json.load(urllib.request.urlopen(req, timeout=120))
         heard = [w for w in r["words"] if w.get("type") == "word"]
         norm = lambda t: re.sub(r"[^a-z0-9']", "", t.lower())
-        a, b = [norm(w["text"]) for w in words], [norm(w["text"]) for w in heard]
+        open(os.path.join(OUT, "stt_transcript.txt"), "w").write(" ".join(w["text"] for w in heard) + "\n")
+        # STT writes spoken numbers as digits ("seven hundred" -> "700", "a hundred twenty
+        # thousand" -> "120,000"). Collapse number words in the script to the same digits so a
+        # correctly heard number isn't counted as missing words (DMM-005 v06 false WARN).
+        U = {"zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12, "thirteen": 13, "fourteen": 14, "fifteen": 15, "sixteen": 16, "seventeen": 17, "eighteen": 18, "nineteen": 19, "twenty": 20, "thirty": 30, "forty": 40, "fifty": 50, "sixty": 60, "seventy": 70, "eighty": 80, "ninety": 90}
+        def collapse(toks):
+            out, i = [], 0
+            while i < len(toks):
+                j, total, cur = i, 0, 0
+                if toks[j] == "a" and j + 1 < len(toks) and toks[j + 1] in ("hundred", "thousand", "million"):
+                    cur, j = 1, j + 1
+                start = j
+                while j < len(toks) and (toks[j] in U or toks[j] in ("hundred", "thousand", "million")):
+                    t = toks[j]
+                    if t in U: cur += U[t]
+                    elif t == "hundred": cur = max(cur, 1) * 100
+                    else: total += max(cur, 1) * (1000 if t == "thousand" else 1000000); cur = 0
+                    j += 1
+                has_mult = any(x in ("hundred", "thousand", "million") for x in toks[start:j])
+                if j > start and (has_mult or j - start > 1):
+                    out.append(str(total + cur)); i = j
+                else:
+                    out.append(toks[i]); i += 1
+            return out
+        a = collapse([norm(w["text"]) for w in words])
+        b = collapse([norm(w["text"].replace(",", "").replace("$", "")) for w in heard])  # same normalisation both sides
         m = sum(x.size for x in difflib.SequenceMatcher(None, a, b).get_matching_blocks())
         rec("speech", "intelligibility (STT)", "PASS" if m == len(a) else "WARN", f"{m}/{len(a)} words recognised in the final mix", m / len(a))
-        d = [abs(h["start"] - (w["start"] + nar["offset_sec"])) for w, h in zip(words, heard)] if len(heard) == len(words) else []
+        json.dump(heard, open(os.path.join(OUT, "stt_words.json"), "w"))
+        # sync over the words that match exactly (numbers may come back as digits, so word
+        # counts can differ; aligning the equal tokens still measures every other word)
+        a0, b0 = [norm(w["text"]) for w in words], [norm(w["text"]) for w in heard]
+        pairs = [(words[blk.a + k], heard[blk.b + k]) for blk in difflib.SequenceMatcher(None, a0, b0, autojunk=False).get_matching_blocks() for k in range(blk.size)]
+        d = [abs(h["start"] - (w["start"] + nar["offset_sec"])) for w, h in pairs] if len(pairs) >= 0.8 * len(words) else []
         rec("speech", "sync vs plan", ("PASS" if max(d) <= TH["sync_max_sec"] else "WARN") if d else "WARN",
-            f"max |error| {max(d):.3f} s" if d else "word counts differ; per-word sync not computed", max(d) if d else None)
+            f"max |error| {max(d):.3f} s over {len(d)} aligned words" if d else "too few aligned words; per-word sync not computed", max(d) if d else None)
         ev = [w["text"] for w in r["words"] if w.get("type") == "audio_event"]
         rec("speech", "STT audio events", "FAIL" if any("music" in e.lower() for e in ev) else "PASS", f"{ev or 'none'}")
     except Exception as e:  # noqa

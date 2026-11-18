@@ -6,13 +6,14 @@ NO background music. Effects are generated from the episode's own event timing
 (timing.ts -> T, passed as JSON), at FIXED gain (never peak-normalised), and
 ducked a further 6 dB while the narration plays. No impacts, no repetitive ticks.
 
-Events:
+Events (v2, two-people clarity rework):
   - hook: a soft water lap at the surface (no impact)
-  - "Nobody" (dive under the surface): a slow, dark underwater air sweep
-  - growth (Seven ... thousand): a very soft rising swell while the hidden mass builds
+  - "car" (A's car lands on the floe): one soft low tink
+  - "invests" (B's hidden mass starts): a slow, dark underwater air sweep
+  - growth (invests ... thousand): a very soft rising swell while B's mass builds
   - month 120: one soft low chime
   - headline: one soft glass tink
-  - glint (light sweeps up through the mass): one soft high chime
+  - glint: one soft high chime
 The narration is NOT in this file; Remotion plays the untouched ElevenLabs MP3.
 Usage: python3 scripts/daily/make_dmm005_sfx.py timing.json out.wav
 """
@@ -66,12 +67,13 @@ def swell(d, level, lo=200, hi=1600, rise=True):
 
 
 place(swell(1.6, 0.07, 300, 2200, rise=False), fr(2))                # water lap
-place(swell(1.4, 0.13, 120, 700, rise=False), fr(T["nobody"]))       # dive under the surface
-g0, g1 = fr(T["seven"] - 4), fr(T["growDone"])
-place(swell(g1 - g0, 0.10, 180, 1200), g0)                          # hidden mass building
-place(chime(0.08, 990), fr(T["growDone"] + 2))                      # month 120
-place(chime(0.06, 2640, dur=0.8), fr(T["headline"] + 2), pan=0.1)   # headline lands
-place(chime(0.07, 1760, dur=1.2), fr(T["glint"] + 6), pan=-0.1)     # glint sweep
+place(chime(0.06, 1180, dur=0.7), fr(T["car"] + 2), pan=-0.2)         # A's car lands
+place(swell(1.4, 0.12, 120, 700, rise=False), fr(T["invests"]))      # B: under the surface
+g0, g1 = fr(T["invests"]), fr(T["growDone"])
+place(swell(g1 - g0, 0.10, 180, 1200), g0, pan=0.2)                 # B's hidden mass building
+place(chime(0.08, 990), fr(T["growDone"] + 2), pan=0.2)             # month 120
+place(chime(0.06, 2640, dur=0.8), fr(T["headline"] + 2))            # headline lands
+place(chime(0.06, 1760, dur=1.2), fr(T["glint"] + 6), pan=0.2)      # glint sweep
 
 gain = np.full(N, GAIN)
 v0, v1 = int(fr(VO_OFFSET) * SR), int((fr(T["voEnd"]) + 0.15) * SR)

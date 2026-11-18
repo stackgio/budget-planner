@@ -7,21 +7,21 @@
   "reference_ids": [
     "REF-0013"
   ],
-  "hook": "EVERYONE SEES YOUR CAR PAYMENT.",
-  "hook_pattern": "seen vs unseen contrast + word-synced captions",
-  "layout": "waterline-depth-reveal",
-  "metaphor": "iceberg: the visible tip carries the car payment; the invested money is the mass below the waterline",
-  "final_render": "video/renders/daily/DMM-005/DMM-005_v03.mp4",
+  "hook": "TWO PEOPLE, SAME $700 A MONTH.",
+  "hook_pattern": "two-people comparison (spend vs invest) + word-synced captions",
+  "layout": "two-icebergs-side-by-side",
+  "metaphor": "two icebergs: person A's car sits on top (seen), person B's invested money grows below the waterline (unseen)",
+  "final_render": "video/renders/daily/DMM-005/DMM-005_v06.mp4",
   "cover": "daily-money-motion/episodes/DMM-005/cover.png",
   "narration": {
     "voice_name": "Stack voice ",
     "voice_id": "xwJCF4OpyrvnHPQlIyZD",
     "model_id": "eleven_multilingual_v2",
-    "cache_key": "f59783e95dc643802800",
+    "cache_key": "0a1955c8e4f08b885eb7",
     "file": "video/public/daily/voice/DMM-005/voice.mp3",
-    "duration_sec": 8.14,
+    "duration_sec": 10.07,
     "offset_sec": 0.2,
-    "script": "Everyone sees your car payment. Nobody sees what you invest. Seven hundred a month for ten years could grow to about a hundred twenty thousand. That's the part under the surface."
+    "script": "Two people, same seven hundred a month. One spends it on a car payment, and everyone sees it. The other invests it instead, and nobody sees it. Ten years later, the investor could have about a hundred twenty thousand."
   },
   "disclosures": [
     "EXAMPLE footnote 0-15 s",
@@ -30,6 +30,7 @@
     "Not advice"
   ],
   "audio": "voice + subtle SFX, no music (creator adds music per platform)",
-  "sfx_track": "public/daily/audio/dmm005-sfx-v01.wav",
-  "publishing": "OFF"
+  "sfx_track": "public/daily/audio/dmm005-sfx-v02.wav",
+  "publishing": "OFF",
+  "revision": "v2 clarity rework after creator feedback 2026-11-18"
 }
