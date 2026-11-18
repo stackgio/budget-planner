@@ -1,0 +1,10 @@
+{
+ "file": "renders/etf-whats-inside/etf-whats-inside_v05_final-voice.mp4",
+ "composition": "EtfWhatsInside",
+ "mode": "education",
+ "title": "4 ETFs: What's the Difference?",
+ "narration": "aligned",
+ "durationSec": 52.367,
+ "props": "public/voice/etf-whats-inside/props.json",
+ "renderedAt": "2026-11-18T21:38:12.462Z"
+}

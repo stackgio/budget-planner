@@ -120,7 +120,6 @@ export const MainScene: React.FC = () => {
 	const tCostco = opt('L13', 'Costco', -0.08);
 	const tAns = cue('L14', 'QQQM', -0.05);
 	const tList = cue('L14', 'list', -0.05);
-	const tBigCo = cue('L14', 'big', -0.05);
 	const tNasdaq = cue('L14', 'Nasdaq', -0.05);
 	const tIncludes = cue('L15', 'includes', -0.05);
 	const tCostco2 = opt('L15', 'Costco', -0.05);
@@ -251,17 +250,12 @@ export const MainScene: React.FC = () => {
 			{frame >= tNow && (
 				<>
 					{drop(tLeanTech, 0, 'TECH', 99999)}
-					<Txt y={170} size={116} ls={-4} o={Math.min(1, S(tList, 'bouncy') * 1.5)} s={mix(0.6, 1, S(tList, 'bouncy'))}>
+					{/* QQQM label: NASDAQ-100, big enough to read on a phone */}
+					<Txt y={172} size={80} ls={-3} o={Math.min(1, S(tList, 'bouncy') * 1.5)} s={mix(0.7, 1, S(tList, 'bouncy'))}>
+						NASDAQ-
+					</Txt>
+					<Txt y={252} size={124} ls={-4} o={Math.min(1, S(tList + 4, 'bouncy') * 1.5)} s={mix(0.6, 1, S(tList + 4, 'bouncy'))}>
 						{FACTS.nasdaq100.value}
-					</Txt>
-					<Txt y={292} size={27} ls={1} weight={800} color={P.body} o={prog(frame, tBigCo, 5)}>
-						LARGE NONFINANCIAL
-					</Txt>
-					<Txt y={326} size={27} ls={1} weight={800} color={P.body} o={prog(frame, tNasdaq, 5)}>
-						NASDAQ-LISTED
-					</Txt>
-					<Txt y={360} size={27} ls={1} weight={800} color={P.body} o={prog(frame, tNasdaq + 4, 5)}>
-						COMPANIES
 					</Txt>
 				</>
 			)}
@@ -306,15 +300,12 @@ export const MainScene: React.FC = () => {
 			{frame >= tNow && (
 				<>
 					{drop(tLeanTech + 3, 0, 'TECH', 99999)}
-					<Txt y={170} size={116} ls={-4} o={Math.min(1, S(tInfo - 4, 'bouncy') * 1.5)} s={mix(0.6, 1, S(tInfo - 4, 'bouncy'))}>
-						U.S.
-					</Txt>
-					<Txt y={309} size={27} ls={1} weight={800} color={P.body} o={prog(frame, tInfo, 5)}>
-						INFORMATION
-					</Txt>
-					<Txt y={343} size={27} ls={1} weight={800} color={P.body} o={prog(frame, tInfo + 5, 5)}>
-						TECHNOLOGY
-					</Txt>
+					{/* VGT label: U.S. TECH SECTOR, same scale as QQQM's */}
+					{(['U.S.', 'TECH', 'SECTOR'] as const).map((w, i) => (
+						<Txt key={w} y={[172, 252, 330][i]} size={i === 2 ? 66 : 80} ls={-3} o={Math.min(1, S(tInfo - 4 + i * 4, 'bouncy') * 1.5)} s={mix(0.7, 1, S(tInfo - 4 + i * 4, 'bouncy'))}>
+							{w}
+						</Txt>
+					))}
 					{drop(tSoft, 1, 'SOFTWARE', 99999)}
 					{drop(tChips, 2, 'COMPUTER CHIPS', 99999, {fontSize: 29, accent: 0})}
 					{frame >= tCostco3 - 2 && (
