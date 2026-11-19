@@ -109,14 +109,14 @@ export const MathScene: React.FC = () => {
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<CinematicBg lightX={540} lightY={1040} light={0.9} warm={false} />
-			{/* footnote: readable for the whole math beat */}
-			<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right, top: story.safe.top + 14, textAlign: 'center', fontSize: 31, fontWeight: 700, lineHeight: 1.3, color: P.body}}>
-				<span style={{color: P.ink, fontWeight: 900, letterSpacing: 2}}>Estimated</span> • assumes $2,500/month in eligible purchases
-			</div>
-			<Row top={300} p={pA} dim={dim}>
+			<Row top={230} p={pA} dim={dim}>
 				<span style={{...num, fontSize: 104, color: P.ink}}>{fmt$(FACTS.monthlySpend.value)}</span>
 				<span style={{...unit, fontSize: 52}}>/month</span>
 			</Row>
+			{/* assumption sits right under the figure it qualifies */}
+			<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right, top: 352, textAlign: 'center', fontSize: 34, fontWeight: 700, color: P.ink, opacity: 0.88}}>
+				Assumes $2,500/month in eligible purchases
+			</div>
 			{receiptOut < 1 && print > 0 && (
 				<SpendReceipt
 					print={print}

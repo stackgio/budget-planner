@@ -57,6 +57,8 @@ export const HookScene: React.FC = () => {
 	const tCut = cue('L1', 'finally');
 	const tGold = cue('L2', 'gold');
 	const tL3 = cue('L3');
+	const tName = cue('L2', 'robinhood');
+	const tNameEnd = cue('L2', 'card', 0, 'end');
 	const tBest = cue('L3', 'best');
 
 	// swipe
@@ -75,7 +77,11 @@ export const HookScene: React.FC = () => {
 	const push = kf(frame, [tL3, tL3 + 4.8 * fps], [0, 1], E.inOut);
 	const underline = sp(frame, fps, tGold, 'snappy');
 	const shine = kf(frame, [tBest - 4, tBest + 22], [0, 1], E.inOut);
+	// brief close-up on the card name while it's said: "Robinhood Gold Card"
+	const zoom = kf(frame, [tName - 3, tName + 9, tNameEnd + 4, tNameEnd + 16], [0, 1, 1, 0], E.inOut);
 	const label = {x: PANEL_LEFT + DASH.goldLabel.x * S, y: TOP_TOP + DASH.goldLabel.y * S, w: DASH.goldLabel.w * S, h: DASH.goldLabel.h * S};
+	const lcx = label.x + label.w / 2;
+	const lcy = label.y + label.h / 2;
 
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
@@ -106,7 +112,8 @@ export const HookScene: React.FC = () => {
 			)}
 
 			{showDash && (
-				<div style={{position: 'absolute', inset: 0, transform: `scale(${1 + 0.035 * push})`, transformOrigin: '540px 900px'}}>
+				<div style={{position: 'absolute', inset: 0, WebkitMaskImage: 'linear-gradient(180deg, transparent 486px, #000 516px, #000 1290px, transparent 1390px)', maskImage: 'linear-gradient(180deg, transparent 486px, #000 516px, #000 1290px, transparent 1390px)'}}>
+				<div style={{position: 'absolute', inset: 0, transform: `translate(${(540 - lcx) * zoom}px, ${(820 - lcy) * zoom}px) scale(${(1 + 0.6 * zoom) * (1 + 0.035 * push)})`, transformOrigin: `${lcx}px ${lcy}px`}}>
 					<div style={{position: 'absolute', left: PANEL_LEFT, top: TOP_TOP}}>
 						<ScreenshotCrop src={DASH.src} natural={DASH.natural} region={DASH.top} w={PANEL_W} radius={24} style={{position: 'relative'}} />
 					</div>
@@ -128,6 +135,7 @@ export const HookScene: React.FC = () => {
 							)}
 						</ScreenshotCrop>
 					</div>
+				</div>
 				</div>
 			)}
 			<Sfx at={SWIPE_END - 1} name="beep" volume={0.3} />

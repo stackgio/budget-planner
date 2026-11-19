@@ -17,7 +17,7 @@ const DEF: VideoDef<Id> = {
 	scenes: SCENES,
 	tailSec: TAIL_SEC,
 	captionCase: 'sentence',
-	captionInactiveAlpha: 0.78,
+	captionInactiveAlpha: 0.9,
 	captionRight: 120, // stay clear of the right-hand platform buttons
 	components: {hook: HookScene, math: MathScene, bridge: BridgeScene, redeem: RedeemScene, plan: PlanScene, end: EndScene},
 	looks: {hook: cinematic, math: cinematic, bridge: cinematic, redeem: cinematic, plan: cinematic, end: cinematic},

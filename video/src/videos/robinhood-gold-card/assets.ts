@@ -18,12 +18,23 @@ export const DASH = {
 };
 
 export const CASHBACK = {
-	src: `${dir}/cashback.png`,
+	src: `${dir}/cashback.png`, // IMG_0754.png
 	natural: {w: 1206, h: 2622},
-	/** enlarged middle: points side → arrow → Robinhood (APY text and Redeem button excluded) */
-	middle: {x: 200, y: 1040, w: 860, h: 520} as Region,
-	/** natural y of the transfer arrow row */
-	arrowY: 1308,
+	/** Banking → arrow → Robinhood plus the slider (APY copy above and Redeem button below are excluded) */
+	view: {x: 100, y: 980, w: 1006, h: 950} as Region,
+	/** measured from the screenshot (natural px) */
+	bg: '#0D0B08',
+	valueColor: '#878682',
+	pointsCenterX: 307,
+	cashCenterX: 899,
+	valueTop: 1373, // top of the digits
+	valueH: 71, // digit height
+	/** areas whose original static values / slider are replaced by animated layers */
+	pointsPatch: {x: 160, y: 1345, w: 300, h: 125} as Region,
+	cashPatch: {x: 690, y: 1345, w: 416, h: 125} as Region,
+	sliderPatch: {x: 120, y: 1740, w: 986, h: 180} as Region,
+	track: {x: 144, y: 1820, w: 918, h: 24, color: '#1C1A17'},
+	knob: {cx: 215.5, cy: 1831.5, r: 71.5, top: '#9D8446', bottom: '#69572C'},
 };
 
 export const PREAPPROVAL = {
