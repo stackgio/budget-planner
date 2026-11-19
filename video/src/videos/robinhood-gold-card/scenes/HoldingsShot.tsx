@@ -17,10 +17,10 @@ export const HoldingsShot: React.FC<{opacity?: number; y?: number}> = ({opacity 
 	return (
 		<AbsoluteFill style={{fontFamily: story.font, opacity, transform: `translateY(${y}px)`}}>
 			<CinematicBg lightX={540} lightY={760} light={0.9} warm={false} />
-			<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right, top: 520, textAlign: 'center', fontSize: 66, fontWeight: 900, letterSpacing: -1.5, color: P.ink}}>
+			<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right, top: 700, textAlign: 'center', fontSize: 66, fontWeight: 900, letterSpacing: -1.5, color: P.ink}}>
 				An ETF I already own.
 			</div>
-			<div style={{position: 'absolute', left: story.safe.left, top: 640, width: W, height: h}}>
+			<div style={{position: 'absolute', left: story.safe.left, top: 820, width: W, height: h}}>
 				{HOLDINGS.src ? (
 					<ScreenshotCrop src={HOLDINGS.src} natural={HOLDINGS.natural} region={HOLDINGS.row} w={W} radius={24} style={{position: 'relative', border: `2px solid ${P.line}`}} />
 				) : (

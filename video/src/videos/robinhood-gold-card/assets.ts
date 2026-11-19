@@ -39,7 +39,8 @@ export const PREAPPROVAL = {
  * While `src` is null the shot renders a clearly marked placeholder.
  */
 export const HOLDINGS: {src: string | null; natural: {w: number; h: number}; row: Region} = {
-	src: null,
-	natural: {w: 1, h: 1},
-	row: {x: 0, y: 0, w: 1, h: 1},
+	src: `${dir}/holdings.jpg`, // IMG_0756.jpeg
+	natural: {w: 1158, h: 814},
+	/** VOO row only, between the divider lines (SOFI and NVDA excluded) */
+	row: {x: 0, y: 353, w: 1158, h: 226},
 };
