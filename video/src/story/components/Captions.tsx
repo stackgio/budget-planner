@@ -30,7 +30,7 @@ const paginate = (n: Narration, maxChars = 20, maxWords = 4): Page[] => {
  * The spoken word is highlighted in brand green. `paletteAt(frame)` lets the
  * caption colour follow editorial / cinematic scenes.
  */
-export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number) => Palette}> = ({narration, paletteAt}) => {
+export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number) => Palette; textCase?: 'upper' | 'sentence'}> = ({narration, paletteAt, textCase = 'upper'}) => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const t = frame / fps;
@@ -54,10 +54,10 @@ export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number
 				flexWrap: 'wrap',
 				columnGap: 24,
 				fontFamily: story.font,
-				fontSize: 58,
+				fontSize: textCase === 'upper' ? 58 : 56,
 				fontWeight: 900,
 				letterSpacing: -1,
-				textTransform: 'uppercase',
+				textTransform: textCase === 'upper' ? 'uppercase' : 'none',
 				lineHeight: 1.1,
 				transform: `translateY(${(1 - pIn) * 14}px)`,
 				opacity: pIn * fade,

@@ -106,3 +106,29 @@ export const Screenshot: React.FC<{
 		</div>
 	);
 };
+
+/**
+ * A fixed crop of a REAL screenshot (pixels untouched — framing only).
+ * `region` is in the image's natural pixels; it is shown at width `w`
+ * (height follows the region's aspect ratio).
+ */
+export const ScreenshotCrop: React.FC<{
+	src: string;
+	natural: {w: number; h: number};
+	region: Region;
+	w: number;
+	radius?: number;
+	style?: React.CSSProperties;
+	children?: React.ReactNode;
+}> = ({src, natural, region, w, radius = 0, style, children}) => {
+	const s = w / region.w;
+	return (
+		<div style={{position: 'absolute', width: w, height: region.h * s, overflow: 'hidden', borderRadius: radius, ...style}}>
+			<Img
+				src={staticFile(src)}
+				style={{position: 'absolute', left: -region.x * s, top: -region.y * s, width: natural.w * s, height: natural.h * s, maxWidth: 'none'}}
+			/>
+			{children}
+		</div>
+	);
+};

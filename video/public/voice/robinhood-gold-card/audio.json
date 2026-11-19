@@ -1,0 +1,11 @@
+{
+ "durationSec": 52.924,
+ "codec": "mp3",
+ "sampleRate": 44100,
+ "channels": 1,
+ "container": "mp3",
+ "bitRate": "130623",
+ "file": "public/voice/robinhood-gold-card/voice.mp3",
+ "source": "/root/.claude/uploads/1758138b-92c0-5ee0-bef1-7a4c8e38fb4a/eed8e4a2-ElevenLabs_2026-11-19T20_40_06_Stack_voice__gen_s50_sim75_v4.mp3",
+ "sha256": "368774cd2d3b795374747c16f5ce4fa988971f3efc6bd273f759d2307a68df7e"
+}

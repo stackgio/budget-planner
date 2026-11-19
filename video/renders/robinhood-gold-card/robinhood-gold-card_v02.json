@@ -1,0 +1,10 @@
+{
+ "file": "renders/robinhood-gold-card/robinhood-gold-card_v02_final-voice.mp4",
+ "composition": "RobinhoodGoldCard",
+ "mode": "personal-journey",
+ "title": "This credit card pays me to invest",
+ "narration": "aligned",
+ "durationSec": 54.1,
+ "props": "public/voice/robinhood-gold-card/props.json",
+ "renderedAt": "2026-11-19T20:51:26.160Z"
+}
