@@ -23,13 +23,21 @@ const ease = Easing.bezier(0.22, 1, 0.36, 1);
 const easeIn = Easing.bezier(0.55, 0, 0.75, 0.3);
 
 // ---------- background: one continuous shot ----------
-const Background: React.FC = () => {
+/**
+ * Shared by OneGoodDay (v01) and OneGoodDayQuote (v02). Defaults reproduce v01 exactly.
+ * liftKeys: [seconds[], lift 0..1[]] for the light lift; textBox: darkening ellipse behind the type.
+ */
+export const Background: React.FC<{
+	totalSec?: number;
+	liftKeys?: [number[], number[]];
+	textBox?: {cx: number; cy: number; rx: number; ry: number};
+}> = ({totalSec = 10, liftKeys = [[0, 5.3, 5.6, 7.4, 10], [0, 0.12, 0.22, 0.72, 1]], textBox = {cx: BLOCK_CX, cy: BLOCK_CY, rx: 760, ry: 420}}) => {
 	const frame = useCurrentFrame();
-	const total = sec(10);
+	const total = sec(totalSec);
 	// Slow push-in across the whole shot (on top of the footage's own forward travel).
 	const scale = interpolate(frame, [0, total], [1, 1.04]);
-	// Near-black open; light lifts as "1 good day" lands (5.6 s) and keeps easing up.
-	const lift = interpolate(frame, [0, sec(5.3), sec(5.6), sec(7.4), total], [0, 0.12, 0.22, 0.72, 1], {
+	// Near-black open; light lifts subtly (v01: as "1 good day" lands at 5.6 s).
+	const lift = interpolate(frame, liftKeys[0].map(sec), liftKeys[1], {
 		easing: Easing.inOut(Easing.cubic),
 		extrapolateRight: 'clamp',
 	});
@@ -50,7 +58,7 @@ const Background: React.FC = () => {
 			{/* extra density behind the type block, falling off toward the horizon glow */}
 			<AbsoluteFill
 				style={{
-					background: `radial-gradient(ellipse 760px 420px at ${BLOCK_CX}px ${BLOCK_CY}px, rgba(${CHARCOAL},0.42), rgba(${CHARCOAL},0) 100%)`,
+					background: `radial-gradient(ellipse ${textBox.rx}px ${textBox.ry}px at ${textBox.cx}px ${textBox.cy}px, rgba(${CHARCOAL},0.42), rgba(${CHARCOAL},0) 100%)`,
 				}}
 			/>
 			{/* top + bottom vignettes keep the platform UI zones calm */}

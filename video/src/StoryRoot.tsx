@@ -4,6 +4,7 @@ import {MarcusGallery} from './story/gallery/MarcusGallery';
 import {story} from './story/theme';
 import {calculateDebtMetadata, DebtThreeThings, debtThreeThingsSchema} from './videos/debt-three-things/DebtThreeThings';
 import {OneGoodDay} from './videos/one-good-day/OneGoodDay';
+import {OneGoodDayQuote} from './videos/one-good-day/OneGoodDayQuote';
 // @motion-imports (scripts/motion/new-video.mjs adds imports above this line)
 
 /** Story-video compositions (Marcus / editorial / cinematic system). */
@@ -22,6 +23,7 @@ export const StoryCompositions: React.FC = () => (
 		/>
 		<Composition id="MarcusGallery" component={MarcusGallery} width={story.width} height={story.height} fps={story.fps} durationInFrames={90} />
 		<Composition id="OneGoodDay" component={OneGoodDay} width={story.width} height={story.height} fps={story.fps} durationInFrames={300} />
+		<Composition id="OneGoodDayQuote" component={OneGoodDayQuote} width={story.width} height={story.height} fps={story.fps} durationInFrames={270} />
 		{/* @motion-compositions (scripts/motion/new-video.mjs adds compositions above this line) */}
 	</>
 );

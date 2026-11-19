@@ -19,3 +19,18 @@ npx remotion render src/index.ts OneGoodDay renders/one-good-day/one-good-day_vN
   --codec=h264 --crf=16 --pixel-format=yuv420p --image-format=jpeg --jpeg-quality=95 --color-space=bt709 --muted \
   --browser-executable="$(ls -d /opt/pw-browsers/chromium_headless_shell-*/chrome-headless-shell-linux64/chrome-headless-shell | head -1)"
 ```
+
+---
+
+# v02 — `OneGoodDayQuote` (silent, 9 s)
+
+The full quote, exactly as supplied, is on screen and static from frame 0 to frame 269:
+
+> Remember all it takes is 1 good year, 1 good season, 1 good month, and it all starts with 1 good day.
+
+Phone wrap (`QUOTE_LINES` in `script.ts`; a check at load time asserts the lines join back to the exact quote):
+`Remember all it takes is` / `1 good year,` / `1 good season,` / `1 good month,` / `and it all starts with` / `1 good day.`
+Setup lines are Inter 700 at 62 px; payoff lines are Inter 900 at 100 px. Each numeral 1 is green, and the whole of "1 good day." is green on one unbreakable line.
+The block is centred at x 516, y 860, inside the safe band.
+Same footage (source 0.5–9.5 s), grade and 100→104% push-in as v01, with the light lifting gently across the 9 s.
+Render: the v01 command with composition `OneGoodDayQuote` and output `one-good-day_v02_silent.mp4`.
