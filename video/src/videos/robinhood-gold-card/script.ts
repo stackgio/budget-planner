@@ -10,9 +10,10 @@ export const META: VideoMeta = {
 	looks: ['cinematic', 'cinematic', 'cinematic', 'cinematic', 'cinematic', 'cinematic'],
 	hookStyle: 'bold-claim',
 	signatureMoves: [
-		'screenshot-first open: real Gold Card pull-back reveals the heading (balance cropped out)',
+		'frame-0 card swipe through a dark reader, match cut to the real dashboard (balance cropped out)',
+		'receipt prints on "bills and everyday stuff"',
 		'vertical rewards-math stack, each figure lands on its spoken word',
-		'labelled EXAMPLE $10 chip arcs across the real Cash back screen',
+		'labelled EXAMPLE $10 chip slides along the real Cash back arrow, hard cut to the real VOO row',
 		'Marcus match-cut from the pay-in-full beat into the ending question',
 	],
 };
@@ -42,8 +43,9 @@ export const SCENES: SceneDef<Id>[] = [
 	{id: 'math', firstLine: 'L4', transitionFrames: 18},
 	{id: 'bridge', firstLine: 'L7', transitionFrames: 16},
 	{id: 'redeem', firstLine: 'L9', transitionFrames: 0}, // hard cut on "I can go into the Rewards tab"
-	{id: 'plan', firstLine: 'L13', transitionFrames: 14},
+	{id: 'plan', firstLine: 'L13', transitionFrames: 0}, // VOO shot continues seamlessly across the line break
 	{id: 'end', firstLine: 'L14', transitionFrames: 8},
 ];
 
-export const TAIL_SEC = 1.4;
+/** brief hold on the final question, then cut */
+export const TAIL_SEC = 1.0;

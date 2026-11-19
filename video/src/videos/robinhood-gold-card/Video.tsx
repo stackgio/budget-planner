@@ -1,5 +1,4 @@
 import React from 'react';
-import {slide} from '@remotion/transitions/slide';
 import {iris, matchCut, panelSweep} from '../../story/components/Transitions';
 import {makeCalculateMetadata, NarratedVideo, narratedSchema, type NarratedProps, type VideoDef} from '../../story/lib/NarratedVideo';
 import {cinematic} from '../../story/theme';
@@ -18,6 +17,8 @@ const DEF: VideoDef<Id> = {
 	scenes: SCENES,
 	tailSec: TAIL_SEC,
 	captionCase: 'sentence',
+	captionInactiveAlpha: 0.78,
+	captionRight: 120, // stay clear of the right-hand platform buttons
 	components: {hook: HookScene, math: MathScene, bridge: BridgeScene, redeem: RedeemScene, plan: PlanScene, end: EndScene},
 	looks: {hook: cinematic, math: cinematic, bridge: cinematic, redeem: cinematic, plan: cinematic, end: cinematic},
 	transitions: {
@@ -26,7 +27,7 @@ const DEF: VideoDef<Id> = {
 		// chapter change: "here's how"
 		bridge: {presentation: panelSweep({color: cinematic.accent, direction: 'left'}), timing: 'spring'},
 		// redeem: hard cut (0 frames) on "I can go into the Rewards tab"
-		plan: {presentation: slide({direction: 'from-bottom'}), timing: 'spring'},
+		// plan: no transition (same VOO shot continues)
 		// same Marcus, same spot
 		end: {presentation: matchCut()},
 	},

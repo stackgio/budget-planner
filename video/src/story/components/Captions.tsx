@@ -30,7 +30,7 @@ const paginate = (n: Narration, maxChars = 20, maxWords = 4): Page[] => {
  * The spoken word is highlighted in brand green. `paletteAt(frame)` lets the
  * caption colour follow editorial / cinematic scenes.
  */
-export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number) => Palette; textCase?: 'upper' | 'sentence'}> = ({narration, paletteAt, textCase = 'upper'}) => {
+export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number) => Palette; textCase?: 'upper' | 'sentence'; inactiveAlpha?: number; right?: number}> = ({narration, paletteAt, textCase = 'upper', inactiveAlpha, right}) => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const t = frame / fps;
@@ -47,7 +47,7 @@ export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number
 			style={{
 				position: 'absolute',
 				left: story.safe.left,
-				right: story.safe.right - 48,
+				right: right ?? story.safe.right - 48,
 				top: story.captionTop,
 				display: 'flex',
 				justifyContent: 'center',
@@ -70,7 +70,8 @@ export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number
 					<span
 						key={i}
 						style={{
-							color: speaking ? pal.accent : active ? pal.ink : pal.name === 'cinematic' ? 'rgba(245,242,234,0.45)' : 'rgba(18,19,22,0.35)',
+							color: speaking ? pal.accent : active ? pal.ink : pal.name === 'cinematic' ? `rgba(245,242,234,${inactiveAlpha ?? 0.45})` : `rgba(18,19,22,${inactiveAlpha ?? 0.35})`,
+							textShadow: pal.name === 'cinematic' && inactiveAlpha !== undefined ? '0 2px 10px rgba(0,0,0,0.85)' : undefined,
 							transform: `scale(${speaking ? 1.06 : 1})`,
 							display: 'inline-block',
 							transformOrigin: '50% 60%',

@@ -55,6 +55,10 @@ export type VideoDef<Id extends string> = {
 	transitions?: Partial<Record<Id, SceneTransition>>;
 	/** caption casing (default 'upper', as in the reference video) */
 	captionCase?: 'upper' | 'sentence';
+	/** opacity of not-yet-spoken caption words (default 0.45 cinematic / 0.35 editorial) */
+	captionInactiveAlpha?: number;
+	/** caption right margin in px (default story.safe.right - 48) */
+	captionRight?: number;
 	/** lead before a scene's first line (sec), default 0.12 */
 	leadSec?: number;
 };
@@ -123,7 +127,7 @@ export function NarratedVideo<Id extends string>({def, props}: {def: VideoDef<Id
 					})}
 				</TransitionSeries>
 			</SfxContext.Provider>
-			{props.captions && <Captions narration={narration} paletteAt={paletteAt} textCase={def.captionCase} />}
+			{props.captions && <Captions narration={narration} paletteAt={paletteAt} textCase={def.captionCase} inactiveAlpha={def.captionInactiveAlpha} right={def.captionRight} />}
 			{props.voiceAudio && <Html5Audio src={staticFile(props.voiceAudio)} volume={props.voiceVolume} />}
 		</AbsoluteFill>
 	);

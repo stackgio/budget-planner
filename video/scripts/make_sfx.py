@@ -126,4 +126,6 @@ save("chime", c1 + c2, -13)
 save("tick", tone(3200, 0.04, 0.012, (1,)) + 0.5 * tone(1800, 0.04, 0.01, (1,)), -16)
 # click: UI click
 save("click", tone(1400, 0.05, 0.015, (1, 0.3)), -16)
+# beep: soft card-reader confirmation (single sine, quick decay)
+save("beep", tone(1760, 0.14, 0.08, (1, 0.08)), -20)
 print("wrote", sorted(os.listdir(OUT)))
