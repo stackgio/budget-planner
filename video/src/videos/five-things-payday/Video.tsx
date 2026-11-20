@@ -5,8 +5,7 @@ import {makeCalculateMetadata, NarratedVideo, narratedSchema, type NarratedProps
 import {cinematic} from '../../story/theme';
 import {SCENES, SCRIPT, TAIL_SEC} from './script';
 import {ProgressOverlay} from './ui';
-import {HookScene} from './scenes/HookScene';
-import {BillsScene} from './scenes/BillsScene';
+import {OpenScene} from './scenes/OpenScene';
 import {GroceriesScene} from './scenes/GroceriesScene';
 import {SavingsScene} from './scenes/SavingsScene';
 import {DebtScene} from './scenes/DebtScene';
@@ -19,10 +18,9 @@ const DEF: VideoDef<Id> = {
 	script: SCRIPT,
 	scenes: SCENES,
 	tailSec: TAIL_SEC,
-	components: {hook: HookScene, bills: BillsScene, groceries: GroceriesScene, savings: SavingsScene, debt: DebtScene, fun: FunScene, end: EndScene},
-	looks: {hook: cinematic, bills: cinematic, groceries: cinematic, savings: cinematic, debt: cinematic, fun: cinematic, end: cinematic},
+	components: {open: OpenScene, groceries: GroceriesScene, savings: SavingsScene, debt: DebtScene, fun: FunScene, end: EndScene},
+	looks: {open: cinematic, groceries: cinematic, savings: cinematic, debt: cinematic, fun: cinematic, end: cinematic},
 	transitions: {
-		bills: {presentation: matchCut()},
 		groceries: {presentation: slide({direction: 'from-right'}), timing: 'spring'},
 		savings: {presentation: slide({direction: 'from-bottom'}), timing: 'spring'},
 		debt: {presentation: slide({direction: 'from-right'}), timing: 'spring'},

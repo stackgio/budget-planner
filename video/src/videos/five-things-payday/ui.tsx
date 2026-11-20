@@ -221,9 +221,10 @@ export const ProgressOverlay: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const {cue} = useCues();
-	const showAt = cue('L2', 'before', 0.15);
-	const show = sp(frame, fps, showAt, 'smooth');
-	if (frame < showAt) return null;
+	const showAt = cue('L2', 'five', -0.05);
+	const hideAt = cue('L16', undefined, -0.25);
+	const show = sp(frame, fps, showAt, 'smooth') * (1 - kf(frame, [hideAt, hideAt + 8], [0, 1], E.in));
+	if (frame < showAt || show <= 0.001) return null;
 	const starts = STEP_START.map((l) => cue(l, undefined, -0.12));
 	const dones = STEP_DONE.map(([l, w, o]) => cue(l, w, o));
 	return (

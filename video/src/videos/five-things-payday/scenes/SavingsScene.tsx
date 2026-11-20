@@ -1,7 +1,6 @@
 import React from 'react';
 import {useCurrentFrame, useVideoConfig} from 'remotion';
 import {Sfx} from '../../../story/components/Chrome';
-import {NumberCounter} from '../../../story/components/NumberCounter';
 import {useCues} from '../../../story/lib/cues';
 import {arc, E, kf, mix, prog, sp} from '../../../story/lib/motion';
 import {FACTS} from '../facts';
@@ -41,8 +40,7 @@ export const SavingsScene: React.FC = () => {
 	const land = tTr + 22;
 
 	const accIn = [sp(frame, fps, Math.min(tMove, 0), 'snappy'), sp(frame, fps, tSav - 2, 'snappy')];
-	const rise = prog(frame, t20 - 3, 16, E.out);
-	const count = prog(frame, t20 - 3, 14, E.out);
+	const rise = prog(frame, t20 - 11, 11, E.out); // fully in by the spoken "20"
 	const fly = prog(frame, tTr, 22, E.inOut);
 	const landed = sp(frame, fps, land, 'snappy');
 	const arrow = kf(frame, [tTr - 2, tTr + 10], [0, 1], E.out);
@@ -96,7 +94,7 @@ export const SavingsScene: React.FC = () => {
 			{rise > 0 && (
 				<div style={{position: 'absolute', left: fx, top: fy, transform: `translate(-50%, -50%) scale(${bump})`, display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: Math.min(1, rise * 3)}}>
 					<ExampleTag size={Math.max(24, fs * 0.13)} style={{marginBottom: fs * 0.06}} />
-					<NumberCounter value={FACTS.savingsExample.value * count} fixedDigits={2} fontSize={fs} color={C.green} style={{letterSpacing: -fs * 0.03}} />
+					<div style={{fontSize: fs, fontWeight: 900, color: C.green, letterSpacing: -fs * 0.03, lineHeight: 1}}>${FACTS.savingsExample.value}</div>
 				</div>
 			)}
 

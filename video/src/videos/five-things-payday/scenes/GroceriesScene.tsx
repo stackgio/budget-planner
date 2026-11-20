@@ -1,13 +1,13 @@
 import React from 'react';
 import {useCurrentFrame, useVideoConfig} from 'remotion';
 import {useCues} from '../../../story/lib/cues';
-import {arc, E, kf, mix, prog, sp} from '../../../story/lib/motion';
+import {arc, E, mix, prog, sp} from '../../../story/lib/motion';
 import {C, L, Label, Stage, StepHeading} from '../ui';
 
-const CARD = {w: 430, h: 300, top: 640};
+const CARD = {w: 430, h: 300, top: 600};
 const LEFTS = [92, 558];
-const BR = {x: 72, y: 980, w: 936, h: 370};
-const IN = {s: 0.86, top: 1064, lefts: [150, 560]};
+const BR = {x: 72, y: 990, w: 936, h: 370};
+const IN = {s: 0.86, top: 1074, lefts: [150, 560]};
 
 const GasIcon = () => (
 	<svg width={84} height={84} viewBox="0 0 24 24">
@@ -60,27 +60,26 @@ export const GroceriesScene: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const {cue} = useCues();
-	const tFigure = cue('L5', 'figure');
 	const tGas = cue('L5', 'gas');
 	const tGro = cue('L5', 'groceries');
 	const tLook = cue('L6', 'look');
-	const tGives = cue('L7', 'gives');
-	const tNum = cue('L7', 'number', -0.12);
+	const tTime = cue('L6', 'time');
+	const tNum = cue('L7', 'gives', 0.05);
 
-	const ph = Math.max(sp(frame, fps, -12, 'snappy') * 0.6, sp(frame, fps, tFigure, 'snappy'));
 	const fills = [sp(frame, fps, tGas, 'snappy'), sp(frame, fps, tGro, 'snappy')];
 	const lastIn = sp(frame, fps, tLook, 'snappy');
 	const bars = prog(frame, tLook + 4, 22, E.out);
-	const brIn = sp(frame, fps, tGives - 4, 'snappy');
+	const brIn = sp(frame, fps, tTime, 'snappy');
 	const moves = [prog(frame, tNum, 18, E.inOut), prog(frame, tNum + 4, 18, E.inOut)];
 	const arrived = sp(frame, fps, tNum + 20, 'snappy');
-	const lastOut = kf(frame, [tNum, tNum + 10], [0, 1]);
+	const ghost = Math.min(1, Math.max(moves[0], moves[1]) * 3);
+	const arrows = prog(frame, tNum + 2, 14, E.out);
 
 	return (
 		<Stage>
 			<StepHeading n={2} text="GAS + GROCERIES" at={-12} />
 
-			<div style={{position: 'absolute', left: LEFTS[0], top: CARD.top - 58, display: 'flex', alignItems: 'center', gap: 16, opacity: lastIn * (1 - lastOut), transform: `translateY(${(1 - lastIn) * 16}px)`}}>
+			<div style={{position: 'absolute', left: LEFTS[0], top: CARD.top - 58, display: 'flex', alignItems: 'center', gap: 16, opacity: lastIn, transform: `translateY(${(1 - lastIn) * 16}px)`}}>
 				<svg width={30} height={30} viewBox="0 0 24 24">
 					<path d="M12 7v5l3.5 2M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4 4v4h4" fill="none" stroke={C.soft} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
 				</svg>
@@ -108,6 +107,17 @@ export const GroceriesScene: React.FC = () => {
 				</Label>
 			</div>
 
+			{/* last period stays visible as a ghost and feeds the new budget */}
+			{ghost > 0 &&
+				[0, 1].map((i) => (
+					<SpendCard key={`g${i}`} label={i === 0 ? 'GAS' : 'GROCERIES'} icon={i === 0 ? <GasIcon /> : <CartIcon />} fill={1} bars={1} budget={0} style={{left: LEFTS[i], top: CARD.top, opacity: 0.32 * ghost}} />
+				))}
+			{[0, 1].map((i) => (
+				<svg key={`a${i}`} width={40} height={64} viewBox="0 0 40 64" style={{position: 'absolute', left: LEFTS[i] + CARD.w / 2 - 20, top: CARD.top + CARD.h + 4, opacity: arrows}}>
+					<path d="M20 4v50M8 42l12 14 12-14" fill="none" stroke={C.green} strokeWidth={5} strokeLinecap="round" strokeLinejoin="round" strokeDasharray={80} strokeDashoffset={80 * (1 - arrows)} />
+				</svg>
+			))}
+
 			{[0, 1].map((i) => {
 				const m = moves[i];
 				const [x, y] = arc(m, [LEFTS[i], CARD.top], [IN.lefts[i], IN.top], 40);
@@ -120,7 +130,7 @@ export const GroceriesScene: React.FC = () => {
 						fill={fills[i]}
 						bars={bars}
 						budget={arrived}
-						style={{left: x, top: y, opacity: ph, transform: `scale(${s * (0.96 + 0.04 * ph)})`, transformOrigin: '0 0'}}
+						style={{left: x, top: y, opacity: Math.min(1, fills[i] * 1.5), transform: `translateY(${(1 - fills[i]) * 40}px) scale(${s})`, transformOrigin: '0 0'}}
 					/>
 				);
 			})}

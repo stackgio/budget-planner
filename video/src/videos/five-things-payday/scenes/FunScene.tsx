@@ -1,20 +1,20 @@
 import React from 'react';
 import {useCurrentFrame, useVideoConfig} from 'remotion';
-import {NumberCounter} from '../../../story/components/NumberCounter';
 import {useCues} from '../../../story/lib/cues';
-import {E, kf, prog, sp} from '../../../story/lib/motion';
+import {E, prog, sp} from '../../../story/lib/motion';
 import {FACTS} from '../facts';
 import {C, ExampleTag, Label, Panel, Stage, StepHeading} from '../ui';
 
-const BOX = {x: 150, y: 560, w: 780, h: 330};
-const CHIPS = {y: 1088, h: 104, lefts: [120, 560], w: 400};
-const BR = {x: 92, y: 1060, w: 896, h: 160};
+const BOX = {x: 150, y: 550, w: 780, h: 300};
+const BR = {x: 92, y: 990, w: 896, h: 150};
+const CHIPS = {y: BR.y + 24, h: 102, lefts: [120, 560], w: 400};
+const SPAN = {y: 1236, x0: 92, x1: 988};
 
 /**
- * STEP 5 — one $80 limit (EXAMPLE) covers both fun categories: the LIMIT box
- * appears on "limit", fills with "$80 TOTAL" on "80", the two labels arrive on
- * "eating out" / "hanging out", one bracket ties them to the $80, then
- * UNTIL NEXT PAYCHECK closes the scene.
+ * STEP 5 — one $80 limit (EXAMPLE) that covers both fun categories and lasts
+ * until the next paycheck. "$80 TOTAL" is fully on screen on the spoken
+ * "80 bucks" (no roll); the labels arrive on "eating out" / "hanging out",
+ * one bracket ties them to the $80, and a TODAY → NEXT PAYCHECK span closes it.
  */
 export const FunScene: React.FC = () => {
 	const frame = useCurrentFrame();
@@ -24,17 +24,17 @@ export const FunScene: React.FC = () => {
 	const t80 = cue('L15', '80');
 	const tEat = cue('L15', 'eating');
 	const tHang = cue('L15', 'hanging');
-	const tBr = cue('L15', 'whatever', -0.2);
+	const tBr = cue('L15', 'whatever', -0.25);
 	const tUntil = cue('L15', 'until');
 
 	const boxIn = Math.max(sp(frame, fps, -8, 'snappy') * 0.5, sp(frame, fps, tLimit - 3, 'snappy'));
-	const filled = sp(frame, fps, t80 - 2, 'snappy');
-	const count = prog(frame, t80 - 2, 16, E.out);
-	const totalIn = sp(frame, fps, t80 + 6, 'snappy');
-	const chips = [sp(frame, fps, tEat - 2, 'snappy'), sp(frame, fps, tHang - 2, 'snappy')];
-	const stem = prog(frame, tBr, 10, E.out);
-	const br = prog(frame, tBr + 6, 12, E.out);
-	const until = sp(frame, fps, tUntil, 'snappy');
+	const filled = prog(frame, t80 - 8, 8, E.out); // complete on the word
+	const chips = [sp(frame, fps, tEat - 3, 'snappy'), sp(frame, fps, tHang - 3, 'snappy')];
+	const stem = prog(frame, tBr, 9, E.out);
+	const br = prog(frame, tBr + 5, 10, E.out);
+	const span = prog(frame, tUntil - 2, 16, E.inOut);
+	const spanLbl = sp(frame, fps, tUntil - 2, 'snappy');
+	const endLbl = sp(frame, fps, tUntil + 10, 'snappy');
 
 	return (
 		<Stage>
@@ -57,12 +57,27 @@ export const FunScene: React.FC = () => {
 				<Label size={30} color={C.soft} style={{position: 'absolute', left: 36, top: 30, fontWeight: 900}}>
 					FUN MONEY LIMIT
 				</Label>
-				{filled > 0.01 && <ExampleTag size={26} style={{position: 'absolute', right: 30, top: 24, opacity: filled}} />}
-				{filled > 0.01 && (
-					<div style={{position: 'absolute', left: 0, right: 0, top: 96, display: 'flex', justifyContent: 'center', alignItems: 'baseline', gap: 26, opacity: Math.min(1, filled * 2)}}>
-						<NumberCounter value={FACTS.funExample.value * count} fixedDigits={2} fontSize={190} color={C.green} style={{letterSpacing: -6}} />
-						<div style={{fontSize: 74, fontWeight: 900, color: C.white, letterSpacing: -1, opacity: totalIn, transform: `translateX(${(1 - totalIn) * -20}px)`}}>TOTAL</div>
-					</div>
+				{filled > 0 && (
+					<>
+						<ExampleTag size={26} style={{position: 'absolute', right: 30, top: 24, opacity: filled}} />
+						<div
+							style={{
+								position: 'absolute',
+								left: 0,
+								right: 0,
+								top: 92,
+								display: 'flex',
+								justifyContent: 'center',
+								alignItems: 'baseline',
+								gap: 26,
+								opacity: filled,
+								transform: `scale(${0.9 + 0.1 * filled})`,
+							}}
+						>
+							<div style={{fontSize: 180, fontWeight: 900, color: C.green, letterSpacing: -6, lineHeight: 1}}>${FACTS.funExample.value}</div>
+							<div style={{fontSize: 74, fontWeight: 900, color: C.white, letterSpacing: -1}}>TOTAL</div>
+						</div>
+					</>
 				)}
 			</Panel>
 
@@ -83,7 +98,6 @@ export const FunScene: React.FC = () => {
 					transform: `scaleX(${0.9 + 0.1 * br})`,
 				}}
 			/>
-
 			{[0, 1].map((i) => (
 				<div
 					key={i}
@@ -112,11 +126,18 @@ export const FunScene: React.FC = () => {
 				</div>
 			))}
 
-			<div style={{position: 'absolute', left: 0, right: 0, top: BR.y + BR.h + 40, textAlign: 'center', opacity: until, transform: `translateY(${(1 - until) * 20}px)`}}>
-				<Label size={36} color={C.white} style={{fontWeight: 900, letterSpacing: 5}}>
-					UNTIL NEXT PAYCHECK
-				</Label>
+			{/* lasts until the next paycheck: TODAY ─────▶ NEXT PAYCHECK */}
+			<div style={{position: 'absolute', left: SPAN.x0, top: SPAN.y - 50, opacity: spanLbl}}>
+				<Label size={28} color={C.soft} style={{fontWeight: 900}}>TODAY</Label>
 			</div>
+			<div style={{position: 'absolute', right: 1080 - SPAN.x1, top: SPAN.y - 52, opacity: endLbl, transform: `translateY(${(1 - endLbl) * 12}px)`}}>
+				<Label size={32} color={C.white} style={{fontWeight: 900, letterSpacing: 3}}>UNTIL NEXT PAYCHECK</Label>
+			</div>
+			<svg width={1080} height={60} style={{position: 'absolute', left: 0, top: SPAN.y - 8, opacity: spanLbl}}>
+				<circle cx={SPAN.x0 + 10} cy={18} r={10} fill={C.green} />
+				<line x1={SPAN.x0 + 10} y1={18} x2={SPAN.x0 + 10 + (SPAN.x1 - SPAN.x0 - 30) * span} y2={18} stroke={C.green} strokeWidth={6} strokeLinecap="round" />
+				{span > 0.98 && <path d={`M${SPAN.x1 - 26} 4 L${SPAN.x1 - 4} 18 L${SPAN.x1 - 26} 32`} fill="none" stroke={C.green} strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" />}
+			</svg>
 		</Stage>
 	);
 };

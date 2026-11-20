@@ -10,6 +10,7 @@ export const META: VideoMeta = {
 	looks: ['cinematic'],
 	hookStyle: 'relatable situation (just got paid) + numbered promise, deposit card moving on frame 0',
 	signatureMoves: [
+		'v2: frame-0 JUST GOT PAID? + deposit alert, RENT DUE tile set aside before 2 s, pauses tightened (voice_tight.wav)',
 		'faceless: no Marcus — paycheck cards + checklist rows carry the story',
 		'matte black throughout (creator brief), green only for numbers and completed checks',
 		'persistent 5-step progress pills that fill as each action completes',
@@ -40,9 +41,8 @@ export const SCRIPT: ScriptLine[] = [
 ];
 
 /** Scenes start on these lines; `transitionFrames` is the transition INTO the scene. */
-export const SCENES: SceneDef<'hook' | 'bills' | 'groceries' | 'savings' | 'debt' | 'fun' | 'end'>[] = [
-	{id: 'hook', firstLine: 'L1'},
-	{id: 'bills', firstLine: 'L3', transitionFrames: 8}, // match cut: checklist row 1 continues
+export const SCENES: SceneDef<'open' | 'groceries' | 'savings' | 'debt' | 'fun' | 'end'>[] = [
+	{id: 'open', firstLine: 'L1'}, // hook + step 1 in one continuous shot (rent tile carries straight into step 1)
 	{id: 'groceries', firstLine: 'L5', transitionFrames: 14}, // slide: next step
 	{id: 'savings', firstLine: 'L8', transitionFrames: 16}, // slide up
 	{id: 'debt', firstLine: 'L11', transitionFrames: 14}, // slide
@@ -50,8 +50,8 @@ export const SCENES: SceneDef<'hook' | 'bills' | 'groceries' | 'savings' | 'debt
 	{id: 'end', firstLine: 'L16', transitionFrames: 6}, // match cut into the pull-back
 ];
 
-/** ~1 s of screenshot hold after the last word (voice ends 50.8 s). */
-export const TAIL_SEC = 1.15;
+/** Hold after the last word so the checklist + footer stay readable > 2 s in total. */
+export const TAIL_SEC = 1.3;
 
 /** When each step's action completes (line, word, offset sec) — drives the progress pills. */
 export const STEP_DONE: [string, string, number][] = [
