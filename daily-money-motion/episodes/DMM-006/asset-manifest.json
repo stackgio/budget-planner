@@ -1,0 +1,11 @@
+{
+  "episode": "DMM-006",
+  "assets": [
+    {"asset": "video/public/daily/voice/DMM-006/voice.mp3", "type": "narration", "source": "ElevenLabs TTS (eleven_multilingual_v2), the creator's own saved voice 'Stack voice ' (xwJCF4OpyrvnHPQlIyZD), generated 2026-11-20; cache key c1ee24eb32ab3b6eeae3. No voice was created or cloned.", "license": "Governed by the creator's ElevenLabs plan. CONFIRM the plan allows commercial use before posting.", "verified": false},
+    {"asset": "video/public/daily/audio/dmm006-sfx-v01.wav", "type": "sfx only (no music)", "source": "Synthesized by video/scripts/daily/make_dmm006_sfx.py from the episode timing", "license": "Original work owned by Stack With Gio", "verified": true},
+    {"asset": "@fontsource/inter", "type": "font", "license": "SIL Open Font License 1.1", "verified": true},
+    {"asset": "Receipt, printer, captions", "type": "vector/motion", "source": "Drawn in code (video/src/daily/episodes/dmm006/Episode.tsx, components/WordCaptions.tsx). Generic subscription categories, no brand names or logos.", "license": "Original", "verified": true}
+  ],
+  "music": "none (creator adds music per platform)",
+  "third_party_footage": "none"
+}

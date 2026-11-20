@@ -1,0 +1,193 @@
+{
+ "cache_key": "c1ee24eb32ab3b6eeae3",
+ "voice_id": "xwJCF4OpyrvnHPQlIyZD",
+ "model_id": "eleven_multilingual_v2",
+ "text": "Fifteen a month feels like nothing. But you don't pay just one. Streaming. Music. Cloud storage. An app. A gym you skip. One more. That's ninety a month. Over a thousand a year. Check your subscriptions today.",
+ "words": [
+  {
+   "text": "Fifteen",
+   "start": 0.035,
+   "end": 0.395
+  },
+  {
+   "text": "a",
+   "start": 0.43,
+   "end": 0.453
+  },
+  {
+   "text": "month",
+   "start": 0.499,
+   "end": 0.685
+  },
+  {
+   "text": "feels",
+   "start": 0.743,
+   "end": 0.975
+  },
+  {
+   "text": "like",
+   "start": 1.01,
+   "end": 1.161
+  },
+  {
+   "text": "nothing.",
+   "start": 1.207,
+   "end": 1.567
+  },
+  {
+   "text": "But",
+   "start": 1.614,
+   "end": 1.741
+  },
+  {
+   "text": "you",
+   "start": 1.776,
+   "end": 1.858
+  },
+  {
+   "text": "don't",
+   "start": 1.904,
+   "end": 2.055
+  },
+  {
+   "text": "pay",
+   "start": 2.09,
+   "end": 2.218
+  },
+  {
+   "text": "just",
+   "start": 2.264,
+   "end": 2.415
+  },
+  {
+   "text": "one.",
+   "start": 2.485,
+   "end": 2.775
+  },
+  {
+   "text": "Streaming.",
+   "start": 2.949,
+   "end": 3.471
+  },
+  {
+   "text": "Music.",
+   "start": 3.553,
+   "end": 4.04
+  },
+  {
+   "text": "Cloud",
+   "start": 4.11,
+   "end": 4.377
+  },
+  {
+   "text": "storage.",
+   "start": 4.412,
+   "end": 4.83
+  },
+  {
+   "text": "An",
+   "start": 4.865,
+   "end": 4.992
+  },
+  {
+   "text": "app.",
+   "start": 5.05,
+   "end": 5.341
+  },
+  {
+   "text": "A",
+   "start": 5.364,
+   "end": 5.445
+  },
+  {
+   "text": "gym",
+   "start": 5.526,
+   "end": 5.677
+  },
+  {
+   "text": "you",
+   "start": 5.724,
+   "end": 5.793
+  },
+  {
+   "text": "skip.",
+   "start": 5.851,
+   "end": 6.177
+  },
+  {
+   "text": "One",
+   "start": 6.235,
+   "end": 6.432
+  },
+  {
+   "text": "more.",
+   "start": 6.467,
+   "end": 6.78
+  },
+  {
+   "text": "That's",
+   "start": 6.85,
+   "end": 7.07
+  },
+  {
+   "text": "ninety",
+   "start": 7.129,
+   "end": 7.396
+  },
+  {
+   "text": "a",
+   "start": 7.442,
+   "end": 7.465
+  },
+  {
+   "text": "month.",
+   "start": 7.512,
+   "end": 7.767
+  },
+  {
+   "text": "Over",
+   "start": 7.825,
+   "end": 8.046
+  },
+  {
+   "text": "a",
+   "start": 8.092,
+   "end": 8.115
+  },
+  {
+   "text": "thousand",
+   "start": 8.173,
+   "end": 8.51
+  },
+  {
+   "text": "a",
+   "start": 8.557,
+   "end": 8.58
+  },
+  {
+   "text": "year.",
+   "start": 8.638,
+   "end": 8.986
+  },
+  {
+   "text": "Check",
+   "start": 9.044,
+   "end": 9.265
+  },
+  {
+   "text": "your",
+   "start": 9.3,
+   "end": 9.404
+  },
+  {
+   "text": "subscriptions",
+   "start": 9.439,
+   "end": 9.95
+  },
+  {
+   "text": "today.",
+   "start": 9.996,
+   "end": 10.414
+  }
+ ]
+}

@@ -313,9 +313,14 @@
       "why_it_worked_hypothesis": "The gap between how a habit feels and what it adds up to; very short, so people rewatch to re-read",
       "adaptation_notes": "Future idea (spending pillar). Don't reuse its punchline structure verbatim.",
       "licensing": "Analysed only.",
-      "used_in": [],
+      "used_in": [
+        "DMM-006"
+      ],
       "our_post_performance": null,
-      "how_studied": "vidIQ watch_shortform_content: an AI-generated text walkthrough plus one still image. We did not view the video ourselves."
+      "how_studied": "vidIQ watch_shortform_content: an AI-generated text walkthrough plus one still image. We did not view the video ourselves.",
+      "evidence": {
+        "VERIFIED_COUNTS": "influencers-club via Firecrawl, 2026-11-20: 226,369 plays, 1,255 likes, 11 comments; duration 6.2 s."
+      }
     },
     {
       "id": "REF-0010",

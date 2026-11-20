@@ -276,6 +276,50 @@
       "cover": "daily-money-motion/episodes/DMM-005/cover.png",
       "qc_score": 8.8,
       "clarity_score": 9
+    },
+    {
+      "id": "DMM-006",
+      "date": "2026-11-20",
+      "composition": "DMM006",
+      "pillar": "spending-habits",
+      "topic": "Forgotten subscriptions: six small monthly charges add up to over $1,000 a year",
+      "status": "NEEDS_FIXING",
+      "history": [
+        {
+          "at": "2026-11-20T09:49:59.855Z",
+          "status": "RESEARCHING"
+        },
+        {
+          "at": "2026-11-20T09:52:58.916Z",
+          "status": "BUILDING",
+          "note": "receipt concept; narration generated; still rounds 2"
+        },
+        {
+          "at": "2026-11-20T09:58:33.089Z",
+          "status": "NEEDS_FIXING",
+          "note": "creative score 8.96 < 9"
+        }
+      ],
+      "published": [],
+      "hook": "$15 A MONTH FEELS LIKE NOTHING.",
+      "layout": "single-receipt-printout",
+      "metaphor": "a receipt printing one labelled line per subscription, then a monthly total and a yearly total",
+      "visual_tags": [
+        "receipt",
+        "printer",
+        "line-items",
+        "totals",
+        "paper"
+      ],
+      "engine": "B-narrated",
+      "hook_pattern": "small-number reframe + itemised list + word-synced captions",
+      "reference_ids": [
+        "REF-0009"
+      ],
+      "final_render": "video/renders/daily/DMM-006/DMM-006_v02.mp4",
+      "cover": "daily-money-motion/episodes/DMM-006/cover.png",
+      "clarity_score": 9.5,
+      "qc_score": 8.96
     }
   ]
 }
