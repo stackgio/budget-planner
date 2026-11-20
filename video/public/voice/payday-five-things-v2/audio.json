@@ -1,0 +1,11 @@
+{
+ "durationSec": 50.991,
+ "codec": "mp3",
+ "sampleRate": 44100,
+ "channels": 1,
+ "container": "mp3",
+ "bitRate": "130722",
+ "file": "public/voice/payday-five-things-v2/voice.mp3",
+ "source": "/root/.claude/uploads/73d47cab-23e7-5ae1-ad3b-1b26082e6c32/4b3a5693-ElevenLabs_2026-11-20T19_26_33_Stack_voice__gen_s50_sim75_v4.mp3",
+ "sha256": "50d6f22feebff50894052b428d2092cb01f27a9e3dd34c9cbd356d2368a5dbdb"
+}

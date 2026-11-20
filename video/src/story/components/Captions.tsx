@@ -30,11 +30,22 @@ const paginate = (n: Narration, maxChars = 20, maxWords = 4): Page[] => {
  * The spoken word is highlighted in brand green. `paletteAt(frame)` lets the
  * caption colour follow editorial / cinematic scenes.
  */
-export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number) => Palette}> = ({narration, paletteAt}) => {
+export type CaptionStyle = {
+	/** max characters per caption page (default 20 ≈ one line; ~44 gives phrase-based two-line pages) */
+	maxChars?: number;
+	maxWords?: number;
+	fontSize?: number;
+	uppercase?: boolean;
+	/** top of the caption band (default story.captionTop) */
+	top?: number;
+};
+
+export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number) => Palette; captionStyle?: CaptionStyle}> = ({narration, paletteAt, captionStyle = {}}) => {
+	const {maxChars = 20, maxWords = 4, fontSize = 58, uppercase = true, top = story.captionTop} = captionStyle;
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const t = frame / fps;
-	const pages = React.useMemo(() => paginate(narration), [narration]);
+	const pages = React.useMemo(() => paginate(narration, maxChars, maxWords), [narration, maxChars, maxWords]);
 	const idx = pages.findIndex((p, i) => t >= p.start - 0.05 && t < (pages[i + 1]?.start ?? p.end + 0.6) - 0.05);
 	if (idx < 0) return null;
 	const page = pages[idx];
@@ -48,17 +59,17 @@ export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number
 				position: 'absolute',
 				left: story.safe.left,
 				right: story.safe.right - 48,
-				top: story.captionTop,
+				top,
 				display: 'flex',
 				justifyContent: 'center',
 				flexWrap: 'wrap',
-				columnGap: 24,
 				fontFamily: story.font,
-				fontSize: 58,
+				fontSize,
 				fontWeight: 900,
 				letterSpacing: -1,
-				textTransform: 'uppercase',
+				textTransform: uppercase ? 'uppercase' : 'none',
 				lineHeight: 1.1,
+				columnGap: fontSize * 0.28,
 				transform: `translateY(${(1 - pIn) * 14}px)`,
 				opacity: pIn * fade,
 			}}
