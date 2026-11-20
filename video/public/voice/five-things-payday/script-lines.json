@@ -1,0 +1,98 @@
+[
+ {
+  "id": "L1",
+  "text": "Just got paid?",
+  "start": 0.12,
+  "end": 0.74
+ },
+ {
+  "id": "L2",
+  "text": "Do these five things before that money starts disappearing.",
+  "start": 1.14,
+  "end": 4.019
+ },
+ {
+  "id": "L3",
+  "text": "One, check which bills are due before your next paycheck.",
+  "start": 4.58,
+  "end": 7.6
+ },
+ {
+  "id": "L4",
+  "text": "If rent's due before you get paid again, set that money aside now so it's there when you need it.",
+  "start": 8.039,
+  "end": 12.62
+ },
+ {
+  "id": "L5",
+  "text": "Two, figure out how much you'll need for gas and groceries till next payday.",
+  "start": 13.16,
+  "end": 16.84
+ },
+ {
+  "id": "L6",
+  "text": "Look at what you spent last time.",
+  "start": 17.28,
+  "end": 18.46
+ },
+ {
+  "id": "L7",
+  "text": "That gives you a number to start with.",
+  "start": 18.8,
+  "end": 20.1
+ },
+ {
+  "id": "L8",
+  "text": "Three, move some money into savings on payday.",
+  "start": 20.64,
+  "end": 23.3
+ },
+ {
+  "id": "L9",
+  "text": "Even if it's 20 bucks, transfer it now.",
+  "start": 23.74,
+  "end": 25.9
+ },
+ {
+  "id": "L10",
+  "text": "It's easy to spend it when it's still sitting in your checking account.",
+  "start": 26.28,
+  "end": 28.8
+ },
+ {
+  "id": "L11",
+  "text": "Four, if you've got credit card debt, cover the minimum on every card.",
+  "start": 29.34,
+  "end": 33.12
+ },
+ {
+  "id": "L12",
+  "text": "Then put any extra toward the card with the highest interest rate.",
+  "start": 33.54,
+  "end": 36.52
+ },
+ {
+  "id": "L13",
+  "text": "That's the one charging you the most for every dollar you owe.",
+  "start": 36.92,
+  "end": 39.52
+ },
+ {
+  "id": "L14",
+  "text": "Five, give yourself a limit for fun money.",
+  "start": 40.06,
+  "end": 42.48
+ },
+ {
+  "id": "L15",
+  "text": "If you set aside 80 bucks, that's 80 total for eating out, hanging out, whatever, until your next check.",
+  "start": 42.9,
+  "end": 48.58
+ },
+ {
+  "id": "L16",
+  "text": "Save this and pull it up next payday.",
+  "start": 49.04,
+  "end": 50.8
+ }
+]

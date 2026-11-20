@@ -5,7 +5,7 @@ import {slide} from '@remotion/transitions/slide';
 import {getAudioDurationInSeconds} from '@remotion/media-utils';
 import {z} from 'zod';
 import '../../fonts';
-import {Captions} from '../components/Captions';
+import {Captions, type CaptionVariant} from '../components/Captions';
 import {SfxContext} from '../components/Chrome';
 import {CueProvider} from './cues';
 import {estimateNarration, narrationFromWords, narrationSchema, scaleNarration, wordsFromAlignmentJson, type Narration, type ScriptLine} from './narration';
@@ -55,6 +55,10 @@ export type VideoDef<Id extends string> = {
 	transitions?: Partial<Record<Id, SceneTransition>>;
 	/** lead before a scene's first line (sec), default 0.12 */
 	leadSec?: number;
+	/** persistent layer drawn above every scene (e.g. a step progress indicator); cue() frames are absolute */
+	overlay?: React.FC;
+	/** caption style: 'kinetic' (default, uppercase word chunks) or 'phrase' (sentence-case phrases, up to two lines) */
+	captionVariant?: CaptionVariant;
 };
 
 export const resolveNarration = async (script: ScriptLine[], props: NarratedProps): Promise<Narration> => {
@@ -120,8 +124,13 @@ export function NarratedVideo<Id extends string>({def, props}: {def: VideoDef<Id
 						);
 					})}
 				</TransitionSeries>
+				{def.overlay && (
+					<CueProvider narration={narration} sceneStartFrame={0}>
+						<def.overlay />
+					</CueProvider>
+				)}
 			</SfxContext.Provider>
-			{props.captions && <Captions narration={narration} paletteAt={paletteAt} />}
+			{props.captions && <Captions narration={narration} paletteAt={paletteAt} variant={def.captionVariant} />}
 			{props.voiceAudio && <Html5Audio src={staticFile(props.voiceAudio)} volume={props.voiceVolume} />}
 		</AbsoluteFill>
 	);

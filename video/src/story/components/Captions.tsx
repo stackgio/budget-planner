@@ -6,6 +6,8 @@ import {story, type Palette} from '../theme';
 
 type Page = {words: {text: string; start: number; end: number}[]; start: number; end: number};
 
+export type CaptionVariant = 'kinetic' | 'phrase';
+
 const paginate = (n: Narration, maxChars = 20, maxWords = 4): Page[] => {
 	const pages: Page[] = [];
 	for (const line of n.lines) {
@@ -30,7 +32,62 @@ const paginate = (n: Narration, maxChars = 20, maxWords = 4): Page[] => {
  * The spoken word is highlighted in brand green. `paletteAt(frame)` lets the
  * caption colour follow editorial / cinematic scenes.
  */
-export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number) => Palette}> = ({narration, paletteAt}) => {
+export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number) => Palette; variant?: CaptionVariant}> = ({narration, paletteAt, variant = 'kinetic'}) => {
+	if (variant === 'phrase') return <PhraseCaptions narration={narration} paletteAt={paletteAt} />;
+	return <KineticCaptions narration={narration} paletteAt={paletteAt} />;
+};
+
+/**
+ * Phrase captions: short sentence-case chunks (break at punctuation, ≤ 7 words),
+ * up to two lines, white on the scene with not-yet-spoken words dimmed. Visually
+ * distinct from uppercase on-screen headlines; no accent colour so green stays
+ * reserved for numbers and checkmarks.
+ */
+const PhraseCaptions: React.FC<{narration: Narration; paletteAt: (frame: number) => Palette}> = ({narration, paletteAt}) => {
+	const frame = useCurrentFrame();
+	const {fps} = useVideoConfig();
+	const t = frame / fps;
+	const pages = React.useMemo(() => paginate(narration, 34, 7), [narration]);
+	const idx = pages.findIndex((p, i) => t >= p.start - 0.05 && t < (pages[i + 1]?.start ?? p.end + 0.6) - 0.05);
+	if (idx < 0) return null;
+	const page = pages[idx];
+	const pal = paletteAt(frame);
+	const local = frame - Math.round((page.start - 0.05) * fps);
+	const pIn = kf(local, [0, 4], [0, 1], E.out);
+	const fade = kf(t, [page.end + 0.35, page.end + 0.55], [1, 0]);
+	const dim = pal.name === 'cinematic' ? 'rgba(245,242,234,0.42)' : 'rgba(18,19,22,0.38)';
+	return (
+		<div
+			style={{
+				position: 'absolute',
+				left: story.safe.left,
+				right: story.safe.left,
+				top: story.captionTop,
+				display: 'flex',
+				justifyContent: 'center',
+				flexWrap: 'wrap',
+				columnGap: 15,
+				fontFamily: story.font,
+				fontSize: 52,
+				fontWeight: 800,
+				letterSpacing: -0.5,
+				lineHeight: 1.18,
+				textAlign: 'center',
+				transform: `translateY(${(1 - pIn) * 10}px)`,
+				opacity: pIn * fade,
+				textShadow: '0 2px 10px rgba(0,0,0,0.6)',
+			}}
+		>
+			{page.words.map((w, i) => (
+				<span key={i} style={{color: t >= w.start - 0.03 ? pal.ink : dim}}>
+					{w.text.replace(/[.,]$/, '')}
+				</span>
+			))}
+		</div>
+	);
+};
+
+const KineticCaptions: React.FC<{narration: Narration; paletteAt: (frame: number) => Palette}> = ({narration, paletteAt}) => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const t = frame / fps;

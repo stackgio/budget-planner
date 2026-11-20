@@ -1,0 +1,10 @@
+{
+ "file": "renders/five-things-payday/five-things-payday_v02_final-voice.mp4",
+ "composition": "FiveThingsPayday",
+ "mode": "education",
+ "title": "5 Things to Do When You Get Paid",
+ "narration": "aligned",
+ "durationSec": 51.967,
+ "props": "public/voice/five-things-payday/props.json",
+ "renderedAt": "2026-11-20T19:40:42.272Z"
+}
