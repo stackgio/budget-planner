@@ -6,7 +6,7 @@ import {useCues} from '../../../story/lib/cues';
 import {E, kf, mix, sp} from '../../../story/lib/motion';
 import {story} from '../../../story/theme';
 import {FACTS} from '../facts';
-import {C, CaptionPlate, Chip, ExampleTag, G, StepHeader} from '../kit';
+import {C, Chip, ExampleTag, G, StepHeader} from '../kit';
 
 /** Top-down takeout bag: folded paper, plain sticker, stapled receipt with the amount hidden. */
 const TakeoutBag: React.FC<{w: number; rot?: number; style?: React.CSSProperties}> = ({w, rot = 0, style}) => {
@@ -141,7 +141,6 @@ export const FunScene: React.FC = () => {
 			<LimitPill p={pill} />
 
 			<StepHeader n={5} text={<>FUN MONEY <G>TILL PAYDAY</G></>} at={tFive} />
-			<CaptionPlate />
 			<Sfx at={t80} name="click" volume={0.25} />
 			<Sfx at={tUntil} name="tick" volume={0.25} />
 		</AbsoluteFill>

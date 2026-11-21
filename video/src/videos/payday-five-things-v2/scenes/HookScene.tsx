@@ -5,7 +5,7 @@ import {DeskSurface, DrawCheck, TopDownPhone} from '../../../story/components/De
 import {useCues} from '../../../story/lib/cues';
 import {E, kf, mix, sp} from '../../../story/lib/motion';
 import {story} from '../../../story/theme';
-import {C, CaptionPlate, HEADER_TOP, L, R} from '../kit';
+import {C, HEADER_TOP, L, R} from '../kit';
 
 const PHONE = {w: 360, x: 540 - 180, y: 640};
 
@@ -85,7 +85,6 @@ export const HookScene: React.FC = () => {
 				</div>
 			</div>
 
-			<CaptionPlate />
 			<Sfx at={2} name="thud" volume={0.22} />
 			<Sfx at={tPaid} name="click" volume={0.3} />
 		</AbsoluteFill>

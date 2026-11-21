@@ -12,16 +12,9 @@ export const C = {
 	grey: '#9A9EA6',
 };
 
-/** Desk area ends here; captions get their own matte-black band below. */
-export const PLATE_TOP = 1405;
 export const L = story.safe.left; // 72
 export const R = 1080 - story.safe.right; // 960
 export const HEADER_TOP = story.safe.top; // 170
-
-/** Matte black caption band — captions never sit on top of the action. */
-export const CaptionPlate: React.FC = () => (
-	<div style={{position: 'absolute', left: 0, right: 0, top: PLATE_TOP, bottom: 0, background: C.black, borderTop: '2px solid #22252A'}} />
-);
 
 /** Small uppercase label chip (tracked annotation). */
 export const Chip: React.FC<{text: React.ReactNode; tone?: 'black' | 'green' | 'white'; size?: number; style?: React.CSSProperties}> = ({text, tone = 'black', size = 30, style}) => (

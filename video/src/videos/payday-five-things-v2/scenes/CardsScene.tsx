@@ -5,7 +5,7 @@ import {DeskSurface, DrawCheck, deskShadow, PenPath} from '../../../story/compon
 import {useCues} from '../../../story/lib/cues';
 import {arc, E, kf, sp} from '../../../story/lib/motion';
 import {story} from '../../../story/theme';
-import {C, CaptionPlate, G, StepHeader} from '../kit';
+import {C, G, StepHeader} from '../kit';
 
 const CW = 560;
 const CH = 350;
@@ -163,7 +163,6 @@ export const CardsScene: React.FC = () => {
 				}
 				swapAt={tThen}
 			/>
-			<CaptionPlate />
 			<Sfx at={tMin + 2} name="tick" volume={0.25} />
 			<Sfx at={tEvery + 2} name="tick" volume={0.25} />
 			<Sfx at={tToward + 24} name="click" volume={0.3} />

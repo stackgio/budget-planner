@@ -38,10 +38,12 @@ export type CaptionStyle = {
 	uppercase?: boolean;
 	/** top of the caption band (default story.captionTop) */
 	top?: number;
+	/** optional backing pill behind each caption page (e.g. matte black over full-bleed footage) */
+	background?: string;
 };
 
 export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number) => Palette; captionStyle?: CaptionStyle}> = ({narration, paletteAt, captionStyle = {}}) => {
-	const {maxChars = 20, maxWords = 4, fontSize = 58, uppercase = true, top = story.captionTop} = captionStyle;
+	const {maxChars = 20, maxWords = 4, fontSize = 58, uppercase = true, top = story.captionTop, background} = captionStyle;
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const t = frame / fps;
@@ -54,15 +56,13 @@ export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number
 	const pIn = kf(local, [0, 5], [0, 1], E.out);
 	const fade = kf(t, [page.end + 0.35, page.end + 0.55], [1, 0]);
 	return (
+		<div style={{position: 'absolute', left: story.safe.left, right: story.safe.right - 48, top, display: 'flex', justifyContent: 'center'}}>
 		<div
 			style={{
-				position: 'absolute',
-				left: story.safe.left,
-				right: story.safe.right - 48,
-				top,
 				display: 'flex',
 				justifyContent: 'center',
 				flexWrap: 'wrap',
+				...(background ? {background, padding: `${fontSize * 0.22}px ${fontSize * 0.5}px ${fontSize * 0.28}px`, borderRadius: fontSize * 0.36, boxShadow: '0 10px 26px rgba(0,0,0,0.25)'} : {}),
 				fontFamily: story.font,
 				fontSize,
 				fontWeight: 900,
@@ -91,6 +91,7 @@ export const Captions: React.FC<{narration: Narration; paletteAt: (frame: number
 					</span>
 				);
 			})}
+		</div>
 		</div>
 	);
 };

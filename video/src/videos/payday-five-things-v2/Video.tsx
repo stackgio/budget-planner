@@ -12,7 +12,7 @@ import {EndScene} from './scenes/EndScene';
 
 type Id = (typeof SCENES)[number]['id'];
 
-// Captions sit on the matte black band every scene draws (white type, green active word).
+// Full-bleed scenes; captions sit on a compact matte black pill (white type, green active word).
 const LOOK = cinematic;
 
 const DEF: VideoDef<Id> = {
@@ -22,7 +22,7 @@ const DEF: VideoDef<Id> = {
 	components: {hook: HookScene, bills: BillsScene, groceries: GroceriesScene, savings: SavingsScene, cards: CardsScene, fun: FunScene, end: EndScene},
 	looks: {hook: LOOK, bills: LOOK, groceries: LOOK, savings: LOOK, cards: LOOK, fun: LOOK, end: LOOK},
 	// phrase-based captions, up to two lines, in their own band
-	captionStyle: {maxChars: 40, maxWords: 9, fontSize: 54, uppercase: false, top: 1440},
+	captionStyle: {maxChars: 36, maxWords: 8, fontSize: 50, uppercase: false, top: 1420, background: '#0B0C0E'},
 };
 
 export const PaydayFiveThingsV2Schema = narratedSchema;

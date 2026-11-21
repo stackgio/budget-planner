@@ -5,7 +5,7 @@ import {DeskSurface, deskColors, deskShadow, ThermalReceipt} from '../../../stor
 import {useCues} from '../../../story/lib/cues';
 import {arc, E, kf, sp} from '../../../story/lib/motion';
 import {story} from '../../../story/theme';
-import {C, CaptionPlate, Chip, G, StepHeader} from '../kit';
+import {C, Chip, G, StepHeader} from '../kit';
 
 const Pump: React.FC<{s: number}> = ({s}) => (
 	<svg width={44 * s} height={44 * s} viewBox="0 0 44 44">
@@ -141,7 +141,6 @@ export const GroceriesScene: React.FC = () => {
 			)}
 
 			<StepHeader n={2} text={<>GAS <G>+</G> GROCERIES</>} at={tTwo} />
-			<CaptionPlate />
 			<Sfx at={tGroc - 3} name="paper" volume={0.25} />
 			<Sfx at={tNum + 22} name="click" volume={0.3} />
 		</AbsoluteFill>

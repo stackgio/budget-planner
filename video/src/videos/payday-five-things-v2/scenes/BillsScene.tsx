@@ -5,7 +5,7 @@ import {DeskSurface, deskColors, deskShadow, PenEllipse, PenPath} from '../../..
 import {useCues} from '../../../story/lib/cues';
 import {arc, E, kf, prog, sp} from '../../../story/lib/motion';
 import {story} from '../../../story/theme';
-import {C, CaptionPlate, Chip, G, StepHeader} from '../kit';
+import {C, Chip, G, StepHeader} from '../kit';
 
 // close crop of a paper desk calendar: three week rows, bleeding off both edges
 const PAPER = {x: 20, y: 330, w: 1040, rot: -1};
@@ -191,7 +191,6 @@ export const BillsScene: React.FC = () => {
 
 			<StepHeader n={1} text={<>BILLS DUE <G>BEFORE PAYDAY</G></>} at={tOne} />
 
-			<CaptionPlate />
 			<Sfx at={tToday} name="tick" volume={0.25} />
 			<Sfx at={tCircle} name="paper" volume={0.3} />
 			<Sfx at={tSet + 20} name="click" volume={0.3} />

@@ -6,7 +6,7 @@ import {useCues} from '../../../story/lib/cues';
 import {arc, E, kf, sp} from '../../../story/lib/motion';
 import {story} from '../../../story/theme';
 import {FACTS} from '../facts';
-import {C, CaptionPlate, Chip, ExampleTag, G, StepHeader} from '../kit';
+import {C, Chip, ExampleTag, G, StepHeader} from '../kit';
 
 // transfer view in phone-screen coordinates (screen ≈ 390 × 830 at phone w=420)
 const SW = 390;
@@ -112,7 +112,6 @@ export const SavingsScene: React.FC = () => {
 			)}
 
 			<StepHeader n={3} text={<>SAVE ON <G>PAYDAY</G></>} at={tThree} />
-			<CaptionPlate />
 			<Sfx at={t20 - 2} name="click" volume={0.25} />
 			<Sfx at={tTransfer + 20} name="chime" volume={0.3} />
 		</AbsoluteFill>
