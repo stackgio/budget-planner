@@ -108,7 +108,7 @@ export const RetireScene: React.FC = () => {
 	const kWaitDim = frame < tRothFocus ? kWait * 0.5 : 0;
 
 	// ---- Roth: after-tax deposit from the debit card, then investments
-	const depFrom: [number, number] = [790, 1190];
+	const depFrom: [number, number] = [785, 1130];
 	const depTo: [number, number] = [R_SLOT1.x + (ROTH_R.w - 72) / 2, R_SLOT1.y + 50];
 	const depP = prog(frame, tPutIn + 3, Math.max(14, tTaxes - tPutIn - 4), E.inOut);
 	const [dx, dy] = arc(depP, depFrom, depTo, 160);
@@ -154,7 +154,7 @@ export const RetireScene: React.FC = () => {
 				{!phaseK && (
 					<>
 						<Pen x={120} y={1300} rot={-16} len={330} />
-						<DebitCard x={640} y={1120} w={300} rot={7} />
+						<DebitCard x={640} y={1040} w={290} rot={7} />
 					</>
 				)}
 				{phaseK && stubOut < 1 && <PayStub x={STUB.x} y={STUB.y + stubOut * 1200} w={STUB.w} h={STUB.h} rot={-1.5} lineHighlight={lineHi} lineLifted={payP > 0 ? 1 : 0} />}
@@ -342,7 +342,7 @@ export const RetireScene: React.FC = () => {
 					</>
 				)}
 			</Camera>
-			<TopTitle hidden={kf(frame, [tInvestRet - 8, tInvestRet, tRothFocus + 4, tRothFocus + 14], [0, 1, 1, 0])} />
+			<TopTitle at={cue('L12', 'What’s')} exitAt={tInvestRet - 10} />
 
 			<Sfx at={tRoth - 2} name="pop" volume={0.2} />
 			<Sfx at={t401 - 2} name="pop" volume={0.2} />

@@ -143,7 +143,7 @@ export const SavingsScene: React.FC = () => {
 				{!afterCut && (
 					<>
 						<Pen x={120} y={1236} rot={-16} len={330} />
-						<DebitCard x={640} y={1120} w={300} rot={7} />
+						<DebitCard x={640} y={1040} w={290} rot={7} />
 					</>
 				)}
 				{afterCut && (
@@ -218,7 +218,7 @@ export const SavingsScene: React.FC = () => {
 					</Reveal>
 				</div>
 			</Camera>
-			<TopTitle />
+			<TopTitle at={cue('L3', 'What’s')} exitAt={cue('L4', 'Say', -0.42)} />
 
 			<Sfx at={0} name="card" volume={0.35} />
 			<Sfx at={tR} name="card" volume={0.3} />

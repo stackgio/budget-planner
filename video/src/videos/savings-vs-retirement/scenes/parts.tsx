@@ -115,27 +115,35 @@ export const GrowthGlyph: React.FC<{w?: number; h?: number; color?: string; draw
 };
 
 /**
- * Persistent headline pinned to the top of the screen (outside the camera, so it
- * never zooms). Readable on frame 0; `hidden` 0..1 fades it out for a beat.
+ * "What's the difference?" headline pinned to the top of the screen (outside the
+ * camera). Pops in on the spoken words (`at`) and leaves at `exitAt`.
  */
-export const TopTitle: React.FC<{hidden?: number}> = ({hidden = 0}) => (
-	<div
-		style={{
-			position: 'absolute',
-			left: story.safe.left,
-			right: story.safe.right,
-			top: story.safe.top + 2,
-			textAlign: 'center',
-			fontFamily: story.font,
-			fontSize: 58,
-			fontWeight: 900,
-			letterSpacing: -1.5,
-			lineHeight: 1,
-			color: desk.ink,
-			opacity: 1 - hidden,
-			transform: `translateY(${-hidden * 14}px)`,
-		}}
-	>
-		WHAT’S THE <span style={{color: desk.green}}>DIFFERENCE?</span>
-	</div>
-);
+export const TopTitle: React.FC<{at: number; exitAt: number}> = ({at, exitAt}) => {
+	const frame = useCurrentFrame();
+	const {fps} = useVideoConfig();
+	if (frame < at - 2 || frame > exitAt + 10) return null;
+	const p = sp(frame, fps, at - 2, 'bouncy');
+	const out = kf(frame, [exitAt, exitAt + 8], [0, 1], E.in);
+	return (
+		<div
+			style={{
+				position: 'absolute',
+				left: story.safe.left,
+				right: story.safe.right,
+				top: story.safe.top + 2,
+				textAlign: 'center',
+				fontFamily: story.font,
+				fontSize: 62,
+				fontWeight: 900,
+				letterSpacing: -1.5,
+				lineHeight: 1,
+				color: desk.ink,
+				opacity: Math.min(1, p * 2) * (1 - out),
+				transform: `scale(${(0.6 + 0.4 * p) * (1 - out * 0.08)}) translateY(${-out * 14}px)`,
+				transformOrigin: '50% 60%',
+			}}
+		>
+			WHAT’S THE <span style={{color: desk.green}}>DIFFERENCE?</span>
+		</div>
+	);
+};
