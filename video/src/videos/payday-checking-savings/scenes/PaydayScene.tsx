@@ -16,15 +16,15 @@ export const PaydayScene: React.FC = () => {
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<MatteBg y={700} lift={0.06} />
-			<Camera keys={[{at: 0, zoom: 1}, {at: end + 6, zoom: 1.045, x: 540, y: 900}]}>
+			<Camera keys={[{at: 0, zoom: 1}, {at: end + 6, zoom: 1.045, x: 540, y: 960}]}>
 				{/* phone */}
 				<div
 					style={{
 						position: 'absolute',
 						left: 190,
-						top: 196,
+						top: 322,
 						width: 700,
-						height: 1180,
+						height: 1060,
 						borderRadius: 96,
 						background: '#050506',
 						border: '14px solid #1D1F23',
@@ -39,15 +39,14 @@ export const PaydayScene: React.FC = () => {
 						9:41
 					</div>
 				</div>
-				<PhoneNotification at={-18} pulseAt={2} x={222} y={556} w={636} title="PAYDAY" body="Your paycheck just landed." accent={P.accent} />
+				<PhoneNotification at={-18} pulseAt={2} x={222} y={660} w={636} title="PAYDAY" body="Your paycheck just landed." accent={P.accent} />
 				<QuestionBubble
 					lineId="F1"
 					at={-12}
 					x={92}
-					y={850}
+					y={930}
 					w={868}
 					fontSize={66}
-					label="FRIEND"
 					colors={{'checking?': P.accentDeep}}
 				/>
 			</Camera>

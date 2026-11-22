@@ -1,0 +1,10 @@
+{
+ "file": "renders/payday-checking-savings/payday-checking-savings_v05_temp-timing.mp4",
+ "composition": "PaydayCheckingSavings",
+ "mode": "budget",
+ "title": "Payday: Checking vs High-Yield Savings",
+ "narration": "temp",
+ "durationSec": 24.667,
+ "props": "projects/payday-checking-savings/preview-props.json",
+ "renderedAt": "2026-11-22T19:59:41.134Z"
+}

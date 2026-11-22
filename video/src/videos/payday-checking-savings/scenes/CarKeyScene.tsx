@@ -25,13 +25,13 @@ export const CarKeyScene: React.FC = () => {
 	const shine = kf(frame, [0, 40], [0.05, 0.75]);
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
-			<MatteBg y={560} lift={0.085} />
+			<MatteBg y={660} lift={0.085} />
 			<Camera keys={[{at: 0, zoom: 1.0, y: 820}, {at: tBreak + 30, zoom: 1.05, y: 820}]} shakeX={sh.x} shakeY={sh.y}>
-				<div style={{position: 'absolute', left: 540 - 190, top: 150}}>
+				<div style={{position: 'absolute', left: 540 - 190, top: 262}}>
 					<CarKey w={380} rot={swing1 + swing2 - 6} shine={shine} />
 				</div>
 				{/* check-engine style warning light (amber = warning) */}
-				<div style={{position: 'absolute', left: 760, top: 420, opacity: warn, transform: `scale(${0.8 + 0.2 * warn})`}}>
+				<div style={{position: 'absolute', left: 760, top: 530, opacity: warn, transform: `scale(${0.8 + 0.2 * warn})`}}>
 					<svg width={150} height={110} viewBox="0 0 150 110" style={{filter: `drop-shadow(0 0 ${18 * warn}px ${P.gold})`}}>
 						<path
 							d="M28 30 H54 V20 H90 V30 H104 L112 40 H124 V30 H134 V80 H124 V70 H112 L100 88 H46 L34 76 H22 V86 H12 V44 H22 V36 Z"
@@ -40,7 +40,7 @@ export const CarKeyScene: React.FC = () => {
 						<circle cx="74" cy="56" r="11" fill="#0A0A0B" />
 					</svg>
 				</div>
-				<QuestionBubble lineId="F2" at={cue('F2', undefined, -0.25)} x={92} y={1010} w={868} fontSize={68} label="FRIEND" colors={{breaks: P.accentDeep, 'down?': P.accentDeep}} />
+				<QuestionBubble lineId="F2" at={cue('F2', undefined, -0.25)} x={92} y={1110} w={868} fontSize={68} colors={{breaks: P.accentDeep, 'down?': P.accentDeep}} />
 			</Camera>
 			<Sfx at={1} name="coin" volume={0.25} />
 			<Sfx at={tBreak} name="thud" volume={0.45} />

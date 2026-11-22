@@ -70,3 +70,4 @@ Creator files go in `public/motion/<slug>/assets/` and are referenced as `motion
 - `CarKey`: `w, rot, shine`. A realistic SVG key fob, blade, and split ring. It pivots on the ring (`rot`).
 - `ScriptLine.caption: false` hides a line from the caption band. `ScriptLine.speaker` is informational.
 - Two speakers: prop `voiceTracks: string[]` plays several full-length tracks together. `scripts/motion/dialogue.py tts|align <slug>` builds them from `src/videos/<slug>/dialogue.json`.
+- `SpeakerAvatars`: `speakers: [{id, label, initial, fill, ink}] ×2, lineSpeaker: {lineId: speakerId}, y`. Two icon avatars showing who's talking: the active one lights up, its ring pulses on each spoken word, and a small equalizer runs beside the name. Pass it as `VideoDef.overlay` (a video-level layer above all scenes) so it never jumps on cuts.

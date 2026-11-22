@@ -12,11 +12,11 @@ import {P} from './look';
  */
 export type ColCues = {on: number; header: number; purpose: number; items: number[]};
 
-const BOARD = {x: story.safe.left, y: 268, w: 1080 - story.safe.left - story.safe.right, h: 1030};
+const BOARD = {x: story.safe.left, y: 392, w: 1080 - story.safe.left - story.safe.right, h: 1030};
 const GAP = 26;
 const COL_W = (BOARD.w - GAP) / 2;
-const COL_Y = 318;
-const COL_H = 920;
+const COL_Y = 392;
+const COL_H = 900;
 const HEADER_H = 168;
 
 type Icon = 'home' | 'cart' | 'fuel' | 'grow' | 'lock';
@@ -230,7 +230,7 @@ export const Board: React.FC<{left: ColCues; right: ColCues; finalAt?: number; t
 					position: 'absolute',
 					left: BOARD.x,
 					width: BOARD.w,
-					top: BOARD.y - 70,
+					top: BOARD.y - 62,
 					textAlign: 'center',
 					fontSize: 28,
 					fontWeight: 800,

@@ -57,6 +57,8 @@ export type VideoDef<Id extends string> = {
 	transitions?: Partial<Record<Id, SceneTransition>>;
 	/** lead before a scene's first line (sec), default 0.12 */
 	leadSec?: number;
+	/** video-level layer above every scene (e.g. speaker avatars); cues are absolute frames */
+	overlay?: React.FC;
 };
 
 export const resolveNarration = async (script: ScriptLine[], props: NarratedProps): Promise<Narration> => {
@@ -130,6 +132,11 @@ export function NarratedVideo<Id extends string>({def, props}: {def: VideoDef<Id
 					})}
 				</TransitionSeries>
 			</SfxContext.Provider>
+			{def.overlay && (
+				<CueProvider narration={narration} sceneStartFrame={0}>
+					<def.overlay />
+				</CueProvider>
+			)}
 			{props.captions && <Captions narration={captioned} paletteAt={paletteAt} />}
 			{props.voiceAudio && <Html5Audio src={staticFile(props.voiceAudio)} volume={props.voiceVolume} />}
 			{(props.voiceTracks ?? []).map((t) => (

@@ -4,6 +4,7 @@ Voices: Gio = ElevenLabs "Stack voice" (xwJCF4OpyrvnHPQlIyZD) · Friend = "Jessi
 
 | scene | first line | look / composition | visual + cues | transition in | SFX |
 |---|---|---|---|---|---|
+| (all) | — | speaker strip on top: FRIEND avatar left, GIO avatar right; the active speaker lights up, its ring pulses per word, equalizer runs | — | — |
 | payday | F1 (friend) | phone lock screen, centred; slow push to 1.045 | PAYDAY notification + white FRIEND bubble readable on frame 0; words firm up as spoken, "checking?" in emerald | — | chime (frame 1) |
 | checking | G1 (Gio) | emerald two-column board, right column dashed placeholder | "Everyday spending" on *spend*, CHECKING header on *checking*, Rent / Groceries / Gas on their words; push toward left column | slide up (answer replaces question) | whoosh, stamp, 3× pop |
 | carkey | F2 (friend) | close-up realistic car key swinging on its ring | bubble lands as she speaks; on *breaks* key jolts + amber warning light + camera shake | hard cut | key jingle, thud |

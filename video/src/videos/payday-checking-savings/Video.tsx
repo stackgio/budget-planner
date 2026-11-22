@@ -4,6 +4,7 @@ import {panelSweep} from '../../story/components/Transitions';
 import {makeCalculateMetadata, NarratedVideo, narratedSchema, type NarratedProps, type VideoDef} from '../../story/lib/NarratedVideo';
 import {SCENES, SCRIPT, TAIL_SEC} from './script';
 import {P} from './look';
+import {SpeakerAvatars} from '../../story/components/SpeakerAvatars';
 import {PaydayScene} from './scenes/PaydayScene';
 import {CheckingScene} from './scenes/CheckingScene';
 import {CarKeyScene} from './scenes/CarKeyScene';
@@ -11,11 +12,23 @@ import {SavingsScene} from './scenes/SavingsScene';
 
 type Id = (typeof SCENES)[number]['id'];
 
+/** Who's talking: friend on the left (her bubbles point left), Gio on the right. */
+const Speakers: React.FC = () => (
+	<SpeakerAvatars
+		speakers={[
+			{id: 'friend', label: 'FRIEND', initial: 'F', fill: '#FFFFFF', ink: '#0A0A0B'},
+			{id: 'gio', label: 'GIO', initial: 'G', fill: P.accent, ink: '#04130C'},
+		]}
+		lineSpeaker={Object.fromEntries(SCRIPT.map((l) => [l.id, l.speaker ?? '']))}
+	/>
+);
+
 const DEF: VideoDef<Id> = {
 	script: SCRIPT,
 	scenes: SCENES,
 	tailSec: TAIL_SEC,
 	components: {payday: PaydayScene, checking: CheckingScene, carkey: CarKeyScene, savings: SavingsScene},
+	overlay: Speakers,
 	looks: {payday: P, checking: P, carkey: P, savings: P},
 	transitions: {
 		// the question pushes up and out as Gio's board rises in (answer replaces question)
