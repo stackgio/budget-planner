@@ -21,9 +21,9 @@ const main = async () => {
 	const TAIL_SEC: number = mod.TAIL_SEC;
 	const META = mod.META ?? null;
 	const props = propsFile ? JSON.parse(readFileSync(propsFile, 'utf8')) : {};
-	const audioSec = props.voiceAudio
-		? Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', `public/${props.voiceAudio}`]).toString().trim())
-		: undefined;
+	const voiceFiles: string[] = [props.voiceAudio, ...(props.voiceTracks ?? [])].filter(Boolean);
+	const durs = voiceFiles.map((f) => Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', `public/${f}`]).toString().trim()));
+	const audioSec = durs.length ? Math.max(...durs) : undefined;
 	let alignment = null;
 	let narration;
 	if (props.alignment) {

@@ -26,6 +26,8 @@ import {editorial, story, type Palette} from '../theme';
 export const narratedSchema = z.object({
 	/** narration audio inside public/, e.g. "voice/<slug>/voice.mp3" (ElevenLabs MP3 or WAV) */
 	voiceAudio: z.string().nullable().default(null),
+	/** extra full-length narration tracks played together (e.g. one per speaker in a dialogue), inside public/ */
+	voiceTracks: z.array(z.string()).default([]),
 	/** word timings inside public/: {words:[{text,start,end}]} or ElevenLabs alignment JSON */
 	alignment: z.string().nullable().default(null),
 	voiceVolume: z.number().min(0).max(2).default(1),
@@ -58,7 +60,9 @@ export type VideoDef<Id extends string> = {
 };
 
 export const resolveNarration = async (script: ScriptLine[], props: NarratedProps): Promise<Narration> => {
-	const audioSec = props.voiceAudio ? await getAudioDurationInSeconds(staticFile(props.voiceAudio)) : undefined;
+	const files = [props.voiceAudio, ...(props.voiceTracks ?? [])].filter((f): f is string => !!f);
+	const durs = await Promise.all(files.map((f) => getAudioDurationInSeconds(staticFile(f))));
+	const audioSec = durs.length ? Math.max(...durs) : undefined;
 	if (props.alignment) {
 		const json = await fetch(staticFile(props.alignment)).then((r) => r.json());
 		return narrationFromWords(script, wordsFromAlignmentJson(json), audioSec);
@@ -87,6 +91,11 @@ export function NarratedVideo<Id extends string>({def, props}: {def: VideoDef<Id
 	// the last scene absorbs any extra frames (e.g. audio longer than the last word + tail)
 	const last = windows[windows.length - 1];
 	const lastExtra = Math.max(0, durationInFrames - last.end);
+	// lines marked `caption: false` (e.g. a question already shown on screen) get no caption band
+	const captioned = React.useMemo(() => {
+		const hidden = new Set(def.script.filter((l) => l.caption === false).map((l) => l.id));
+		return {...narration, lines: narration.lines.filter((l) => !hidden.has(l.id))};
+	}, [def.script, narration]);
 	const paletteAt = (f: number) => {
 		let look = def.looks[windows[0].id];
 		for (const w of windows) if (f >= w.boundary) look = def.looks[w.id];
@@ -121,8 +130,11 @@ export function NarratedVideo<Id extends string>({def, props}: {def: VideoDef<Id
 					})}
 				</TransitionSeries>
 			</SfxContext.Provider>
-			{props.captions && <Captions narration={narration} paletteAt={paletteAt} />}
+			{props.captions && <Captions narration={captioned} paletteAt={paletteAt} />}
 			{props.voiceAudio && <Html5Audio src={staticFile(props.voiceAudio)} volume={props.voiceVolume} />}
+			{(props.voiceTracks ?? []).map((t) => (
+				<Html5Audio key={t} src={staticFile(t)} volume={props.voiceVolume} />
+			))}
 		</AbsoluteFill>
 	);
 }

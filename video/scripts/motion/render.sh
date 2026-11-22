@@ -57,13 +57,13 @@ grep -q "width=1080" "$QC/probe.txt" && grep -q "height=1920" "$QC/probe.txt" &&
   && echo "OK export 1080x1920 30fps h264" | tee -a "$QC/checks.txt" || { echo "FAIL export settings" | tee -a "$QC/checks.txt"; FAIL=1; }
 VDUR=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$OUT")
 ACODEC=$(ffprobe -v error -select_streams a -show_entries stream=codec_name -of csv=p=0 "$OUT" | head -1)
-VOICE=$(node -e 'const p=process.argv[1]?require(require("path").resolve(process.argv[1])):{}; console.log(p.voiceAudio||"")' "$PROPS")
-if [ -n "$VOICE" ]; then
-  ADUR=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "public/$VOICE")
+VOICES=$(node -e 'const p=process.argv[1]?require(require("path").resolve(process.argv[1])):{}; console.log([p.voiceAudio,...(p.voiceTracks||[])].filter(Boolean).join(" "))' "$PROPS")
+if [ -n "$VOICES" ]; then
+  ADUR=0; for VOICE in $VOICES; do D=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "public/$VOICE"); ADUR=$(awk "BEGIN{print ($D>$ADUR)?$D:$ADUR}"); done
   [ -n "$ACODEC" ] && echo "OK audio stream ($ACODEC)" | tee -a "$QC/checks.txt" || { echo "FAIL no audio stream but voice supplied" | tee -a "$QC/checks.txt"; FAIL=1; }
   awk "BEGIN{exit !($VDUR + 0.05 >= $ADUR)}" && echo "OK video ${VDUR}s >= voice ${ADUR}s (no words cut)" | tee -a "$QC/checks.txt" \
     || { echo "FAIL video ${VDUR}s shorter than voice ${ADUR}s" | tee -a "$QC/checks.txt"; FAIL=1; }
-  echo "voice file sha256: $(sha256sum "public/$VOICE" | cut -c1-16) (played untouched at 1.0x)" | tee -a "$QC/checks.txt"
+  for VOICE in $VOICES; do echo "voice file $VOICE sha256: $(sha256sum "public/$VOICE" | cut -c1-16) (played untouched at 1.0x)" | tee -a "$QC/checks.txt"; done
 else
   echo "NOTE no voiceover — timing is TEMPORARY (audio: ${ACODEC:-none}, SFX only)" | tee -a "$QC/checks.txt"
 fi

@@ -31,7 +31,16 @@ export type Word = z.infer<typeof wordSchema>;
 export type LineTiming = z.infer<typeof lineTimingSchema>;
 export type Narration = z.infer<typeof narrationSchema>;
 
-export type ScriptLine = {id: string; text: string; /** extra silence after the line (sec) */ pauseAfter?: number};
+export type ScriptLine = {
+	id: string;
+	text: string;
+	/** extra silence after the line (sec) */
+	pauseAfter?: number;
+	/** who speaks it, for dialogue videos (informational) */
+	speaker?: string;
+	/** false = no caption band for this line (its words are already on screen) */
+	caption?: boolean;
+};
 
 const syllables = (w: string) => {
 	const s = w.toLowerCase().replace(/[^a-z]/g, '');

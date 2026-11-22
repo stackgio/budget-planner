@@ -63,3 +63,10 @@ Scene `firstLine`s and `transitionFrames` live in `script.ts`. `buildSceneWindow
 
 ## Assets
 Creator files go in `public/motion/<slug>/assets/` and are referenced as `motion/<slug>/assets/<file>` (through `staticFile` inside components). Logos only from official sources (see `/graph` rules). Never draw a fake logo or a fake app UI presented as real.
+
+## Dialogue / faceless pieces (added for `payday-checking-savings`)
+- `QuestionBubble` (`components/QuestionBubble.tsx`): `lineId, at, x, y, w, fontSize, label, colors, tail, exitAt`. A white chat bubble showing a whole narration line; each word firms from grey to ink as it is spoken (it acts as the caption, so mark that line `caption: false` in `SCRIPT`).
+- `PhoneNotification`: `at, x, y, w, title, body, time, accent, pulseAt`. A generic, unbranded lock-screen banner.
+- `CarKey`: `w, rot, shine`. A realistic SVG key fob, blade, and split ring. It pivots on the ring (`rot`).
+- `ScriptLine.caption: false` hides a line from the caption band. `ScriptLine.speaker` is informational.
+- Two speakers: prop `voiceTracks: string[]` plays several full-length tracks together. `scripts/motion/dialogue.py tts|align <slug>` builds them from `src/videos/<slug>/dialogue.json`.

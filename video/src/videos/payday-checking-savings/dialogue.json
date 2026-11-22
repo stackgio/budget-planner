@@ -1,0 +1,16 @@
+{
+ "speakers": {
+  "gio": {"label": "Gio", "voice_id": "xwJCF4OpyrvnHPQlIyZD", "voice_name": "Stack voice",
+          "settings": {"stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "use_speaker_boost": true, "speed": 1.0}},
+  "friend": {"label": "Friend", "voice_id": "cgSgspJ2msm6clMCkdW9", "voice_name": "Jessica - Playful, Bright, Warm",
+          "settings": {"stability": 0.45, "similarity_boost": 0.75, "style": 0.15, "use_speaker_boost": true, "speed": 1.0}}
+ },
+ "model_id": "eleven_multilingual_v2",
+ "leadSec": 0.25,
+ "lines": [
+  {"id": "F1", "speaker": "friend", "text": "I just got paid. Do I leave all of it in checking?"},
+  {"id": "G1", "speaker": "gio", "gapBefore": 0.45, "text": "I keep the money I’m about to spend in checking. Think rent, groceries, and gas."},
+  {"id": "F2", "speaker": "friend", "gapBefore": 0.7, "text": "Okay, but what if my car breaks down?"},
+  {"id": "G2", "speaker": "gio", "gapBefore": 0.55, "text": "That’s what my emergency money is for. I’d keep it in high-yield savings so it can earn interest while it’s set aside."}
+ ]
+}
