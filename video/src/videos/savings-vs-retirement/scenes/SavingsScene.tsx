@@ -7,7 +7,7 @@ import {useCues} from '../../../story/lib/cues';
 import {E, kf, mix, prog, sp} from '../../../story/lib/motion';
 import {story} from '../../../story/theme';
 import {FACTS} from '../facts';
-import {CARD, Chip, CONTENT_CX, Kicker, Reveal, Slot} from './parts';
+import {CARD, Chip, CONTENT_CX, Kicker, Reveal, Slot, TopTitle} from './parts';
 
 const money = (v: number) => `$${v.toLocaleString('en-US')}`;
 
@@ -218,6 +218,7 @@ export const SavingsScene: React.FC = () => {
 					</Reveal>
 				</div>
 			</Camera>
+			<TopTitle />
 
 			<Sfx at={0} name="card" volume={0.35} />
 			<Sfx at={tR} name="card" volume={0.3} />

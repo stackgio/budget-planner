@@ -113,3 +113,29 @@ export const GrowthGlyph: React.FC<{w?: number; h?: number; color?: string; draw
 		</svg>
 	);
 };
+
+/**
+ * Persistent headline pinned to the top of the screen (outside the camera, so it
+ * never zooms). Readable on frame 0; `hidden` 0..1 fades it out for a beat.
+ */
+export const TopTitle: React.FC<{hidden?: number}> = ({hidden = 0}) => (
+	<div
+		style={{
+			position: 'absolute',
+			left: story.safe.left,
+			right: story.safe.right,
+			top: story.safe.top + 2,
+			textAlign: 'center',
+			fontFamily: story.font,
+			fontSize: 58,
+			fontWeight: 900,
+			letterSpacing: -1.5,
+			lineHeight: 1,
+			color: desk.ink,
+			opacity: 1 - hidden,
+			transform: `translateY(${-hidden * 14}px)`,
+		}}
+	>
+		WHAT’S THE <span style={{color: desk.green}}>DIFFERENCE?</span>
+	</div>
+);

@@ -6,7 +6,7 @@ import {AccountCard, DebitCard, desk, paperShadow, Pen, PayStub, StoneDesk} from
 import {useCues} from '../../../story/lib/cues';
 import {arc, E, kf, mix, prog, sp} from '../../../story/lib/motion';
 import {story} from '../../../story/theme';
-import {type Box, CARD, CashGlyph, Chip, CONTENT_CX, GrowthGlyph, Kicker, lerpBox, OwnerTag, Reveal, scaledBox, Slot} from './parts';
+import {type Box, CARD, CashGlyph, Chip, CONTENT_CX, GrowthGlyph, Kicker, lerpBox, OwnerTag, Reveal, scaledBox, Slot, TopTitle} from './parts';
 
 // ---- layouts (world coordinates, 1080×1920)
 const EQUAL_R: Box = {x: CARD.lx, y: CARD.y, w: CARD.w, h: CARD.h, s: 1, dim: 0};
@@ -342,6 +342,7 @@ export const RetireScene: React.FC = () => {
 					</>
 				)}
 			</Camera>
+			<TopTitle hidden={kf(frame, [tInvestRet - 8, tInvestRet, tRothFocus + 4, tRothFocus + 14], [0, 1, 1, 0])} />
 
 			<Sfx at={tRoth - 2} name="pop" volume={0.2} />
 			<Sfx at={t401 - 2} name="pop" volume={0.2} />

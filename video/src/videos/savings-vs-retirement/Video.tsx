@@ -27,7 +27,7 @@ const DEF: VideoDef<Id> = {
 
 export const SavingsVsRetirementSchema = narratedSchema.extend({
 	/** quiet original music bed under the narration (public/music/desk-bed.wav) */
-	music: z.boolean().default(true),
+	music: z.boolean().default(false),
 	musicVolume: z.number().min(0).max(1).default(0.07),
 });
 type Props = z.infer<typeof SavingsVsRetirementSchema>;
