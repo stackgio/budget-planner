@@ -63,3 +63,6 @@ Scene `firstLine`s and `transitionFrames` live in `script.ts`. `buildSceneWindow
 
 ## Assets
 Creator files go in `public/motion/<slug>/assets/` and are referenced as `motion/<slug>/assets/<file>` (through `staticFile` inside components). Logos only from official sources (see `/graph` rules). Never draw a fake logo or a fake app UI presented as real.
+
+## Desk kit (`components/Desk.tsx`)
+Top-down "desk shoot" look without Marcus: `DeskSurface {light, seed}` (warm off-white surface, window light), `AccountCard {x, y, w, h, rot, lift, highlight, dim}` (white card, natural shadow, green edge on highlight), `CarKeys {x, y, w, rot, shadowLift}`, `RepairEstimate {x, y, w, rot, mark}`, `PayStub {x, y, w, sliceShow, gone}` (tax-neutral example stub), and `desk.shadow(lift)`. SFX `keys` (key jingle) added to `make_sfx.py`.

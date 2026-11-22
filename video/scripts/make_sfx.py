@@ -126,4 +126,13 @@ save("chime", c1 + c2, -13)
 save("tick", tone(3200, 0.04, 0.012, (1,)) + 0.5 * tone(1800, 0.04, 0.01, (1,)), -16)
 # click: UI click
 save("click", tone(1400, 0.05, 0.015, (1, 0.3)), -16)
+# keys: small metallic jingle (a few detuned inharmonic pings + soft clatter) — keys set down on a desk
+kx = np.zeros(int(SR * 0.6))
+for i, (off, f) in enumerate([(0.0, 3150), (0.045, 4280), (0.09, 3620), (0.16, 4950), (0.24, 3380)]):
+    o = int(SR * off)
+    ping = tone(f, 0.6, 0.09 + 0.02 * i, (1, 0.45, 0.2), 0.41) * (0.9 - 0.12 * i)
+    kx[o:] += ping[: len(kx) - o]
+cn = rng.standard_normal(len(kx))
+kx += (cn - lowpass(cn, 0.35)) * env(len(kx), 0.002, 0.05, 5) * 0.5
+save("keys", kx, -14)
 print("wrote", sorted(os.listdir(OUT)))

@@ -1,0 +1,116 @@
+[
+ {
+  "id": "L1",
+  "text": "This is a regular savings account.",
+  "start": 0.16,
+  "end": 1.8
+ },
+ {
+  "id": "L2",
+  "text": "This is a high-yield savings account.",
+  "start": 2.24,
+  "end": 3.98
+ },
+ {
+  "id": "L3",
+  "text": "What's the difference?",
+  "start": 4.5,
+  "end": 5.18
+ },
+ {
+  "id": "L4",
+  "text": "Say you've got five hundred dollars set aside in case your car breaks down.",
+  "start": 5.74,
+  "end": 9.06
+ },
+ {
+  "id": "L5",
+  "text": "Either account can hold that money.",
+  "start": 9.48,
+  "end": 10.88
+ },
+ {
+  "id": "L6",
+  "text": "The difference is how much the bank pays you while it sits there.",
+  "start": 11.28,
+  "end": 14.24
+ },
+ {
+  "id": "L7",
+  "text": "That money the bank pays you is called interest.",
+  "start": 14.74,
+  "end": 16.96
+ },
+ {
+  "id": "L8",
+  "text": "A regular savings account can pay interest, and a high-yield savings account usually pays more.",
+  "start": 17.46,
+  "end": 22.08
+ },
+ {
+  "id": "L9",
+  "text": "So while you're waiting for that surprise repair, the same five hundred dollars could earn you more.",
+  "start": 22.56,
+  "end": 27.2
+ },
+ {
+  "id": "L10",
+  "text": "This is a Roth IRA, and this is a 401k.",
+  "start": 27.86,
+  "end": 31.92
+ },
+ {
+  "id": "L11",
+  "text": "What's the difference?",
+  "start": 32.479,
+  "end": 33.18
+ },
+ {
+  "id": "L12",
+  "text": "Both help you invest for retirement.",
+  "start": 33.8,
+  "end": 35.44
+ },
+ {
+  "id": "L13",
+  "text": "A Roth IRA is one you open yourself.",
+  "start": 35.92,
+  "end": 38.3
+ },
+ {
+  "id": "L14",
+  "text": "You put in money you've already paid taxes on, and you can use it to buy investments.",
+  "start": 38.74,
+  "end": 42.58
+ },
+ {
+  "id": "L15",
+  "text": "Later, if you follow the withdrawal rules, you can take out your money and what it earned tax-free.",
+  "start": 43.06,
+  "end": 47.94
+ },
+ {
+  "id": "L16",
+  "text": "A 401k is offered through work.",
+  "start": 48.46,
+  "end": 50.54
+ },
+ {
+  "id": "L17",
+  "text": "You choose how much to put in, and it comes straight out of your paycheck.",
+  "start": 51.0,
+  "end": 54.02
+ },
+ {
+  "id": "L18",
+  "text": "If your job offers a match, your employer adds some of its own money when you put in yours.",
+  "start": 54.44,
+  "end": 58.64
+ },
+ {
+  "id": "L19",
+  "text": "And yes, you can have both a Roth IRA and a 401k.",
+  "start": 59.08,
+  "end": 63.12
+ }
+]
