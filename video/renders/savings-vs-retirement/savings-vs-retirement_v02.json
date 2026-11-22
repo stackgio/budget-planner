@@ -1,0 +1,10 @@
+{
+ "file": "renders/savings-vs-retirement/savings-vs-retirement_v02_final-voice.mp4",
+ "composition": "SavingsVsRetirement",
+ "mode": "education",
+ "title": "Savings vs High-Yield, Roth IRA vs 401(k)",
+ "narration": "aligned",
+ "durationSec": 64.633,
+ "props": "public/voice/savings-vs-retirement/props.json",
+ "renderedAt": "2026-11-22T18:50:30.035Z"
+}
