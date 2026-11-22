@@ -1,0 +1,11 @@
+{
+ "durationSec": 63.399,
+ "codec": "mp3",
+ "sampleRate": 44100,
+ "channels": 1,
+ "container": "mp3",
+ "bitRate": "130189",
+ "file": "public/voice/savings-vs-retirement/voice.mp3",
+ "source": "/root/.claude/uploads/9d07b7b0-6b98-55a7-b7ed-d38e02acff80/4f94910f-ElevenLabs_2026-11-22T16_15_52_Stack_voice__gen_s50_sim75_v4.mp3",
+ "sha256": "c2c87d9d6a4d28bb31a27428e3c74a5379ae7429b9295d90920089bb5d5bd352"
+}
