@@ -151,6 +151,8 @@ export const SavingsScene: React.FC = () => {
 				</div>
 			</Camera>
 
+			{frame < tCut && <DiffHeadline p={sp(frame, fps, tAlign, 'snappy')} out={0} />}
+
 			{inKeys && <KeysShot local={frame - tCut} tFive={tFive - tCut} tCar={tCar - tCut} />}
 
 			<Sfx at={tRight} name="paper" volume={0.45} />
@@ -161,6 +163,13 @@ export const SavingsScene: React.FC = () => {
 		</AbsoluteFill>
 	);
 };
+
+/** "What's the difference?" headline above the two cards (on the spoken question). */
+export const DiffHeadline: React.FC<{p: number; out: number}> = ({p, out}) => (
+	<div style={{position: 'absolute', left: 0, right: 0, top: 196, textAlign: 'center', fontSize: 70, fontWeight: 900, letterSpacing: -2, color: C.ink, opacity: p * (1 - out), transform: `translateY(${(1 - p) * 24 - out * 16}px)`}}>
+		What&rsquo;s the <span style={{color: C.greenDeep}}>difference?</span>
+	</div>
+);
 
 /** The "$500 set aside" note (example). */
 const MoneyNote: React.FC<{x: number; y: number; p: number; style?: React.CSSProperties; hideAmount?: boolean}> = ({x, y, p, style, hideAmount}) => (

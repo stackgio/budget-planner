@@ -7,6 +7,7 @@ import {useCues} from '../../../story/lib/cues';
 import {arc, E, mix, prog, sp} from '../../../story/lib/motion';
 import {story} from '../../../story/theme';
 import {BELOW, C, CARD} from '../layout';
+import {DiffHeadline} from './SavingsScene';
 
 const Title: React.FC<{text: string; p: number}> = ({text, p}) => (
 	<div style={{position: 'absolute', left: 40, top: 44, right: 30, height: 72, overflow: 'hidden'}}>
@@ -79,6 +80,7 @@ export const RetireScene: React.FC = () => {
 	const tRoth = cue('L10', 'Roth', -0.05);
 	const t401 = cue('L10', '401k', -0.05);
 	const tBoth = cue('L12', 'Both', -0.05);
+	const tDiff = cue('L11', "What's", -0.05);
 	const tRothFocus = cue('L13', undefined, -0.05);
 	const tOpen = cue('L13', 'open', -0.05);
 	const tPut = cue('L14', 'put', -0.1);
@@ -152,6 +154,8 @@ export const RetireScene: React.FC = () => {
 	return (
 		<AbsoluteFill style={{fontFamily: story.font}}>
 			<DeskSurface />
+
+			{frame < tBoth + 8 && <DiffHeadline p={sp(frame, fps, tDiff, 'snappy')} out={prog(frame, tBoth - 4, 8)} />}
 
 			{/* "Both are for retirement" */}
 			<div style={{position: 'absolute', left: 0, right: 0, top: 186, opacity: both, transform: `translateY(${(1 - both) * -16}px)`}}>
@@ -274,7 +278,6 @@ export const RetireScene: React.FC = () => {
 			<Sfx at={tStub} name="paper" volume={0.45} />
 			<Sfx at={tStraight + 24} name="card" volume={0.4} />
 			<Sfx at={tMatch + 26} name="coin" volume={0.3} />
-			<Sfx at={tHaveBoth} name="chime" volume={0.22} />
 		</AbsoluteFill>
 	);
 };
