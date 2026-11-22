@@ -353,7 +353,6 @@ export const RetireScene: React.FC = () => {
 			<Sfx at={tComes} name="paper" volume={0.2} />
 			<Sfx at={tPaycheck + 4} name="cash" volume={0.25} />
 			<Sfx at={tAdds} name="coin" volume={0.25} />
-			<Sfx at={tBoth} name="chime" volume={0.2} />
 		</AbsoluteFill>
 	);
 };

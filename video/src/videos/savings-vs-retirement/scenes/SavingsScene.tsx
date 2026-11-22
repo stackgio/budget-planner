@@ -225,7 +225,6 @@ export const SavingsScene: React.FC = () => {
 			<Sfx at={tFive + 1} name="pop" volume={0.22} />
 			<Sfx at={tCar + 1} name="keys" volume={0.25} />
 			<Sfx at={tInterest} name="tick" volume={0.3} />
-			<Sfx at={tUsually + 2} name="chime" volume={0.22} />
 			<Sfx at={tMore + 2} name="paper" volume={0.15} />
 		</AbsoluteFill>
 	);
