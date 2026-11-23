@@ -1,0 +1,35 @@
+{
+  "episode": "DMM-007",
+  "date": "2026-11-23",
+  "composition": "DMM007",
+  "pillar": "meaningful-messages",
+  "engine": "B-narrated",
+  "reference_ids": [],
+  "hook": "A $400 SURPRISE.",
+  "hook_pattern": "relatable surprise + verified statistic + simple plan",
+  "layout": "storm-cloud-three-people-umbrella",
+  "metaphor": "rain of labelled surprise bills from a storm cloud; an umbrella labelled EMERGENCY FUND fills from $0 to $400 and shields one person",
+  "final_render": "video/renders/daily/DMM-007/DMM-007_v02.mp4",
+  "cover": "daily-money-motion/episodes/DMM-007/cover.png",
+  "narration": {
+    "voice_name": "Stack voice ",
+    "voice_id": "xwJCF4OpyrvnHPQlIyZD",
+    "model_id": "eleven_multilingual_v2",
+    "cache_key": "8def37cfe49f0492a119",
+    "file": "video/public/daily/voice/DMM-007/voice.mp3",
+    "duration_sec": 8.41,
+    "offset_sec": 0.2,
+    "script": "A four hundred dollar surprise. A car repair. A doctor bill. More than one in three adults wouldn't cover it with cash. Build a small cushion. Ten dollars a week gets you there in forty weeks."
+  },
+  "sources": [
+    "Federal Reserve, Economic Well-Being of U.S. Households in 2025 (May 2026), executive summary and fact sheet: 63% of adults would cover a hypothetical $400 emergency expense with cash or its equivalent"
+  ],
+  "disclosures": [
+    "Source footnote 0-15 s",
+    "EXAMPLE $10/week x 40 weeks = $400, cash, no interest",
+    "Not advice"
+  ],
+  "audio": "voice + subtle SFX, no music (creator adds music per platform)",
+  "sfx_track": "public/daily/audio/dmm007-sfx-v01.wav",
+  "publishing": "OFF"
+}

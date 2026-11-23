@@ -1,0 +1,12 @@
+{
+  "episode": "DMM-007",
+  "assets": [
+    {"asset": "video/public/daily/voice/DMM-007/voice.mp3", "type": "narration", "source": "ElevenLabs TTS (eleven_multilingual_v2), the creator's own saved voice 'Stack voice ' (xwJCF4OpyrvnHPQlIyZD), generated 2026-11-23; cache key 8def37cfe49f0492a119. No voice was created or cloned.", "license": "Governed by the creator's ElevenLabs plan. CONFIRM the plan allows commercial use before posting.", "verified": false},
+    {"asset": "video/public/daily/audio/dmm007-sfx-v01.wav", "type": "sfx only (no music)", "source": "Synthesized by video/scripts/daily/make_dmm007_sfx.py from the episode timing", "license": "Original work owned by Stack With Gio", "verified": true},
+    {"asset": "@fontsource/inter", "type": "font", "license": "SIL Open Font License 1.1", "verified": true},
+    {"asset": "Cloud, rain, people icons, umbrella, captions", "type": "vector/motion", "source": "Drawn in code (video/src/daily/episodes/dmm007/Episode.tsx, components/WordCaptions.tsx)", "license": "Original", "verified": true},
+    {"asset": "Statistic: 63% would cover a $400 emergency with cash or its equivalent", "type": "data", "source": "Federal Reserve, Economic Well-Being of U.S. Households in 2025 (May 2026), https://www.federalreserve.gov/publications/2026-economic-well-being-of-us-households-in-2025-executive-summary.htm", "license": "U.S. government publication (public); cited on screen", "verified": true}
+  ],
+  "music": "none (creator adds music per platform)",
+  "third_party_footage": "none"
+}

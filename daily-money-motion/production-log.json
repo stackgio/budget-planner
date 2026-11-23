@@ -320,6 +320,47 @@
       "cover": "daily-money-motion/episodes/DMM-006/cover.png",
       "clarity_score": 9.5,
       "qc_score": 8.96
+    },
+    {
+      "id": "DMM-007",
+      "date": "2026-11-23",
+      "composition": "DMM007",
+      "pillar": "meaningful-messages",
+      "topic": "An emergency cushion: more than 1 in 3 adults wouldn't cover a $400 surprise with cash; $10 a week builds it",
+      "status": "READY_FOR_REVIEW",
+      "history": [
+        {
+          "at": "2026-11-23T12:50:36.521Z",
+          "status": "RESEARCHING"
+        },
+        {
+          "at": "2026-11-23T12:53:40.881Z",
+          "status": "BUILDING",
+          "note": "umbrella concept; narration generated; still round 1"
+        },
+        {
+          "at": "2026-11-23T13:00:57.315Z",
+          "status": "READY_FOR_REVIEW",
+          "note": "auto-QC 0 FAIL (0 WARN), score 9, clarity 9.5"
+        }
+      ],
+      "published": [],
+      "hook": "A $400 SURPRISE.",
+      "layout": "storm-cloud-three-people-umbrella",
+      "metaphor": "rain of labelled surprise bills from a storm cloud; an umbrella labelled EMERGENCY FUND fills from $0 to $400 and shields one person",
+      "visual_tags": [
+        "storm-cloud",
+        "rain",
+        "umbrella",
+        "people-icons",
+        "weekly-counter"
+      ],
+      "engine": "B-narrated",
+      "hook_pattern": "relatable surprise + verified statistic + simple plan",
+      "final_render": "video/renders/daily/DMM-007/DMM-007_v02.mp4",
+      "cover": "daily-money-motion/episodes/DMM-007/cover.png",
+      "clarity_score": 9.5,
+      "qc_score": 9
     }
   ]
 }

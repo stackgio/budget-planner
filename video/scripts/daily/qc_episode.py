@@ -173,7 +173,9 @@ if STT:
                     out.append(str(total + cur)); i = j
                 else:
                     out.append(toks[i]); i += 1
-            return out
+            # "four hundred dollar" is often transcribed "$400": drop a currency word that follows a
+            # number on BOTH sides so the two forms compare equal (DMM-007 v01 false WARN)
+            return [t for k, t in enumerate(out) if not (t in ("dollar", "dollars") and k > 0 and (out[k - 1].isdigit() or out[k - 1] in U))]
         a = collapse([norm(w["text"]) for w in words])
         b = collapse([norm(w["text"].replace(",", "").replace("$", "")) for w in heard])  # same normalisation both sides
         m = sum(x.size for x in difflib.SequenceMatcher(None, a, b).get_matching_blocks())
