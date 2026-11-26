@@ -1,0 +1,199 @@
+{
+ "episode": "DMM-008",
+ "file": "/home/user/budget-planner/video/renders/daily/DMM-008/DMM-008_v03.mp4",
+ "results": [
+  {
+   "category": "export",
+   "check": "resolution",
+   "status": "PASS",
+   "detail": "1080x1920",
+   "value": null
+  },
+  {
+   "category": "export",
+   "check": "frame rate",
+   "status": "PASS",
+   "detail": "30/1",
+   "value": null
+  },
+  {
+   "category": "export",
+   "check": "duration",
+   "status": "PASS",
+   "detail": "450 frames = 15.00 s",
+   "value": 450
+  },
+  {
+   "category": "export",
+   "check": "codec",
+   "status": "PASS",
+   "detail": "h264 yuv420p",
+   "value": null
+  },
+  {
+   "category": "export",
+   "check": "audio stream",
+   "status": "PASS",
+   "detail": "aac",
+   "value": null
+  },
+  {
+   "category": "audio",
+   "check": "integrated loudness",
+   "status": "PASS",
+   "detail": "-17.6 LUFS (target -20..-14)",
+   "value": -17.6
+  },
+  {
+   "category": "audio",
+   "check": "true peak / clipping",
+   "status": "PASS",
+   "detail": "-4.5 dBFS (max -1.0)",
+   "value": -4.5
+  },
+  {
+   "category": "audio",
+   "check": "voice untouched",
+   "status": "PASS",
+   "detail": "correlation 0.9999, gain -0.01 dB vs the ElevenLabs file",
+   "value": {
+    "corr": 0.9998539686203003,
+    "gain_db": -0.010082739598830465
+   }
+  },
+  {
+   "category": "audio",
+   "check": "SFX under voice",
+   "status": "PASS",
+   "detail": "voice -17.2 dBFS RMS vs everything else -57.5 dBFS \u2192 40.2 dB below (min 20)",
+   "value": 40.22500801086426
+  },
+  {
+   "category": "audio",
+   "check": "SFX peak",
+   "status": "PASS",
+   "detail": "-32.5 dBFS (max -24)",
+   "value": -32.515167236328125
+  },
+  {
+   "category": "audio",
+   "check": "no background music",
+   "status": "PASS",
+   "detail": "71 SFX-silent 100 ms windows; 1 contain non-voice energy above -55 dBFS",
+   "value": {
+    "windows": 71,
+    "violations": 1
+   }
+  },
+  {
+   "category": "audio",
+   "check": "per-second level",
+   "status": "INFO",
+   "detail": "0s:-17.8 1s:-16.4 2s:-17.8 3s:-15.6 4s:-16.5 5s:-17.7 6s:-16.9 7s:-19.0 8s:-21.9 9s:-48.2 10s:-54.5 11s:-48.5 12s:-64.3 13s:-240.0 14s:-240.0",
+   "value": [
+    -17.8,
+    -16.4,
+    -17.8,
+    -15.6,
+    -16.5,
+    -17.7,
+    -16.9,
+    -19.0,
+    -21.9,
+    -48.2,
+    -54.5,
+    -48.5,
+    -64.3,
+    -240.0,
+    -240.0
+   ]
+  },
+  {
+   "category": "speech",
+   "check": "intelligibility (STT)",
+   "status": "PASS",
+   "detail": "26/26 words recognised in the final mix",
+   "value": 1.0
+  },
+  {
+   "category": "speech",
+   "check": "sync vs plan",
+   "status": "PASS",
+   "detail": "max |error| 0.072 s over 25 aligned words",
+   "value": 0.07200000000000006
+  },
+  {
+   "category": "speech",
+   "check": "STT audio events",
+   "status": "PASS",
+   "detail": "['[notification sound]']",
+   "value": null
+  },
+  {
+   "category": "captions",
+   "check": "captions = narration",
+   "status": "PASS",
+   "detail": "caption tokens come from the TTS alignment of the script",
+   "value": null
+  },
+  {
+   "category": "captions",
+   "check": "spelling",
+   "status": "PASS",
+   "detail": "24 distinct words OK",
+   "value": null
+  },
+  {
+   "category": "picture",
+   "check": "frame 0 not blank",
+   "status": "PASS",
+   "detail": "3.02% bright (text) pixels on frame 0",
+   "value": null
+  },
+  {
+   "category": "picture",
+   "check": "motion in first 2 s",
+   "status": "PASS",
+   "detail": "mean motion 0.89 (min 0.4; calibrated: static \u22480.08, active \u22650.3)",
+   "value": 0.8944252133369446
+  },
+  {
+   "category": "picture",
+   "check": "abrupt jumps",
+   "status": "PASS",
+   "detail": "none",
+   "value": []
+  },
+  {
+   "category": "picture",
+   "check": "static holds",
+   "status": "PASS",
+   "detail": "longest near-static stretch 0.2 s (max 1.5); stretches \u22651 s: []",
+   "value": 0.2
+  },
+  {
+   "category": "picture",
+   "check": "safe zones (bright content in UI bands)",
+   "status": "PASS",
+   "detail": "no bright content in top/bottom/right UI bands",
+   "value": []
+  },
+  {
+   "category": "original",
+   "check": "visual similarity to past episodes",
+   "status": "PASS",
+   "detail": "{'DMM-001': 0.72, 'DMM-002': 0.753, 'DMM-003': 0.758, 'DMM-004': 0.758, 'DMM-005': 0.772, 'DMM-006': 0.773, 'DMM-007': 0.778} (mean best-match; max 0.85)",
+   "value": {
+    "DMM-001": 0.72,
+    "DMM-002": 0.753,
+    "DMM-003": 0.758,
+    "DMM-004": 0.758,
+    "DMM-005": 0.772,
+    "DMM-006": 0.773,
+    "DMM-007": 0.778
+   }
+  }
+ ],
+ "fails": 0,
+ "warns": 0
+}

@@ -1,0 +1,12 @@
+{
+  "episode": "DMM-008",
+  "assets": [
+    {"asset": "video/public/daily/voice/DMM-008/voice.mp3", "type": "narration", "source": "ElevenLabs TTS (eleven_multilingual_v2), the creator's own saved voice 'Stack voice ' (xwJCF4OpyrvnHPQlIyZD), generated 2026-11-26; cache key 332d32a043bc1638007d. No voice was created or cloned.", "license": "Governed by the creator's ElevenLabs plan. CONFIRM the plan allows commercial use before posting.", "verified": false},
+    {"asset": "video/public/daily/audio/dmm008-sfx-v01.wav", "type": "sfx only (no music)", "source": "Synthesized by video/scripts/daily/make_dmm008_sfx.py from the episode timing", "license": "Original work owned by Stack With Gio", "verified": true},
+    {"asset": "@fontsource/inter", "type": "font", "license": "SIL Open Font License 1.1", "verified": true},
+    {"asset": "Bank cards, mailboxes, envelopes, people icons, captions", "type": "vector/motion", "source": "Drawn in code (video/src/daily/episodes/dmm008/Episode.tsx, components/WordCaptions.tsx)", "license": "Original", "verified": true},
+    {"asset": "Statistic: national rate for savings accounts 0.39%", "type": "data", "source": "FDIC, National Rates and Rate Caps - November 2026, https://www.fdic.gov/national-rates-and-rate-caps (last updated Nov 16, 2026)", "license": "U.S. government publication (public); cited on screen", "verified": true}
+  ],
+  "music": "none (creator adds music per platform)",
+  "third_party_footage": "none"
+}

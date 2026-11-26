@@ -168,8 +168,9 @@ if STT:
                     elif t == "hundred": cur = max(cur, 1) * 100
                     else: total += max(cur, 1) * (1000 if t == "thousand" else 1000000); cur = 0
                     j += 1
-                has_mult = any(x in ("hundred", "thousand", "million") for x in toks[start:j])
-                if j > start and (has_mult or j - start > 1):
+                # a lone number word also becomes digits ("twenty dollars" is heard "20 dollars",
+                # DMM-008 v01 false WARN); collapse() runs on BOTH sides, so "One bank" still matches
+                if j > start:
                     out.append(str(total + cur)); i = j
                 else:
                     out.append(toks[i]); i += 1

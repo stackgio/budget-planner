@@ -361,6 +361,41 @@
       "cover": "daily-money-motion/episodes/DMM-007/cover.png",
       "clarity_score": 9.5,
       "qc_score": 9
+    },
+    {
+      "id": "DMM-008",
+      "date": "2026-11-26",
+      "composition": "DMM008",
+      "pillar": "saving-money",
+      "topic": "Same $5,000 saved, two banks: 0.39% national average vs an example 4% savings rate",
+      "status": "READY_FOR_REVIEW",
+      "history": [
+        {
+          "at": "2026-11-26T09:50:20.278Z",
+          "status": "RESEARCHING"
+        },
+        {
+          "at": "2026-11-26T10:06:09.443Z",
+          "status": "READY_FOR_REVIEW",
+          "note": "auto-QC 0 FAIL (0 WARN), score 9, clarity 9.5"
+        }
+      ],
+      "published": [],
+      "hook": "SAME $5,000 SAVED. TWO BANKS.",
+      "hook_pattern": "two people + same amount + verified average vs labelled example",
+      "layout": "two-mailboxes-month-ticker",
+      "metaphor": "two mailboxes side by side; every month the bank mails interest: a thin envelope to A, a fat envelope to B; a JAN-DEC month flag ticks and the yearly totals stack",
+      "visual_tags": [
+        "mailbox",
+        "envelopes",
+        "month-flag",
+        "two-people",
+        "stacking-envelopes"
+      ],
+      "engine": "B-narrated",
+      "final_render": "video/renders/daily/DMM-008/DMM-008_v03.mp4",
+      "qc_score": 9,
+      "clarity_score": 9.5
     }
   ]
 }

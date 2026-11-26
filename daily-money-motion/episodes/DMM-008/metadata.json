@@ -1,0 +1,37 @@
+{
+  "episode": "DMM-008",
+  "date": "2026-11-26",
+  "composition": "DMM008",
+  "pillar": "saving-money",
+  "engine": "B-narrated",
+  "reference_ids": [],
+  "hook": "SAME $5,000 SAVED. TWO BANKS.",
+  "hook_pattern": "two people + same amount + verified average vs labelled example",
+  "layout": "two-mailboxes-month-ticker",
+  "metaphor": "two mailboxes side by side; every month the bank mails interest: a thin envelope to A, a fat envelope to B; a month counter ticks 1-12 and the stacks and counters grow",
+  "final_render": "video/renders/daily/DMM-008/DMM-008_v03.mp4",
+  "cover": "daily-money-motion/episodes/DMM-008/cover.png",
+  "narration": {
+    "voice_name": "Stack voice ",
+    "voice_id": "xwJCF4OpyrvnHPQlIyZD",
+    "model_id": "eleven_multilingual_v2",
+    "cache_key": "332d32a043bc1638007d",
+    "file": "video/public/daily/voice/DMM-008/voice.mp3",
+    "duration_sec": 8.54,
+    "offset_sec": 0.2,
+    "script": "Two people save the same five thousand dollars. One bank pays them about twenty dollars a year. The other pays two hundred. Same money. Different bank. Check your savings rate."
+  },
+  "sources": [
+    "FDIC, National Rates and Rate Caps - November 2026 (fdic.gov, last updated Nov 16, 2026): national rate for savings accounts 0.39%",
+    "Context for the EXAMPLE rate (not shown as fact): Fortune (Nov 24, 2026) top high-yield savings up to 4.70% APY; Investopedia (Nov 25, 2026) up to 5.00% APY"
+  ],
+  "disclosures": [
+    "Source footnote 0-15 s",
+    "EXAMPLE 4.00% APY on $5,000 for one year, paid monthly",
+    "Rates change and are not guaranteed",
+    "Not advice"
+  ],
+  "audio": "voice + subtle SFX, no music (creator adds music per platform)",
+  "sfx_track": "public/daily/audio/dmm008-sfx-v01.wav",
+  "publishing": "OFF"
+}
