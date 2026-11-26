@@ -66,6 +66,7 @@ place(swell(y1 - y0, 0.06, 900, 4200, rise=False), y0)                   # soft 
 place(swell(y1 - y0, 0.05, 180, 1000), y0, pan=0.2)                      # gentle rise toward month 12
 place(chime(0.08, 990), fr(T["yearDone"] + 1), pan=0.2)                   # month 12: $19.50 vs $200
 place(chime(0.06, 2640, dur=0.8), fr(T["headline"] + 2))                 # headline lands
+place(chime(0.045, 1760, dur=0.7), fr(T["cta"] + 3), pan=0.0)             # CTA card appears
 
 gain = np.full(N, GAIN)
 v0, v1 = int(fr(VO_OFFSET) * SR), int((fr(T["voEnd"]) + 0.15) * SR)

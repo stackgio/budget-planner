@@ -5,21 +5,21 @@
   "pillar": "saving-money",
   "engine": "B-narrated",
   "reference_ids": [],
-  "hook": "SAME $5,000 SAVED. TWO BANKS.",
+  "hook": "YOUR SAVINGS COULD BE EARNING 10\u00d7 MORE?",
   "hook_pattern": "two people + same amount + verified average vs labelled example",
   "layout": "two-mailboxes-month-ticker",
   "metaphor": "two mailboxes side by side; every month the bank mails interest: a thin envelope to A, a fat envelope to B; a month counter ticks 1-12 and the stacks and counters grow",
-  "final_render": "video/renders/daily/DMM-008/DMM-008_v03.mp4",
+  "final_render": "video/renders/daily/DMM-008/DMM-008_v04.mp4",
   "cover": "daily-money-motion/episodes/DMM-008/cover.png",
   "narration": {
     "voice_name": "Stack voice ",
     "voice_id": "xwJCF4OpyrvnHPQlIyZD",
     "model_id": "eleven_multilingual_v2",
-    "cache_key": "332d32a043bc1638007d",
+    "cache_key": "cba3ec67d0f26280b7da",
     "file": "video/public/daily/voice/DMM-008/voice.mp3",
-    "duration_sec": 8.54,
+    "duration_sec": 10.0,
     "offset_sec": 0.2,
-    "script": "Two people save the same five thousand dollars. One bank pays them about twenty dollars a year. The other pays two hundred. Same money. Different bank. Check your savings rate."
+    "script": "Your savings could be earning ten times more. Two people save the same five thousand dollars. One bank pays them about twenty dollars a year. The other pays two hundred. Check your savings rate, and follow for more."
   },
   "sources": [
     "FDIC, National Rates and Rate Caps - November 2026 (fdic.gov, last updated Nov 16, 2026): national rate for savings accounts 0.39%",
@@ -32,6 +32,10 @@
     "Not advice"
   ],
   "audio": "voice + subtle SFX, no music (creator adds music per platform)",
-  "sfx_track": "public/daily/audio/dmm008-sfx-v01.wav",
-  "publishing": "OFF"
+  "sfx_track": "public/daily/audio/dmm008-sfx-v02.wav",
+  "publishing": "OFF",
+  "cta": {
+    "spoken": "Check your savings rate, and follow for more.",
+    "on_screen": "FOLLOW STACK WITH GIO \u00b7 COMMENT YOUR SAVINGS RATE BELOW"
+  }
 }

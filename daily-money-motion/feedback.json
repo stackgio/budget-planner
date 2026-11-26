@@ -35,6 +35,17 @@
         "Label every symbol; state the takeaway in words on screen",
         "Clarity score < 9 means NEEDS FIXING"
       ]
+    },
+    {
+      "episode": "ALL (from DMM-008)",
+      "date": "2026-11-26",
+      "from": "creator",
+      "notes": "Add a good CTA on every video and a good hook at the beginning.",
+      "lessons": [
+        "Every video opens with a spoken hook (<= 10 words) and an on-screen hook stamp readable on frame 0",
+        "Every video ends with a spoken CTA ('... and follow for more') and the on-screen CTA card (FOLLOW STACK WITH GIO + one episode-specific action)",
+        "Automated: a missing CTA is a QC FAIL"
+      ]
     }
   ],
   "analytics": []

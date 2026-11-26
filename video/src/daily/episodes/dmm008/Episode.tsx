@@ -9,7 +9,9 @@ import React from 'react';
 import {AbsoluteFill, Html5Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import '../../../fonts';
 import {E, prog, sp} from '../../../story/lib/motion';
-import {SafeZoneOverlay, Signature} from '../../components/Chrome';
+import {SafeZoneOverlay} from '../../components/Chrome';
+import {CTACard} from '../../components/CTA';
+import {HookStamp} from '../../components/Hook';
 import {FilmFinish, Stage} from '../../components/FilmLook';
 import {Headline} from '../../components/Headline';
 import {buildPages, WordCaptions} from '../../components/WordCaptions';
@@ -28,6 +30,7 @@ const BOX_TOP = 890;
 const BOX_BOTTOM = 1060;
 const BOX_HALF = 118;
 const fadeIn = (f: number, at: number, d = 8) => prog(f, at, d, E.out);
+const HOOK_OUT = 34; // hook stamp lifts away (≈ "ten times more")
 
 type Side = {key: 'A' | 'B'; x: number; rate: number; rateAt: number; perYearAt: number; perYear: string; rateNote: string; env: {w: number; h: number; row: number}; color: string};
 const SIDES: Side[] = [
@@ -54,15 +57,16 @@ export const DMM008: React.FC<{showSafeZones?: boolean; audio?: boolean}> = ({sh
 	const {fps} = useVideoConfig();
 
 	// camera: a short pull-back on the hook, then a constant slow drift (never static)
-	const introY = 150 * (1 - prog(frame, 0, 62, (t) => t));
-	const drift = -46 * prog(frame, 62, 449 - 62, (t) => t);
+	// the scene waits below the hook stamp, then rises once the stamp lifts away
+	const introY = 150 * (1 - prog(frame, HOOK_OUT - 6, 45, (t) => t)) + 14 * Math.sin(frame / 8) * (1 - prog(frame, HOOK_OUT - 6, 20));
+	const drift = -46 * prog(frame, 73, 449 - 73, (t) => t);
 
 	const yearT = (frame - T.yearStart) / T.monthFrames; // months elapsed (continuous)
 	const monthsDone = Math.max(0, Math.min(MONTHS, Math.floor(yearT + 1e-6)));
 	const yearDone = frame >= T.yearDone;
 	const doneFlash = yearDone ? Math.max(0, 1 - (frame - T.yearDone) / 18) : 0;
-	const savedPulse = Math.max(0, 1 - Math.abs(frame - T.saved - 6) / 10);
-	const diffPulse = Math.max(0, 1 - Math.abs(frame - T.different - 6) / 10);
+	const savedPulse = Math.max(0, 1 - Math.abs(frame - T.saved - 6) / 10) + Math.max(0, 1 - Math.abs(frame - T.people - 6) / 10) * 0.6;
+	const diffPulse = Math.max(0, 1 - Math.abs(frame - T.check - 6) / 10);
 	const peopleIn = sp(frame, fps, -30, 'smooth');
 
 	return (
@@ -176,17 +180,16 @@ export const DMM008: React.FC<{showSafeZones?: boolean; audio?: boolean}> = ({sh
 						<div key={s.key} style={{position: 'absolute', left: s.x - 190, width: 380, top: GROUND + 16, textAlign: 'center', fontVariantNumeric: 'tabular-nums', opacity: fadeIn(frame, T.yearStart - 6)}}>
 							<div style={{fontSize: 22, fontWeight: 800, letterSpacing: 2, color: C.muted, whiteSpace: 'nowrap'}}>{s.key} · INTEREST PAID</div>
 							<div style={{fontSize: 64, fontWeight: 900, color: s.color, lineHeight: 1.1, transform: `scale(${1 + 0.18 * doneFlash})`}}>{usd(val, 2)}</div>
+							{/* payoff: the difference after one year, under B's counter */}
+							{s.key === 'B' && (
+								<div style={{fontSize: 30, fontWeight: 900, color: C.accent, whiteSpace: 'nowrap', opacity: fadeIn(frame, T.yearDone + 8, 10), transform: `scale(${0.6 + 0.4 * sp(frame, fps, T.yearDone + 8, 'bouncy')})`}}>
+									+{usd(DIFF.value, 2)} MORE
+								</div>
+							)}
 						</div>
 					);
 				})}
 			</AbsoluteFill>
-
-			{/* the payoff: the difference after one year (drifts with the scene) */}
-			<div style={{position: 'absolute', left: dmm.safe.left, width: 888, top: GROUND + 122 + drift, textAlign: 'center', opacity: fadeIn(frame, T.yearDone + 10, 10), transform: `scale(${0.7 + 0.3 * sp(frame, fps, T.yearDone + 10, 'bouncy')})`}}>
-				<span style={{display: 'inline-block', padding: '6px 22px', borderRadius: 999, background: C.accent, color: C.bg, fontSize: 32, fontWeight: 900, letterSpacing: 1, whiteSpace: 'nowrap'}}>
-					B GOT {usd(DIFF.value, 2)} MORE THIS YEAR
-				</span>
-			</div>
 
 			{/* legibility band behind captions */}
 			<AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(8,13,10,0.92) 0%, rgba(8,13,10,0.6) 17%, rgba(8,13,10,0) 21%)'}} />
@@ -203,18 +206,18 @@ export const DMM008: React.FC<{showSafeZones?: boolean; audio?: boolean}> = ({sh
 				]}
 			/>
 
-			<div style={{opacity: prog(frame, T.sign, 16)}}>
-				<Signature y={1466} />
-			</div>
-			<div style={{position: 'absolute', left: dmm.safe.left, top: 1504, width: 888, fontSize: 21, lineHeight: 1.3, fontWeight: 600, color: C.muted}}>
-				*FDIC national rate for savings accounts, Nov 2026: {AVG_RATE.value}%. <span style={{color: C.ink, fontWeight: 800, letterSpacing: 2}}>EXAMPLE</span> · {usd(SAVED.value)} kept for one year at {EXAMPLE_RATE.value.toFixed(2)}% APY, paid monthly. Rates change and are not guaranteed. Not advice.
+			{/* hook (frame 0) and CTA (spoken "follow for more") — series rule since 2026-11-26 */}
+			<HookStamp big={`${Math.round(EXAMPLE_RATE.value / AVG_RATE.value)}× MORE?`} y={356} out={HOOK_OUT} />
+			<CTACard at={T.cta} y={1434} prompt="COMMENT YOUR SAVINGS RATE BELOW" />
+			<div style={{position: 'absolute', left: dmm.safe.left, top: 1543, width: 888, fontSize: 18, lineHeight: 1.25, fontWeight: 600, color: C.muted}}>
+				*FDIC national savings rate, Nov 2026: {AVG_RATE.value}%. <span style={{color: C.ink, fontWeight: 800, letterSpacing: 2}}>EXAMPLE</span> · {usd(SAVED.value)} for one year at {EXAMPLE_RATE.value.toFixed(2)}% APY, paid monthly. Rates change; not guaranteed. Not advice.
 			</div>
 
 			<FilmFinish grain={0.06} />
 			{showSafeZones && <SafeZoneOverlay />}
 			{audio && (
 				<>
-					<Html5Audio src={staticFile('daily/audio/dmm008-sfx-v01.wav')} />
+					<Html5Audio src={staticFile('daily/audio/dmm008-sfx-v02.wav')} />
 					<Sequence from={VO_OFFSET} layout="none" name="voice: Stack voice">
 						<Html5Audio src={staticFile('daily/voice/DMM-008/voice.mp3')} />
 					</Sequence>

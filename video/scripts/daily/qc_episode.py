@@ -214,6 +214,20 @@ try:
 except ImportError:
     rec("captions", "spelling", "WARN", "pyspellchecker not installed: pip install pyspellchecker")
 
+# ---------------- hook + CTA (creator rule 2026-11-26: a strong hook and a CTA on every video)
+_hc = CFG.get("hook_cta", {})
+_sent = [x.strip() for x in re.split(r"(?<=[.!?])\s+", META.get("narration", {}).get("script", "")) if x.strip()]
+if _sent:
+    _first = len(_sent[0].split())
+    rec("hook", "spoken hook (first sentence)", "PASS" if _first <= _hc.get("hook_max_words", 10) else "WARN",
+        f'"{_sent[0]}" ({_first} words; max {_hc.get("hook_max_words", 10)})')
+    _last = _sent[-1].lower()
+    _verbs = _hc.get("cta_verbs", ["follow", "save", "share", "comment", "send"])
+    _hit = [v for v in _verbs if re.search(rf"\b{v}\b", _last)]
+    rec("hook", "spoken CTA (last sentence)", "PASS" if _hit else "FAIL", f'"{_sent[-1]}" → {_hit or "no CTA verb " + str(_verbs)}')
+_cta = META.get("cta", {})
+rec("hook", "on-screen CTA declared", "PASS" if _cta.get("on_screen") else "FAIL", _cta.get("on_screen") or "metadata.json has no cta.on_screen")
+
 # ---------------- picture
 W, H = 270, 480
 raw = subprocess.run(["ffmpeg", "-v", "error", "-i", MP4, "-vf", f"scale={W}:{H},format=gray", "-f", "rawvideo", "-"], capture_output=True).stdout

@@ -378,10 +378,15 @@
           "at": "2026-11-26T10:06:09.443Z",
           "status": "READY_FOR_REVIEW",
           "note": "auto-QC 0 FAIL (0 WARN), score 9, clarity 9.5"
+        },
+        {
+          "at": "2026-11-26T20:59:49.192Z",
+          "status": "READY_FOR_REVIEW",
+          "note": "auto-QC 0 FAIL (0 WARN), score 9.04, clarity 9.5"
         }
       ],
       "published": [],
-      "hook": "SAME $5,000 SAVED. TWO BANKS.",
+      "hook": "YOUR SAVINGS COULD BE EARNING 10× MORE?",
       "hook_pattern": "two people + same amount + verified average vs labelled example",
       "layout": "two-mailboxes-month-ticker",
       "metaphor": "two mailboxes side by side; every month the bank mails interest: a thin envelope to A, a fat envelope to B; a JAN-DEC month flag ticks and the yearly totals stack",
@@ -393,8 +398,8 @@
         "stacking-envelopes"
       ],
       "engine": "B-narrated",
-      "final_render": "video/renders/daily/DMM-008/DMM-008_v03.mp4",
-      "qc_score": 9,
+      "final_render": "video/renders/daily/DMM-008/DMM-008_v04.mp4",
+      "qc_score": 9.04,
       "clarity_score": 9.5
     }
   ]

@@ -1,135 +1,155 @@
 {
-  "series": "Daily Money Motion (posting every 72 h)",
-  "brand": "Stack With Gio",
-  "format": {
-    "width": 1080,
-    "height": 1920,
-    "fps": 30,
-    "frames": 450
+ "series": "Daily Money Motion (posting every 72 h)",
+ "brand": "Stack With Gio",
+ "format": {
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "frames": 450
+ },
+ "pillars": [
+  "saving-money",
+  "investing-encouragement",
+  "money-discipline",
+  "building-wealth",
+  "spending-habits",
+  "meaningful-messages"
+ ],
+ "engines": {
+  "A": "cinematic (licensed footage)",
+  "B": "motion-graphics",
+  "C": "cinematic 2.5D / hybrid"
+ },
+ "rules": {
+  "duplicate_window_days": 30,
+  "max_same_layout_in_a_row": 1,
+  "max_same_reference_creator_in_7_days": 1,
+  "qc_target": 9.0
+ },
+ "statuses": [
+  "RESEARCHING",
+  "REFERENCE_SELECTED",
+  "SCRIPT_READY",
+  "BUILDING",
+  "REVIEWING",
+  "NEEDS_FIXING",
+  "READY_FOR_REVIEW",
+  "APPROVED",
+  "QUEUED",
+  "PUBLISHED",
+  "FAILED"
+ ],
+ "schedule": {
+  "active": true,
+  "intervalDays": 3,
+  "anchorDate": "2026-11-17",
+  "timezone": "America/New_York",
+  "deliverBy": "07:00",
+  "note": "Rolling 72 h from anchorDate. A daily trigger at 04:47 ET runs `dmm.mjs due`; only production days do any work. Hard stop 06:45 ET → deliver the best preview + an honest status.",
+  "startAt": "04:47",
+  "baseBranch": "claude/daily-money-motion-4tu50i",
+  "episodeBranch": "dmm/<YYYY-MM-DD>",
+  "publishing": "OFF (creator reviews and posts manually)",
+  "activatedByCreator": "2026-11-14 (explicit approval in chat)"
+ },
+ "narrator": {
+  "name": "Stack voice ",
+  "voice_id": "xwJCF4OpyrvnHPQlIyZD",
+  "source": "Creator's own saved ElevenLabs voice (category: generated / Voice Design), found by name on 2026-11-14. Never create or clone another voice.",
+  "model_id": "eleven_multilingual_v2",
+  "voice_settings": {
+   "stability": 0.5,
+   "similarity_boost": 0.75,
+   "style": 0.0,
+   "use_speaker_boost": true,
+   "speed": 1.0
   },
-  "pillars": [
-    "saving-money",
-    "investing-encouragement",
-    "money-discipline",
-    "building-wealth",
-    "spending-habits",
-    "meaningful-messages"
+  "auth": "ELEVENLABS_API_KEY env var; in this cloud environment the network proxy injects the key for api.elevenlabs.io. Never commit keys."
+ },
+ "audio": {
+  "default": "Stack voice narration + very subtle SFX + NO background music",
+  "music": "none. The creator adds music on each platform (TikTok, Instagram, Facebook, YouTube).",
+  "sfx": {
+   "max_level": "about 30 dB+ below the narration during speech (DMM-003 v03 measured 33.7 dB below); peak at or under -30 dBFS",
+   "duck_under_voice_db": 6,
+   "avoid": [
+    "music beds, pads, drones",
+    "impacts/booms",
+    "repetitive ticks",
+    "sharp clicks (use soft attacks)"
+   ],
+   "gain": "fixed: never peak-normalise an SFX-only track"
+  },
+  "voice": "Play the ElevenLabs MP3 untouched on its own track at volume 1.0: no compression, no limiter, no re-generation for audio fixes.",
+  "qc": [
+   "no-music check: the residual (mix minus voice) must be digital silence wherever no SFX is scheduled",
+   "speech-to-text on the final mix: every word recognised, no 'music' audio event",
+   "voice gain vs original about 0 dB, correlation > 0.99"
+  ]
+ },
+ "safe": {
+  "top": 170,
+  "bottom": 330,
+  "left": 72,
+  "right": 120
+ },
+ "qc_thresholds": {
+  "lufs_min": -20,
+  "lufs_max": -14,
+  "true_peak_max": -1.0,
+  "voice_corr_min": 0.99,
+  "voice_gain_tol_db": 0.5,
+  "sfx_below_voice_db_min": 20,
+  "sfx_peak_max": -24,
+  "no_music_residual_max": -55,
+  "sync_max_sec": 0.12,
+  "hook_motion_min": 0.4,
+  "static_diff": 0.15,
+  "max_static_sec": 1.5,
+  "max_visual_similarity": 0.85,
+  "allowed_words": [
+   "whatever's",
+   "payday",
+   "dmm",
+   "app"
+  ]
+ },
+ "gate": {
+  "ready_label": "READY FOR MY REVIEW",
+  "fail_label": "NEEDS FIXING",
+  "min_creative_score": 9.0,
+  "requires": [
+   "qc_auto.json with 0 FAIL",
+   "human-judgment scores written in qc-report.md",
+   "no unresolved important issue",
+   "clarity score >= 9 in qc-report.md (anybody gets the message)"
   ],
-  "engines": {
-    "A": "cinematic (licensed footage)",
-    "B": "motion-graphics",
-    "C": "cinematic 2.5D / hybrid"
-  },
-  "rules": {
-    "duplicate_window_days": 30,
-    "max_same_layout_in_a_row": 1,
-    "max_same_reference_creator_in_7_days": 1,
-    "qc_target": 9.0
-  },
-  "statuses": [
-    "RESEARCHING",
-    "REFERENCE_SELECTED",
-    "SCRIPT_READY",
-    "BUILDING",
-    "REVIEWING",
-    "NEEDS_FIXING",
-    "READY_FOR_REVIEW",
-    "APPROVED",
-    "QUEUED",
-    "PUBLISHED",
-    "FAILED"
+  "never": "POST READY / auto-publish: the creator approves every episode",
+  "min_clarity_score": 9.0
+ },
+ "production_limits": {
+  "max_render_rounds": 4,
+  "max_still_rounds": 4,
+  "hard_stop_minutes_before_delivery": 15
+ },
+ "hook_cta": {
+  "rule": "Creator rule 2026-11-26: EVERY video has a strong hook at the start and a clear CTA at the end.",
+  "hook_max_words": 10,
+  "hook": "Spoken first sentence <= 10 words that creates curiosity or tension (a surprising number, a 'you' statement or a question). On screen from frame 0: HookStamp (components/Hook.tsx), a big number/claim readable with sound off, then it lifts away.",
+  "cta_verbs": [
+   "follow",
+   "save",
+   "share",
+   "comment",
+   "send"
   ],
-  "schedule": {
-    "active": true,
-    "intervalDays": 3,
-    "anchorDate": "2026-11-17",
-    "timezone": "America/New_York",
-    "deliverBy": "07:00",
-    "note": "Rolling 72 h from anchorDate. A daily trigger at 04:47 ET runs `dmm.mjs due`; only production days do any work. Hard stop 06:45 ET \u2192 deliver the best preview + an honest status.",
-    "startAt": "04:47",
-    "baseBranch": "claude/daily-money-motion-4tu50i",
-    "episodeBranch": "dmm/<YYYY-MM-DD>",
-    "publishing": "OFF (creator reviews and posts manually)",
-    "activatedByCreator": "2026-11-14 (explicit approval in chat)"
-  },
-  "narrator": {
-    "name": "Stack voice ",
-    "voice_id": "xwJCF4OpyrvnHPQlIyZD",
-    "source": "Creator's own saved ElevenLabs voice (category: generated / Voice Design), found by name on 2026-11-14. Never create or clone another voice.",
-    "model_id": "eleven_multilingual_v2",
-    "voice_settings": {
-      "stability": 0.5,
-      "similarity_boost": 0.75,
-      "style": 0.0,
-      "use_speaker_boost": true,
-      "speed": 1.0
-    },
-    "auth": "ELEVENLABS_API_KEY env var; in this cloud environment the network proxy injects the key for api.elevenlabs.io. Never commit keys."
-  },
-  "audio": {
-    "default": "Stack voice narration + very subtle SFX + NO background music",
-    "music": "none. The creator adds music on each platform (TikTok, Instagram, Facebook, YouTube).",
-    "sfx": {
-      "max_level": "about 30 dB+ below the narration during speech (DMM-003 v03 measured 33.7 dB below); peak at or under -30 dBFS",
-      "duck_under_voice_db": 6,
-      "avoid": [
-        "music beds, pads, drones",
-        "impacts/booms",
-        "repetitive ticks",
-        "sharp clicks (use soft attacks)"
-      ],
-      "gain": "fixed: never peak-normalise an SFX-only track"
-    },
-    "voice": "Play the ElevenLabs MP3 untouched on its own track at volume 1.0: no compression, no limiter, no re-generation for audio fixes.",
-    "qc": [
-      "no-music check: the residual (mix minus voice) must be digital silence wherever no SFX is scheduled",
-      "speech-to-text on the final mix: every word recognised, no 'music' audio event",
-      "voice gain vs original about 0 dB, correlation > 0.99"
-    ]
-  },
-  "safe": {
-    "top": 170,
-    "bottom": 330,
-    "left": 72,
-    "right": 120
-  },
-  "qc_thresholds": {
-    "lufs_min": -20,
-    "lufs_max": -14,
-    "true_peak_max": -1.0,
-    "voice_corr_min": 0.99,
-    "voice_gain_tol_db": 0.5,
-    "sfx_below_voice_db_min": 20,
-    "sfx_peak_max": -24,
-    "no_music_residual_max": -55,
-    "sync_max_sec": 0.12,
-    "hook_motion_min": 0.4,
-    "static_diff": 0.15,
-    "max_static_sec": 1.5,
-    "max_visual_similarity": 0.85,
-    "allowed_words": [
-      "whatever's",
-      "payday",
-      "dmm",
-      "app"
-    ]
-  },
-  "gate": {
-    "ready_label": "READY FOR MY REVIEW",
-    "fail_label": "NEEDS FIXING",
-    "min_creative_score": 9.0,
-    "requires": [
-      "qc_auto.json with 0 FAIL",
-      "human-judgment scores written in qc-report.md",
-      "no unresolved important issue",
-      "clarity score >= 9 in qc-report.md (anybody gets the message)"
-    ],
-    "never": "POST READY / auto-publish: the creator approves every episode",
-    "min_clarity_score": 9.0
-  },
-  "production_limits": {
-    "max_render_rounds": 4,
-    "max_still_rounds": 4,
-    "hard_stop_minutes_before_delivery": 15
-  }
+  "cta": "Spoken last sentence contains a CTA verb (e.g. '..., and follow for more.'). On screen: CTACard (components/CTA.tsx) appears on the spoken CTA and stays to the last frame: button 'FOLLOW STACK WITH GIO' + one episode-specific action (COMMENT ... / SAVE THIS ... / SEND THIS TO ...). It replaces the plain signature.",
+  "examples_cta": [
+   "COMMENT YOUR SAVINGS RATE BELOW",
+   "SAVE THIS FOR YOUR NEXT PAYDAY",
+   "SEND THIS TO SOMEONE WHO NEEDS IT",
+   "COMMENT YOUR NUMBER BELOW"
+  ],
+  "qc": "qc_episode.py: hook > 10 words = WARN; no CTA verb in the last sentence = FAIL; no metadata cta.on_screen = FAIL"
+ }
 }

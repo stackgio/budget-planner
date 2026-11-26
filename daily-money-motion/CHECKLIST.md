@@ -21,6 +21,14 @@ Every episode follows this list. **When a problem shows up twice, it gets a line
 - [ ] **The ending states the takeaway in words** on screen (a 2-line headline), not only as a picture.
 - [ ] Score **Clarity** in qc-report.md; below 9 means NEEDS FIXING, whatever the average.
 
+## B3. Hook and CTA on every video (creator rule, 2026-11-26)
+- [ ] **Hook (0–2 s):** the first spoken sentence is ≤ 10 words and creates curiosity or tension (a surprising number, a "you" statement, or a question). Don't open with a setup line.
+- [ ] **Hook on screen from frame 0:** `HookStamp` (`components/Hook.tsx`): one big number or claim (e.g. "10× MORE?") that reads with sound off, then lifts away. It must not cover the hero object.
+- [ ] **Spoken CTA:** the last sentence carries the CTA (e.g. "…, and follow for more."). Verbs: follow / save / share / comment / send.
+- [ ] **On-screen CTA:** `CTACard` (`components/CTA.tsx`) appears on the spoken CTA and stays to the last frame: "FOLLOW STACK WITH GIO" + ONE episode-specific action tied to the topic ("COMMENT YOUR SAVINGS RATE BELOW", "SAVE THIS FOR PAYDAY", "SEND THIS TO SOMEONE WHO…"). It replaces the plain signature. Record it in `metadata.json → cta`.
+- [ ] Keep it honest: no "link in bio", giveaway or bait the creator hasn't set up; never promise results.
+- [ ] **Automated:** `qc_episode.py` WARNs on a hook over 10 words and FAILs without a CTA.
+
 ## C. Voice and audio (permanent default)
 - [ ] Stack voice from `config.json → narrator`, via `voice_tts.py` (cached; never regenerate just to fix a mix).
 - [ ] **No music.** SFX only, fixed gain, at least 20 dB below the voice during speech, ducked 6 dB. No impacts, no repetitive ticks.

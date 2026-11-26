@@ -24,6 +24,7 @@ export const YEAR_B = fact(earned(EXAMPLE_RATE.value, 12), 'computed', '$5,000 Ã
 export const MONTHS = 12;
 export const DIFF = fact(YEAR_B.value - YEAR_A.value, 'computed', '$200 âˆ’ $19.50 = $180.50');
 
-// The narration says "about twenty dollars" and "two hundred".
+// The narration says "ten times more", "about twenty dollars" and "two hundred".
+if (Math.round(EXAMPLE_RATE.value / AVG_RATE.value) !== 10) throw new Error('claim fails: ten times more');
 if (Math.abs(YEAR_A.value - 19.5) > 0.01 || Math.abs(YEAR_B.value - 200) > 0.01) throw new Error('facts drifted');
 if (Math.round(YEAR_A.value / 10) * 10 !== 20) throw new Error('claim fails: about $20');

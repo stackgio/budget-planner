@@ -3,15 +3,16 @@
 **One-sentence message (clarity rule):** two people keep the same $5,000 in savings; the U.S. average rate pays about $20 a year, an example 4% rate pays $200, so check what your savings account pays.
 
 **Pillar:** saving-money · **Engine:** B (narrated motion graphics) · **Composition:** `DMM008` (450 frames, 1080×1920, 30 fps)
-**Narration (Stack voice, 8.54 s, starts at 0.2 s):**
-> Two people save the same five thousand dollars. One bank pays them about twenty dollars a year. The other pays two hundred. Same money. Different bank. Check your savings rate.
+**Narration (Stack voice, 10.0 s, starts at 0.2 s) — v04 with hook + CTA:**
+> Your savings could be earning ten times more. Two people save the same five thousand dollars. One bank pays them about twenty dollars a year. The other pays two hundred. Check your savings rate, and follow for more.
 
 | Frames | Words | Picture | Sound |
 |---|---|---|---|
-| 0–74 | "Two people save the same five thousand dollars." | Person A + mailbox + BANK A card, person B + mailbox + BANK B card; both cards "$5,000 SAVED" (pulse on "five thousand"), rate slots "?.??%" wobbling; the scene rises into place | soft tink |
-| 75–141 | "One bank pays them about twenty dollars a year." | BANK A rate resolves to 0.39% · U.S. AVERAGE* · PAYS ≈ $20 A YEAR | soft low chime |
-| 142–169 | "The other pays two hundred." | BANK B rate resolves to 4.00% · EXAMPLE RATE · PAYS $200 A YEAR | soft brighter chime |
-| 170–350 | "Same money. Different bank. Check your savings rate." (to 262) | MONTH 1→12; every month each bank mails an envelope into the open mailbox (thin for A, fat with a green seal for B); flags go up; B's mailbox fills, A's shows a thin strip; INTEREST PAID counters climb $0 → $19.50 and $0 → $200.00 | one soft paper rustle + gentle swell |
-| 270–449 | (headline, then after the year) | Headline SAME $5,000. DIFFERENT BANK. / CHECK YOUR SAVINGS RATE.; at month 12 the counters flash and "B GOT $180.50 MORE THIS YEAR" pops; slow drift; signature | chime, tink |
+| 0–74 | "Your savings could be earning ten times more." (HOOK) | Big pulsing "10× MORE?" under the caption from frame 0; banks with "$5,000 SAVED" and wobbling "?.??%"; at ~1.1 s the stamp lifts away and the scene rises | — |
+| 75–143 | "Two people save the same five thousand dollars." | People A and B, mailboxes; both "$5,000 SAVED" cards pulse | soft tink |
+| 144–213 | "One bank pays them about twenty dollars a year." | BANK A → 0.39% · U.S. AVERAGE* · PAYS ≈ $20 A YEAR | soft low chime |
+| 214–239 | "The other pays two hundred." | BANK B → 4.00% · EXAMPLE RATE · PAYS $200 A YEAR | soft brighter chime |
+| 240–372 | "Check your savings rate, and follow for more." (CTA, to 306) | MONTH 1→12; monthly envelopes (thin to A, fat to B); B's mailbox fills; counters $0 → $19.50 / $200.00; on "follow" the CTA card pops: "+ FOLLOW STACK WITH GIO" / "COMMENT YOUR SAVINGS RATE BELOW" | soft rustle + swell; soft tink |
+| 314–449 | (headline, payoff, CTA held) | Headline SAME $5,000. DIFFERENT BANK. / CHECK YOUR SAVINGS RATE.; month 12 flash; "+$180.50 MORE" under B; CTA button breathes to the last frame | chime |
 
 Source and EXAMPLE footnote on screen for the full 15 s.

@@ -1,158 +1,198 @@
 {
- "cache_key": "332d32a043bc1638007d",
+ "cache_key": "cba3ec67d0f26280b7da",
  "voice_id": "xwJCF4OpyrvnHPQlIyZD",
  "model_id": "eleven_multilingual_v2",
- "text": "Two people save the same five thousand dollars. One bank pays them about twenty dollars a year. The other pays two hundred. Same money. Different bank. Check your savings rate.",
+ "text": "Your savings could be earning ten times more. Two people save the same five thousand dollars. One bank pays them about twenty dollars a year. The other pays two hundred. Check your savings rate, and follow for more.",
  "words": [
   {
-   "text": "Two",
+   "text": "Your",
    "start": 0.046,
-   "end": 0.197
-  },
-  {
-   "text": "people",
-   "start": 0.244,
-   "end": 0.476
-  },
-  {
-   "text": "save",
-   "start": 0.511,
-   "end": 0.708
-  },
-  {
-   "text": "the",
-   "start": 0.731,
-   "end": 0.801
-  },
-  {
-   "text": "same",
-   "start": 0.836,
-   "end": 1.022
-  },
-  {
-   "text": "five",
-   "start": 1.068,
-   "end": 1.265
-  },
-  {
-   "text": "thousand",
-   "start": 1.3,
-   "end": 1.602
-  },
-  {
-   "text": "dollars.",
-   "start": 1.637,
-   "end": 2.125
-  },
-  {
-   "text": "One",
-   "start": 2.368,
-   "end": 2.554
-  },
-  {
-   "text": "bank",
-   "start": 2.601,
-   "end": 2.775
-  },
-  {
-   "text": "pays",
-   "start": 2.833,
-   "end": 3.007
-  },
-  {
-   "text": "them",
-   "start": 3.03,
-   "end": 3.135
-  },
-  {
-   "text": "about",
-   "start": 3.17,
-   "end": 3.379
-  },
-  {
-   "text": "twenty",
-   "start": 3.413,
-   "end": 3.68
-  },
-  {
-   "text": "dollars",
-   "start": 3.715,
-   "end": 4.005
-  },
-  {
-   "text": "a",
-   "start": 4.04,
-   "end": 4.075
-  },
-  {
-   "text": "year.",
-   "start": 4.122,
-   "end": 4.377
-  },
-  {
-   "text": "The",
-   "start": 4.447,
-   "end": 4.551
-  },
-  {
-   "text": "other",
-   "start": 4.598,
-   "end": 4.76
-  },
-  {
-   "text": "pays",
-   "start": 4.807,
-   "end": 5.016
-  },
-  {
-   "text": "two",
-   "start": 5.062,
-   "end": 5.224
-  },
-  {
-   "text": "hundred.",
-   "start": 5.283,
-   "end": 5.666
-  },
-  {
-   "text": "Same",
-   "start": 5.84,
-   "end": 6.084
-  },
-  {
-   "text": "money.",
-   "start": 6.118,
-   "end": 6.444
-  },
-  {
-   "text": "Different",
-   "start": 6.594,
-   "end": 6.954
-  },
-  {
-   "text": "bank.",
-   "start": 7.001,
-   "end": 7.372
-  },
-  {
-   "text": "Check",
-   "start": 7.546,
-   "end": 7.732
-  },
-  {
-   "text": "your",
-   "start": 7.767,
-   "end": 7.86
+   "end": 0.186
   },
   {
    "text": "savings",
-   "start": 7.895,
-   "end": 8.208
+   "start": 0.232,
+   "end": 0.592
   },
   {
-   "text": "rate.",
-   "start": 8.255,
-   "end": 8.545
+   "text": "could",
+   "start": 0.639,
+   "end": 0.778
+  },
+  {
+   "text": "be",
+   "start": 0.801,
+   "end": 0.871
+  },
+  {
+   "text": "earning",
+   "start": 0.906,
+   "end": 1.115
+  },
+  {
+   "text": "ten",
+   "start": 1.161,
+   "end": 1.335
+  },
+  {
+   "text": "times",
+   "start": 1.405,
+   "end": 1.672
+  },
+  {
+   "text": "more.",
+   "start": 1.73,
+   "end": 2.043
+  },
+  {
+   "text": "Two",
+   "start": 2.287,
+   "end": 2.473
+  },
+  {
+   "text": "people",
+   "start": 2.543,
+   "end": 2.821
+  },
+  {
+   "text": "save",
+   "start": 2.868,
+   "end": 3.088
+  },
+  {
+   "text": "the",
+   "start": 3.123,
+   "end": 3.193
+  },
+  {
+   "text": "same",
+   "start": 3.228,
+   "end": 3.437
+  },
+  {
+   "text": "five",
+   "start": 3.471,
+   "end": 3.704
+  },
+  {
+   "text": "thousand",
+   "start": 3.738,
+   "end": 4.029
+  },
+  {
+   "text": "dollars.",
+   "start": 4.075,
+   "end": 4.516
+  },
+  {
+   "text": "One",
+   "start": 4.667,
+   "end": 4.888
+  },
+  {
+   "text": "bank",
+   "start": 4.923,
+   "end": 5.12
+  },
+  {
+   "text": "pays",
+   "start": 5.178,
+   "end": 5.352
+  },
+  {
+   "text": "them",
+   "start": 5.387,
+   "end": 5.503
+  },
+  {
+   "text": "about",
+   "start": 5.55,
+   "end": 5.735
+  },
+  {
+   "text": "twenty",
+   "start": 5.77,
+   "end": 5.979
+  },
+  {
+   "text": "dollars",
+   "start": 6.014,
+   "end": 6.293
+  },
+  {
+   "text": "a",
+   "start": 6.327,
+   "end": 6.351
+  },
+  {
+   "text": "year.",
+   "start": 6.409,
+   "end": 6.711
+  },
+  {
+   "text": "The",
+   "start": 6.838,
+   "end": 6.954
+  },
+  {
+   "text": "other",
+   "start": 7.001,
+   "end": 7.152
+  },
+  {
+   "text": "pays",
+   "start": 7.198,
+   "end": 7.372
+  },
+  {
+   "text": "two",
+   "start": 7.407,
+   "end": 7.523
+  },
+  {
+   "text": "hundred.",
+   "start": 7.593,
+   "end": 7.93
+  },
+  {
+   "text": "Check",
+   "start": 8.046,
+   "end": 8.278
+  },
+  {
+   "text": "your",
+   "start": 8.324,
+   "end": 8.429
+  },
+  {
+   "text": "savings",
+   "start": 8.475,
+   "end": 8.8
+  },
+  {
+   "text": "rate,",
+   "start": 8.847,
+   "end": 9.056
+  },
+  {
+   "text": "and",
+   "start": 9.079,
+   "end": 9.183
+  },
+  {
+   "text": "follow",
+   "start": 9.242,
+   "end": 9.474
+  },
+  {
+   "text": "for",
+   "start": 9.52,
+   "end": 9.625
+  },
+  {
+   "text": "more.",
+   "start": 9.671,
+   "end": 9.996
   }
  ]
 }
