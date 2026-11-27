@@ -1,0 +1,501 @@
+{
+ "engine": "elevenlabs:scribe_v1",
+ "text": "Keeping 5,000 dollars in a traditional bank is quietly costing you hundreds every single year. Here's the math. A big bank pays 0.01%. After three years, your 5,000 dollars earns a dollar 50. A pack of gum costs more than that. A high-yield savings account pays 4.5%. Same money, same three years, 705 dollars for doing nothing. Why? Online banks don't pay for branches, rent, or tellers, so they pass that cash to you, and it's just as safe as long as the bank is FDIC insured up to 250,000 dollars. Save this and switch your savings before Monday.",
+ "words": [
+  {
+   "text": "Keeping",
+   "start": 0.08,
+   "end": 0.32
+  },
+  {
+   "text": "5,000",
+   "start": 0.4,
+   "end": 0.92
+  },
+  {
+   "text": "dollars",
+   "start": 0.96,
+   "end": 1.3
+  },
+  {
+   "text": "in",
+   "start": 1.34,
+   "end": 1.4
+  },
+  {
+   "text": "a",
+   "start": 1.44,
+   "end": 1.5
+  },
+  {
+   "text": "traditional",
+   "start": 1.54,
+   "end": 1.96
+  },
+  {
+   "text": "bank",
+   "start": 2.04,
+   "end": 2.3
+  },
+  {
+   "text": "is",
+   "start": 2.4,
+   "end": 2.54
+  },
+  {
+   "text": "quietly",
+   "start": 2.6,
+   "end": 2.94
+  },
+  {
+   "text": "costing",
+   "start": 2.98,
+   "end": 3.3
+  },
+  {
+   "text": "you",
+   "start": 3.36,
+   "end": 3.46
+  },
+  {
+   "text": "hundreds",
+   "start": 3.52,
+   "end": 3.9
+  },
+  {
+   "text": "every",
+   "start": 4.019,
+   "end": 4.2
+  },
+  {
+   "text": "single",
+   "start": 4.3,
+   "end": 4.52
+  },
+  {
+   "text": "year.",
+   "start": 4.6,
+   "end": 4.82
+  },
+  {
+   "text": "Here's",
+   "start": 5.06,
+   "end": 5.24
+  },
+  {
+   "text": "the",
+   "start": 5.28,
+   "end": 5.34
+  },
+  {
+   "text": "math.",
+   "start": 5.4,
+   "end": 5.64
+  },
+  {
+   "text": "A",
+   "start": 5.78,
+   "end": 5.84
+  },
+  {
+   "text": "big",
+   "start": 5.88,
+   "end": 6.04
+  },
+  {
+   "text": "bank",
+   "start": 6.1,
+   "end": 6.32
+  },
+  {
+   "text": "pays",
+   "start": 6.4,
+   "end": 6.6
+  },
+  {
+   "text": "0.01%.",
+   "start": 6.88,
+   "end": 8.02
+  },
+  {
+   "text": "After",
+   "start": 8.2,
+   "end": 8.38
+  },
+  {
+   "text": "three",
+   "start": 8.48,
+   "end": 8.62
+  },
+  {
+   "text": "years,",
+   "start": 8.72,
+   "end": 8.96
+  },
+  {
+   "text": "your",
+   "start": 9.08,
+   "end": 9.2
+  },
+  {
+   "text": "5,000",
+   "start": 9.46,
+   "end": 9.78
+  },
+  {
+   "text": "dollars",
+   "start": 9.84,
+   "end": 10.12
+  },
+  {
+   "text": "earns",
+   "start": 10.18,
+   "end": 10.42
+  },
+  {
+   "text": "a",
+   "start": 10.64,
+   "end": 10.68
+  },
+  {
+   "text": "dollar",
+   "start": 10.74,
+   "end": 10.96
+  },
+  {
+   "text": "50.",
+   "start": 11.06,
+   "end": 11.38
+  },
+  {
+   "text": "A",
+   "start": 11.54,
+   "end": 11.56
+  },
+  {
+   "text": "pack",
+   "start": 11.66,
+   "end": 11.8
+  },
+  {
+   "text": "of",
+   "start": 11.84,
+   "end": 11.92
+  },
+  {
+   "text": "gum",
+   "start": 11.98,
+   "end": 12.1
+  },
+  {
+   "text": "costs",
+   "start": 12.2,
+   "end": 12.42
+  },
+  {
+   "text": "more",
+   "start": 12.48,
+   "end": 12.62
+  },
+  {
+   "text": "than",
+   "start": 12.64,
+   "end": 12.76
+  },
+  {
+   "text": "that.",
+   "start": 12.82,
+   "end": 13.0
+  },
+  {
+   "text": "A",
+   "start": 13.16,
+   "end": 13.2
+  },
+  {
+   "text": "high-yield",
+   "start": 13.26,
+   "end": 13.66
+  },
+  {
+   "text": "savings",
+   "start": 13.74,
+   "end": 14.04
+  },
+  {
+   "text": "account",
+   "start": 14.1,
+   "end": 14.34
+  },
+  {
+   "text": "pays",
+   "start": 14.42,
+   "end": 14.62
+  },
+  {
+   "text": "4.5%.",
+   "start": 14.8,
+   "end": 15.74
+  },
+  {
+   "text": "Same",
+   "start": 16.02,
+   "end": 16.2
+  },
+  {
+   "text": "money,",
+   "start": 16.28,
+   "end": 16.5
+  },
+  {
+   "text": "same",
+   "start": 16.76,
+   "end": 16.94
+  },
+  {
+   "text": "three",
+   "start": 17.0,
+   "end": 17.18
+  },
+  {
+   "text": "years,",
+   "start": 17.28,
+   "end": 17.54
+  },
+  {
+   "text": "705",
+   "start": 17.94,
+   "end": 18.6
+  },
+  {
+   "text": "dollars",
+   "start": 18.66,
+   "end": 19.1
+  },
+  {
+   "text": "for",
+   "start": 19.28,
+   "end": 19.4
+  },
+  {
+   "text": "doing",
+   "start": 19.46,
+   "end": 19.66
+  },
+  {
+   "text": "nothing.",
+   "start": 19.7,
+   "end": 19.98
+  },
+  {
+   "text": "Why?",
+   "start": 20.1,
+   "end": 20.36
+  },
+  {
+   "text": "Online",
+   "start": 20.56,
+   "end": 20.86
+  },
+  {
+   "text": "banks",
+   "start": 20.94,
+   "end": 21.14
+  },
+  {
+   "text": "don't",
+   "start": 21.2,
+   "end": 21.34
+  },
+  {
+   "text": "pay",
+   "start": 21.4,
+   "end": 21.5
+  },
+  {
+   "text": "for",
+   "start": 21.56,
+   "end": 21.64
+  },
+  {
+   "text": "branches,",
+   "start": 21.72,
+   "end": 22.1
+  },
+  {
+   "text": "rent,",
+   "start": 22.2,
+   "end": 22.34
+  },
+  {
+   "text": "or",
+   "start": 22.44,
+   "end": 22.54
+  },
+  {
+   "text": "tellers,",
+   "start": 22.64,
+   "end": 22.98
+  },
+  {
+   "text": "so",
+   "start": 23.14,
+   "end": 23.22
+  },
+  {
+   "text": "they",
+   "start": 23.26,
+   "end": 23.38
+  },
+  {
+   "text": "pass",
+   "start": 23.44,
+   "end": 23.66
+  },
+  {
+   "text": "that",
+   "start": 23.72,
+   "end": 23.84
+  },
+  {
+   "text": "cash",
+   "start": 23.9,
+   "end": 24.14
+  },
+  {
+   "text": "to",
+   "start": 24.18,
+   "end": 24.26
+  },
+  {
+   "text": "you,",
+   "start": 24.34,
+   "end": 24.5
+  },
+  {
+   "text": "and",
+   "start": 24.66,
+   "end": 24.72
+  },
+  {
+   "text": "it's",
+   "start": 24.76,
+   "end": 24.92
+  },
+  {
+   "text": "just",
+   "start": 24.96,
+   "end": 25.1
+  },
+  {
+   "text": "as",
+   "start": 25.14,
+   "end": 25.24
+  },
+  {
+   "text": "safe",
+   "start": 25.3,
+   "end": 25.62
+  },
+  {
+   "text": "as",
+   "start": 25.68,
+   "end": 25.78
+  },
+  {
+   "text": "long",
+   "start": 25.82,
+   "end": 25.94
+  },
+  {
+   "text": "as",
+   "start": 25.98,
+   "end": 26.06
+  },
+  {
+   "text": "the",
+   "start": 26.1,
+   "end": 26.18
+  },
+  {
+   "text": "bank",
+   "start": 26.22,
+   "end": 26.4
+  },
+  {
+   "text": "is",
+   "start": 26.44,
+   "end": 26.54
+  },
+  {
+   "text": "FDIC",
+   "start": 26.66,
+   "end": 27.14
+  },
+  {
+   "text": "insured",
+   "start": 27.18,
+   "end": 27.56
+  },
+  {
+   "text": "up",
+   "start": 27.68,
+   "end": 27.76
+  },
+  {
+   "text": "to",
+   "start": 27.8,
+   "end": 27.9
+  },
+  {
+   "text": "250,000",
+   "start": 28.08,
+   "end": 28.96
+  },
+  {
+   "text": "dollars.",
+   "start": 29.02,
+   "end": 29.42
+  },
+  {
+   "text": "Save",
+   "start": 29.62,
+   "end": 29.84
+  },
+  {
+   "text": "this",
+   "start": 29.9,
+   "end": 30.1
+  },
+  {
+   "text": "and",
+   "start": 30.18,
+   "end": 30.28
+  },
+  {
+   "text": "switch",
+   "start": 30.36,
+   "end": 30.54
+  },
+  {
+   "text": "your",
+   "start": 30.58,
+   "end": 30.68
+  },
+  {
+   "text": "savings",
+   "start": 30.74,
+   "end": 31.08
+  },
+  {
+   "text": "before",
+   "start": 31.12,
+   "end": 31.42
+  },
+  {
+   "text": "Monday.",
+   "start": 31.46,
+   "end": 31.8
+  }
+ ]
+}
