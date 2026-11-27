@@ -21,14 +21,14 @@ body{background:#d9d2c3;font-family:Inter,system-ui,sans-serif;color:var(--ink);
 .top{display:flex;justify-content:space-between;align-items:center;height:44px}
 .brand{display:flex;align-items:center;gap:14px;font-weight:800;font-size:24px;letter-spacing:3px;color:var(--body)}
 .count{font-weight:700;font-size:24px;color:var(--muted);letter-spacing:1px}
-.kicker{margin-top:70px;display:inline-flex;align-self:flex-start;align-items:center;gap:12px;
+.kicker{margin-top:62px;display:inline-flex;align-self:flex-start;align-items:center;gap:12px;
   font-weight:800;font-size:26px;letter-spacing:3px;text-transform:uppercase;padding:12px 22px;border-radius:999px}
 .k-red{background:var(--redSoft);color:var(--red)}
 .k-green{background:var(--greenSoft);color:var(--greenDeep)}
 .k-ink{background:var(--ink);color:var(--bg)}
 h1{font-weight:900;font-size:82px;line-height:1.02;letter-spacing:-3px}
-h2{font-weight:900;font-size:66px;line-height:1.05;letter-spacing:-2.5px}
-.lead{font-weight:500;font-size:36px;line-height:1.35;color:var(--body);letter-spacing:-.4px}
+h2{font-weight:900;font-size:62px;line-height:1.05;letter-spacing:-2.5px}
+.lead{font-weight:500;font-size:34px;line-height:1.35;color:var(--body);letter-spacing:-.4px}
 .mark{background:linear-gradient(transparent 58%,rgba(217,71,47,.28) 58%)}
 .markg{background:linear-gradient(transparent 58%,rgba(30,158,87,.28) 58%)}
 .red{color:var(--red)}.green{color:var(--green)}
@@ -37,69 +37,37 @@ h2{font-weight:900;font-size:66px;line-height:1.05;letter-spacing:-2.5px}
 .swipe{display:flex;align-items:center;gap:12px;font-weight:800;font-size:24px;letter-spacing:2px;color:var(--ink);white-space:nowrap}
 .swipe span{width:56px;height:56px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:28px}
 .card{background:var(--paper);border-radius:36px;box-shadow:0 18px 40px -18px var(--shadow);border:2px solid var(--line)}
-.mega{font-weight:900;letter-spacing:-10px;line-height:.9}
-.eq{display:flex;align-items:center;gap:18px;font-weight:800;font-size:40px;color:var(--body)}
-.chip{background:var(--paper);border:2px solid var(--line);border-radius:20px;padding:14px 22px}
+.mega{font-weight:900;letter-spacing:-8px;line-height:.9}
+.eq{display:flex;align-items:center;gap:16px;font-weight:800;font-size:36px;color:var(--body)}
+.chip{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:10px 20px}
+.scene{position:relative}
+.scene > *{position:absolute}
+.ground{height:5px;background:var(--ink);border-radius:3px;left:-20px;right:-20px}
+.tag{font-weight:900;font-size:24px;padding:8px 16px;border-radius:14px;border:4px solid var(--ink);white-space:nowrap;box-shadow:4px 4px 0 var(--ink)}
+.t-red{background:#FBE1DB;color:var(--red)}
+.t-green{background:#D7F0E1;color:var(--greenDeep)}
+.lbl{font-weight:700;font-size:22px;letter-spacing:2px;color:var(--muted);text-align:center}
 </style>
 </head>
 <body>
 
-<!-- reusable brand mark -->
-<svg width="0" height="0" style="position:absolute">
-  <symbol id="logo" viewBox="0 0 30 30">
-    <rect x="1" y="18" width="7" height="11" rx="2" fill="#1E9E57"/>
-    <rect x="11" y="11" width="7" height="18" rx="2" fill="#1E9E57"/>
-    <rect x="21" y="2" width="7" height="27" rx="2" fill="#121316"/>
-  </symbol>
-</svg>
-
 <!-- ============ SLIDE 1 — HOOK ============ -->
 <section class="slide" id="s1">
-  <div class="top"><div class="brand"><svg width="32" height="32"><use href="#logo"/></svg>STACK WITH GIO</div><div class="count">1 / 6</div></div>
+  <div class="top"><div class="brand"><i data-logo></i>STACK WITH GIO</div><div class="count">1 / 6</div></div>
 
-  <h1 style="margin-top:84px;font-size:86px">Keeping $5,000 in a traditional bank is <span class="mark">quietly costing you hundreds</span> every single year.</h1>
+  <h1 style="margin-top:64px;font-size:78px">Keeping $5,000 in a traditional bank is <span class="mark">quietly costing you hundreds</span> every single year.</h1>
 
-  <!-- coin vs cash stack -->
-  <div style="flex:1;display:flex;align-items:flex-end;justify-content:center;gap:90px;padding-bottom:150px">
-    <div style="display:flex;flex-direction:column;align-items:center;gap:26px">
-      <div style="height:360px;display:flex;align-items:flex-end"><svg width="120" height="120" viewBox="0 0 120 120">
-        <ellipse cx="60" cy="98" rx="46" ry="9" fill="rgba(60,45,20,.15)"/>
-        <circle cx="60" cy="56" r="40" fill="#C9C2B4" stroke="#121316" stroke-width="5"/>
-        <circle cx="60" cy="56" r="29" fill="none" stroke="#121316" stroke-width="3" stroke-dasharray="4 6"/>
-        <text x="60" y="68" text-anchor="middle" font-family="Inter" font-weight="900" font-size="32" fill="#121316">¢</text>
-      </svg></div>
-      <div style="font-weight:900;font-size:64px;letter-spacing:-2px" class="red">$1.50</div>
-      <div style="font-weight:700;font-size:24px;letter-spacing:2px;color:var(--muted)">BIG BANK</div>
-    </div>
-
-    <div style="align-self:stretch;display:flex;align-items:center;font-weight:900;font-size:44px;color:var(--muted);padding-bottom:110px">vs</div>
-
-    <div style="display:flex;flex-direction:column;align-items:center;gap:26px">
-      <svg width="380" height="360" viewBox="0 0 380 360">
-        <ellipse cx="190" cy="340" rx="180" ry="16" fill="rgba(60,45,20,.15)"/>
-        <!-- stack of bills, drawn bottom-up -->
-        <g stroke="#121316" stroke-width="5" stroke-linejoin="round">
-          <rect x="22" y="282" width="336" height="50" rx="10" fill="#1E9E57"/>
-          <rect x="36" y="232" width="336" height="50" rx="10" fill="#22AE60" transform="rotate(-2 204 257)"/>
-          <rect x="14" y="182" width="336" height="50" rx="10" fill="#1E9E57" transform="rotate(1.5 182 207)"/>
-          <rect x="30" y="132" width="336" height="50" rx="10" fill="#22AE60" transform="rotate(-1 198 157)"/>
-          <rect x="20" y="82" width="336" height="50" rx="10" fill="#1E9E57" transform="rotate(2 188 107)"/>
-        </g>
-        <!-- band -->
-        <rect x="160" y="80" width="56" height="256" rx="6" fill="#E2A72E" stroke="#121316" stroke-width="5"/>
-        <!-- top bill -->
-        <g transform="rotate(-3 190 50)">
-          <rect x="24" y="20" width="336" height="64" rx="12" fill="#CFEBD9" stroke="#121316" stroke-width="5"/>
-          <rect x="40" y="32" width="304" height="40" rx="8" fill="none" stroke="#13703C" stroke-width="3"/>
-          <circle cx="192" cy="52" r="17" fill="#FFFDF8" stroke="#13703C" stroke-width="3"/>
-          <text x="192" y="62" text-anchor="middle" font-family="Inter" font-weight="900" font-size="26" fill="#13703C">$</text>
-          <text x="70" y="62" text-anchor="middle" font-family="Inter" font-weight="900" font-size="24" fill="#13703C">100</text>
-          <text x="314" y="62" text-anchor="middle" font-family="Inter" font-weight="900" font-size="24" fill="#13703C">100</text>
-        </g>
-      </svg>
-      <div style="font-weight:900;font-size:64px;letter-spacing:-2px" class="green">$705</div>
-      <div style="font-weight:700;font-size:24px;letter-spacing:2px;color:var(--muted)">HIGH-YIELD SAVINGS</div>
-    </div>
+  <div class="scene" style="height:640px;margin-top:auto;margin-bottom:96px">
+    <div data-ill="bank" data-w="400" style="left:-6px;bottom:158px"></div>
+    <div data-ill="coin" data-w="40" data-fill="#C9C2B4" style="left:240px;bottom:182px"></div>
+    <div class="tag t-red" style="left:270px;bottom:236px;transform:rotate(-5deg)">+$1.50</div>
+    <div style="left:420px;top:300px;font-weight:900;font-size:44px;color:var(--muted)">vs</div>
+    <div data-ill="phone" data-w="180" style="left:530px;bottom:158px"></div>
+    <div data-ill="cash" data-w="210" data-n="6" style="left:682px;bottom:158px"></div>
+    <div class="tag t-green" style="left:712px;top:120px;transform:rotate(-4deg)">+$705</div>
+    <div class="ground" style="top:482px"></div>
+    <div style="left:0;width:400px;top:510px" class="lbl">BIG BANK · 0.01%</div>
+    <div style="left:510px;width:386px;top:510px" class="lbl">ONLINE HYSA · 4.50%</div>
   </div>
 
   <div class="foot"><div class="note">Interest earned on $5,000 over 3 years.</div><div class="swipe">SWIPE <span>→</span></div></div>
@@ -107,48 +75,58 @@ h2{font-weight:900;font-size:66px;line-height:1.05;letter-spacing:-2.5px}
 
 <!-- ============ SLIDE 2 — BIG BANK MATH ============ -->
 <section class="slide" id="s2">
-  <div class="top"><div class="brand"><svg width="32" height="32"><use href="#logo"/></svg>STACK WITH GIO</div><div class="count">2 / 6</div></div>
-  <div class="kicker k-red">🏦 Big bank math</div>
+  <div class="top"><div class="brand"><i data-logo></i>STACK WITH GIO</div><div class="count">2 / 6</div></div>
+  <div class="kicker k-red">Big bank math</div>
 
-  <div class="eq" style="margin-top:56px">
+  <div class="eq" style="margin-top:40px">
     <div class="chip">$5,000</div><div>×</div><div class="chip red">0.01%</div><div>×</div><div class="chip">3 years</div>
   </div>
 
-  <div class="card" style="margin-top:56px;padding:56px 60px 60px;position:relative">
-    <div style="font-weight:700;font-size:28px;letter-spacing:2px;color:var(--muted)">TOTAL INTEREST PAID TO YOU</div>
-    <div class="mega red" style="font-size:300px;margin-top:26px">$1.50</div>
-    <div class="lead" style="margin-top:30px">That's <b style="color:var(--ink)">50¢ a year.</b> Less than a pack of gum.</div>
+  <div class="scene" style="height:400px;margin-top:40px">
+    <div data-ill="bank" data-w="400" data-web="1" style="left:-6px;bottom:48px"></div>
+    <div data-ill="coin" data-w="36" data-fill="#C9C2B4" style="left:242px;bottom:72px"></div>
+    <div class="ground" style="top:352px;right:auto;width:440px"></div>
+    <div style="left:440px;top:40px;width:460px">
+      <div class="lbl" style="text-align:left">YOUR INTEREST, 3 YEARS</div>
+      <div class="mega red" style="font-size:176px;margin-top:18px">$1.50</div>
+      <div class="lead" style="margin-top:22px">That's <b style="color:var(--ink)">50¢ a year.</b></div>
+    </div>
   </div>
 
-  <h2 style="margin-top:72px">That is a <span class="mark">joke.</span></h2>
+  <div class="card" style="margin-top:34px;padding:30px 40px;display:flex;align-items:center;gap:36px">
+    <div data-ill="gum" data-w="220"></div>
+    <div class="lead" style="font-size:32px"><b style="color:var(--ink)">A pack of gum</b> costs more than 3 years of interest.</div>
+  </div>
+
+  <h2 style="margin-top:44px">That is a <span class="mark">joke.</span></h2>
 
   <div class="foot"><div class="note">0.01% APY is a typical rate at large brick-and-mortar banks. $5,000 × ((1.0001)³ − 1) = $1.50.</div><div class="swipe">SWIPE <span>→</span></div></div>
 </section>
 
 <!-- ============ SLIDE 3 — HYSA MATH ============ -->
 <section class="slide" id="s3">
-  <div class="top"><div class="brand"><svg width="32" height="32"><use href="#logo"/></svg>STACK WITH GIO</div><div class="count">3 / 6</div></div>
-  <div class="kicker k-green">📈 High-yield savings math</div>
+  <div class="top"><div class="brand"><i data-logo></i>STACK WITH GIO</div><div class="count">3 / 6</div></div>
+  <div class="kicker k-green">High-yield savings math</div>
 
-  <div class="eq" style="margin-top:56px">
+  <div class="eq" style="margin-top:40px">
     <div class="chip">$5,000</div><div>×</div><div class="chip green">4.50%</div><div>×</div><div class="chip">3 years</div>
   </div>
 
-  <div style="display:flex;align-items:baseline;gap:28px;margin-top:62px">
-    <div class="mega green" style="font-size:300px">$705</div>
+  <div class="scene" style="height:470px;margin-top:34px">
+    <div data-ill="phone" data-w="190" style="left:0;bottom:102px"></div>
+    <div data-ill="arrow" data-w="90" style="left:200px;top:150px"></div>
+    <div data-ill="cash" data-w="170" data-n="2" style="left:300px;bottom:102px"></div>
+    <div data-ill="cash" data-w="170" data-n="4" style="left:500px;bottom:102px"></div>
+    <div data-ill="cash" data-w="170" data-n="7" style="left:700px;bottom:102px"></div>
+    <div class="ground" style="top:368px"></div>
+    <div style="left:300px;width:170px;top:390px" class="lbl">YEAR 1<br><b style="color:var(--green);font-size:30px;letter-spacing:0">+$225</b></div>
+    <div style="left:500px;width:170px;top:390px" class="lbl">YEAR 2<br><b style="color:var(--green);font-size:30px;letter-spacing:0">+$235</b></div>
+    <div style="left:700px;width:170px;top:390px" class="lbl">YEAR 3<br><b style="color:var(--green);font-size:30px;letter-spacing:0">+$246</b></div>
   </div>
-  <div class="lead" style="margin-top:22px">in cash, <span class="markg" style="color:var(--ink);font-weight:800">for doing nothing.</span></div>
 
-  <!-- year-by-year bars -->
-  <div class="card" style="margin-top:54px;padding:40px 48px">
-    <div style="display:grid;grid-template-columns:110px 1fr 140px;row-gap:24px;align-items:center;font-weight:800;font-size:28px">
-      <div style="color:var(--muted)">Year 1</div><div style="height:34px;border-radius:10px;background:var(--green);width:91.6%"></div><div style="text-align:right">+$225</div>
-      <div style="color:var(--muted)">Year 2</div><div style="height:34px;border-radius:10px;background:var(--green);width:95.7%"></div><div style="text-align:right">+$235</div>
-      <div style="color:var(--muted)">Year 3</div><div style="height:34px;border-radius:10px;background:var(--green);width:100%"></div><div style="text-align:right">+$246</div>
-    </div>
-    <div style="margin-top:28px;padding-top:24px;border-top:2px dashed var(--line);display:flex;justify-content:space-between;font-weight:800;font-size:28px">
-      <span style="color:var(--muted)">Big bank, all 3 years</span><span class="red">+$1.50</span>
-    </div>
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:26px">
+    <div class="mega green" style="font-size:230px">$705</div>
+    <div class="lead" style="text-align:right;padding-bottom:14px">in cash,<br><span class="markg" style="color:var(--ink);font-weight:800">for doing nothing.</span></div>
   </div>
 
   <div class="foot"><div class="note">4.50% APY, compounded yearly, rate held for 3 years. HYSA rates are variable and can change.</div><div class="swipe">SWIPE <span>→</span></div></div>
@@ -156,28 +134,35 @@ h2{font-weight:900;font-size:66px;line-height:1.05;letter-spacing:-2.5px}
 
 <!-- ============ SLIDE 4 — WHY ============ -->
 <section class="slide" id="s4">
-  <div class="top"><div class="brand"><svg width="32" height="32"><use href="#logo"/></svg>STACK WITH GIO</div><div class="count">4 / 6</div></div>
+  <div class="top"><div class="brand"><i data-logo></i>STACK WITH GIO</div><div class="count">4 / 6</div></div>
   <div class="kicker k-ink">Why the pay is so different</div>
 
-  <h1 style="margin-top:50px;font-size:74px">Online banks don't pay for <span class="mark">brick-and-mortar buildings.</span></h1>
-  <div class="lead" style="margin-top:28px">So they pass that cash to you.</div>
+  <h1 style="margin-top:44px;font-size:70px">Online banks don't pay for <span class="mark">brick-and-mortar buildings.</span></h1>
+  <div class="lead" style="margin-top:20px">So they pass that cash to you.</div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:58px">
-    <div class="card" style="padding:40px 38px;display:flex;flex-direction:column">
-      <svg width="100" height="90" viewBox="0 0 100 90"><g stroke="#121316" stroke-width="5" stroke-linejoin="round" fill="#FFFDF8"><path d="M8 32 L50 8 L92 32 Z" fill="#ECE5D6"/><rect x="8" y="78" width="84" height="8" fill="#ECE5D6"/><rect x="18" y="38" width="10" height="38"/><rect x="45" y="38" width="10" height="38"/><rect x="72" y="38" width="10" height="38"/></g></svg>
-      <div style="font-weight:900;font-size:36px;margin-top:18px">Big bank</div>
-      <div style="margin:20px 0 34px;display:flex;flex-direction:column;gap:14px;font-weight:700;font-size:28px;color:var(--body)">
-        <div>🏢 Branches everywhere</div><div>🧾 Rent &amp; utilities</div><div>👔 Tellers &amp; staff</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:44px">
+    <div class="card" style="padding:30px 32px">
+      <div class="scene" style="height:270px">
+        <div data-ill="bank" data-w="210" style="right:-4px;bottom:6px"></div>
+        <div class="tag t-red" style="left:0;top:6px;font-size:21px;transform:rotate(-4deg)">− Rent</div>
+        <div class="tag t-red" style="left:10px;top:72px;font-size:21px;transform:rotate(3deg)">− Staff</div>
+        <div class="tag t-red" style="left:0;top:138px;font-size:21px;transform:rotate(-3deg)">− Branches</div>
+        <div class="tag t-red" style="left:14px;top:204px;font-size:21px;transform:rotate(4deg)">− Marble</div>
       </div>
-      <div style="margin-top:auto;padding-top:22px;border-top:2px dashed var(--line);font-weight:900;font-size:34px" class="red">You get 0.01%</div>
+      <div style="font-weight:900;font-size:34px;margin-top:22px">Big bank</div>
+      <div style="font-weight:600;font-size:24px;color:var(--muted);margin-top:6px">Your interest pays the bills</div>
+      <div style="margin-top:22px;padding-top:20px;border-top:2px dashed var(--line);font-weight:900;font-size:32px" class="red">You get 0.01%</div>
     </div>
-    <div class="card" style="padding:40px 38px;display:flex;flex-direction:column;border-color:var(--green);background:#F3FAF5">
-      <svg width="100" height="90" viewBox="0 0 100 90"><g stroke="#121316" stroke-width="5" stroke-linejoin="round"><rect x="28" y="6" width="44" height="78" rx="9" fill="#FFFDF8"/><rect x="36" y="18" width="28" height="44" rx="3" fill="#1E9E57"/><circle cx="50" cy="74" r="3" fill="#121316"/></g></svg>
-      <div style="font-weight:900;font-size:36px;margin-top:18px">Online bank</div>
-      <div style="margin:20px 0 34px;display:flex;flex-direction:column;gap:14px;font-weight:700;font-size:28px;color:var(--body)">
-        <div>📱 Just an app</div><div>💻 A website</div><div>✅ Way lower costs</div>
+    <div class="card" style="padding:30px 32px;border-color:var(--green);background:#F3FAF5">
+      <div class="scene" style="height:270px">
+        <div data-ill="phone" data-w="130" style="left:8px;bottom:6px"></div>
+        <div data-ill="arrow" data-w="70" style="left:146px;top:110px"></div>
+        <div data-ill="cash" data-w="140" data-n="4" style="left:222px;bottom:6px"></div>
+        <div class="tag t-green" style="left:208px;top:40px;transform:rotate(-5deg)">→ to you</div>
       </div>
-      <div style="margin-top:auto;padding-top:22px;border-top:2px dashed var(--line);font-weight:900;font-size:34px" class="green">You get ~4.50%</div>
+      <div style="font-weight:900;font-size:34px;margin-top:22px">Online bank</div>
+      <div style="font-weight:600;font-size:24px;color:var(--muted);margin-top:6px">Just an app, way lower costs</div>
+      <div style="margin-top:22px;padding-top:20px;border-top:2px dashed var(--line);font-weight:900;font-size:32px" class="green">You get ~4.50%</div>
     </div>
   </div>
 
@@ -186,24 +171,22 @@ h2{font-weight:900;font-size:66px;line-height:1.05;letter-spacing:-2.5px}
 
 <!-- ============ SLIDE 5 — SAFETY ============ -->
 <section class="slide" id="s5">
-  <div class="top"><div class="brand"><svg width="32" height="32"><use href="#logo"/></svg>STACK WITH GIO</div><div class="count">5 / 6</div></div>
-  <div class="kicker k-green">🛡️ Safety check</div>
+  <div class="top"><div class="brand"><i data-logo></i>STACK WITH GIO</div><div class="count">5 / 6</div></div>
+  <div class="kicker k-green">Safety check</div>
 
-  <div style="display:flex;align-items:center;gap:48px;margin-top:64px">
-    <svg width="250" height="290" viewBox="0 0 250 290">
-      <path d="M125 12 L228 50 V140 C228 210 182 256 125 278 C68 256 22 210 22 140 V50 Z" fill="#1E9E57" stroke="#121316" stroke-width="8" stroke-linejoin="round"/>
-      <path d="M125 40 L202 68 V140 C202 194 168 230 125 248 C82 230 48 194 48 140 V68 Z" fill="#13703C"/>
-      <path d="M80 148 L112 180 L172 112" fill="none" stroke="#FFFDF8" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <div>
-      <div style="font-weight:700;font-size:28px;letter-spacing:2px;color:var(--muted)">FDIC-INSURED UP TO</div>
-      <div class="mega green" style="font-size:150px;letter-spacing:-6px;margin-top:10px">$250K</div>
+  <div class="scene" style="height:400px;margin-top:40px">
+    <div data-ill="vault" data-w="350" style="left:0;top:20px"></div>
+    <div data-ill="shield" data-w="150" style="left:250px;top:220px"></div>
+    <div style="left:450px;top:80px">
+      <div class="lbl" style="text-align:left">FDIC-INSURED UP TO</div>
+      <div class="mega green" style="font-size:150px;letter-spacing:-6px;margin-top:14px">$250K</div>
+      <div class="lead" style="margin-top:16px;font-size:30px">per depositor, per bank</div>
     </div>
   </div>
 
-  <h2 style="margin-top:58px">Your money is <span class="markg">100% safe</span> as long as the bank is FDIC-insured.</h2>
+  <h2 style="margin-top:34px">Your money is <span class="markg">100% safe</span> as long as the bank is FDIC-insured.</h2>
 
-  <div style="margin-top:46px;display:flex;flex-direction:column;gap:20px;font-weight:700;font-size:30px;color:var(--body)">
+  <div style="margin-top:36px;display:flex;flex-direction:column;gap:18px;font-weight:700;font-size:30px;color:var(--body)">
     <div style="display:flex;gap:18px;align-items:center"><span class="green" style="font-size:34px">✓</span>Same protection as your big bank</div>
     <div style="display:flex;gap:18px;align-items:center"><span class="green" style="font-size:34px">✓</span>Look for “Member FDIC” before you open</div>
     <div style="display:flex;gap:18px;align-items:center"><span class="green" style="font-size:34px">✓</span>Credit union? Look for NCUA instead</div>
@@ -214,23 +197,194 @@ h2{font-weight:900;font-size:66px;line-height:1.05;letter-spacing:-2.5px}
 
 <!-- ============ SLIDE 6 — CTA ============ -->
 <section class="slide" id="s6" style="background:var(--ink);color:#F5F2EA">
-  <div class="top"><div class="brand" style="color:#C7CBD2"><svg width="32" height="32" viewBox="0 0 30 30"><rect x="1" y="18" width="7" height="11" rx="2" fill="#2CD47A"/><rect x="11" y="11" width="7" height="18" rx="2" fill="#2CD47A"/><rect x="21" y="2" width="7" height="27" rx="2" fill="#F5F2EA"/></svg>STACK WITH GIO</div><div class="count" style="color:#7C828B">6 / 6</div></div>
+  <div class="top"><div class="brand" style="color:#C7CBD2"><i data-logo="dark"></i>STACK WITH GIO</div><div class="count" style="color:#7C828B">6 / 6</div></div>
 
-  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding-bottom:150px">
-    <svg width="130" height="160" viewBox="0 0 130 160"><path d="M14 10 H116 V150 L65 114 L14 150 Z" fill="#2CD47A" stroke="#F5F2EA" stroke-width="8" stroke-linejoin="round"/></svg>
-    <h1 style="margin-top:56px;font-size:96px;letter-spacing:-3.5px">Save this carousel</h1>
-    <h1 style="font-size:96px;letter-spacing:-3.5px;color:#2CD47A">and switch your savings account before Monday.</h1>
-
-    <div style="margin-top:70px;display:flex;gap:22px;align-items:center;font-weight:800;font-size:34px">
-      <span style="text-decoration:line-through;color:#FF5B48">$1.50</span>
-      <span style="color:#7C828B">→</span>
-      <span style="color:#2CD47A">$705</span>
-      <span style="color:#7C828B;font-weight:600;font-size:28px">on the same $5,000</span>
-    </div>
+  <div class="scene" style="height:400px;margin-top:50px">
+    <div data-ill="bank" data-w="330" data-theme="dark" style="left:0;bottom:38px"></div>
+    <div class="tag" style="left:200px;top:70px;background:#2A2E35;color:#FF5B48;border-color:#F5F2EA;box-shadow:4px 4px 0 #F5F2EA;transform:rotate(-4deg)">$1.50</div>
+    <div data-ill="arrow" data-w="140" data-theme="dark" style="left:360px;top:170px"></div>
+    <div data-ill="phone" data-w="160" data-theme="dark" style="left:530px;bottom:38px"></div>
+    <div data-ill="cash" data-w="170" data-n="5" style="left:690px;bottom:38px"></div>
+    <div class="tag t-green" style="left:700px;top:84px;transform:rotate(4deg);border-color:#F5F2EA;box-shadow:4px 4px 0 #F5F2EA">$705</div>
+    <div class="ground" style="top:362px;background:#F5F2EA"></div>
   </div>
+
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding-bottom:150px"><h1 style="font-size:88px;letter-spacing:-3.5px;display:flex;align-items:center;gap:24px">Save this carousel <span data-ill="bookmark" data-w="62"></span></h1>
+  <h1 style="font-size:88px;letter-spacing:-3.5px;color:#2CD47A">and switch your savings account before Monday.</h1></div>
 
   <div class="foot"><div class="note" style="color:#7C828B">Educational only, not financial advice. Rates vary by bank and change over time.</div><div class="swipe" style="color:#F5F2EA">FOLLOW <span style="background:#2CD47A;color:#121316">+</span></div></div>
 </section>
 
+<script>
+// ---------- illustration kit (flat, bold ink outlines) ----------
+const INK = '#121316';
+const T = (x, y, s, o = {}) =>
+  `<text x="${x}" y="${y}" text-anchor="${o.a || 'middle'}" font-family="Inter" font-weight="${o.w || 900}" font-size="${o.fs || 20}" fill="${o.f || INK}" letter-spacing="${o.ls || 0}">${s}</text>`;
+
+const ILL = {
+  logo(theme) {
+    const top = theme === 'dark' ? '#F5F2EA' : INK, g = theme === 'dark' ? '#2CD47A' : '#1E9E57';
+    return `<svg width="32" height="32" viewBox="0 0 30 30"><rect x="1" y="18" width="7" height="11" rx="2" fill="${g}"/><rect x="11" y="11" width="7" height="18" rx="2" fill="${g}"/><rect x="21" y="2" width="7" height="27" rx="2" fill="${top}"/></svg>`;
+  },
+
+  // Classic marble bank: pediment, 4 columns, arched door, steps.
+  bank({w, theme, web}) {
+    const d = theme === 'dark';
+    const s = d ? '#C7CBD2' : INK, wall = d ? '#2A2E35' : '#EFE8DA', wall2 = d ? '#20242A' : '#DDD4C2',
+      door = d ? '#15171B' : '#6E6656', badge = d ? '#4A4F57' : '#C9C2B4', txt = d ? '#C7CBD2' : INK;
+    const cols = [66, 124, 246, 304].map((x) => `
+      <rect x="${x}" y="138" width="30" height="96" fill="${wall}"/>
+      <line x1="${x + 10}" y1="142" x2="${x + 10}" y2="230" stroke-width="2.5"/>
+      <line x1="${x + 20}" y1="142" x2="${x + 20}" y2="230" stroke-width="2.5"/>
+      <rect x="${x - 7}" y="126" width="44" height="14" rx="2" fill="${wall2}"/>
+      <rect x="${x - 7}" y="230" width="44" height="12" rx="2" fill="${wall2}"/>`).join('');
+    const cobweb = web ? `
+      <g stroke="${s}" stroke-width="2" fill="none" opacity=".75">
+        <path d="M46 126 L46 196 M46 126 L60 194 M46 126 L58 152"/>
+        <path d="M46 146 Q52 145 52 140 M46 164 Q55 163 56 150 M46 182 Q59 180 59 170"/>
+      </g>
+      <g stroke="${s}" stroke-width="2" fill="none" opacity=".75">
+        <path d="M354 126 L354 196 M354 126 L340 194 M354 126 L342 152"/>
+        <path d="M354 146 Q348 145 348 140 M354 164 Q345 163 344 150 M354 182 Q341 180 341 170"/>
+      </g>` : '';
+    return `<svg width="${w}" viewBox="0 0 400 314" style="display:block;overflow:visible">
+      <ellipse cx="200" cy="320" rx="196" ry="9" fill="rgba(60,45,20,.15)"/>
+      <g stroke="${s}" stroke-width="6" stroke-linejoin="round">
+        <rect x="12" y="288" width="376" height="26" rx="3" fill="${wall2}"/>
+        <rect x="32" y="264" width="336" height="26" rx="3" fill="${wall}"/>
+        <rect x="46" y="240" width="308" height="26" fill="${wall2}"/>
+        <rect x="46" y="124" width="308" height="118" fill="${d ? '#1B1E23' : '#E6DECD'}"/>
+        <path d="M164 242 V180 a36 36 0 0 1 72 0 V242 Z" fill="${door}"/>
+        <line x1="200" y1="150" x2="200" y2="242" stroke-width="4"/>
+        ${cols}
+        <rect x="30" y="98" width="340" height="30" fill="${wall2}"/>
+        <path d="M22 100 L200 14 L378 100 Z" fill="${wall}"/>
+        <circle cx="200" cy="68" r="22" fill="${badge}"/>
+      </g>
+      ${cobweb}
+      ${T(200, 77, '$', {fs: 26, f: txt})}
+      ${T(200, 121, 'BANK', {fs: 20, ls: 8, f: txt})}
+    </svg>`;
+  },
+
+  // Phone running a savings app.
+  phone({w, theme}) {
+    const d = theme === 'dark', frame = d ? '#F5F2EA' : INK;
+    return `<svg width="${w}" viewBox="0 0 230 410" style="display:block;overflow:visible">
+      <ellipse cx="115" cy="418" rx="100" ry="8" fill="rgba(60,45,20,.15)"/>
+      <rect x="6" y="6" width="218" height="404" rx="38" fill="${frame}"/>
+      <rect x="20" y="22" width="190" height="372" rx="26" fill="#FFFDF8"/>
+      <rect x="88" y="32" width="54" height="12" rx="6" fill="${frame}"/>
+      ${T(38, 84, 'HIGH-YIELD SAVINGS', {a: 'start', fs: 13, w: 800, f: '#857D6E', ls: 1})}
+      ${T(38, 126, '$5,705', {a: 'start', fs: 40})}
+      <rect x="38" y="142" width="118" height="30" rx="15" fill="#D7F0E1"/>
+      ${T(97, 163, '4.50% APY', {fs: 16, w: 800, f: '#13703C'})}
+      <path d="M38 318 L38 292 C80 286 104 266 130 252 S176 222 192 196 L192 318 Z" fill="rgba(30,158,87,.16)"/>
+      <path d="M38 292 C80 286 104 266 130 252 S176 222 192 196" fill="none" stroke="#1E9E57" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="192" cy="196" r="8" fill="#1E9E57" stroke="#FFFDF8" stroke-width="3"/>
+      <line x1="38" y1="318" x2="192" y2="318" stroke="#E0D8C7" stroke-width="3"/>
+      <rect x="38" y="336" width="154" height="40" rx="20" fill="#1E9E57"/>
+      ${T(115, 362, '+$705 earned', {fs: 17, w: 800, f: '#FFFDF8'})}
+    </svg>`;
+  },
+
+  // Stack of $100 bills with a gold band. n = number of bills under the top one.
+  cash({w, n}) {
+    n = +n; const H = n * 28 + 72; let bills = '';
+    for (let i = 0; i < n; i++) {
+      const y = H - 14 - (i + 1) * 28, x = i % 2 ? 14 : 4;
+      bills += `<rect x="${x}" y="${y}" width="222" height="28" rx="7" fill="${i % 2 ? '#22AE60' : '#1E9E57'}"/>`;
+    }
+    return `<svg width="${w}" viewBox="0 0 240 ${H - 14}" style="display:block;overflow:visible">
+      <ellipse cx="120" cy="${H - 6}" rx="118" ry="8" fill="rgba(60,45,20,.15)"/>
+      <g stroke="${INK}" stroke-width="5" stroke-linejoin="round">${bills}
+        <rect x="100" y="40" width="40" height="${H - 54}" rx="4" fill="#E2A72E"/>
+        <g transform="rotate(-3 120 34)">
+          <rect x="6" y="8" width="226" height="50" rx="10" fill="#CFEBD9"/>
+          <rect x="18" y="17" width="202" height="32" rx="6" fill="none" stroke="#13703C" stroke-width="3"/>
+          <circle cx="119" cy="33" r="13" fill="#FFFDF8" stroke="#13703C" stroke-width="3"/>
+        </g>
+      </g>
+      <g transform="rotate(-3 120 34)">
+        ${T(119, 41, '$', {fs: 20, f: '#13703C'})}${T(48, 41, '100', {fs: 18, f: '#13703C'})}${T(190, 41, '100', {fs: 18, f: '#13703C'})}
+      </g>
+    </svg>`;
+  },
+
+  coin({w, fill}) {
+    return `<svg width="${w}" viewBox="0 0 100 100" style="display:block;overflow:visible">
+      <circle cx="50" cy="50" r="42" fill="${fill || '#E2A72E'}" stroke="${INK}" stroke-width="7"/>
+      <circle cx="50" cy="50" r="28" fill="none" stroke="${INK}" stroke-width="4" stroke-dasharray="5 7"/>
+      ${T(50, 63, '¢', {fs: 36})}
+    </svg>`;
+  },
+
+  gum({w}) {
+    return `<svg width="${w}" viewBox="0 0 220 120" style="display:block;overflow:visible">
+      <g stroke="${INK}" stroke-width="6" stroke-linejoin="round">
+        <rect x="8" y="26" width="196" height="80" rx="14" fill="#F4B7CB"/>
+        <rect x="8" y="50" width="196" height="32" fill="#FFFDF8"/>
+        <path d="M8 40 h196 M8 92 h196" stroke-width="3"/>
+      </g>
+      ${T(106, 74, 'GUM', {fs: 24, ls: 6})}
+      <g transform="rotate(10 178 26)">
+        <rect x="140" y="6" width="78" height="38" rx="8" fill="#E2A72E" stroke="${INK}" stroke-width="5"/>
+        ${T(179, 33, '$1.99', {fs: 20})}
+      </g>
+    </svg>`;
+  },
+
+  // Bold curved arrow (left -> right).
+  arrow({w, theme}) {
+    const c = theme === 'dark' ? '#2CD47A' : '#1E9E57';
+    return `<svg width="${w}" viewBox="0 0 120 80" style="display:block;overflow:visible">
+      <path d="M8 58 Q56 0 100 34" fill="none" stroke="${c}" stroke-width="12" stroke-linecap="round"/>
+      <path d="M78 18 L108 40 L76 54 Z" fill="${c}" stroke="${c}" stroke-width="6" stroke-linejoin="round"/>
+    </svg>`;
+  },
+
+  vault({w}) {
+    let bolts = '';
+    for (let k = 0; k < 12; k++) {
+      const a = (k * 30 * Math.PI) / 180;
+      bolts += `<circle cx="${180 + 122 * Math.cos(a)}" cy="${180 + 122 * Math.sin(a)}" r="7" fill="#B9AF9C" stroke="${INK}" stroke-width="3"/>`;
+    }
+    const spokes = [90, 210, 330].map((deg) => {
+      const a = (deg * Math.PI) / 180, x = 180 + 66 * Math.cos(a), y = 180 + 66 * Math.sin(a);
+      return `<line x1="180" y1="180" x2="${x}" y2="${y}" stroke="${INK}" stroke-width="14" stroke-linecap="round"/>
+              <circle cx="${x}" cy="${y}" r="13" fill="#E2A72E" stroke="${INK}" stroke-width="5"/>`;
+    }).join('');
+    return `<svg width="${w}" viewBox="0 0 360 350" style="display:block;overflow:visible">
+      <ellipse cx="180" cy="362" rx="170" ry="9" fill="rgba(60,45,20,.15)"/>
+      <rect x="14" y="10" width="332" height="340" rx="34" fill="#D8D0BF" stroke="${INK}" stroke-width="7"/>
+      <rect x="0" y="86" width="28" height="56" rx="7" fill="#B9AF9C" stroke="${INK}" stroke-width="5"/>
+      <rect x="0" y="218" width="28" height="56" rx="7" fill="#B9AF9C" stroke="${INK}" stroke-width="5"/>
+      <circle cx="180" cy="180" r="142" fill="#ECE5D6" stroke="${INK}" stroke-width="7"/>
+      ${bolts}
+      <circle cx="180" cy="180" r="100" fill="#F7F2E8" stroke="${INK}" stroke-width="5"/>
+      ${spokes}
+      <circle cx="180" cy="180" r="28" fill="#E2A72E" stroke="${INK}" stroke-width="6"/>
+    </svg>`;
+  },
+
+  shield({w}) {
+    return `<svg width="${w}" viewBox="0 0 250 290" style="display:block;overflow:visible">
+      <path d="M125 12 L228 50 V140 C228 210 182 256 125 278 C68 256 22 210 22 140 V50 Z" fill="#1E9E57" stroke="${INK}" stroke-width="9" stroke-linejoin="round"/>
+      <path d="M125 40 L202 68 V140 C202 194 168 230 125 248 C82 230 48 194 48 140 V68 Z" fill="#13703C"/>
+      <path d="M80 148 L112 180 L172 112" fill="none" stroke="#FFFDF8" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+  },
+
+  bookmark({w}) {
+    return `<svg width="${w}" viewBox="0 0 130 160" style="display:block"><path d="M14 10 H116 V150 L65 114 L14 150 Z" fill="#2CD47A" stroke="#F5F2EA" stroke-width="10" stroke-linejoin="round"/></svg>`;
+  },
+};
+
+document.querySelectorAll('[data-logo]').forEach((el) => (el.outerHTML = ILL.logo(el.dataset.logo)));
+document.querySelectorAll('[data-ill]').forEach((el) => {
+  const o = {...el.dataset}; o.w = +o.w;
+  el.innerHTML = ILL[o.ill](o);
+});
+</script>
 </body>
 </html>
