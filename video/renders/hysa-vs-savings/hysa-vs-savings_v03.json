@@ -1,0 +1,10 @@
+{
+ "file": "renders/hysa-vs-savings/hysa-vs-savings_v03_final-voice.mp4",
+ "composition": "HysaVsSavings",
+ "mode": "education",
+ "title": "HYSA vs Regular Savings",
+ "narration": "aligned",
+ "durationSec": 33.733,
+ "props": "public/voice/hysa-vs-savings/props.json",
+ "renderedAt": "2026-11-27T19:07:41.064Z"
+}
