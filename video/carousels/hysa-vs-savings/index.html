@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HYSA vs Regular Savings</title>
+<style>
+@font-face{font-family:Inter;font-weight:500;src:url(fonts/inter-latin-500-normal.woff2)}
+@font-face{font-family:Inter;font-weight:700;src:url(fonts/inter-latin-700-normal.woff2)}
+@font-face{font-family:Inter;font-weight:800;src:url(fonts/inter-latin-800-normal.woff2)}
+@font-face{font-family:Inter;font-weight:900;src:url(fonts/inter-latin-900-normal.woff2)}
+:root{
+  --bg:#F5F0E6;--bg2:#ECE5D6;--paper:#FFFDF8;--ink:#121316;--body:#2B2F36;--muted:#857D6E;
+  --line:#E0D8C7;--green:#1E9E57;--greenDeep:#13703C;--greenSoft:rgba(30,158,87,.14);
+  --red:#D9472F;--redSoft:rgba(217,71,47,.12);--gold:#E2A72E;--shadow:rgba(60,45,20,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#d9d2c3;font-family:Inter,system-ui,sans-serif;color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;gap:40px;padding:40px 0}
+.slide{width:1080px;height:1350px;background:var(--bg);position:relative;overflow:hidden;
+  padding:96px 92px 0;display:flex;flex-direction:column}
+.top{display:flex;justify-content:space-between;align-items:center;height:44px}
+.brand{display:flex;align-items:center;gap:14px;font-weight:800;font-size:24px;letter-spacing:3px;color:var(--body)}
+.count{font-weight:700;font-size:24px;color:var(--muted);letter-spacing:1px}
+.kicker{margin-top:70px;display:inline-flex;align-self:flex-start;align-items:center;gap:12px;
+  font-weight:800;font-size:26px;letter-spacing:3px;text-transform:uppercase;padding:12px 22px;border-radius:999px}
+.k-red{background:var(--redSoft);color:var(--red)}
+.k-green{background:var(--greenSoft);color:var(--greenDeep)}
+.k-ink{background:var(--ink);color:var(--bg)}
+h1{font-weight:900;font-size:82px;line-height:1.02;letter-spacing:-3px}
+h2{font-weight:900;font-size:66px;line-height:1.05;letter-spacing:-2.5px}
+.lead{font-weight:500;font-size:36px;line-height:1.35;color:var(--body);letter-spacing:-.4px}
+.mark{background:linear-gradient(transparent 58%,rgba(217,71,47,.28) 58%)}
+.markg{background:linear-gradient(transparent 58%,rgba(30,158,87,.28) 58%)}
+.red{color:var(--red)}.green{color:var(--green)}
+.foot{position:absolute;left:92px;right:92px;bottom:58px;display:flex;justify-content:space-between;align-items:flex-end;gap:40px}
+.note{font-weight:500;font-size:20px;line-height:1.4;color:var(--muted);max-width:720px}
+.swipe{display:flex;align-items:center;gap:12px;font-weight:800;font-size:24px;letter-spacing:2px;color:var(--ink);white-space:nowrap}
+.swipe span{width:56px;height:56px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:28px}
+.card{background:var(--paper);border-radius:36px;box-shadow:0 18px 40px -18px var(--shadow);border:2px solid var(--line)}
+.mega{font-weight:900;letter-spacing:-10px;line-height:.9}
+.eq{display:flex;align-items:center;gap:18px;font-weight:800;font-size:40px;color:var(--body)}
+.chip{background:var(--paper);border:2px solid var(--line);border-radius:20px;padding:14px 22px}
+</style>
+</head>
+<body>
+
+<!-- reusable brand mark -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="logo" viewBox="0 0 30 30">
+    <rect x="1" y="18" width="7" height="11" rx="2" fill="#1E9E57"/>
+    <rect x="11" y="11" width="7" height="18" rx="2" fill="#1E9E57"/>
+    <rect x="21" y="2" width="7" height="27" rx="2" fill="#121316"/>
+  </symbol>
+</svg>
+
+<!-- ============ SLIDE 1 — HOOK ============ -->
+<section class="slide" id="s1">
+  <div class="top"><div class="brand"><svg width="32" height="32"><use href="#logo"/></svg>STACK WITH GIO</div><div class="count">1 / 6</div></div>
+
+  <h1 style="margin-top:84px;font-size:86px">Keeping $5,000 in a traditional bank is <span class="mark">quietly costing you hundreds</span> every single year.</h1>
+
+  <!-- coin vs cash stack -->
+  <div style="flex:1;display:flex;align-items:flex-end;justify-content:center;gap:90px;padding-bottom:150px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:26px">
+      <div style="height:360px;display:flex;align-items:flex-end"><svg width="120" height="120" viewBox="0 0 120 120">
+        <ellipse cx="60" cy="98" rx="46" ry="9" fill="rgba(60,45,20,.15)"/>
+        <circle cx="60" cy="56" r="40" fill="#C9C2B4" stroke="#121316" stroke-width="5"/>
+        <circle cx="60" cy="56" r="29" fill="none" stroke="#121316" stroke-width="3" stroke-dasharray="4 6"/>
+        <text x="60" y="68" text-anchor="middle" font-family="Inter" font-weight="900" font-size="32" fill="#121316">¢</text>
+      </svg></div>
+      <div style="font-weight:900;font-size:64px;letter-spacing:-2px" class="red">$1.50</div>
+      <div style="font-weight:700;font-size:24px;letter-spacing:2px;color:var(--muted)">BIG BANK</div>
+    </div>
+
+    <div style="align-self:stretch;display:flex;align-items:center;font-weight:900;font-size:44px;color:var(--muted);padding-bottom:110px">vs</div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:26px">
+      <svg width="380" height="360" viewBox="0 0 380 360">
+        <ellipse cx="190" cy="340" rx="180" ry="16" fill="rgba(60,45,20,.15)"/>
+        <!-- stack of bills, drawn bottom-up -->
+        <g stroke="#121316" stroke-width="5" stroke-linejoin="round">
+          <rect x="22" y="282" width="336" height="50" rx="10" fill="#1E9E57"/>
+          <rect x="36" y="232" width="336" height="50" rx="10" fill="#22AE60" transform="rotate(-2 204 257)"/>
+          <rect x="14" y="182" width="336" height="50" rx="10" fill="#1E9E57" transform="rotate(1.5 182 207)"/>
+          <rect x="30" y="132" width="336" height="50" rx="10" fill="#22AE60" transform="rotate(-1 198 157)"/>
+          <rect x="20" y="82" width="336" height="50" rx="10" fill="#1E9E57" transform="rotate(2 188 107)"/>
+        </g>
+        <!-- band -->
+        <rect x="160" y="80" width="56" height="256" rx="6" fill="#E2A72E" stroke="#121316" stroke-width="5"/>
+        <!-- top bill -->
+        <g transform="rotate(-3 190 50)">
+          <rect x="24" y="20" width="336" height="64" rx="12" fill="#CFEBD9" stroke="#121316" stroke-width="5"/>
+          <rect x="40" y="32" width="304" height="40" rx="8" fill="none" stroke="#13703C" stroke-width="3"/>
+          <circle cx="192" cy="52" r="17" fill="#FFFDF8" stroke="#13703C" stroke-width="3"/>
+          <text x="192" y="62" text-anchor="middle" font-family="Inter" font-weight="900" font-size="26" fill="#13703C">$</text>
+          <text x="70" y="62" text-anchor="middle" font-family="Inter" font-weight="900" font-size="24" fill="#13703C">100</text>
+          <text x="314" y="62" text-anchor="middle" font-family="Inter" font-weight="900" font-size="24" fill="#13703C">100</text>
+        </g>
+      </svg>
+      <div style="font-weight:900;font-size:64px;letter-spacing:-2px" class="green">$705</div>
+      <div style="font-weight:700;font-size:24px;letter-spacing:2px;color:var(--muted)">HIGH-YIELD SAVINGS</div>
+    </div>
+  </div>
+
+  <div class="foot"><div class="note">Interest earned on $5,000 over 3 years.</div><div class="swipe">SWIPE <span>→</span></div></div>
+</section>
+
+<!-- ============ SLIDE 2 — BIG BANK MATH ============ -->
+<section class="slide" id="s2">
+  <div class="top"><div class="brand"><svg width="32" height="32"><use href="#logo"/></svg>STACK WITH GIO</div><div class="count">2 / 6</div></div>
+  <div class="kicker k-red">🏦 Big bank math</div>
+
+  <div class="eq" style="margin-top:56px">
+    <div class="chip">$5,000</div><div>×</div><div class="chip red">0.01%</div><div>×</div><div class="chip">3 years</div>
+  </div>
+
+  <div class="card" style="margin-top:56px;padding:56px 60px 60px;position:relative">
+    <div style="font-weight:700;font-size:28px;letter-spacing:2px;color:var(--muted)">TOTAL INTEREST PAID TO YOU</div>
+    <div class="mega red" style="font-size:300px;margin-top:26px">$1.50</div>
+    <div class="lead" style="margin-top:30px">That's <b style="color:var(--ink)">50¢ a year.</b> Less than a pack of gum.</div>
+  </div>
+
+  <h2 style="margin-top:72px">That is a <span class="mark">joke.</span></h2>
+
+  <div class="foot"><div class="note">0.01% APY is a typical rate at large brick-and-mortar banks. $5,000 × ((1.0001)³ − 1) = $1.50.</div><div class="swipe">SWIPE <span>→</span></div></div>
+</section>
+
+<!-- ============ SLIDE 3 — HYSA MATH ============ -->
+<section class="slide" id="s3">
+  <div class="top"><div class="brand"><svg width="32" height="32"><use href="#logo"/></svg>STACK WITH GIO</div><div class="count">3 / 6</div></div>
+  <div class="kicker k-green">📈 High-yield savings math</div>
+
+  <div class="eq" style="margin-top:56px">
+    <div class="chip">$5,000</div><div>×</div><div class="chip green">4.50%</div><div>×</div><div class="chip">3 years</div>
+  </div>
+
+  <div style="display:flex;align-items:baseline;gap:28px;margin-top:62px">
+    <div class="mega green" style="font-size:300px">$705</div>
+  </div>
+  <div class="lead" style="margin-top:22px">in cash, <span class="markg" style="color:var(--ink);font-weight:800">for doing nothing.</span></div>
+
+  <!-- year-by-year bars -->
+  <div class="card" style="margin-top:54px;padding:40px 48px">
+    <div style="display:grid;grid-template-columns:110px 1fr 140px;row-gap:24px;align-items:center;font-weight:800;font-size:28px">
+      <div style="color:var(--muted)">Year 1</div><div style="height:34px;border-radius:10px;background:var(--green);width:91.6%"></div><div style="text-align:right">+$225</div>
+      <div style="color:var(--muted)">Year 2</div><div style="height:34px;border-radius:10px;background:var(--green);width:95.7%"></div><div style="text-align:right">+$235</div>
+      <div style="color:var(--muted)">Year 3</div><div style="height:34px;border-radius:10px;background:var(--green);width:100%"></div><div style="text-align:right">+$246</div>
+    </div>
+    <div style="margin-top:28px;padding-top:24px;border-top:2px dashed var(--line);display:flex;justify-content:space-between;font-weight:800;font-size:28px">
+      <span style="color:var(--muted)">Big bank, all 3 years</span><span class="red">+$1.50</span>
+    </div>
+  </div>
+
+  <div class="foot"><div class="note">4.50% APY, compounded yearly, rate held for 3 years. HYSA rates are variable and can change.</div><div class="swipe">SWIPE <span>→</span></div></div>
+</section>
+
+<!-- ============ SLIDE 4 — WHY ============ -->
+<section class="slide" id="s4">
+  <div class="top"><div class="brand"><svg width="32" height="32"><use href="#logo"/></svg>STACK WITH GIO</div><div class="count">4 / 6</div></div>
+  <div class="kicker k-ink">Why the pay is so different</div>
+
+  <h1 style="margin-top:50px;font-size:74px">Online banks don't pay for <span class="mark">brick-and-mortar buildings.</span></h1>
+  <div class="lead" style="margin-top:28px">So they pass that cash to you.</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:58px">
+    <div class="card" style="padding:40px 38px;display:flex;flex-direction:column">
+      <svg width="100" height="90" viewBox="0 0 100 90"><g stroke="#121316" stroke-width="5" stroke-linejoin="round" fill="#FFFDF8"><path d="M8 32 L50 8 L92 32 Z" fill="#ECE5D6"/><rect x="8" y="78" width="84" height="8" fill="#ECE5D6"/><rect x="18" y="38" width="10" height="38"/><rect x="45" y="38" width="10" height="38"/><rect x="72" y="38" width="10" height="38"/></g></svg>
+      <div style="font-weight:900;font-size:36px;margin-top:18px">Big bank</div>
+      <div style="margin:20px 0 34px;display:flex;flex-direction:column;gap:14px;font-weight:700;font-size:28px;color:var(--body)">
+        <div>🏢 Branches everywhere</div><div>🧾 Rent &amp; utilities</div><div>👔 Tellers &amp; staff</div>
+      </div>
+      <div style="margin-top:auto;padding-top:22px;border-top:2px dashed var(--line);font-weight:900;font-size:34px" class="red">You get 0.01%</div>
+    </div>
+    <div class="card" style="padding:40px 38px;display:flex;flex-direction:column;border-color:var(--green);background:#F3FAF5">
+      <svg width="100" height="90" viewBox="0 0 100 90"><g stroke="#121316" stroke-width="5" stroke-linejoin="round"><rect x="28" y="6" width="44" height="78" rx="9" fill="#FFFDF8"/><rect x="36" y="18" width="28" height="44" rx="3" fill="#1E9E57"/><circle cx="50" cy="74" r="3" fill="#121316"/></g></svg>
+      <div style="font-weight:900;font-size:36px;margin-top:18px">Online bank</div>
+      <div style="margin:20px 0 34px;display:flex;flex-direction:column;gap:14px;font-weight:700;font-size:28px;color:var(--body)">
+        <div>📱 Just an app</div><div>💻 A website</div><div>✅ Way lower costs</div>
+      </div>
+      <div style="margin-top:auto;padding-top:22px;border-top:2px dashed var(--line);font-weight:900;font-size:34px" class="green">You get ~4.50%</div>
+    </div>
+  </div>
+
+  <div class="foot"><div class="note">Lower overhead is what lets online banks offer higher rates.</div><div class="swipe">SWIPE <span>→</span></div></div>
+</section>
+
+<!-- ============ SLIDE 5 — SAFETY ============ -->
+<section class="slide" id="s5">
+  <div class="top"><div class="brand"><svg width="32" height="32"><use href="#logo"/></svg>STACK WITH GIO</div><div class="count">5 / 6</div></div>
+  <div class="kicker k-green">🛡️ Safety check</div>
+
+  <div style="display:flex;align-items:center;gap:48px;margin-top:64px">
+    <svg width="250" height="290" viewBox="0 0 250 290">
+      <path d="M125 12 L228 50 V140 C228 210 182 256 125 278 C68 256 22 210 22 140 V50 Z" fill="#1E9E57" stroke="#121316" stroke-width="8" stroke-linejoin="round"/>
+      <path d="M125 40 L202 68 V140 C202 194 168 230 125 248 C82 230 48 194 48 140 V68 Z" fill="#13703C"/>
+      <path d="M80 148 L112 180 L172 112" fill="none" stroke="#FFFDF8" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div>
+      <div style="font-weight:700;font-size:28px;letter-spacing:2px;color:var(--muted)">FDIC-INSURED UP TO</div>
+      <div class="mega green" style="font-size:150px;letter-spacing:-6px;margin-top:10px">$250K</div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:58px">Your money is <span class="markg">100% safe</span> as long as the bank is FDIC-insured.</h2>
+
+  <div style="margin-top:46px;display:flex;flex-direction:column;gap:20px;font-weight:700;font-size:30px;color:var(--body)">
+    <div style="display:flex;gap:18px;align-items:center"><span class="green" style="font-size:34px">✓</span>Same protection as your big bank</div>
+    <div style="display:flex;gap:18px;align-items:center"><span class="green" style="font-size:34px">✓</span>Look for “Member FDIC” before you open</div>
+    <div style="display:flex;gap:18px;align-items:center"><span class="green" style="font-size:34px">✓</span>Credit union? Look for NCUA instead</div>
+  </div>
+
+  <div class="foot"><div class="note">$250,000 per depositor, per insured bank, per ownership category. Verify any bank at fdic.gov/bankfind.</div><div class="swipe">SWIPE <span>→</span></div></div>
+</section>
+
+<!-- ============ SLIDE 6 — CTA ============ -->
+<section class="slide" id="s6" style="background:var(--ink);color:#F5F2EA">
+  <div class="top"><div class="brand" style="color:#C7CBD2"><svg width="32" height="32" viewBox="0 0 30 30"><rect x="1" y="18" width="7" height="11" rx="2" fill="#2CD47A"/><rect x="11" y="11" width="7" height="18" rx="2" fill="#2CD47A"/><rect x="21" y="2" width="7" height="27" rx="2" fill="#F5F2EA"/></svg>STACK WITH GIO</div><div class="count" style="color:#7C828B">6 / 6</div></div>
+
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding-bottom:150px">
+    <svg width="130" height="160" viewBox="0 0 130 160"><path d="M14 10 H116 V150 L65 114 L14 150 Z" fill="#2CD47A" stroke="#F5F2EA" stroke-width="8" stroke-linejoin="round"/></svg>
+    <h1 style="margin-top:56px;font-size:96px;letter-spacing:-3.5px">Save this carousel</h1>
+    <h1 style="font-size:96px;letter-spacing:-3.5px;color:#2CD47A">and switch your savings account before Monday.</h1>
+
+    <div style="margin-top:70px;display:flex;gap:22px;align-items:center;font-weight:800;font-size:34px">
+      <span style="text-decoration:line-through;color:#FF5B48">$1.50</span>
+      <span style="color:#7C828B">→</span>
+      <span style="color:#2CD47A">$705</span>
+      <span style="color:#7C828B;font-weight:600;font-size:28px">on the same $5,000</span>
+    </div>
+  </div>
+
+  <div class="foot"><div class="note" style="color:#7C828B">Educational only, not financial advice. Rates vary by bank and change over time.</div><div class="swipe" style="color:#F5F2EA">FOLLOW <span style="background:#2CD47A;color:#121316">+</span></div></div>
+</section>
+
+</body>
+</html>
