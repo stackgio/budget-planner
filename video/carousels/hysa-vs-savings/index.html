@@ -46,6 +46,8 @@ h2{font-weight:900;font-size:62px;line-height:1.05;letter-spacing:-2.5px}
 .tag{font-weight:900;font-size:24px;padding:8px 16px;border-radius:14px;border:4px solid var(--ink);white-space:nowrap;box-shadow:4px 4px 0 var(--ink)}
 .t-red{background:#FBE1DB;color:var(--red)}
 .t-green{background:#D7F0E1;color:var(--greenDeep)}
+.yr{display:block;margin-top:4px;color:var(--ink);font-size:28px;letter-spacing:-.5px;font-weight:900}
+.yr.green{color:var(--green)}
 .lbl{font-weight:700;font-size:22px;letter-spacing:2px;color:var(--muted);text-align:center}
 </style>
 </head>
@@ -78,29 +80,36 @@ h2{font-weight:900;font-size:62px;line-height:1.05;letter-spacing:-2.5px}
   <div class="top"><div class="brand"><i data-logo></i>STACK WITH GIO</div><div class="count">2 / 6</div></div>
   <div class="kicker k-red">Big bank math</div>
 
-  <div class="eq" style="margin-top:40px">
-    <div class="chip">$5,000</div><div>×</div><div class="chip red">0.01%</div><div>×</div><div class="chip">3 years</div>
+  <h2 style="margin-top:36px">You put <span class="mark">$5,000</span> in a big bank paying <span class="red">0.01%</span> a year.</h2>
+
+  <div class="scene" style="height:360px;margin-top:30px">
+    <div data-ill="bank" data-w="260" data-web="1" style="left:-4px;bottom:90px"></div>
+    <div data-ill="arrow" data-w="60" data-theme="mute" style="left:262px;top:110px"></div>
+    <div data-ill="cash" data-w="160" data-n="4" style="left:330px;bottom:90px"></div>
+    <div data-ill="cash" data-w="160" data-n="4" style="left:526px;bottom:90px"></div>
+    <div data-ill="cash" data-w="160" data-n="4" style="left:722px;bottom:90px"></div>
+    <div class="ground" style="top:270px"></div>
+    <div style="left:0;width:256px;top:290px" class="lbl">TODAY<br><b class="yr">$5,000</b></div>
+    <div style="left:330px;width:160px;top:290px" class="lbl">YEAR 1<br><b class="yr">$5,000.50</b></div>
+    <div style="left:526px;width:160px;top:290px" class="lbl">YEAR 2<br><b class="yr">$5,001.00</b></div>
+    <div style="left:722px;width:160px;top:290px" class="lbl">YEAR 3<br><b class="yr">$5,001.50</b></div>
   </div>
 
-  <div class="scene" style="height:400px;margin-top:40px">
-    <div data-ill="bank" data-w="400" data-web="1" style="left:-6px;bottom:48px"></div>
-    <div data-ill="coin" data-w="36" data-fill="#C9C2B4" style="left:242px;bottom:72px"></div>
-    <div class="ground" style="top:352px;right:auto;width:440px"></div>
-    <div style="left:440px;top:40px;width:460px">
-      <div class="lbl" style="text-align:left">YOUR INTEREST, 3 YEARS</div>
-      <div class="mega red" style="font-size:176px;margin-top:18px">$1.50</div>
-      <div class="lead" style="margin-top:22px">That's <b style="color:var(--ink)">50¢ a year.</b></div>
+  <div class="card" style="margin-top:30px;padding:30px 40px;display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div class="lbl" style="text-align:left">YOU EARNED IN 3 YEARS</div>
+      <div class="mega red" style="font-size:140px;margin-top:14px">$1.50</div>
+      <div class="lead" style="margin-top:14px;font-size:30px">That's <b style="color:var(--ink)">50¢ a year.</b></div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+      <div data-ill="gum" data-w="190"></div>
+      <div style="font-weight:700;font-size:22px;color:var(--muted);text-align:center">A pack of gum<br>costs more.</div>
     </div>
   </div>
 
-  <div class="card" style="margin-top:34px;padding:30px 40px;display:flex;align-items:center;gap:36px">
-    <div data-ill="gum" data-w="220"></div>
-    <div class="lead" style="font-size:32px"><b style="color:var(--ink)">A pack of gum</b> costs more than 3 years of interest.</div>
-  </div>
+  <h2 style="margin-top:30px">That is a <span class="mark">joke.</span></h2>
 
-  <h2 style="margin-top:44px">That is a <span class="mark">joke.</span></h2>
-
-  <div class="foot"><div class="note">0.01% APY is a typical rate at large brick-and-mortar banks. $5,000 × ((1.0001)³ − 1) = $1.50.</div><div class="swipe">SWIPE <span>→</span></div></div>
+  <div class="foot"><div class="note">0.01% APY, compounded yearly.</div><div class="swipe">SWIPE <span>→</span></div></div>
 </section>
 
 <!-- ============ SLIDE 3 — HYSA MATH ============ -->
@@ -108,28 +117,36 @@ h2{font-weight:900;font-size:62px;line-height:1.05;letter-spacing:-2.5px}
   <div class="top"><div class="brand"><i data-logo></i>STACK WITH GIO</div><div class="count">3 / 6</div></div>
   <div class="kicker k-green">High-yield savings math</div>
 
-  <div class="eq" style="margin-top:40px">
-    <div class="chip">$5,000</div><div>×</div><div class="chip green">4.50%</div><div>×</div><div class="chip">3 years</div>
+  <h2 style="margin-top:36px">Same <span class="markg">$5,000</span> in a high-yield account paying <span class="green">4.50%</span>.</h2>
+
+  <div class="scene" style="height:360px;margin-top:30px">
+    <div data-ill="phone" data-w="140" style="left:40px;bottom:90px"></div>
+    <div data-ill="arrow" data-w="70" style="left:220px;top:80px"></div>
+    <div data-ill="cash" data-w="160" data-n="2" style="left:330px;bottom:90px"></div>
+    <div data-ill="cash" data-w="160" data-n="4" style="left:526px;bottom:90px"></div>
+    <div data-ill="cash" data-w="160" data-n="6" style="left:722px;bottom:90px"></div>
+    <div class="ground" style="top:270px"></div>
+    <div style="left:0;width:256px;top:290px" class="lbl">TODAY<br><b class="yr">$5,000</b></div>
+    <div style="left:330px;width:160px;top:290px" class="lbl">YEAR 1<br><b class="yr green">$5,225</b></div>
+    <div style="left:526px;width:160px;top:290px" class="lbl">YEAR 2<br><b class="yr green">$5,460</b></div>
+    <div style="left:722px;width:160px;top:290px" class="lbl">YEAR 3<br><b class="yr green">$5,705</b></div>
   </div>
 
-  <div class="scene" style="height:470px;margin-top:34px">
-    <div data-ill="phone" data-w="190" style="left:0;bottom:102px"></div>
-    <div data-ill="arrow" data-w="90" style="left:200px;top:150px"></div>
-    <div data-ill="cash" data-w="170" data-n="2" style="left:300px;bottom:102px"></div>
-    <div data-ill="cash" data-w="170" data-n="4" style="left:500px;bottom:102px"></div>
-    <div data-ill="cash" data-w="170" data-n="7" style="left:700px;bottom:102px"></div>
-    <div class="ground" style="top:368px"></div>
-    <div style="left:300px;width:170px;top:390px" class="lbl">YEAR 1<br><b style="color:var(--green);font-size:30px;letter-spacing:0">+$225</b></div>
-    <div style="left:500px;width:170px;top:390px" class="lbl">YEAR 2<br><b style="color:var(--green);font-size:30px;letter-spacing:0">+$235</b></div>
-    <div style="left:700px;width:170px;top:390px" class="lbl">YEAR 3<br><b style="color:var(--green);font-size:30px;letter-spacing:0">+$246</b></div>
+  <div class="card" style="margin-top:30px;padding:30px 40px;display:flex;align-items:center;justify-content:space-between;border-color:var(--green);background:#F3FAF5">
+    <div>
+      <div class="lbl" style="text-align:left">YOU EARNED IN 3 YEARS</div>
+      <div class="mega green" style="font-size:140px;margin-top:14px">$705</div>
+      <div class="lead" style="margin-top:14px;font-size:30px"><b style="color:var(--ink)">For doing nothing.</b></div>
+    </div>
+    <div style="text-align:right">
+      <div class="lbl" style="text-align:right">BIG BANK</div>
+      <div style="font-weight:900;font-size:56px;margin-top:8px;text-decoration:line-through;text-decoration-thickness:6px" class="red">$1.50</div>
+    </div>
   </div>
 
-  <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:26px">
-    <div class="mega green" style="font-size:230px">$705</div>
-    <div class="lead" style="text-align:right;padding-bottom:14px">in cash,<br><span class="markg" style="color:var(--ink);font-weight:800">for doing nothing.</span></div>
-  </div>
+  <h2 style="margin-top:30px">That's <span class="markg">470× more.</span></h2>
 
-  <div class="foot"><div class="note">4.50% APY, compounded yearly, rate held for 3 years. HYSA rates are variable and can change.</div><div class="swipe">SWIPE <span>→</span></div></div>
+  <div class="foot"><div class="note">4.50% APY, compounded yearly. HYSA rates can change.</div><div class="swipe">SWIPE <span>→</span></div></div>
 </section>
 
 <!-- ============ SLIDE 4 — WHY ============ -->
@@ -336,7 +353,7 @@ const ILL = {
 
   // Bold curved arrow (left -> right).
   arrow({w, theme}) {
-    const c = theme === 'dark' ? '#2CD47A' : '#1E9E57';
+    const c = theme === 'dark' ? '#2CD47A' : theme === 'mute' ? '#B9AF9C' : '#1E9E57';
     return `<svg width="${w}" viewBox="0 0 120 80" style="display:block;overflow:visible">
       <path d="M8 58 Q56 0 100 34" fill="none" stroke="${c}" stroke-width="12" stroke-linecap="round"/>
       <path d="M78 18 L108 40 L76 54 Z" fill="${c}" stroke="${c}" stroke-width="6" stroke-linejoin="round"/>
